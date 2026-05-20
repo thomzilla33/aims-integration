@@ -442,13 +442,14 @@ body{
 .health-dot{width:6px; height:6px; border-radius:50%; background:currentColor}
 .cap-chips{display:flex; gap:4px; flex-wrap:wrap}
 .cap-chip{
-  font-size:10px; font-weight:600; padding:2px 7px; border-radius:4px;
-  background:rgba(255,255,255,0.06); color:var(--t2); border:1px solid var(--line);
+  display:inline-flex; align-items:center; gap:4px;
+  font-size:10px; font-weight:600; padding:2.5px 7px; border-radius:5px;
+  background:rgba(255,255,255,0.04); color:var(--t2); border:1px solid var(--line);
 }
-.cap-chip.tools{color:var(--purple); background:rgba(167,139,250,0.1); border-color:rgba(167,139,250,0.2)}
-.cap-chip.knowledge{color:var(--green); background:rgba(5,223,114,0.08); border-color:rgba(5,223,114,0.18)}
-.cap-chip.triggers{color:var(--amber); background:rgba(253,199,0,0.08); border-color:rgba(253,199,0,0.18)}
-.cap-chip.channels{color:var(--cyan); background:rgba(6,182,212,0.08); border-color:rgba(6,182,212,0.22)}
+.cap-chip svg{flex-shrink:0}
+.cap-chip.cap-tool{color:var(--purple); background:rgba(167,139,250,0.10); border-color:rgba(167,139,250,0.22)}
+.cap-chip.cap-data{color:var(--green); background:rgba(5,223,114,0.10); border-color:rgba(5,223,114,0.22)}
+.cap-chip.cap-mcp{color:var(--cyan); background:rgba(6,182,212,0.10); border-color:rgba(6,182,212,0.25)}
 
 .conn-meta{display:flex; justify-content:space-between; gap:8px; font-size:11px; color:var(--t2)}
 .conn-meta strong{color:var(--t1); font-weight:600}
@@ -1258,6 +1259,144 @@ body{
 .active-studio-dot.studio-ag{background:var(--purple)}
 .active-studio-dot.studio-wf{background:var(--accent)}
 
+/* ── Provider + Instances UX ── */
+
+/* Instance count badge on cards */
+.inst-count{
+  display:inline-flex; align-items:center; gap:4px;
+  font-size:10px; font-weight:700; padding:2px 7px; border-radius:10px;
+  background:rgba(43,127,255,0.10); color:var(--accent);
+  border:1px solid rgba(43,127,255,0.22); letter-spacing:.02em;
+}
+.inst-count-dot{width:5px; height:5px; border-radius:50%; background:currentColor}
+
+/* Instances section on detail page */
+.inst-section{margin-top:24px}
+.inst-section-h{
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:10px;
+}
+.inst-section-title{font-size:13px; font-weight:700; color:var(--t1); display:flex; align-items:center; gap:8px}
+.inst-section-title .inst-count{font-size:10px}
+
+.inst-list{display:flex; flex-direction:column; gap:8px}
+.inst-row{
+  display:flex; align-items:center; gap:14px;
+  padding:14px 16px; border-radius:var(--r10);
+  background:var(--bg3); border:1px solid var(--line);
+  transition:border-color .12s, background .12s, transform .1s;
+}
+.inst-row:hover{border-color:var(--line-strong); background:var(--bg2); transform:translateY(-1px)}
+.inst-row-name{
+  font-size:13.5px; font-weight:600; color:var(--t1);
+  display:flex; align-items:center; gap:8px;
+  flex:1; min-width:0;
+}
+.inst-row-id{
+  font-size:10.5px; font-family:'SF Mono',Menlo,monospace; color:var(--t3);
+  background:rgba(255,255,255,0.04); padding:1.5px 6px; border-radius:4px;
+}
+.inst-row-meta{display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-top:3px}
+.inst-row-status{
+  display:inline-flex; align-items:center; gap:5px;
+  font-size:11px; font-weight:600; padding:2px 8px; border-radius:14px;
+  white-space:nowrap;
+}
+.inst-row-status.ok{background:rgba(5,223,114,0.08); color:var(--green); border:1px solid rgba(5,223,114,0.20)}
+.inst-row-status.warn{background:rgba(253,199,0,0.08); color:var(--amber); border:1px solid rgba(253,199,0,0.20)}
+.inst-row-status.bad{background:rgba(239,68,68,0.08); color:var(--red); border:1px solid rgba(239,68,68,0.20)}
+.inst-row-mode{
+  font-size:9.5px; font-weight:700; padding:1.5px 6px; border-radius:8px;
+  background:var(--hover); color:var(--t2); border:1px solid var(--line);
+  text-transform:uppercase; letter-spacing:.05em;
+}
+.inst-row-mode.aims{color:var(--cyan); background:rgba(6,182,212,0.08); border-color:rgba(6,182,212,0.22)}
+.inst-row-mode.byok{color:var(--purple); background:rgba(167,139,250,0.08); border-color:rgba(167,139,250,0.22)}
+.inst-row-actions{flex-shrink:0; display:flex; gap:6px}
+
+.inst-add-btn{
+  display:inline-flex; align-items:center; gap:5px;
+  padding:6px 11px; border-radius:var(--r6);
+  background:var(--hover); border:1px dashed var(--line-strong);
+  color:var(--t1); font-size:12px; font-weight:600;
+  cursor:pointer; font-family:inherit;
+  transition:border-color .12s, background .12s;
+}
+.inst-add-btn:hover{border-color:var(--accent); background:rgba(43,127,255,0.06); color:var(--accent)}
+
+/* MCP tools drill-down */
+.mcp-tools{
+  display:flex; flex-direction:column; gap:6px;
+  padding:12px;
+  background:rgba(6,182,212,0.04);
+  border:1px solid rgba(6,182,212,0.22); border-radius:var(--r8);
+}
+.mcp-tools-h{
+  display:flex; align-items:center; gap:8px;
+  padding:0 4px 8px; border-bottom:1px solid rgba(6,182,212,0.18);
+  margin-bottom:4px;
+}
+.mcp-tools-h-title{font-size:11px; font-weight:700; color:var(--cyan); text-transform:uppercase; letter-spacing:.06em; flex:1}
+.mcp-tools-h-info{font-size:10.5px; color:var(--t3)}
+.mcp-tool-row{
+  display:flex; align-items:center; gap:10px;
+  padding:8px 10px; border-radius:var(--r6);
+  background:rgba(255,255,255,0.03);
+  transition:background .12s;
+}
+.mcp-tool-row:hover{background:rgba(255,255,255,0.05)}
+.mcp-tool-row-name{
+  font-family:'SF Mono',Menlo,monospace; font-size:12px; color:var(--t1); font-weight:600;
+}
+.mcp-tool-row-desc{font-size:11px; color:var(--t2); flex:1}
+.mcp-tool-row-count{
+  font-size:9.5px; font-weight:700; padding:1px 6px; border-radius:8px;
+  background:rgba(6,182,212,0.10); color:var(--cyan); border:1px solid rgba(6,182,212,0.22);
+}
+
+/* Governance 3-layer breakdown */
+.gov-layers{
+  display:flex; flex-direction:column; gap:0;
+  background:var(--bg3); border:1px solid var(--line);
+  border-radius:var(--r10); overflow:hidden;
+}
+.gov-layer{
+  display:flex; align-items:flex-start; gap:14px;
+  padding:14px 16px; position:relative;
+  border-bottom:1px solid var(--line);
+}
+.gov-layer:last-child{border-bottom:none}
+.gov-layer::before{
+  content:''; position:absolute; left:32px; top:38px; bottom:-10px;
+  width:1px; background:linear-gradient(180deg, var(--accent) 0%, transparent 100%);
+  opacity:.45;
+}
+.gov-layer:last-child::before{display:none}
+.gov-layer-num{
+  width:24px; height:24px; border-radius:50%;
+  background:rgba(43,127,255,0.10); color:var(--accent);
+  border:1px solid rgba(43,127,255,0.30);
+  display:flex; align-items:center; justify-content:center;
+  font-size:11px; font-weight:700; flex-shrink:0;
+  position:relative; z-index:1;
+}
+.gov-layer-text{flex:1; min-width:0}
+.gov-layer-title{font-size:13px; font-weight:700; color:var(--t1); display:flex; align-items:center; gap:8px}
+.gov-layer-who{
+  font-size:10px; font-weight:700; padding:1.5px 6px; border-radius:8px;
+  background:var(--hover); color:var(--t2); border:1px solid var(--line);
+  text-transform:uppercase; letter-spacing:.04em;
+}
+.gov-layer-desc{font-size:12px; color:var(--t2); margin-top:3px; line-height:1.55}
+.gov-layer-counts{
+  display:inline-flex; gap:5px; margin-top:8px; flex-wrap:wrap;
+}
+.gov-layer-count-chip{
+  font-size:10.5px; padding:2px 7px; border-radius:6px;
+  background:rgba(255,255,255,0.04); color:var(--t1); border:1px solid var(--line);
+}
+.gov-layer-count-chip strong{color:var(--accent); font-weight:700}
+
 /* ── Vanguard catalog toolbar ── */
 .catalog-toolbar{
   position:sticky; top:0; z-index:5;
@@ -1394,10 +1533,9 @@ body{
   background:rgba(255,255,255,0.06);
   border-color:var(--line-strong);
 }
-.ct-mini.active.cap-tools{color:var(--purple); background:rgba(167,139,250,0.08); border-color:rgba(167,139,250,0.30)}
-.ct-mini.active.cap-knowledge{color:var(--green); background:rgba(5,223,114,0.08); border-color:rgba(5,223,114,0.30)}
-.ct-mini.active.cap-triggers{color:var(--amber); background:rgba(253,199,0,0.08); border-color:rgba(253,199,0,0.30)}
-.ct-mini.active.cap-channels{color:var(--cyan); background:rgba(6,182,212,0.08); border-color:rgba(6,182,212,0.30)}
+.ct-mini.active.cap-tool{color:var(--purple); background:rgba(167,139,250,0.08); border-color:rgba(167,139,250,0.30)}
+.ct-mini.active.cap-data_sync{color:var(--green); background:rgba(5,223,114,0.08); border-color:rgba(5,223,114,0.30)}
+.ct-mini.active.cap-mcp{color:var(--cyan); background:rgba(6,182,212,0.08); border-color:rgba(6,182,212,0.30)}
 .ct-mini.active.state-on{color:var(--green); background:rgba(5,223,114,0.06); border-color:rgba(5,223,114,0.25)}
 .ct-mini.active.state-off{color:var(--t2); background:rgba(255,255,255,0.05); border-color:var(--line-strong)}
 
@@ -1817,12 +1955,41 @@ const CATEGORIES = [
   { slug:'custom',        label:'Custom / Build your own', color:'#6B7280', icon:'<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M11 2.5l2.5 2.5L6 12.5l-3 .5.5-3L11 2.5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>' }
 ];
 
+// New capability taxonomy (engineering brief §3): Tool / Data Sync / MCP
+// Old types (tools/knowledge/triggers/channels) map to new types automatically via CAP_MIGRATE.
 const CAP_META = {
-  tools:    { label:'Tools',    icon:'⚡', color:'purple' },
-  knowledge:{ label:'Knowledge',icon:'📚', color:'green'  },
-  triggers: { label:'Triggers', icon:'⏱',  color:'amber'  },
-  channels: { label:'Channels', icon:'📡', color:'cyan'   }
+  tool: {
+    label:'Tool', cls:'tool', color:'#A78BFA',
+    icon:'<svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M11 2L7 7H10L6 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    desc:'Synchronous actions agents can invoke (e.g. create_ticket, send_message)'
+  },
+  data_sync: {
+    label:'Data Sync', cls:'data', color:'#05DF72',
+    icon:'<svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M2 6a3 3 0 013-3h8M14 10a3 3 0 01-3 3H3M11 1l3 2-3 2M5 11l-3 2 3 2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    desc:'Continuous events fed into Helix Data Studio for mapping & ingestion'
+  },
+  mcp: {
+    label:'MCP', cls:'mcp', color:'#06B6D4',
+    icon:'<svg width="11" height="11" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.4"/><rect x="9" y="2" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.4"/><rect x="2" y="9" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.4"/><rect x="9" y="9" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.4"/></svg>',
+    desc:'Model Context Protocol bundle — granular per-tool activation'
+  }
 };
+
+// Migrate old taxonomy (tools/knowledge/triggers/channels) → new (tool/data_sync/mcp)
+const CAP_MIGRATE = {
+  tools:'tool', triggers:'data_sync', channels:'data_sync', knowledge:'data_sync'
+};
+// Back-compat: provide old keys as aliases of new ones for legacy code paths
+CAP_META.tools = CAP_META.tool;
+CAP_META.knowledge = CAP_META.data_sync;
+CAP_META.triggers = CAP_META.data_sync;
+CAP_META.channels = CAP_META.data_sync;
+
+function normalizeCaps(caps) {
+  if (!caps) return [];
+  // Dedupe after migration
+  return [...new Set(caps.map(c => CAP_MIGRATE[c] || c))];
+}
 
 const STUDIO_META = {
   governance:{
@@ -1843,6 +2010,50 @@ const STUDIO_META = {
     verb:'channels',
     icon:'<svg viewBox="0 0 16 16" fill="none"><path d="M2 3h12v8H9l-3 2V11H2V3z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>'
   }
+};
+
+// Provider instances (engineering brief §2: 1 Provider can have N Instances)
+// Each provider has a possibly empty array of instances; the prototype shows S3, Slack, GitHub with multiple instances.
+const PROVIDER_INSTANCES = {
+  s3: [
+    { id:'s3-prod',      name:'Amazon S3 — Production',  status:'fully_configured',     health:'healthy',  authMode:'byok',     authMethod:'apikey',  region:'us-east-1', connectedBy:{name:'María González',initials:'MG'}, connectedAt:'2 months ago',  lastRun:'1 min ago',   errors24h:0, activeCaps:{ tool:['list_objects','get_object','put_object'], data_sync:['object_created','object_removed'], mcp:[] } },
+    { id:'s3-dev',       name:'Amazon S3 — Dev',         status:'fully_configured',     health:'healthy',  authMode:'byok',     authMethod:'apikey',  region:'us-east-1', connectedBy:{name:'Thomas González',initials:'TG'},connectedAt:'5 weeks ago',   lastRun:'12 min ago',  errors24h:0, activeCaps:{ tool:['list_objects','get_object'], data_sync:[], mcp:[] } },
+    { id:'s3-analytics', name:'Amazon S3 — Analytics',   status:'partially_configured', health:'degraded', authMode:'aims_managed', authMethod:'oauth', region:'us-west-2', connectedBy:{name:'Diana Pérez',initials:'DP'},   connectedAt:'1 week ago',    lastRun:'3 hours ago', errors24h:1, activeCaps:{ tool:['get_object'], data_sync:['object_created'], mcp:[] }, note:'Helix mapping pending verification' }
+  ],
+  slack: [
+    { id:'slack-ws',      name:'Slack — AIMS Workspace',    status:'fully_configured', health:'healthy', authMode:'aims_managed', authMethod:'oauth', connectedBy:{name:'María González',initials:'MG'}, connectedAt:'3 days ago', lastRun:'2 min ago', errors24h:0, activeCaps:{ tool:['send_message','read_channel_history','react_to_message'], data_sync:['message_posted','app_mentioned'], mcp:[] } },
+    { id:'slack-eng',     name:'Slack — Engineering channels', status:'fully_configured', health:'healthy', authMode:'aims_managed', authMethod:'oauth', connectedBy:{name:'Thomas González',initials:'TG'}, connectedAt:'1 week ago', lastRun:'15 min ago', errors24h:0, activeCaps:{ tool:['send_message','react_to_message'], data_sync:['message_posted'], mcp:[] } }
+  ],
+  github: [
+    { id:'github-org',  name:'GitHub — aims-os org',    status:'fully_configured', health:'healthy', authMode:'byok', authMethod:'oauth', connectedBy:{name:'Thomas González',initials:'TG'}, connectedAt:'4 months ago', lastRun:'1 min ago', errors24h:0, activeCaps:{ tool:['create_issue','create_pr','merge_pr'], data_sync:['pr_opened','workflow_completed'], mcp:['gh.issues','gh.repos','gh.actions'] } }
+  ],
+  linear: [
+    { id:'linear-main', name:'Linear — AIMS team', status:'fully_configured', health:'healthy', authMode:'aims_managed', authMethod:'oauth', connectedBy:{name:'Thomas González',initials:'TG'}, connectedAt:'1 week ago', lastRun:'18 min ago', errors24h:0, activeCaps:{ tool:['create_issue','update_issue'], data_sync:[], mcp:[] } }
+  ]
+};
+
+// MCP tools (engineering brief §4) — when a provider exposes an MCP capability, customer activates each tool individually
+const MCP_TOOLS = {
+  github: [
+    { id:'gh.issues',  name:'github.issues',      desc:'Create, update, search GitHub issues',     toolCount:8,  active:true },
+    { id:'gh.repos',   name:'github.repos',       desc:'Repository management — list, create, fork', toolCount:6,  active:true },
+    { id:'gh.actions', name:'github.actions',     desc:'Trigger and inspect GitHub Actions workflows', toolCount:5,  active:true },
+    { id:'gh.users',   name:'github.users',       desc:'User and organization lookups',              toolCount:4,  active:false },
+    { id:'gh.codespaces', name:'github.codespaces', desc:'Manage GitHub Codespaces environments',    toolCount:7,  active:false }
+  ]
+};
+
+function instancesOf(slug){ return PROVIDER_INSTANCES[slug] || [] }
+function isActivated(slug){ const inst = instancesOf(slug); return inst.length > 0 }
+function primaryInstanceOf(slug){ return instancesOf(slug)[0] }
+
+// Status vocab (engineering brief §13.4)
+const STATUS_META = {
+  fully_configured:     { label:'Fully configured',     color:'#05DF72', cls:'ok'   },
+  partially_configured: { label:'Partially configured', color:'#FDC700', cls:'warn' },
+  auth_failed:          { label:'Authentication failed',color:'#EF4444', cls:'bad'  },
+  token_expired:        { label:'API key expired',      color:'#EF4444', cls:'bad'  },
+  provider_down:        { label:'Provider down',        color:'#EF4444', cls:'bad'  }
 };
 
 // Per-integration studio usage (mock telemetry data)
@@ -1910,7 +2121,8 @@ const INTEGRATIONS = [
   },
   { slug:'twilio', name:'Twilio', vendor:'Twilio Inc.', category:'communication', color:'#F22F46',
     desc:'SMS, voice and WhatsApp messaging via Twilio APIs.',
-    capabilities:['tools','channels'], authMethods:['apikey'], source:'official', connected:false
+    capabilities:['tools','channels'], authMethods:['apikey'], source:'official', connected:false,
+    multiTenant:true
   },
 
   // Productivity & Docs (4)
@@ -2021,7 +2233,11 @@ const INTEGRATIONS = [
   },
   { slug:'s3', name:'Amazon S3', vendor:'Amazon Web Services', category:'storage', color:'#FF9900',
     desc:'Object storage — index buckets and prefixes as knowledge.',
-    capabilities:['knowledge'], authMethods:['apikey'], source:'official', connected:false
+    capabilities:['knowledge'], authMethods:['apikey'], source:'official',
+    connected:true, health:'healthy', lastRun:'1 min ago', errors24h:0,
+    connectedBy:{name:'María González',initials:'MG'}, connectedAt:'2 months ago',
+    studios:{governance:true,agentic:true,workforce:false}, allowPersonal:false,
+    multiTenant:false  // BYOK only (engineering brief §7)
   },
   { slug:'box', name:'Box', vendor:'Box Inc.', category:'storage', color:'#0061D5',
     desc:'Secure enterprise file storage and collaboration.',
@@ -2187,7 +2403,11 @@ function healthBadge(h) {
 }
 
 function capChips(caps) {
-  return caps.map(c => `<span class="cap-chip ${c}">${escapeHtml(CAP_META[c].label)}</span>`).join('');
+  return normalizeCaps(caps).map(c => {
+    const meta = CAP_META[c];
+    if (!meta) return '';
+    return `<span class="cap-chip cap-${meta.cls}" title="${escapeHtml(meta.desc)}">${meta.icon}<span>${escapeHtml(meta.label)}</span></span>`;
+  }).join('');
 }
 
 function srcBadge(integration) {
@@ -2268,6 +2488,119 @@ function usedInHTML(integration) {
   `;
 }
 
+function instancesSectionHTML(integration) {
+  const instances = instancesOf(integration.slug);
+  if (instances.length === 0) return '';
+  return `
+    <div class="inst-section">
+      <div class="inst-section-h">
+        <div class="inst-section-title">Instances <span class="inst-count"><span class="inst-count-dot"></span>${instances.length} active</span></div>
+        <button class="inst-add-btn" onclick="openConnect('${integration.slug}')">+ Add another instance</button>
+      </div>
+      <div class="inst-list">
+        ${instances.map(inst => {
+          const status = STATUS_META[inst.status] || STATUS_META.fully_configured;
+          const totalCaps = (inst.activeCaps.tool?.length||0) + (inst.activeCaps.data_sync?.length||0) + (inst.activeCaps.mcp?.length||0);
+          return `
+            <div class="inst-row" onclick="toast('Instance detail — coming next')">
+              <div style="flex:1;min-width:0">
+                <div class="inst-row-name">
+                  ${escapeHtml(inst.name)}
+                  <span class="inst-row-id">${escapeHtml(inst.id)}</span>
+                </div>
+                <div class="inst-row-meta">
+                  <span class="inst-row-status ${status.cls}">● ${escapeHtml(status.label)}</span>
+                  <span class="inst-row-mode ${inst.authMode==='aims_managed'?'aims':'byok'}">${inst.authMode==='aims_managed'?'AIMS-managed':'BYOK'}</span>
+                  <span style="font-size:11px;color:var(--t2)">${totalCaps} capabilities active</span>
+                  <span style="font-size:11px;color:var(--t3)">·</span>
+                  <span style="font-size:11px;color:var(--t2)">Last run ${escapeHtml(inst.lastRun||'—')}</span>
+                  <span style="font-size:11px;color:var(--t3)">·</span>
+                  <span style="font-size:11px;color:var(--t2)">by ${escapeHtml(inst.connectedBy.name)}</span>
+                  ${inst.note ? `<span style="font-size:11px;color:var(--amber);margin-top:4px;flex:1 1 100%">⚠ ${escapeHtml(inst.note)}</span>` : ''}
+                </div>
+              </div>
+              <div class="inst-row-actions">
+                <button class="icon-btn" onclick="event.stopPropagation();toast('Manage ${escapeHtml(inst.name)}')" title="Manage">
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="3" cy="8" r="1.2"/><circle cx="8" cy="8" r="1.2"/><circle cx="13" cy="8" r="1.2"/></svg>
+                </button>
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function mcpToolsHTML(integration) {
+  const tools = MCP_TOOLS[integration.slug];
+  if (!tools || tools.length === 0) return '';
+  const active = tools.filter(t => t.active).length;
+  return `
+    <div class="mcp-tools" style="margin-top:14px">
+      <div class="mcp-tools-h">
+        <span class="cap-chip cap-mcp">${CAP_META.mcp.icon}<span>MCP</span></span>
+        <div class="mcp-tools-h-title">Granular tool activation</div>
+        <div class="mcp-tools-h-info">${active} of ${tools.length} activated</div>
+      </div>
+      ${tools.map(t => `
+        <div class="mcp-tool-row">
+          <div style="flex:1">
+            <div class="mcp-tool-row-name">${escapeHtml(t.name)}</div>
+            <div class="mcp-tool-row-desc">${escapeHtml(t.desc)}</div>
+          </div>
+          <span class="mcp-tool-row-count">${t.toolCount} tools</span>
+          <div class="toggle ${t.active?'on':''}" onclick="toast('${t.active?'Disabled':'Enabled'} ${escapeHtml(t.name)}')"></div>
+        </div>
+      `).join('')}
+      <div style="font-size:11px; color:var(--t3); padding:6px 4px 0; line-height:1.5">
+        ℹ Agents only see the tools you've activated above. Activating ${escapeHtml(integration.name)}'s MCP doesn't grant access to the whole bundle.
+      </div>
+    </div>
+  `;
+}
+
+function governanceLayersHTML(integration) {
+  const layer1Count = (integration.tools?.length||0) + (integration.triggers?.length||0);
+  return `
+    <div class="gov-layers">
+      <div class="gov-layer">
+        <div class="gov-layer-num">1</div>
+        <div class="gov-layer-text">
+          <div class="gov-layer-title">Integration level <span class="gov-layer-who">Workspace Admin</span></div>
+          <div class="gov-layer-desc">Maximum scope this integration can ever do, anywhere in the platform. Turning off a capability here means no agent in the entire tenant can use it.</div>
+          <div class="gov-layer-counts">
+            <span class="gov-layer-count-chip"><strong>${layer1Count}</strong> capabilities enabled</span>
+            <span class="gov-layer-count-chip">All studios</span>
+          </div>
+        </div>
+      </div>
+      <div class="gov-layer">
+        <div class="gov-layer-num">2</div>
+        <div class="gov-layer-text">
+          <div class="gov-layer-title">Workflow / Network level <span class="gov-layer-who">Workflow builder</span></div>
+          <div class="gov-layer-desc">Which of Layer 1's active capabilities each workflow is allowed to use. Cannot exceed Layer 1.</div>
+          <div class="gov-layer-counts">
+            <span class="gov-layer-count-chip"><strong>3</strong> workflows reference this</span>
+            <span class="gov-layer-count-chip">Avg <strong>4</strong> capabilities per workflow</span>
+          </div>
+        </div>
+      </div>
+      <div class="gov-layer">
+        <div class="gov-layer-num">3</div>
+        <div class="gov-layer-text">
+          <div class="gov-layer-title">Agent / Chat level <span class="gov-layer-who">Agent owner</span></div>
+          <div class="gov-layer-desc">Which of the workflow's capabilities a specific agent can use. Cannot exceed Layer 2.</div>
+          <div class="gov-layer-counts">
+            <span class="gov-layer-count-chip"><strong>8</strong> agents use this</span>
+            <span class="gov-layer-count-chip">Cascade enforced</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
 function activeStudioDotsHTML(integration) {
   const studios = ['governance','agentic','workforce'];
   const activeStudios = studios.filter(s => getStudioState(integration, s) === 'active');
@@ -2338,7 +2671,10 @@ function renderHome() {
   if (state.activeSrc!=='all') filtered = filtered.filter(i=>i.source===state.activeSrc);
   if (state.activeStudio) filtered = filtered.filter(i => i.studios && i.studios[state.activeStudio]);
   if (state.activeCats.size>0) filtered = filtered.filter(i=>state.activeCats.has(i.category));
-  if (state.activeCaps.size>0) filtered = filtered.filter(i => i.capabilities && i.capabilities.some(c=>state.activeCaps.has(c)));
+  if (state.activeCaps.size>0) filtered = filtered.filter(i => {
+    const norm = normalizeCaps(i.capabilities||[]);
+    return norm.some(c => state.activeCaps.has(c));
+  });
   if (state.activeStates.size>0) filtered = filtered.filter(i=>state.activeStates.has(i.connected?'connected':'not_connected'));
   if (state.search) {
     const q = state.search.toLowerCase();
@@ -2530,8 +2866,11 @@ function mktCardHTML(i) {
   const flag = i.source==='private' ? '<span class="mkt-card-flag private">Private</span>' :
                i.source==='partner' ? '<span class="mkt-card-flag partner">Partner</span>' : '';
 
+  const instCount = instancesOf(i.slug).length;
   const stateLine = i.connected
-    ? `<span class="mkt-card-state ${i.health||'healthy'}"><svg width="8" height="8" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="currentColor"/></svg>${i.health==='healthy'?'Connected':i.health==='degraded'?'Degraded':'Failed'}</span>`
+    ? (instCount > 1
+        ? `<span class="inst-count" title="${instCount} instances of this provider"><span class="inst-count-dot"></span>${instCount} instances</span>`
+        : `<span class="mkt-card-state ${i.health||'healthy'}"><svg width="8" height="8" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="currentColor"/></svg>${i.health==='healthy'?'Connected':i.health==='degraded'?'Degraded':'Failed'}</span>`)
     : `<button class="mkt-card-cta" onclick="event.stopPropagation();openConnect('${i.slug}')">Connect</button>`;
 
   const verified = i.source==='official' ? '<span class="mkt-card-verified" title="Official AIMS-OS integration"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 0.8l1.7 1.7 2.4-.4.8 2.3 2.3.8-.4 2.4L16.3 9.2l-1.7 1.7.4 2.4-2.3.8-.8 2.3-2.4-.4L8 16.7l-1.7-1.7-2.4.4-.8-2.3-2.3-.8.4-2.4L-.3 8.2l1.7-1.7-.4-2.4 2.3-.8.8-2.3 2.4.4L8 .8z" fill="#2B7FFF"/><path d="M5.3 8.2l2 2 3.4-3.6" stroke="#fff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>' : '';
@@ -2675,6 +3014,8 @@ function detailOverview(i) {
             <button class="btn btn-primary btn-sm" onclick="openConnect('${i.slug}')">Connect ${escapeHtml(i.name)}</button>
           </div>
         ` : ''}
+
+        ${instancesSectionHTML(i)}
       </div>
 
       <div class="ov-side">
@@ -2737,7 +3078,7 @@ function detailCapabilities(i) {
   if (!i.connected) {
     return lockOverlay(i, 'Connect to manage capabilities');
   }
-  return ['tools','knowledge','triggers','channels'].map(c => capabilityGroup(i, c)).join('');
+  return ['tools','knowledge','triggers','channels'].map(c => capabilityGroup(i, c)).join('') + mcpToolsHTML(i);
 }
 
 function capabilityGroup(i, cap) {
@@ -2816,6 +3157,12 @@ function detailPermissions(i) {
   if (!i.connected) return lockOverlay(i, 'Connect to manage permissions');
   const studios = i.studios || {};
   return `
+    <div class="perm-card">
+      <h3 style="display:flex;align-items:center;gap:8px">Cascading governance <span style="font-size:10px;font-weight:600;padding:2px 7px;border-radius:8px;background:rgba(43,127,255,0.10);color:var(--accent);border:1px solid rgba(43,127,255,0.22);letter-spacing:.05em;text-transform:uppercase">3 layers</span></h3>
+      <div class="perm-sub">Each layer can restrict (never expand) what the layer above allows. Mike's model after the early MCP experiment.</div>
+      ${governanceLayersHTML(i)}
+    </div>
+
     <div class="perm-card">
       <h3>Available in studios</h3>
       <div class="perm-sub">Choose which studios can reference this integration, and which roles within each.</div>
@@ -2905,9 +3252,13 @@ function disconnect(slug) {
 function openConnect(slug) {
   const i = findIntegration(slug);
   if (!i) return;
+  const existingCount = instancesOf(slug).length;
   state.drawerState = {
     integration:i,
-    step:i.authMethods.length>1 ? 1 : 2,
+    step:0,  // Step 0: Name your instance (NEW per engineering brief §5.2)
+    instanceName: existingCount>0 ? `${i.name} — Instance ${existingCount+1}` : i.name,
+    instanceDesc: '',
+    authMode: i.multiTenant ? null : 'byok',  // null = customer picks AIMS-managed or BYOK
     authMethod:i.authMethods[0],
     studios:{governance:true,agentic:true,workforce:true},
     allowPersonal:false,
@@ -2920,6 +3271,7 @@ function openConnect(slug) {
   paintDrawer();
   $('drawerOverlay').classList.add('open');
   $('drawer').classList.add('open');
+  setTimeout(()=>{ const inp=document.querySelector('.drawer input'); if(inp) inp.focus(); }, 300);
 }
 
 function closeDrawer() {
@@ -2936,10 +3288,51 @@ function paintDrawer() {
   let body = '';
   let footer = '';
 
-  if (s.step === 1) {
+  if (s.step === 0) {
     body = `
-      <div class="drawer-step-h">Step 1 of 4</div>
-      <div class="drawer-step-title">Choose authentication method</div>
+      <div class="drawer-step-h">Step 1 of 5 · Name your instance</div>
+      <div class="drawer-step-title">Name and describe this ${escapeHtml(i.name)} instance</div>
+      <p style="font-size:12px;color:var(--t2);margin-bottom:14px;line-height:1.55">
+        You can activate ${escapeHtml(i.name)} multiple times — for example one for production, one for dev, one for analytics. Each <strong style="color:var(--t1)">instance</strong> has its own credentials, status, and audit log.
+      </p>
+      <div class="field-group">
+        <label class="field-label">Instance name</label>
+        <input class="input" type="text" placeholder="e.g. ${escapeHtml(i.name)} — Production" value="${escapeHtml(s.instanceName)}" oninput="state.drawerState.instanceName=this.value"/>
+        <div class="field-help">A clear, distinguishing name. You'll see this everywhere this instance is referenced.</div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Description (optional)</label>
+        <input class="input" type="text" placeholder="What is this instance used for?" value="${escapeHtml(s.instanceDesc)}" oninput="state.drawerState.instanceDesc=this.value"/>
+      </div>
+      ${i.multiTenant !== false ? `
+        <div class="field-group" style="padding-top:6px;border-top:1px solid var(--line);margin-top:6px">
+          <label class="field-label">Authentication mode</label>
+          <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
+            <div class="auth-card ${s.authMode==='aims_managed'?'selected':''}" onclick="state.drawerState.authMode='aims_managed';paintDrawer()">
+              <div class="auth-card-h"><span class="auth-name">AIMS-managed</span><span class="badge">Recommended</span></div>
+              <div class="auth-card-desc">We provision a tenant-isolated subaccount on ${escapeHtml(i.name)}. Billed through AIMS. Faster setup, no key rotation.</div>
+            </div>
+            <div class="auth-card ${s.authMode==='byok'?'selected':''}" onclick="state.drawerState.authMode='byok';paintDrawer()">
+              <div class="auth-card-h"><span class="auth-name">Bring your own key (BYOK)</span></div>
+              <div class="auth-card-desc">Use your own ${escapeHtml(i.name)} account. Full control, billed by ${escapeHtml(i.name)} directly.</div>
+            </div>
+          </div>
+        </div>
+      ` : `
+        <div class="field-group" style="padding-top:6px;border-top:1px solid var(--line);margin-top:6px">
+          <label class="field-label">Authentication</label>
+          <p style="font-size:11.5px;color:var(--t2);margin-top:4px">${escapeHtml(i.name)} requires you to bring your own credentials (BYOK only — provider does not support multi-tenancy).</p>
+        </div>
+      `}
+    `;
+    const canContinue = s.instanceName.trim() && (i.multiTenant===false || s.authMode);
+    footer = `<button class="btn btn-ghost btn-sm" onclick="closeDrawer()">Cancel</button><button class="btn btn-primary btn-sm" ${canContinue?'':'disabled style="opacity:.5;cursor:not-allowed"'} onclick="drawerNext()">Continue →</button>`;
+  }
+
+  else if (s.step === 1) {
+    body = `
+      <div class="drawer-step-h">Step 2 of 5 · Authentication method</div>
+      <div class="drawer-step-title">Choose how to connect</div>
       ${i.authMethods.map(m => {
         const meta = {
           oauth:{label:'OAuth 2.0',desc:'Sign in to '+i.name+' and authorize AIMS-OS. Most secure and easiest for end users.',badge:'Most secure'},
@@ -2961,7 +3354,7 @@ function paintDrawer() {
   else if (s.step === 2) {
     if (s.authMethod==='oauth') {
       body = `
-        <div class="drawer-step-h">Step 2 of 4 · OAuth 2.0</div>
+        <div class="drawer-step-h">Step 3 of 5 · OAuth 2.0</div>
         <div class="drawer-step-title">Authorize with ${escapeHtml(i.name)}</div>
         ${s.authenticated ? `
           <div class="connected-panel">
@@ -2983,7 +3376,7 @@ function paintDrawer() {
     }
     else if (s.authMethod==='apikey') {
       body = `
-        <div class="drawer-step-h">Step 2 of 4 · API token</div>
+        <div class="drawer-step-h">Step 3 of 5 · API token</div>
         <div class="drawer-step-title">Paste your ${escapeHtml(i.name)} token</div>
         <div class="field-group">
           <label class="field-label">${escapeHtml(i.name)} token</label>
@@ -3004,7 +3397,7 @@ function paintDrawer() {
     }
     else {
       body = `
-        <div class="drawer-step-h">Step 2 of 4 · Service account</div>
+        <div class="drawer-step-h">Step 3 of 5 · Service account</div>
         <div class="drawer-step-title">Upload your service account key</div>
         <div class="field-group">
           ${s.authenticated ? `
@@ -3024,7 +3417,7 @@ function paintDrawer() {
 
   else if (s.step === 3) {
     body = `
-      <div class="drawer-step-h">Step 3 of 4 · Initial scope</div>
+      <div class="drawer-step-h">Step 4 of 5 · Initial scope</div>
       <div class="drawer-step-title">Where should this integration be available?</div>
       <div class="field-group">
         ${Object.keys(STUDIO_META).map(k=>`
@@ -3052,7 +3445,7 @@ function paintDrawer() {
   else if (s.step === 4) {
     const studios = Object.keys(s.studios).filter(k=>s.studios[k]).map(k=>STUDIO_META[k].label).join(', ');
     body = `
-      <div class="drawer-step-h">Step 4 of 4 · Confirm</div>
+      <div class="drawer-step-h">Step 5 of 5 · Confirm</div>
       <div class="drawer-step-title">Review and connect</div>
       <div class="confirm-summary">
         <strong>${escapeHtml(i.name)}</strong> will be available in <strong>${escapeHtml(studios||'no studios')}</strong>.<br>
