@@ -764,6 +764,177 @@ body{
 .lock-overlay-h{font-size:14px; font-weight:600; color:var(--t1); margin-bottom:6px}
 .lock-overlay-p{font-size:12px; color:var(--t2); margin-bottom:14px}
 
+/* Detail row — wrap on smaller screens */
+.detail-row{flex-wrap:wrap}
+.detail-meta{flex-wrap:wrap; row-gap:2px}
+.detail-actions{flex-wrap:wrap}
+
+/* mkt-card-foot — allow wrap if needed */
+.mkt-card-foot{flex-wrap:wrap; gap:6px}
+
+/* Hero stats — grid instead of flex */
+.mkt-hero-stats{
+  display:grid;
+  grid-template-columns:repeat(4, minmax(0, 1fr));
+  gap:8px 24px;
+  text-align:center;
+  max-width:640px; margin:0 auto;
+}
+.mkt-hero-stat{padding:0 4px}
+
+/* Used-in grid — responsive */
+.used-in-grid{
+  grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));
+}
+
+/* Mobile menu toggle (hamburger) in topbar */
+.tb-menu-btn{
+  display:none; width:32px; height:32px;
+  border-radius:var(--r8); background:transparent; border:none;
+  color:var(--t2); cursor:pointer;
+  align-items:center; justify-content:center;
+  margin-right:4px; flex-shrink:0;
+}
+.tb-menu-btn:hover{background:var(--hover); color:var(--t1)}
+
+/* Sub-sidebar overlay backdrop (mobile/tablet) */
+.ssb-backdrop{
+  display:none; position:fixed; inset:0;
+  background:rgba(0,0,0,0.55); backdrop-filter:blur(4px);
+  z-index:14; opacity:0; transition:opacity .2s;
+}
+.ssb-backdrop.open{display:block; opacity:1}
+
+/* ── Responsive breakpoints ── */
+
+/* Tablet (≤1024px): sub-sidebar becomes overlay */
+@media (max-width: 1024px){
+  .tb-menu-btn{display:flex}
+  .tb-search-btn{width:auto; flex:1 1 auto; max-width:280px}
+  .tb-context-name{max-width:140px}
+
+  .ssb{
+    position:absolute; top:0; bottom:0; left:0;
+    width:280px; z-index:15;
+    transform:translateX(-100%);
+    transition:transform .25s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius:14px 0 0 14px;
+    box-shadow:8px 0 32px rgba(0,0,0,0.5);
+  }
+  .ssb.open{transform:translateX(0)}
+
+  .main{position:relative}
+
+  /* Hero compaction */
+  .mkt-hero{padding:36px 24px 32px}
+  .mkt-hero-title{font-size:26px}
+  .mkt-hero-sub{font-size:13px; margin-bottom:20px}
+
+  /* Active strip — wrap on narrower */
+  .active-strip{flex-wrap:wrap; gap:12px}
+  .active-strip-text{flex:1 1 100%}
+  .active-strip-cta{order:3}
+
+  /* Featured card stacks */
+  .featured-card{flex-direction:column; align-items:flex-start; padding:24px}
+  .featured-visual{align-self:center}
+  .logo.logo-xl{width:72px; height:72px; font-size:24px}
+  .featured-title{font-size:19px}
+
+  /* Detail page */
+  .detail-head{padding:16px 24px}
+  .detail-name{font-size:20px}
+  .detail-actions{width:100%; margin-top:8px}
+
+  /* Section paddings */
+  .mkt-section, .featured-wrap, .build-promo, .studio-filter, .cat-strip,
+  .breadcrumb, .ph, .detail-body, .section{padding-left:24px; padding-right:24px}
+  .build-promo{margin-left:24px; margin-right:24px}
+  .active-strip{margin-left:24px; margin-right:24px}
+}
+
+/* Mobile (≤720px): tighter compactions */
+@media (max-width: 720px){
+  .app{padding:60px 8px 8px 8px}
+
+  /* Topbar */
+  .tb-context-name{display:none}
+  .tb-ws-badge-name{display:none}
+  .tb-search-btn{display:none}
+  .tb-divider-v{display:none}
+  .topbar{padding:0 12px 0 8px; gap:6px}
+
+  /* Hero stats — 2 columns */
+  .mkt-hero-stats{grid-template-columns:repeat(2, 1fr); gap:14px 16px}
+  .mkt-hero{padding:28px 16px 24px}
+  .mkt-hero-title{font-size:22px}
+  .mkt-hero-sub{font-size:12.5px; margin-bottom:16px}
+  .mkt-search-input{padding:12px 14px 12px 40px; font-size:13px}
+  .mkt-search-icon{left:14px}
+
+  /* Section paddings */
+  .mkt-section, .featured-wrap, .studio-filter, .cat-strip,
+  .breadcrumb, .ph, .detail-body, .section{padding-left:16px; padding-right:16px}
+  .build-promo{margin-left:16px; margin-right:16px; padding:16px; flex-wrap:wrap}
+  .active-strip{margin-left:16px; margin-right:16px}
+  .detail-head{padding:14px 16px}
+
+  /* Section header */
+  .mkt-section-h{flex-direction:column; align-items:flex-start; gap:6px}
+  .mkt-section-title{font-size:15px}
+
+  /* Card grids — single column on mobile */
+  .mkt-grid{grid-template-columns:1fr; gap:10px}
+  .connected-grid{grid-template-columns:1fr}
+
+  /* Studio chips bigger touch target on mobile */
+  .studio-chip{width:22px; height:22px}
+  .studio-chip svg{width:13px; height:13px}
+
+  /* USED IN — single column */
+  .used-in-grid{grid-template-columns:1fr}
+
+  /* Studio filter wraps */
+  .studio-filter{padding:14px 16px 0}
+  .studio-pill{padding:5px 10px; font-size:11.5px}
+
+  /* Cat-strip — show fade mask hint */
+  .cat-strip{padding:14px 16px; gap:6px}
+  .cat-item{font-size:11.5px; padding:6px 11px}
+
+  /* Featured card — even tighter */
+  .featured-card{padding:18px; gap:14px}
+  .featured-title{font-size:17px; line-height:1.3}
+  .featured-desc{font-size:12px}
+
+  /* Detail page */
+  .detail-name{font-size:18px}
+  .ov-cols{grid-template-columns:1fr}
+  .ov-side{order:2}
+  .tabs{padding:0 16px; overflow-x:auto; gap:4px; -webkit-overflow-scrolling:touch}
+  .tab{padding:11px 10px; font-size:12.5px; flex-shrink:0}
+
+  /* Capabilities rows */
+  .cap-row{grid-template-columns:1fr; gap:6px; padding:10px}
+  .cap-row > *:not(:first-child){padding-left:0}
+
+  /* Permissions studios — single column */
+  .studio-grid{grid-template-columns:1fr}
+
+  /* Audit table — hide IP column on mobile */
+  .audit-table th:nth-child(7), .audit-table td:nth-child(7){display:none}
+  .audit-table{font-size:11px}
+  .audit-table th, .audit-table td{padding:8px}
+
+  /* Build promo */
+  .build-promo-text{flex:1 1 100%; order:2}
+  .build-promo-ico{flex-shrink:0; order:1}
+  .build-promo .btn{order:3; width:100%; justify-content:center}
+
+  /* Drawer full-width on mobile */
+  .drawer, .ai-drawer{width:100vw; max-width:100vw}
+}
+
 /* ── Marketplace hero ── */
 .mkt-hero{
   padding:56px 32px 44px; text-align:center;
@@ -797,7 +968,7 @@ body{
 }
 .mkt-search-input:focus{border-color:var(--accent); background:var(--bg2); box-shadow:0 0 0 4px rgba(43,127,255,0.16), 0 4px 20px rgba(0,0,0,0.25)}
 .mkt-search-input::placeholder{color:var(--t3)}
-.mkt-hero-stats{display:inline-flex; gap:32px; font-size:12px; color:var(--t2); flex-wrap:wrap; justify-content:center; position:relative}
+.mkt-hero-stats{font-size:12px; color:var(--t2); position:relative}
 .mkt-hero-stat strong{color:var(--t1); font-weight:700; font-size:14px; display:block; margin-bottom:1px}
 
 /* ── Category nav strip ── */
@@ -1054,7 +1225,7 @@ body{
   text-transform:uppercase; letter-spacing:.10em;
 }
 .used-in-grid{
-  display:grid; grid-template-columns:repeat(3, 1fr); gap:10px;
+  display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:10px;
 }
 .used-in-card{
   display:flex; align-items:center; gap:10px;
@@ -1221,6 +1392,9 @@ body{
 <!-- Topbar (full AIMS-OS shell) -->
 <header class="topbar">
   <div class="tb-left">
+    <button class="tb-menu-btn" type="button" onclick="toggleSsb()" aria-label="Toggle settings menu">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
     <div class="tb-context-wrap">
       <button class="tb-context" type="button" onclick="toast('App switcher — coming soon')" aria-haspopup="menu">
         <div class="tb-context-logo" style="background:var(--grad-app)">
@@ -1326,6 +1500,9 @@ body{
       </button>
     </div>
   </nav>
+
+  <!-- Sub-sidebar backdrop (mobile/tablet overlay) -->
+  <div class="ssb-backdrop" id="ssbBackdrop" onclick="closeSsb()"></div>
 
   <!-- Main -->
   <div class="main">
@@ -3475,6 +3652,26 @@ function aiRender(text) {
   html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
   return html;
 }
+
+/* ====================== MOBILE SSB TOGGLE ====================== */
+
+function toggleSsb(){
+  const ssb = document.querySelector('.ssb');
+  const bd = $('ssbBackdrop');
+  if(!ssb) return;
+  const willOpen = !ssb.classList.contains('open');
+  ssb.classList.toggle('open', willOpen);
+  bd.classList.toggle('open', willOpen);
+}
+function closeSsb(){
+  document.querySelector('.ssb')?.classList.remove('open');
+  $('ssbBackdrop')?.classList.remove('open');
+}
+
+// Auto-close ssb on navigation in mobile
+window.addEventListener('hashchange', () => {
+  if (window.innerWidth <= 1024) closeSsb();
+});
 
 /* ====================== BOOT ====================== */
 
