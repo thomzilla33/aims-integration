@@ -1258,6 +1258,180 @@ body{
 .active-studio-dot.studio-ag{background:var(--purple)}
 .active-studio-dot.studio-wf{background:var(--accent)}
 
+/* ── Vanguard catalog toolbar ── */
+.catalog-toolbar{
+  position:sticky; top:0; z-index:5;
+  background:linear-gradient(180deg, rgba(13,19,35,0.92) 0%, rgba(10,13,26,0.88) 100%);
+  backdrop-filter:blur(24px) saturate(1.8);
+  -webkit-backdrop-filter:blur(24px) saturate(1.8);
+  border:1px solid var(--line); border-radius:14px;
+  margin-bottom:18px;
+  padding:14px 16px 12px;
+  display:flex; flex-direction:column; gap:10px;
+  transition:box-shadow .2s, border-color .2s;
+}
+.catalog-toolbar::before{
+  content:''; position:absolute; top:0; left:24px; right:24px; height:1px;
+  background:linear-gradient(90deg, transparent 0%, rgba(43,127,255,0.22) 50%, transparent 100%);
+  pointer-events:none; opacity:0; transition:opacity .2s;
+}
+.catalog-toolbar.scrolled{
+  box-shadow:0 12px 32px rgba(0,0,0,0.4);
+  border-color:rgba(43,127,255,0.18);
+}
+.catalog-toolbar.scrolled::before{opacity:1}
+
+.ct-header{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:12px; flex-wrap:wrap;
+}
+.ct-title-group{display:flex; align-items:baseline; gap:8px; flex-shrink:0}
+.ct-title{font-size:15px; font-weight:700; color:var(--t1); letter-spacing:-.01em}
+.ct-count{
+  font-size:11px; font-weight:600; padding:2px 8px;
+  border-radius:10px; background:rgba(43,127,255,0.10); color:var(--accent);
+  border:1px solid rgba(43,127,255,0.22); line-height:1.4;
+  transition:transform .2s cubic-bezier(.34,1.56,.64,1);
+}
+.ct-count.pulse{transform:scale(1.12)}
+
+.ct-search{position:relative; flex:1; max-width:280px; min-width:160px}
+.ct-search input{
+  width:100%; padding:7px 12px 7px 32px;
+  background:rgba(255,255,255,0.04); border:1px solid var(--line);
+  border-radius:8px; color:var(--t1); font-size:12.5px;
+  font-family:inherit; outline:none;
+  transition:border-color .15s, background .15s, box-shadow .15s;
+}
+.ct-search input::placeholder{color:var(--t3)}
+.ct-search input:focus{
+  border-color:rgba(43,127,255,0.45);
+  background:rgba(43,127,255,0.06);
+  box-shadow:0 0 0 3px rgba(43,127,255,0.12);
+}
+.ct-search-ic{
+  position:absolute; left:11px; top:50%; transform:translateY(-50%);
+  color:var(--t3); pointer-events:none;
+}
+
+.ct-row{
+  display:flex; align-items:center; gap:6px; flex-wrap:wrap;
+  padding-top:8px; border-top:1px solid rgba(255,255,255,0.05);
+}
+.ct-row:first-of-type{padding-top:0; border-top:none}
+
+.ct-tabs{
+  display:inline-flex; gap:2px;
+  background:var(--hover); border:1px solid var(--line);
+  border-radius:9px; padding:2px;
+}
+.ct-tab{
+  padding:5px 11px; font-size:12px; font-weight:600;
+  background:transparent; border:none; border-radius:7px;
+  color:var(--t2); cursor:pointer; font-family:inherit;
+  display:inline-flex; align-items:center; gap:5px;
+  transition:background .14s, color .14s;
+}
+.ct-tab:hover{color:var(--t1)}
+.ct-tab.active{
+  background:var(--bg3); color:var(--t1);
+  box-shadow:0 1px 3px rgba(0,0,0,0.3);
+}
+.ct-tab-count{
+  font-size:10px; font-weight:500; color:var(--t3);
+  letter-spacing:.02em;
+}
+.ct-tab.active .ct-tab-count{color:var(--accent)}
+
+.ct-sep-v{
+  width:1px; height:18px; background:var(--line); margin:0 6px;
+  align-self:center;
+}
+.ct-build-link{
+  font-size:12px; font-weight:600; color:var(--cyan);
+  text-decoration:none; padding:6px 11px;
+  border-radius:7px; transition:background .12s;
+  display:inline-flex; align-items:center; gap:5px;
+}
+.ct-build-link:hover{background:rgba(6,182,212,0.10)}
+
+.ct-pills{display:inline-flex; gap:5px; flex-wrap:wrap; align-items:center; flex:1}
+
+.ct-cat{
+  display:inline-flex; align-items:center; gap:6px;
+  padding:5px 10px; border-radius:7px;
+  background:rgba(255,255,255,0.03); border:1px solid var(--line);
+  font-size:12px; font-weight:500; color:var(--t1);
+  cursor:pointer; font-family:inherit; white-space:nowrap;
+  transition:all .15s cubic-bezier(.4,0,.2,1);
+}
+.ct-cat:hover{
+  background:rgba(255,255,255,0.06);
+  border-color:var(--line-strong);
+  transform:translateY(-1px);
+}
+.ct-cat-ico{display:inline-flex; flex-shrink:0; transition:transform .15s}
+.ct-cat:hover .ct-cat-ico{transform:scale(1.12)}
+.ct-cat.active{
+  color:#fff; border-color:transparent;
+  box-shadow:0 4px 14px rgba(0,0,0,0.30);
+  transform:translateY(-1px);
+}
+
+.ct-label{
+  font-size:9.5px; font-weight:700; color:var(--t3);
+  text-transform:uppercase; letter-spacing:.10em;
+  margin-right:6px; flex-shrink:0;
+}
+
+.ct-mini{
+  padding:4px 9px; font-size:11.5px; font-weight:500;
+  background:rgba(255,255,255,0.03); border:1px solid var(--line);
+  border-radius:6px; color:var(--t1); cursor:pointer;
+  font-family:inherit; transition:background .12s, border-color .12s, color .12s;
+}
+.ct-mini:hover{
+  background:rgba(255,255,255,0.06);
+  border-color:var(--line-strong);
+}
+.ct-mini.active.cap-tools{color:var(--purple); background:rgba(167,139,250,0.08); border-color:rgba(167,139,250,0.30)}
+.ct-mini.active.cap-knowledge{color:var(--green); background:rgba(5,223,114,0.08); border-color:rgba(5,223,114,0.30)}
+.ct-mini.active.cap-triggers{color:var(--amber); background:rgba(253,199,0,0.08); border-color:rgba(253,199,0,0.30)}
+.ct-mini.active.cap-channels{color:var(--cyan); background:rgba(6,182,212,0.08); border-color:rgba(6,182,212,0.30)}
+.ct-mini.active.state-on{color:var(--green); background:rgba(5,223,114,0.06); border-color:rgba(5,223,114,0.25)}
+.ct-mini.active.state-off{color:var(--t2); background:rgba(255,255,255,0.05); border-color:var(--line-strong)}
+
+.ct-clear{
+  margin-left:auto;
+  display:none; align-items:center; gap:5px;
+  font-size:11px; font-weight:600; color:var(--red);
+  background:transparent; border:none; cursor:pointer;
+  padding:5px 9px; border-radius:6px;
+  font-family:inherit; transition:background .12s;
+}
+.ct-clear.visible{display:inline-flex}
+.ct-clear:hover{background:rgba(239,68,68,0.10)}
+.ct-clear-count{
+  font-size:9.5px; font-weight:700; padding:1px 5px;
+  border-radius:8px; background:rgba(239,68,68,0.18); color:var(--red);
+  min-width:18px; text-align:center;
+}
+
+/* Sort segmented control */
+.ct-sort{
+  display:inline-flex; gap:2px; padding:2px;
+  background:var(--hover); border:1px solid var(--line);
+  border-radius:8px; flex-shrink:0;
+}
+.ct-sort-btn{
+  padding:4px 10px; font-size:11.5px; font-weight:600;
+  background:transparent; border:none; border-radius:6px;
+  color:var(--t2); cursor:pointer; font-family:inherit;
+  transition:background .12s, color .12s;
+}
+.ct-sort-btn:hover{color:var(--t1)}
+.ct-sort-btn.active{background:var(--bg3); color:var(--t1)}
+
 /* ── AI Assistant ── */
 .btn-ai{
   background:linear-gradient(135deg, #06B6D4 0%, #A78BFA 100%);
@@ -1971,6 +2145,7 @@ const state = {
   activeCaps:new Set(),
   activeStates:new Set(),
   activeStudio:null,
+  sortBy:'popular',
   search:'',
   detailTab:'overview',
   drawerOpen:false,
@@ -2170,6 +2345,16 @@ function renderHome() {
     filtered = filtered.filter(i => i.name.toLowerCase().includes(q) || (i.desc||'').toLowerCase().includes(q) || (i.vendor||'').toLowerCase().includes(q));
   }
 
+  // Sorting
+  if (state.sortBy === 'alphabetical') {
+    filtered = [...filtered].sort((a,b) => a.name.localeCompare(b.name));
+  } else if (state.sortBy === 'recent') {
+    // Partners + private feel "recent" in this mock
+    const orderRank = { partner:0, private:1, official:2 };
+    filtered = [...filtered].sort((a,b) => (orderRank[a.source]??9) - (orderRank[b.source]??9));
+  }
+  // 'popular' = leave default order (curated)
+
   const isFiltering = state.activeCats.size>0 || state.activeCaps.size>0 || state.activeStates.size>0 || !!state.search || state.activeSrc!=='all' || !!state.activeStudio;
 
   $('content').innerHTML = `
@@ -2187,14 +2372,6 @@ function renderHome() {
         <div class="mkt-hero-stat"><strong>${INTEGRATIONS.filter(i=>i.source==='private').length}</strong>Built by your team</div>
       </div>
     </section>
-
-    <div class="cat-strip">
-      ${CATEGORIES.map(c => {
-        const active = state.activeCats.has(c.slug);
-        const style = active ? `background:${c.color};border-color:${c.color};color:#fff` : '';
-        return `<button class="cat-item ${active?'active':''}" style="${style}" onclick="toggleCat('${c.slug}')"><span class="cat-item-icon" style="color:${active?'#fff':c.color}">${c.icon}</span>${escapeHtml(c.label)}</button>`;
-      }).join('')}
-    </div>
 
     <div class="studio-filter">
       <span class="studio-filter-label">Show:</span>
@@ -2278,29 +2455,64 @@ function renderHome() {
     ` : ''}
 
     <div class="mkt-section" id="catalogSection">
-      <div class="mkt-section-h">
-        <div>
-          <div class="mkt-section-title">${isFiltering ? 'Filtered results' : 'Browse all integrations'}</div>
-          <div class="mkt-section-sub">${filtered.length} of ${total} ${filtered.length===1?'integration':'integrations'}</div>
-        </div>
-      </div>
 
-      <div class="src-tabs">
-        ${['all','official','partner','private'].map(s => {
-          const count = s==='all' ? total : INTEGRATIONS.filter(i=>i.source===s).length;
-          const label = s==='all' ? 'All' : s.charAt(0).toUpperCase()+s.slice(1);
-          return `<button class="src-tab ${state.activeSrc===s?'active':''}" onclick="setSrc('${s}')">${label}<span class="src-count">${count}</span></button>`;
-        }).join('')}
-        <a class="src-tab build-own" href="#/build">+ Build your own</a>
-      </div>
-
-      <div class="filter-bar">
-        <div class="filter-bar-left">
-          ${Object.keys(CAP_META).map(k => `<button class="pill ${state.activeCaps.has(k)?'active':''}" onclick="toggleCap('${k}')">${escapeHtml(CAP_META[k].label)}</button>`).join('')}
-          <button class="pill ${state.activeStates.has('connected')?'active':''}" onclick="toggleState('connected')">Connected</button>
-          <button class="pill ${state.activeStates.has('not_connected')?'active':''}" onclick="toggleState('not_connected')">Not connected</button>
+      <div class="catalog-toolbar" id="catalogToolbar">
+        <!-- Header: title + count + search -->
+        <div class="ct-header">
+          <div class="ct-title-group">
+            <div class="ct-title">${isFiltering ? 'Filtered results' : 'Browse all integrations'}</div>
+            <div class="ct-count" id="ctCount">${filtered.length}</div>
+          </div>
+          <div class="ct-search">
+            <svg class="ct-search-ic" width="13" height="13" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4" stroke="currentColor" stroke-width="1.3"/><path d="M9.5 9.5L12 12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+            <input type="text" placeholder="Search Slack, Salesforce, Snowflake…" value="${escapeHtml(state.search)}" oninput="setSearch(this.value)"/>
+          </div>
         </div>
-        ${isFiltering ? '<button class="pill pill-clear" onclick="clearFilters()">Clear filters</button>' : ''}
+
+        <!-- Source tabs + Build your own -->
+        <div class="ct-row">
+          <div class="ct-tabs">
+            ${['all','official','partner','private'].map(s => {
+              const count = s==='all' ? total : INTEGRATIONS.filter(i=>i.source===s).length;
+              const label = s==='all' ? 'All' : s.charAt(0).toUpperCase()+s.slice(1);
+              return `<button class="ct-tab ${state.activeSrc===s?'active':''}" onclick="setSrc('${s}')">${label} <span class="ct-tab-count">${count}</span></button>`;
+            }).join('')}
+          </div>
+          <span class="ct-sep-v"></span>
+          <a class="ct-build-link" href="#/build">+ Build your own</a>
+          <div style="flex:1"></div>
+          <div class="ct-sort">
+            <button class="ct-sort-btn ${(state.sortBy||'popular')==='popular'?'active':''}" onclick="setSort('popular')">Popular</button>
+            <button class="ct-sort-btn ${state.sortBy==='alphabetical'?'active':''}" onclick="setSort('alphabetical')">A–Z</button>
+            <button class="ct-sort-btn ${state.sortBy==='recent'?'active':''}" onclick="setSort('recent')">Recent</button>
+          </div>
+        </div>
+
+        <!-- Categories -->
+        <div class="ct-row">
+          <span class="ct-label">Category</span>
+          <div class="ct-pills">
+            ${CATEGORIES.map(c => {
+              const active = state.activeCats.has(c.slug);
+              const style = active ? `background:${c.color};border-color:${c.color};color:#fff` : '';
+              return `<button class="ct-cat ${active?'active':''}" style="${style}" onclick="toggleCat('${c.slug}')"><span class="ct-cat-ico" style="color:${active?'#fff':c.color}">${c.icon}</span>${escapeHtml(c.label)}</button>`;
+            }).join('')}
+          </div>
+        </div>
+
+        <!-- Refinements: capability + state -->
+        <div class="ct-row">
+          <span class="ct-label">Capability</span>
+          ${Object.keys(CAP_META).map(k => `<button class="ct-mini cap-${k} ${state.activeCaps.has(k)?'active':''}" onclick="toggleCap('${k}')">${escapeHtml(CAP_META[k].label)}</button>`).join('')}
+          <span class="ct-sep-v"></span>
+          <span class="ct-label">State</span>
+          <button class="ct-mini state-on ${state.activeStates.has('connected')?'active':''}" onclick="toggleState('connected')">Connected</button>
+          <button class="ct-mini state-off ${state.activeStates.has('not_connected')?'active':''}" onclick="toggleState('not_connected')">Not connected</button>
+          <button class="ct-clear ${isFiltering?'visible':''}" onclick="clearFilters()">
+            <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+            Clear all <span class="ct-clear-count">${state.activeCats.size + state.activeCaps.size + state.activeStates.size + (state.search?1:0) + (state.activeSrc!=='all'?1:0) + (state.activeStudio?1:0)}</span>
+          </button>
+        </div>
       </div>
 
       ${filtered.length===0 ? `
@@ -2358,6 +2570,7 @@ function toggleState(s){ state.activeStates.has(s) ? state.activeStates.delete(s
 function setSearch(v){ state.search = v; renderHome(); setTimeout(()=>{ const inp=document.querySelector('.search-input'); if(inp){inp.focus();inp.setSelectionRange(v.length,v.length)} },0) }
 function clearFilters(){ state.activeCats.clear(); state.activeCaps.clear(); state.activeStates.clear(); state.search=''; state.activeSrc='all'; state.activeStudio=null; renderHome() }
 function setStudio(s){ state.activeStudio = (state.activeStudio===s)?null:s; renderHome() }
+function setSort(s){ state.sortBy = s; renderHome() }
 
 /* ====================== DETAIL ====================== */
 
@@ -3665,6 +3878,21 @@ window.addEventListener('hashchange', () => {
 });
 
 /* ====================== BOOT ====================== */
+
+// Sticky toolbar shadow on scroll
+function wireToolbarScroll(){
+  const content = $('content');
+  if(!content) return;
+  content.addEventListener('scroll', () => {
+    const tb = $('catalogToolbar');
+    if (!tb) return;
+    const rect = tb.getBoundingClientRect();
+    const parent = tb.parentElement.getBoundingClientRect();
+    tb.classList.toggle('scrolled', rect.top <= parent.top + 2);
+  }, { passive: true });
+}
+const _origRoute = route;
+route = function(){ _origRoute(); setTimeout(wireToolbarScroll, 50); };
 
 window.addEventListener('hashchange', route);
 document.querySelectorAll('.ssb-item:not(.disabled)').forEach(b => {
