@@ -2502,7 +2502,7 @@ function instancesSectionHTML(integration) {
           const status = STATUS_META[inst.status] || STATUS_META.fully_configured;
           const totalCaps = (inst.activeCaps.tool?.length||0) + (inst.activeCaps.data_sync?.length||0) + (inst.activeCaps.mcp?.length||0);
           return `
-            <div class="inst-row" onclick="toast('Instance detail — coming next')">
+            <div class="inst-row" onclick="navigate('#/integrations/${integration.slug}/instances/${inst.id}')">
               <div style="flex:1;min-width:0">
                 <div class="inst-row-name">
                   ${escapeHtml(inst.name)}
@@ -2631,7 +2631,9 @@ function route() {
   const activeKey = ssbMap[baseRoute] || baseRoute;
   document.querySelectorAll(`.ssb-item[data-route="${activeKey}"]`).forEach(b=>b.classList.add('active'));
 
-  if (parts[0]==='integrations' && parts[1]) {
+  if (parts[0]==='integrations' && parts[1] && parts[2]==='instances' && parts[3]) {
+    renderInstanceDetail(parts[1], parts[3]);
+  } else if (parts[0]==='integrations' && parts[1]) {
     renderDetail(parts[1]);
   } else if (parts[0]==='integrations') {
     renderHome();
@@ -2965,19 +2967,234 @@ function paintDetail(i) {
     </div>
 
     <div class="tabs">
-      ${['overview','capabilities','permissions','audit'].map(t => `<button class="tab ${state.detailTab===t?'active':''}" onclick="setDetailTab('${i.slug}','${t}')">${t.charAt(0).toUpperCase()+t.slice(1)}</button>`).join('')}
+      ${['overview','capabilities','permissions','logs','audit'].map(t => `<button class="tab ${state.detailTab===t?'active':''}" onclick="setDetailTab('${i.slug}','${t}')">${t.charAt(0).toUpperCase()+t.slice(1)}</button>`).join('')}
     </div>
 
     <div class="detail-body">
       ${state.detailTab==='overview' ? detailOverview(i) : ''}
       ${state.detailTab==='capabilities' ? detailCapabilities(i) : ''}
       ${state.detailTab==='permissions' ? detailPermissions(i) : ''}
+      ${state.detailTab==='logs' ? detailLogs(i) : ''}
       ${state.detailTab==='audit' ? detailAudit(i) : ''}
     </div>
   `;
 }
 
 function setDetailTab(slug, tab) { state.detailTab = tab; paintDetail(findIntegration(slug)) }
+
+/* ====================== INSTANCE DETAIL ====================== */
+
+let instanceTabState = 'basic';
+function setInstanceTab(slug, instId, tab){ instanceTabState = tab; renderInstanceDetail(slug, instId) }
+
+function renderInstanceDetail(slug, instId) {
+  const i = findIntegration(slug);
+  if (!i) { renderNotFound(slug); return }
+  const inst = instancesOf(slug).find(x => x.id === instId);
+  if (!inst) { renderNotFound(instId); return }
+  const status = STATUS_META[inst.status] || STATUS_META.fully_configured;
+  const cat = CATEGORIES.find(c=>c.slug===i.category);
+  const tab = instanceTabState || 'basic';
+
+  $('content').innerHTML = `
+    <div class="breadcrumb">
+      <a href="#/integrations">Settings</a>
+      <span class="crumb-sep">›</span>
+      <a href="#/integrations">Integrations</a>
+      <span class="crumb-sep">›</span>
+      <a href="#/integrations/${i.slug}">${escapeHtml(i.name)}</a>
+      <span class="crumb-sep">›</span>
+      <span class="crumb-current">${escapeHtml(inst.name)}</span>
+    </div>
+
+    <div class="detail-head">
+      <div class="detail-row">
+        ${logo(i, 'lg')}
+        <div class="detail-text">
+          <div class="detail-name">${escapeHtml(inst.name)} <span class="inst-row-id" style="font-size:11px">${escapeHtml(inst.id)}</span></div>
+          <div class="detail-vendor">Instance of <a href="#/integrations/${i.slug}" style="color:var(--accent);text-decoration:none">${escapeHtml(i.name)}</a> · ${escapeHtml(cat?cat.label:'')}</div>
+          <div class="detail-meta">
+            <span class="inst-row-status ${status.cls}">● ${escapeHtml(status.label)}</span>
+            <span class="sep">·</span>
+            <span class="inst-row-mode ${inst.authMode==='aims_managed'?'aims':'byok'}">${inst.authMode==='aims_managed'?'AIMS-managed':'BYOK'}</span>
+            <span class="sep">·</span>
+            <span>Last run <strong style="color:var(--t1)">${escapeHtml(inst.lastRun||'—')}</strong></span>
+            <span class="sep">·</span>
+            <span>Connected by ${escapeHtml(inst.connectedBy.name)} · ${escapeHtml(inst.connectedAt)}</span>
+            ${inst.region ? `<span class="sep">·</span><span>Region: <code style="font-family:'SF Mono',Menlo,monospace;font-size:11px">${escapeHtml(inst.region)}</code></span>` : ''}
+          </div>
+        </div>
+        <div class="detail-actions">
+          <button class="btn-ai" onclick="openAIDrawer('${i.slug}')" title="Ask AI">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 2.5c.5 0 1 .4 1.1.9l1.1 4.9c.1.3.3.5.6.6l4.9 1.1c.5.1.9.6.9 1.1s-.4 1-.9 1.1l-4.9 1.1c-.3.1-.5.3-.6.6l-1.1 4.9c-.1.5-.6.9-1.1.9s-1-.4-1.1-.9l-1.1-4.9c-.1-.3-.3-.5-.6-.6l-4.9-1.1c-.5-.1-.9-.6-.9-1.1s.4-1 .9-1.1l4.9-1.1c.3-.1.5-.3.6-.6l1.1-4.9c.1-.5.6-.9 1.1-.9z" fill="currentColor"/></svg>
+            Ask AI
+          </button>
+          <button class="btn btn-ghost btn-sm" onclick="setInstanceTab('${i.slug}','${inst.id}','auth')">Rotate credentials</button>
+          <button class="btn btn-danger btn-sm" onclick="if(confirm('Disconnect this instance?'))toast('${escapeHtml(inst.name)} disconnected','success')">Disconnect</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="tabs">
+      ${['basic','capabilities','auth','logs','audit'].map(t => {
+        const labels = { basic:'Basic Info', capabilities:'Capabilities', auth:'Authentication', logs:'Logs', audit:'Audit' };
+        return `<button class="tab ${tab===t?'active':''}" onclick="setInstanceTab('${i.slug}','${inst.id}','${t}')">${labels[t]}</button>`;
+      }).join('')}
+    </div>
+
+    <div class="detail-body">
+      ${tab==='basic'        ? instanceBasicHTML(i, inst) : ''}
+      ${tab==='capabilities' ? instanceCapsHTML(i, inst) : ''}
+      ${tab==='auth'         ? instanceAuthHTML(i, inst) : ''}
+      ${tab==='logs'         ? instanceLogsHTML(i, inst) : ''}
+      ${tab==='audit'        ? instanceAuditHTML(i, inst) : ''}
+    </div>
+  `;
+}
+
+function instanceBasicHTML(i, inst) {
+  return `
+    <div class="ov-cols">
+      <div class="ov-main">
+        <h3>About this instance</h3>
+        <p>This is one of <strong>${instancesOf(i.slug).length}</strong> active instances of <strong>${escapeHtml(i.name)}</strong> in your workspace. It has its own credentials, status, and audit trail. Changes you make here only affect this instance.</p>
+
+        <h3>Configuration</h3>
+        <div class="ov-side" style="background:var(--bg3); padding:14px; margin:0; height:auto">
+          <div class="ov-side-row"><span class="ov-side-k">Instance ID</span><span class="ov-side-v" style="font-family:'SF Mono',Menlo,monospace">${escapeHtml(inst.id)}</span></div>
+          <div class="ov-side-row"><span class="ov-side-k">Display name</span><span class="ov-side-v">${escapeHtml(inst.name)}</span></div>
+          <div class="ov-side-row"><span class="ov-side-k">Auth mode</span><span class="ov-side-v">${inst.authMode==='aims_managed'?'AIMS-managed subaccount':'Bring-your-own-key (BYOK)'}</span></div>
+          <div class="ov-side-row"><span class="ov-side-k">Auth method</span><span class="ov-side-v">${inst.authMethod==='oauth'?'OAuth 2.0':inst.authMethod==='apikey'?'API token':'Service account'}</span></div>
+          ${inst.region ? `<div class="ov-side-row"><span class="ov-side-k">Region</span><span class="ov-side-v" style="font-family:'SF Mono',Menlo,monospace">${escapeHtml(inst.region)}</span></div>` : ''}
+          <div class="ov-side-row"><span class="ov-side-k">Activated by</span><span class="ov-side-v">${escapeHtml(inst.connectedBy.name)} · ${escapeHtml(inst.connectedAt)}</span></div>
+        </div>
+
+        <h3>Health snapshot</h3>
+        <div class="ov-cap-cards">
+          <div class="ov-cap-card"><div class="ov-cap-card-h">Status</div><div class="ov-cap-card-d"><span class="inst-row-status ${(STATUS_META[inst.status]||STATUS_META.fully_configured).cls}">● ${(STATUS_META[inst.status]||STATUS_META.fully_configured).label}</span></div></div>
+          <div class="ov-cap-card"><div class="ov-cap-card-h">Last run</div><div class="ov-cap-card-d">${escapeHtml(inst.lastRun||'—')}</div></div>
+          <div class="ov-cap-card"><div class="ov-cap-card-h">Errors (24h)</div><div class="ov-cap-card-d" style="color:${inst.errors24h>0?'var(--red)':'var(--t1)'}">${inst.errors24h||0}</div></div>
+        </div>
+
+        ${inst.note ? `<div class="lock-overlay" style="background:rgba(253,199,0,0.04);border-color:rgba(253,199,0,0.22)"><div class="lock-overlay-h" style="color:var(--amber)">⚠ Action needed</div><div class="lock-overlay-p">${escapeHtml(inst.note)}</div><button class="btn btn-primary btn-sm" onclick="toast('Opens Helix Data Studio with mapping pre-loaded','success')">Open in Helix Data Studio →</button></div>` : ''}
+      </div>
+      <div class="ov-side">
+        <h3 style="margin-top:0;margin-bottom:8px">Quick actions</h3>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <button class="btn btn-ghost btn-sm" onclick="setInstanceTab('${i.slug}','${inst.id}','capabilities')">Manage capabilities →</button>
+          <button class="btn btn-ghost btn-sm" onclick="setInstanceTab('${i.slug}','${inst.id}','auth')">Rotate credentials →</button>
+          <button class="btn btn-ghost btn-sm" onclick="setInstanceTab('${i.slug}','${inst.id}','logs')">View execution logs →</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function instanceCapsHTML(i, inst) {
+  const groups = [
+    { type:'tool', label:'Tool', items:inst.activeCaps?.tool||[] },
+    { type:'data_sync', label:'Data Sync', items:inst.activeCaps?.data_sync||[] },
+    { type:'mcp', label:'MCP', items:inst.activeCaps?.mcp||[] }
+  ];
+  return groups.map(g => {
+    const meta = CAP_META[g.type];
+    return `
+      <div class="cap-grp">
+        <div class="cap-grp-head">
+          <div class="cap-grp-icon ${meta.cls}" style="color:${meta.color};background:rgba(255,255,255,0.04)">${meta.icon}</div>
+          <div class="cap-grp-title">${meta.label}</div>
+          <div class="cap-grp-count">${g.items.length} active</div>
+        </div>
+        <div class="cap-grp-body">
+          ${g.items.length===0
+            ? `<div class="cap-row" style="grid-template-columns:1fr"><div class="cap-row-desc">No ${meta.label} capabilities enabled on this instance.</div></div>`
+            : g.items.map(item => `
+              <div class="cap-row">
+                <div class="cap-row-name">${escapeHtml(item)}</div>
+                <div class="cap-row-desc">Active on this instance</div>
+                <div class="cap-row-scope"></div>
+                <div class="toggle on" onclick="toast('Disabled ${escapeHtml(item)}')"></div>
+              </div>
+            `).join('')}
+        </div>
+      </div>
+    `;
+  }).join('') + mcpToolsHTML(i);
+}
+
+function instanceAuthHTML(i, inst) {
+  return `
+    <div class="perm-card">
+      <h3>${inst.authMethod==='oauth'?'OAuth 2.0':inst.authMethod==='apikey'?'API token':'Service account'}</h3>
+      <div class="perm-sub">Renew, rotate, or replace credentials without re-running the activation wizard.</div>
+      <div class="ov-side" style="background:var(--bg3); padding:14px; margin:0; height:auto">
+        <div class="ov-side-row"><span class="ov-side-k">Connected as</span><span class="ov-side-v">${escapeHtml(inst.name)}</span></div>
+        <div class="ov-side-row"><span class="ov-side-k">Auth mode</span><span class="ov-side-v">${inst.authMode==='aims_managed'?'AIMS-managed':'BYOK'}</span></div>
+        <div class="ov-side-row"><span class="ov-side-k">Last rotated</span><span class="ov-side-v">${escapeHtml(inst.connectedAt)}</span></div>
+        <div class="ov-side-row"><span class="ov-side-k">Status</span><span class="ov-side-v">${(STATUS_META[inst.status]||STATUS_META.fully_configured).label}</span></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap">
+        <button class="btn btn-primary btn-sm" onclick="toast('Credential rotation flow started — wizard form opens here','success')">Rotate now</button>
+        <button class="btn btn-ghost btn-sm" onclick="toast('Re-authentication initiated','success')">Re-authenticate</button>
+        <button class="btn btn-ghost btn-sm" onclick="toast('Test connection passed','success')">Test connection</button>
+      </div>
+    </div>
+  `;
+}
+
+function instanceLogsHTML(i, inst) {
+  const mockLogs = [
+    { ts:'2 min ago',  actor:'Agent: Sales Triage Bot', action:'send_message', studio:'agentic',   status:'success', latency:'120ms' },
+    { ts:'14 min ago', actor:'Agent: PR Reviewer',      action:'read_channel', studio:'agentic',   status:'success', latency:'89ms'  },
+    { ts:'1 hour ago', actor:'Workflow: Lead routing',  action:'send_message', studio:'workforce', status:'success', latency:'210ms' },
+    { ts:'3 hours ago',actor:'Agent: Onboarding Bot',   action:'list_users',   studio:'agentic',   status:'success', latency:'67ms'  },
+    { ts:'5 hours ago',actor:'Agent: PR Reviewer',      action:'send_message', studio:'agentic',   status:'failed',  latency:'5000ms', error:'Rate limit exceeded' }
+  ];
+  return `
+    <div class="audit-head">Execution logs for <strong style="color:var(--t1)">${escapeHtml(inst.name)}</strong> · Last 24h · <a href="#" style="color:var(--accent);text-decoration:none">Export →</a></div>
+    <table class="audit-table">
+      <thead><tr><th>Timestamp</th><th>Status</th><th>Action</th><th>Actor</th><th>Studio</th><th>Latency</th></tr></thead>
+      <tbody>
+        ${mockLogs.map(l => `
+          <tr>
+            <td>${l.ts}</td>
+            <td><span class="audit-ev ${l.status==='success'?'info':'crit'}">${l.status.toUpperCase()}</span></td>
+            <td><span class="audit-ev">${l.action}</span></td>
+            <td>${escapeHtml(l.actor)}</td>
+            <td>${STUDIO_META[l.studio]?.label||'—'}</td>
+            <td style="font-family:'SF Mono',Menlo,monospace;font-size:11px">${l.latency}${l.error?'<br><span style="color:var(--red);font-size:10px">'+escapeHtml(l.error)+'</span>':''}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+    <div style="margin-top:10px;font-size:11px;color:var(--t3)">Logs are kept for 90 days for SOC 2 compliance. Older logs are exported to your configured SIEM if enabled.</div>
+  `;
+}
+
+function instanceAuditHTML(i, inst) {
+  const mockAudit = [
+    { ts:'5 days ago', actor:'María González', event:'capability.activated', detail:'Enabled send_message tool' },
+    { ts:'1 week ago', actor:'Thomas González', event:'permissions.changed', detail:'Added "Agent Builders" role to Agentic scope' },
+    { ts:'3 weeks ago',actor:'María González', event:'credentials.rotated',  detail:'OAuth token refreshed manually' },
+    { ts:'2 months ago',actor:'María González', event:'instance.created',    detail:`Activated as ${inst.authMode==='aims_managed'?'AIMS-managed':'BYOK'}` }
+  ];
+  return `
+    <div class="audit-head">Configuration audit for <strong style="color:var(--t1)">${escapeHtml(inst.name)}</strong> · <a href="#/audit" style="color:var(--accent);text-decoration:none">View workspace audit log →</a></div>
+    <table class="audit-table">
+      <thead><tr><th>Timestamp</th><th>Event</th><th>Actor</th><th>Detail</th></tr></thead>
+      <tbody>
+        ${mockAudit.map(a => `
+          <tr>
+            <td>${a.ts}</td>
+            <td><span class="audit-ev info">${escapeHtml(a.event)}</span></td>
+            <td>${escapeHtml(a.actor)}</td>
+            <td>${escapeHtml(a.detail)}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+}
 
 function detailOverview(i) {
   return `
@@ -3213,11 +3430,54 @@ function detailPermissions(i) {
   `;
 }
 
+function detailLogs(i) {
+  if (!i.connected) return lockOverlay(i, 'Connect to view execution logs');
+  const instances = instancesOf(i.slug);
+  return `
+    <div class="audit-head">
+      <strong style="color:var(--t1)">Execution logs</strong> across all instances of ${escapeHtml(i.name)} · Last 24h
+      <span style="margin-left:6px; font-size:11px; color:var(--t3)">— each row is a single tool invocation by an agent or workflow</span>
+    </div>
+    ${instances.length > 0 ? `
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">
+        <button class="ct-mini active">All instances (${instances.length})</button>
+        ${instances.map(inst => `<button class="ct-mini" onclick="navigate('#/integrations/${i.slug}/instances/${inst.id}'); setInstanceTab('${i.slug}','${inst.id}','logs')">${escapeHtml(inst.name)}</button>`).join('')}
+      </div>
+    ` : ''}
+    <table class="audit-table">
+      <thead><tr><th>Timestamp</th><th>Status</th><th>Action</th><th>Actor</th><th>Studio</th><th>Latency</th></tr></thead>
+      <tbody>
+        ${[
+          { ts:'2 min ago',  actor:'Agent: Sales Triage Bot', action:'send_message',      studio:'agentic',   status:'success', latency:'120ms' },
+          { ts:'14 min ago', actor:'Agent: PR Reviewer',      action:'read_channel',      studio:'agentic',   status:'success', latency:'89ms'  },
+          { ts:'1 hour ago', actor:'Workflow: Lead routing',  action:'send_message',      studio:'workforce', status:'success', latency:'210ms' },
+          { ts:'3 hours ago',actor:'Agent: Onboarding Bot',   action:'list_users',        studio:'agentic',   status:'success', latency:'67ms'  },
+          { ts:'5 hours ago',actor:'Agent: PR Reviewer',      action:'send_message',      studio:'agentic',   status:'failed',  latency:'5000ms', error:'Rate limit exceeded' },
+          { ts:'8 hours ago',actor:'Agent: Knowledge Indexer',action:'read_channel_history',studio:'governance',status:'success', latency:'412ms' }
+        ].map(l => `
+          <tr>
+            <td>${l.ts}</td>
+            <td><span class="audit-ev ${l.status==='success'?'info':'crit'}">${l.status.toUpperCase()}</span></td>
+            <td><span class="audit-ev">${l.action}</span></td>
+            <td>${escapeHtml(l.actor)}</td>
+            <td>${STUDIO_META[l.studio]?.label||'—'}</td>
+            <td style="font-family:'SF Mono',Menlo,monospace;font-size:11px">${l.latency}${l.error?'<br><span style="color:var(--red);font-size:10px">'+escapeHtml(l.error)+'</span>':''}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+    <div style="margin-top:10px;font-size:11px;color:var(--t3)">
+      Logs = every execution (operational view).
+      Audit = every config change (compliance view, see <a href="#" onclick="setDetailTab('${i.slug}','audit');return false" style="color:var(--accent);text-decoration:none">Audit tab</a>).
+    </div>
+  `;
+}
+
 function detailAudit(i) {
   const events = AUDIT_EVENTS.filter(e => e.resource === i.slug);
   return `
-    <div class="audit-head">Showing audit events for <strong style="color:var(--t1)">${escapeHtml(i.name)}</strong> · Last 30 days · <a href="#/audit" style="color:var(--accent);text-decoration:none">View full audit log →</a></div>
-    ${events.length===0 ? `<div class="empty"><div class="empty-h">No events for this integration in the last 30 days</div><div class="empty-p">Try widening the date range from the full audit log.</div></div>` : auditTable(events, false)}
+    <div class="audit-head"><strong style="color:var(--t1)">Configuration audit</strong> for ${escapeHtml(i.name)} · Last 30 days · <a href="#/audit" style="color:var(--accent);text-decoration:none">View full audit log →</a><br><span style="font-size:11px;color:var(--t3)">— each row is a configuration change (instance created, capability toggled, permissions edited, credentials rotated)</span></div>
+    ${events.length===0 ? `<div class="empty"><div class="empty-h">No config changes for this integration in the last 30 days</div><div class="empty-p">Try widening the date range from the full audit log.</div></div>` : auditTable(events, false)}
   `;
 }
 
@@ -3290,7 +3550,7 @@ function paintDrawer() {
 
   if (s.step === 0) {
     body = `
-      <div class="drawer-step-h">Step 1 of 5 · Name your instance</div>
+      <div class="drawer-step-h">Step 1 of 6 · Name your instance</div>
       <div class="drawer-step-title">Name and describe this ${escapeHtml(i.name)} instance</div>
       <p style="font-size:12px;color:var(--t2);margin-bottom:14px;line-height:1.55">
         You can activate ${escapeHtml(i.name)} multiple times — for example one for production, one for dev, one for analytics. Each <strong style="color:var(--t1)">instance</strong> has its own credentials, status, and audit log.
@@ -3354,7 +3614,7 @@ function paintDrawer() {
   else if (s.step === 2) {
     if (s.authMethod==='oauth') {
       body = `
-        <div class="drawer-step-h">Step 3 of 5 · OAuth 2.0</div>
+        <div class="drawer-step-h">Step 2 of 6 · OAuth 2.0</div>
         <div class="drawer-step-title">Authorize with ${escapeHtml(i.name)}</div>
         ${s.authenticated ? `
           <div class="connected-panel">
@@ -3376,7 +3636,7 @@ function paintDrawer() {
     }
     else if (s.authMethod==='apikey') {
       body = `
-        <div class="drawer-step-h">Step 3 of 5 · API token</div>
+        <div class="drawer-step-h">Step 2 of 6 · API token</div>
         <div class="drawer-step-title">Paste your ${escapeHtml(i.name)} token</div>
         <div class="field-group">
           <label class="field-label">${escapeHtml(i.name)} token</label>
@@ -3397,7 +3657,7 @@ function paintDrawer() {
     }
     else {
       body = `
-        <div class="drawer-step-h">Step 3 of 5 · Service account</div>
+        <div class="drawer-step-h">Step 2 of 6 · Service account</div>
         <div class="drawer-step-title">Upload your service account key</div>
         <div class="field-group">
           ${s.authenticated ? `
@@ -3417,7 +3677,32 @@ function paintDrawer() {
 
   else if (s.step === 3) {
     body = `
-      <div class="drawer-step-h">Step 4 of 5 · Initial scope</div>
+      <div class="drawer-step-h">Step 3 of 6 · Choose capabilities</div>
+      <div class="drawer-step-title">What can ${escapeHtml(i.name)} do for you?</div>
+      <p style="font-size:12px;color:var(--t2);margin-bottom:14px;line-height:1.55">
+        Activate only what you need. You can change this later from the instance's <strong>Capabilities</strong> tab. Anything turned off here cannot be used by any agent in your tenant.
+      </p>
+      ${normalizeCaps(i.capabilities||[]).map(c => {
+        const meta = CAP_META[c];
+        return `
+          <div class="auth-card" style="margin-bottom:8px; cursor:default">
+            <div class="auth-card-h" style="margin-bottom:6px">
+              <span class="cap-chip cap-${meta.cls}">${meta.icon}<span>${meta.label}</span></span>
+              <span style="font-size:11px;color:var(--t2);flex:1">${escapeHtml(meta.desc)}</span>
+              <div class="toggle on" onclick="toast('${meta.label} enabled for this instance')"></div>
+            </div>
+            ${c==='mcp' ? `<div style="font-size:11px;color:var(--cyan);background:rgba(6,182,212,0.04);padding:8px 10px;border-radius:6px;border:1px solid rgba(6,182,212,0.20);margin-top:6px"><strong>ℹ Granular activation:</strong> After connecting, you'll see all tools this MCP exposes and activate them individually.</div>` : ''}
+            ${c==='data_sync' ? `<div style="font-size:11px;color:var(--green);background:rgba(5,223,114,0.04);padding:8px 10px;border-radius:6px;border:1px solid rgba(5,223,114,0.20);margin-top:6px"><strong>ℹ Helix mapping required:</strong> Activating Data Sync opens the pipe. Customer needs to verify field mapping in Helix Data Studio for data to actually flow.</div>` : ''}
+          </div>
+        `;
+      }).join('')}
+    `;
+    footer = `<button class="btn btn-ghost btn-sm" onclick="drawerPrev()">← Back</button><button class="btn btn-primary btn-sm" onclick="drawerNext()">Continue →</button>`;
+  }
+
+  else if (s.step === 4) {
+    body = `
+      <div class="drawer-step-h">Step 4 of 6 · Initial scope</div>
       <div class="drawer-step-title">Where should this integration be available?</div>
       <div class="field-group">
         ${Object.keys(STUDIO_META).map(k=>`
@@ -3442,10 +3727,10 @@ function paintDrawer() {
     footer = `<button class="btn btn-ghost btn-sm" onclick="drawerPrev()">← Back</button><button class="btn btn-primary btn-sm" onclick="drawerNext()">Continue →</button>`;
   }
 
-  else if (s.step === 4) {
+  else if (s.step === 5) {
     const studios = Object.keys(s.studios).filter(k=>s.studios[k]).map(k=>STUDIO_META[k].label).join(', ');
     body = `
-      <div class="drawer-step-h">Step 5 of 5 · Confirm</div>
+      <div class="drawer-step-h">Step 6 of 6 · Confirm</div>
       <div class="drawer-step-title">Review and connect</div>
       <div class="confirm-summary">
         <strong>${escapeHtml(i.name)}</strong> will be available in <strong>${escapeHtml(studios||'no studios')}</strong>.<br>
@@ -3616,8 +3901,8 @@ function renderBuildChooser() {
     <div class="ph">
       <div class="ph-top">
         <div class="ph-text">
-          <div class="ph-h1">Build a private integration</div>
-          <div class="ph-sub">Choose how you want to connect your internal system or third-party API to AIMS-OS.</div>
+          <div class="ph-h1" style="display:flex;align-items:center;gap:10px">Build a private integration <span style="font-size:11px;font-weight:700;padding:3px 9px;border-radius:10px;background:rgba(167,139,250,0.10);color:var(--purple);border:1px solid rgba(167,139,250,0.30);text-transform:uppercase;letter-spacing:.05em">Preview · v2</span></div>
+          <div class="ph-sub">Choose how to connect your internal system or third-party API to AIMS-OS. <strong style="color:var(--amber)">⚠ Out of scope for v1 launch</strong> — same screens will serve customer-built providers in a later release.</div>
         </div>
       </div>
     </div>
