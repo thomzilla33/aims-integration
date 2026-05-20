@@ -2047,6 +2047,54 @@ function instancesOf(slug){ return PROVIDER_INSTANCES[slug] || [] }
 function isActivated(slug){ const inst = instancesOf(slug); return inst.length > 0 }
 function primaryInstanceOf(slug){ return instancesOf(slug)[0] }
 
+// Authentication patterns (engineering brief §9) — schema-driven renderable
+// Each pattern declares its UI schema; the wizard renders from this, no hardcoded forms per provider.
+const AUTH_PATTERNS = {
+  oauth: {
+    label:'OAuth 2.0', badge:'Most secure', icon:'🔐',
+    desc:'Sign in to the provider and authorize AIMS-OS. Most secure for end users.',
+    schema:{ type:'oauth_redirect', fields:[] }
+  },
+  apikey: {
+    label:'API token', badge:'', icon:'🔑',
+    desc:'Paste a long-lived token from the provider. Used when OAuth is unavailable or for service automation.',
+    schema:{ type:'form', fields:[
+      { id:'token', label:'API token', kind:'password', placeholder:'sk_live_…', required:true, help:'Find this in {provider} → API settings ↗' },
+      { id:'displayName', label:'Display name (optional)', kind:'text', placeholder:'e.g. Production key' }
+    ]}
+  },
+  service: {
+    label:'Service account', badge:'', icon:'📄',
+    desc:'Upload a JSON key file. For server-to-server access (e.g. Google Cloud, AWS IAM).',
+    schema:{ type:'file_upload', accept:'application/json', help:'Upload your service-account-key.json' }
+  },
+  basic: {
+    label:'Username + password → token', badge:'', icon:'👤',
+    desc:'Provide credentials. AIMS exchanges them for a token and refreshes it on schedule.',
+    schema:{ type:'form', fields:[
+      { id:'username', label:'Username', kind:'text', required:true },
+      { id:'password', label:'Password', kind:'password', required:true },
+      { id:'tokenUrl', label:'Token endpoint (optional)', kind:'text', placeholder:'https://provider.com/oauth/token', help:'Leave blank to use the provider default' }
+    ]}
+  },
+  per_user: {
+    label:'Per-user authentication', badge:'Each user signs in separately', icon:'👥',
+    desc:'The tool is added once at workspace level, but each end user authenticates individually before they can invoke it. Tool calls run under the user\'s identity.',
+    schema:{ type:'per_user_consent', help:'Users will see a consent prompt on first use. No credentials are stored centrally.' }
+  },
+  manual: {
+    label:'Manual / multi-step checklist', badge:'Complex setup', icon:'📋',
+    desc:'For providers without a clean API, follow a checklist with external steps and a video walkthrough.',
+    schema:{ type:'checklist', steps:[
+      { title:'Create a service account in the provider\'s admin console', detail:'Navigate to Admin → Integrations → Add new app', external:true },
+      { title:'Generate API credentials', detail:'Copy the Client ID and Client Secret. Save them somewhere safe.', external:true },
+      { title:'Configure the OAuth callback', detail:'Set redirect URL to https://aims-os.ai/integrations/callback', external:true, copy:true },
+      { title:'Whitelist the AIMS IP range', detail:'Add 52.x.x.x/16 to the allowed list in your provider\'s firewall settings', external:true },
+      { title:'Paste the credentials here', detail:'Client ID and Client Secret', external:false }
+    ], video:'https://video.aims-os.ai/setup-walkthrough.mp4' }
+  }
+};
+
 // Status vocab (engineering brief §13.4)
 const STATUS_META = {
   fully_configured:     { label:'Fully configured',     color:'#05DF72', cls:'ok'   },
@@ -2221,8 +2269,8 @@ const INTEGRATIONS = [
 
   // Storage (5)
   { slug:'gdrive', name:'Google Drive', vendor:'Google', category:'storage', color:'#1FA463',
-    desc:'Index Drive folders as knowledge sources for Governance.',
-    capabilities:['knowledge'], authMethods:['oauth','service'], source:'official',
+    desc:'Index Drive folders as knowledge sources for Governance, or let each user access their own files.',
+    capabilities:['knowledge'], authMethods:['oauth','service','per_user'], source:'official',
     connected:true, health:'healthy', lastRun:'30 min ago', errors24h:0,
     connectedBy:{name:'Diana Pérez',initials:'DP'}, connectedAt:'1 month ago',
     studios:{governance:true,agentic:false,workforce:false}, allowPersonal:true
@@ -2270,7 +2318,7 @@ const INTEGRATIONS = [
   // HR (4)
   { slug:'workday', name:'Workday', vendor:'Acme HR Connect', category:'hr', color:'#F38B00',
     desc:'HCM, payroll and people data through the Acme HR Connect bridge.',
-    capabilities:['tools','knowledge'], authMethods:['oauth'], source:'partner', partnerBy:'Acme HR Connect', connected:false
+    capabilities:['tools','knowledge'], authMethods:['basic','oauth'], source:'partner', partnerBy:'Acme HR Connect', connected:false
   },
   { slug:'bamboo', name:'BambooHR', vendor:'BambooHR', category:'hr', color:'#73C41D',
     desc:'HR software for small and mid-sized businesses.',
@@ -2291,8 +2339,8 @@ const INTEGRATIONS = [
     capabilities:['tools','knowledge'], authMethods:['oauth'], source:'official', connected:false
   },
   { slug:'sap', name:'SAP S/4HANA', vendor:'Mulesoft', category:'finance', color:'#0FAAFF',
-    desc:'Enterprise ERP via the Mulesoft connector.',
-    capabilities:['tools'], authMethods:['oauth'], source:'partner', partnerBy:'Mulesoft', connected:false
+    desc:'Enterprise ERP via the Mulesoft connector. Setup requires manual configuration steps.',
+    capabilities:['tools'], authMethods:['manual','oauth'], source:'partner', partnerBy:'Mulesoft', connected:false
   },
   { slug:'quickbooks', name:'QuickBooks', vendor:'Intuit', category:'finance', color:'#2CA01C',
     desc:'Small business accounting and invoicing.',
@@ -3591,24 +3639,26 @@ function paintDrawer() {
 
   else if (s.step === 1) {
     body = `
-      <div class="drawer-step-h">Step 2 of 5 · Authentication method</div>
-      <div class="drawer-step-title">Choose how to connect</div>
+      <div class="drawer-step-h">Step 2 of 6 · Authentication method</div>
+      <div class="drawer-step-title">Choose how to connect to ${escapeHtml(i.name)}</div>
+      <p style="font-size:11.5px;color:var(--t3);margin-bottom:14px;font-style:italic;line-height:1.55">
+        ⚙ Methods below are declared by the provider's metadata. The form on the next step renders from the chosen pattern's UI schema — no custom code per provider (engineering brief §10).
+      </p>
       ${i.authMethods.map(m => {
-        const meta = {
-          oauth:{label:'OAuth 2.0',desc:'Sign in to '+i.name+' and authorize AIMS-OS. Most secure and easiest for end users.',badge:'Most secure'},
-          apikey:{label:'API token',desc:'Paste a token from '+i.name+'. Used when OAuth is not available or for service automation.',badge:''},
-          service:{label:'Service account',desc:'Upload a JSON key file. For server-to-server access (e.g. Google Cloud).',badge:''}
-        }[m];
+        const pattern = AUTH_PATTERNS[m]; if (!pattern) return '';
         const sel = s.authMethod===m ? 'selected' : '';
         return `
           <div class="auth-card ${sel}" onclick="selectAuth('${m}')">
-            <div class="auth-card-h"><span class="auth-name">${meta.label}</span>${meta.badge?`<span class="badge">${meta.badge}</span>`:''}</div>
-            <div class="auth-card-desc">${meta.desc}</div>
+            <div class="auth-card-h">
+              <span class="auth-name"><span style="margin-right:5px">${pattern.icon}</span>${escapeHtml(pattern.label)}</span>
+              ${pattern.badge?`<span class="badge">${escapeHtml(pattern.badge)}</span>`:''}
+            </div>
+            <div class="auth-card-desc">${escapeHtml(pattern.desc)}</div>
           </div>
         `;
       }).join('')}
     `;
-    footer = `<button class="btn btn-ghost btn-sm" onclick="closeDrawer()">Cancel</button><button class="btn btn-primary btn-sm" onclick="drawerNext()">Continue →</button>`;
+    footer = `<button class="btn btn-ghost btn-sm" onclick="drawerPrev()">← Back</button><button class="btn btn-primary btn-sm" onclick="drawerNext()">Continue →</button>`;
   }
 
   else if (s.step === 2) {
@@ -3655,7 +3705,7 @@ function paintDrawer() {
       `;
       footer = `<button class="btn btn-ghost btn-sm" onclick="drawerPrev()">← Back</button><button class="btn btn-primary btn-sm ${s.apiKeyValid?'':'btn-disabled'}" ${s.apiKeyValid?'':'disabled style="opacity:.5;cursor:not-allowed"'} onclick="drawerNext()">Continue →</button>`;
     }
-    else {
+    else if (s.authMethod==='service') {
       body = `
         <div class="drawer-step-h">Step 2 of 6 · Service account</div>
         <div class="drawer-step-title">Upload your service account key</div>
@@ -3672,6 +3722,90 @@ function paintDrawer() {
         </div>
       `;
       footer = `<button class="btn btn-ghost btn-sm" onclick="drawerPrev()">← Back</button><button class="btn btn-primary btn-sm ${s.authenticated?'':''}" ${s.authenticated?'':'disabled style="opacity:.5;cursor:not-allowed"'} onclick="drawerNext()">Continue →</button>`;
+    }
+    else if (s.authMethod==='basic') {
+      // Engineering brief §9 — Username/password → token
+      body = `
+        <div class="drawer-step-h">Step 2 of 6 · Username + password</div>
+        <div class="drawer-step-title">Provide credentials for ${escapeHtml(i.name)}</div>
+        <p style="font-size:12px;color:var(--t2);margin-bottom:14px">We'll exchange your credentials for a token and refresh it on schedule. Your password is never stored — only the rotating token.</p>
+        <div class="field-group">
+          <label class="field-label">Username</label>
+          <input class="input" type="text" placeholder="user@company.com"/>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Password</label>
+          <input class="input" type="password" placeholder="••••••••"/>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Token endpoint (optional)</label>
+          <input class="input" type="text" placeholder="https://provider.com/oauth/token"/>
+          <div class="field-help">Leave blank to use the provider's default endpoint</div>
+        </div>
+        ${s.authenticated ? `<div class="connected-panel"><strong>✓ Token obtained</strong>Refresh interval: every 24 hours</div>` : ''}
+        ${!s.authenticated ? `<button class="btn btn-ghost btn-sm" onclick="state.drawerState.authenticated=true;paintDrawer()">Exchange credentials for token</button>` : ''}
+      `;
+      footer = `<button class="btn btn-ghost btn-sm" onclick="drawerPrev()">← Back</button><button class="btn btn-primary btn-sm" ${s.authenticated?'':'disabled style="opacity:.5;cursor:not-allowed"'} onclick="drawerNext()">Continue →</button>`;
+    }
+    else if (s.authMethod==='per_user') {
+      // Engineering brief §9 — Per-user authentication
+      body = `
+        <div class="drawer-step-h">Step 2 of 6 · Per-user authentication</div>
+        <div class="drawer-step-title">Each user will sign in individually</div>
+        <p style="font-size:12px;color:var(--t2);margin-bottom:14px;line-height:1.55">
+          With this pattern, the integration is <strong style="color:var(--t1)">added once</strong> here, but each end user must authenticate before they can use it. Tool calls then run under the user's identity — preserving the principle of least privilege.
+        </p>
+        <div class="connected-panel" style="background:rgba(43,127,255,0.06);border-color:rgba(43,127,255,0.20);color:var(--accent);margin:0">
+          <strong>How it works</strong>
+          1. AIMS-OS shows a consent prompt to the user the first time an agent tries to use ${escapeHtml(i.name)}<br>
+          2. User authorizes via OAuth (their own ${escapeHtml(i.name)} session)<br>
+          3. Token is stored per-user, never centrally<br>
+          4. Tool invocations are attributed to that user
+        </div>
+        <div class="field-group" style="margin-top:14px">
+          <label class="field-label">Default scopes to request from each user</label>
+          <input class="input" type="text" value="${i.scopes ? i.scopes.join(' ') : 'read write'}"/>
+          <div class="field-help">Each user grants these on first use. They can revoke at any time.</div>
+        </div>
+      `;
+      footer = `<button class="btn btn-ghost btn-sm" onclick="drawerPrev()">← Back</button><button class="btn btn-primary btn-sm" onclick="state.drawerState.authenticated=true;drawerNext()">Continue →</button>`;
+    }
+    else if (s.authMethod==='manual') {
+      // Engineering brief §13.6 — "Design for the ugliest provider"
+      const steps = AUTH_PATTERNS.manual.schema.steps;
+      body = `
+        <div class="drawer-step-h">Step 2 of 6 · Manual setup</div>
+        <div class="drawer-step-title">Multi-step setup for ${escapeHtml(i.name)}</div>
+        <p style="font-size:12px;color:var(--t2);margin-bottom:14px;line-height:1.55">
+          This provider requires a few external steps before we can connect. Follow the checklist below — we've included a video walkthrough for the trickier parts.
+        </p>
+        <a href="${AUTH_PATTERNS.manual.schema.video}" style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--cyan);text-decoration:none;margin-bottom:14px" onclick="event.preventDefault();toast('Video walkthrough — coming soon')">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 2v12l10-6L3 2z" fill="currentColor"/></svg>
+          Watch 3-minute walkthrough
+        </a>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          ${steps.map((step, idx) => `
+            <div style="display:flex;gap:10px;padding:10px 12px;background:rgba(255,255,255,0.03);border:1px solid var(--line);border-radius:var(--r8)">
+              <div style="width:20px;height:20px;border-radius:50%;background:${idx<2?'var(--green)':'var(--hover)'};color:${idx<2?'#0a0d1a':'var(--t2)'};border:1px solid ${idx<2?'var(--green)':'var(--line)'};display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;margin-top:1px">${idx<2?'✓':idx+1}</div>
+              <div style="flex:1">
+                <div style="font-size:12.5px;font-weight:600;color:var(--t1);display:flex;align-items:center;gap:6px">
+                  ${escapeHtml(step.title)}
+                  ${step.external?'<span style="font-size:9.5px;font-weight:700;padding:1px 5px;border-radius:8px;background:rgba(253,199,0,0.10);color:var(--amber);border:1px solid rgba(253,199,0,0.20);letter-spacing:.04em;text-transform:uppercase">External</span>':''}
+                  ${step.copy?'<button onclick="toast(\'Copied to clipboard\')" style="background:transparent;border:none;color:var(--cyan);cursor:pointer;font-size:11px">📋 copy</button>':''}
+                </div>
+                <div style="font-size:11px;color:var(--t2);margin-top:2px">${escapeHtml(step.detail)}</div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+        <div class="field-group" style="margin-top:14px;padding-top:14px;border-top:1px solid var(--line)">
+          <label class="field-label">Once you've completed steps 1-4 above, paste your credentials here</label>
+          <input class="input" type="text" placeholder="Client ID"/>
+          <div style="margin-top:6px"></div>
+          <input class="input" type="password" placeholder="Client Secret"/>
+        </div>
+      `;
+      footer = `<button class="btn btn-ghost btn-sm" onclick="drawerPrev()">← Back</button><button class="btn btn-primary btn-sm" onclick="state.drawerState.authenticated=true;drawerNext()">Verify & continue →</button>`;
     }
   }
 
