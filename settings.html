@@ -946,15 +946,7 @@ body{
   width:600px; height:200px; background:radial-gradient(circle, rgba(43,127,255,0.18), transparent 70%);
   pointer-events:none; filter:blur(40px);
 }
-.mkt-hero-eyebrow{
-  display:inline-flex; align-items:center; gap:6px;
-  font-size:11px; font-weight:700; letter-spacing:.10em; text-transform:uppercase;
-  color:var(--cyan); margin-bottom:14px;
-  padding:4px 12px; border-radius:20px;
-  background:rgba(6,182,212,0.08); border:1px solid rgba(6,182,212,0.22);
-  position:relative;
-}
-.mkt-hero-title{font-size:32px; font-weight:700; color:var(--t1); letter-spacing:-.02em; margin-bottom:10px; position:relative}
+.mkt-hero-title{font-size:32px; font-weight:700; color:var(--t1); letter-spacing:-.02em; margin-bottom:10px; position:relative; padding-top:12px}
 .mkt-hero-sub{font-size:14px; color:var(--t2); max-width:540px; margin:0 auto 26px; position:relative; line-height:1.6}
 .mkt-search-wrap{position:relative; max-width:560px; margin:0 auto 22px}
 .mkt-search-icon{position:absolute; left:18px; top:50%; transform:translateY(-50%); color:var(--t3); pointer-events:none}
@@ -2182,7 +2174,6 @@ function renderHome() {
 
   $('content').innerHTML = `
     <section class="mkt-hero">
-      <span class="mkt-hero-eyebrow">Workspace · Integrations</span>
       <h1 class="mkt-hero-title">Connect your stack to AIMS-OS</h1>
       <p class="mkt-hero-sub">${total} integrations across ${CATEGORIES.length} categories. Managed once at the workspace level, consumed by Governance, Agentic and Workforce.</p>
       <div class="mkt-search-wrap">
