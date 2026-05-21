@@ -1714,6 +1714,93 @@ body{
 .ct-sort-btn:hover{color:var(--t1)}
 .ct-sort-btn.active{background:var(--bg3); color:var(--t1)}
 
+/* Active filter chips row */
+.ct-active-row{
+  display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+  padding:10px 0;
+  border-top:1px solid rgba(255,255,255,0.05);
+  animation:ctActiveSlide .18s ease-out;
+}
+@keyframes ctActiveSlide{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.ct-active-chips{display:inline-flex; flex-wrap:wrap; gap:5px; flex:1; min-width:0}
+.ct-active-chip{
+  --chip-color:#06B6D4;
+  display:inline-flex; align-items:center; gap:5px;
+  padding:4px 5px 4px 10px;
+  font-size:11.5px; font-weight:500; color:var(--chip-color);
+  background:color-mix(in srgb, var(--chip-color) 10%, transparent);
+  border:1px solid color-mix(in srgb, var(--chip-color) 30%, transparent);
+  border-radius:6px;
+  cursor:pointer; font-family:inherit;
+  transition:background .12s, border-color .12s, transform .1s;
+}
+.ct-active-chip:hover{
+  background:color-mix(in srgb, var(--chip-color) 18%, transparent);
+  border-color:color-mix(in srgb, var(--chip-color) 50%, transparent);
+}
+.ct-active-chip svg{
+  width:14px; height:14px; padding:2px;
+  background:color-mix(in srgb, var(--chip-color) 18%, transparent);
+  border-radius:3px; flex-shrink:0;
+  transition:background .12s;
+}
+.ct-active-chip:hover svg{background:color-mix(in srgb, var(--chip-color) 35%, transparent)}
+
+.ct-clear-inline{
+  display:inline-flex; align-items:center; gap:5px;
+  font-size:11px; font-weight:600; color:var(--red);
+  background:transparent; border:none; cursor:pointer;
+  padding:5px 9px; border-radius:6px;
+  font-family:inherit; transition:background .12s;
+}
+.ct-clear-inline:hover{background:rgba(239,68,68,0.10)}
+
+/* Cat "More" button */
+.ct-cat-more{
+  display:inline-flex; align-items:center; gap:5px;
+  padding:5px 11px; border-radius:7px;
+  background:rgba(255,255,255,0.03); border:1px dashed var(--line-strong);
+  font-size:12px; font-weight:500; color:var(--t2);
+  cursor:pointer; font-family:inherit;
+  transition:background .12s, color .12s, border-color .12s;
+}
+.ct-cat-more:hover{background:var(--hover); color:var(--t1); border-color:var(--line)}
+.ct-cat-more.open{border-style:solid; color:var(--accent); border-color:rgba(43,127,255,0.40); background:rgba(43,127,255,0.06)}
+
+/* Unified category active state — subtle tint, no full color flood */
+.ct-cat.active{
+  background:color-mix(in srgb, var(--cat-color) 12%, transparent) !important;
+  border-color:color-mix(in srgb, var(--cat-color) 35%, transparent) !important;
+  color:var(--cat-color) !important;
+  box-shadow:none !important;
+  transform:none !important;
+}
+.ct-cat.active .ct-cat-ico{color:var(--cat-color) !important}
+
+/* Sort moved closer to title — compact look */
+.ct-header-sort{
+  display:inline-flex; gap:2px; padding:2px;
+  background:var(--hover); border:1px solid var(--line);
+  border-radius:7px; flex-shrink:0;
+}
+.ct-header-sort-btn{
+  padding:3px 8px; font-size:11px; font-weight:600;
+  background:transparent; border:none; border-radius:5px;
+  color:var(--t2); cursor:pointer; font-family:inherit;
+  transition:.12s;
+}
+.ct-header-sort-btn:hover{color:var(--t1)}
+.ct-header-sort-btn.active{background:var(--bg3); color:var(--t1)}
+
+/* Light mode — active chips */
+html.theme-light .ct-active-row{border-top-color:var(--line)}
+html.theme-light .ct-active-chip{background:color-mix(in srgb, var(--chip-color) 8%, white); border-color:color-mix(in srgb, var(--chip-color) 25%, transparent)}
+html.theme-light .ct-cat-more{background:#FFFFFF; border-color:var(--line-strong); color:var(--t2)}
+html.theme-light .ct-cat-more:hover{background:var(--hover); color:var(--t1)}
+html.theme-light .ct-header-sort{background:rgba(15,23,42,0.04); border-color:var(--line)}
+html.theme-light .ct-header-sort-btn{color:var(--t2)}
+html.theme-light .ct-header-sort-btn.active{background:#FFFFFF; color:var(--t1)}
+
 /* ════════════════════════════════════════════════════════
    LIGHT MODE — WCAG AA (4.5:1+ text contrast on all surfaces)
    Toggle via html.theme-light class. Persisted to localStorage.
@@ -2550,6 +2637,9 @@ CAP_META.knowledge = CAP_META.data_sync;
 CAP_META.triggers = CAP_META.data_sync;
 CAP_META.channels = CAP_META.data_sync;
 
+// Canonical capability types (only these render in pickers/filters — aliases above are for back-compat reads only)
+const CAP_TYPES = ['tool', 'data_sync', 'mcp'];
+
 function normalizeCaps(caps) {
   if (!caps) return [];
   // Dedupe after migration
@@ -3032,6 +3122,7 @@ const state = {
   activeStudio:null,
   sortBy:'popular',
   search:'',
+  catMoreOpen:false,
   detailTab:'overview',
   drawerOpen:false,
   drawerState:null
@@ -3371,16 +3462,6 @@ function renderHome() {
       </div>
     </section>
 
-    <div class="studio-filter">
-      <span class="studio-filter-label">Show:</span>
-      <button class="studio-pill studio-all ${!state.activeStudio?'active':''}" onclick="setStudio(null)">All studios <span class="studio-pill-count">${total}</span></button>
-      ${Object.keys(STUDIO_META).map(s => {
-        const meta = STUDIO_META[s];
-        const count = INTEGRATIONS.filter(it => it.studios && it.studios[s]).length;
-        const active = state.activeStudio === s;
-        return `<button class="studio-pill studio-${meta.cls} ${active?'active':''}" onclick="setStudio('${s}')">${meta.icon}${meta.label}<span class="studio-pill-count">${count}</span></button>`;
-      }).join('')}
-    </div>
 
     ${connected.length > 0 ? `
       <div class="active-strip">
@@ -3458,11 +3539,16 @@ function renderHome() {
     <div class="mkt-section" id="catalogSection">
 
       <div class="catalog-toolbar" id="catalogToolbar">
-        <!-- Header: title + count + search -->
+        <!-- Header: title + count + sort + search -->
         <div class="ct-header">
           <div class="ct-title-group">
             <div class="ct-title">${isFiltering ? 'Filtered results' : 'Browse all integrations'}</div>
             <div class="ct-count" id="ctCount">${filtered.length}</div>
+            <div class="ct-header-sort">
+              <button class="ct-header-sort-btn ${(state.sortBy||'popular')==='popular'?'active':''}" onclick="setSort('popular')">Popular</button>
+              <button class="ct-header-sort-btn ${state.sortBy==='alphabetical'?'active':''}" onclick="setSort('alphabetical')">A–Z</button>
+              <button class="ct-header-sort-btn ${state.sortBy==='recent'?'active':''}" onclick="setSort('recent')">Recent</button>
+            </div>
           </div>
           <div class="ct-search">
             <svg class="ct-search-ic" width="13" height="13" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4" stroke="currentColor" stroke-width="1.3"/><path d="M9.5 9.5L12 12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
@@ -3470,8 +3556,12 @@ function renderHome() {
           </div>
         </div>
 
+        <!-- Active filter chips (only when filtering) -->
+        ${activeChipsHTML()}
+
         <!-- Source tabs + Build your own -->
         <div class="ct-row">
+          <span class="ct-label">Source</span>
           <div class="ct-tabs">
             ${['all','official','partner','private'].map(s => {
               const count = s==='all' ? total : INTEGRATIONS.filter(i=>i.source===s).length;
@@ -3481,38 +3571,41 @@ function renderHome() {
           </div>
           <span class="ct-sep-v"></span>
           <a class="ct-build-link" href="#/build">+ Build your own</a>
-          <div style="flex:1"></div>
-          <div class="ct-sort">
-            <button class="ct-sort-btn ${(state.sortBy||'popular')==='popular'?'active':''}" onclick="setSort('popular')">Popular</button>
-            <button class="ct-sort-btn ${state.sortBy==='alphabetical'?'active':''}" onclick="setSort('alphabetical')">A–Z</button>
-            <button class="ct-sort-btn ${state.sortBy==='recent'?'active':''}" onclick="setSort('recent')">Recent</button>
-          </div>
         </div>
 
-        <!-- Categories -->
+        <!-- Studio filter (NEW position — integrated into toolbar) -->
+        <div class="ct-row">
+          <span class="ct-label">Studio</span>
+          <button class="ct-mini ${!state.activeStudio?'active':''}" style="${!state.activeStudio?'background:rgba(43,127,255,0.10);border-color:rgba(43,127,255,0.30);color:var(--accent)':''}" onclick="setStudio(null)">All <span style="opacity:.6;font-size:10px;margin-left:3px">${total}</span></button>
+          ${Object.keys(STUDIO_META).map(s => {
+            const meta = STUDIO_META[s];
+            const count = INTEGRATIONS.filter(it => it.studios && it.studios[s]).length;
+            const active = state.activeStudio === s;
+            const style = active ? `background:color-mix(in srgb, ${meta.color} 12%, transparent);border-color:color-mix(in srgb, ${meta.color} 35%, transparent);color:${meta.color}` : '';
+            return `<button class="ct-mini ${active?'active':''}" style="${style}" onclick="setStudio('${s}')"><span style="display:inline-flex;color:${active?meta.color:'inherit'};margin-right:4px;vertical-align:middle">${meta.icon}</span>${escapeHtml(meta.label)} <span style="opacity:.6;font-size:10px;margin-left:3px">${count}</span></button>`;
+          }).join('')}
+        </div>
+
+        <!-- Categories — top 5 + More -->
         <div class="ct-row">
           <span class="ct-label">Category</span>
           <div class="ct-pills">
-            ${CATEGORIES.map(c => {
+            ${(state.catMoreOpen ? CATEGORIES : CATEGORIES.slice(0, 5)).map(c => {
               const active = state.activeCats.has(c.slug);
-              const style = active ? `background:${c.color};border-color:${c.color};color:#fff` : '';
-              return `<button class="ct-cat ${active?'active':''}" style="${style}" onclick="toggleCat('${c.slug}')"><span class="ct-cat-ico" style="color:${active?'#fff':c.color}">${c.icon}</span>${escapeHtml(c.label)}</button>`;
+              return `<button class="ct-cat ${active?'active':''}" style="--cat-color:${c.color}" onclick="toggleCat('${c.slug}')"><span class="ct-cat-ico" style="color:${c.color}">${c.icon}</span>${escapeHtml(c.label)}</button>`;
             }).join('')}
+            ${CATEGORIES.length > 5 ? `<button class="ct-cat-more ${state.catMoreOpen?'open':''}" onclick="toggleCatMore()">${state.catMoreOpen?'Less ▴':`More <span style="opacity:.6">${CATEGORIES.length-5}</span> ▾`}</button>` : ''}
           </div>
         </div>
 
         <!-- Refinements: capability + state -->
         <div class="ct-row">
           <span class="ct-label">Capability</span>
-          ${Object.keys(CAP_META).map(k => `<button class="ct-mini cap-${k} ${state.activeCaps.has(k)?'active':''}" onclick="toggleCap('${k}')">${escapeHtml(CAP_META[k].label)}</button>`).join('')}
+          ${CAP_TYPES.map(k => `<button class="ct-mini cap-${k} ${state.activeCaps.has(k)?'active':''}" onclick="toggleCap('${k}')">${escapeHtml(CAP_META[k].label)}</button>`).join('')}
           <span class="ct-sep-v"></span>
           <span class="ct-label">State</span>
           <button class="ct-mini state-on ${state.activeStates.has('connected')?'active':''}" onclick="toggleState('connected')">Connected</button>
           <button class="ct-mini state-off ${state.activeStates.has('not_connected')?'active':''}" onclick="toggleState('not_connected')">Not connected</button>
-          <button class="ct-clear ${isFiltering?'visible':''}" onclick="clearFilters()">
-            <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-            Clear all <span class="ct-clear-count">${state.activeCats.size + state.activeCaps.size + state.activeStates.size + (state.search?1:0) + (state.activeSrc!=='all'?1:0) + (state.activeStudio?1:0)}</span>
-          </button>
         </div>
       </div>
 
@@ -3581,6 +3674,53 @@ function setSearch(v){ state.search = v; renderHome(); setTimeout(()=>{ const in
 function clearFilters(){ state.activeCats.clear(); state.activeCaps.clear(); state.activeStates.clear(); state.search=''; state.activeSrc='all'; state.activeStudio=null; renderHome() }
 function setStudio(s){ state.activeStudio = (state.activeStudio===s)?null:s; renderHome() }
 function setSort(s){ state.sortBy = s; renderHome() }
+function toggleCatMore(){ state.catMoreOpen = !state.catMoreOpen; renderHome() }
+
+function removeFilter(kind, value) {
+  if (kind === 'search') state.search = '';
+  else if (kind === 'src') state.activeSrc = 'all';
+  else if (kind === 'studio') state.activeStudio = null;
+  else if (kind === 'cat') state.activeCats.delete(value);
+  else if (kind === 'cap') state.activeCaps.delete(value);
+  else if (kind === 'state') state.activeStates.delete(value);
+  renderHome();
+}
+
+function activeChipsHTML() {
+  const chips = [];
+  if (state.search) chips.push({ key:'search', value:'', label:`Search: "${state.search}"`, icon:'🔍' });
+  if (state.activeSrc !== 'all') chips.push({ key:'src', value:'', label:`Source: ${state.activeSrc.charAt(0).toUpperCase()+state.activeSrc.slice(1)}` });
+  if (state.activeStudio) chips.push({ key:'studio', value:state.activeStudio, label:STUDIO_META[state.activeStudio].label, color:STUDIO_META[state.activeStudio].color });
+  state.activeCats.forEach(c => {
+    const cat = CATEGORIES.find(x => x.slug===c);
+    if (cat) chips.push({ key:'cat', value:c, label:cat.label, color:cat.color });
+  });
+  state.activeCaps.forEach(c => {
+    const meta = CAP_META[c];
+    if (meta) chips.push({ key:'cap', value:c, label:meta.label, color:meta.color });
+  });
+  state.activeStates.forEach(s => {
+    chips.push({ key:'state', value:s, label: s==='connected'?'Connected':'Not connected' });
+  });
+  if (chips.length === 0) return '';
+  return `
+    <div class="ct-active-row">
+      <span class="ct-label">Active</span>
+      <div class="ct-active-chips">
+        ${chips.map(c => `
+          <button class="ct-active-chip" style="${c.color?`--chip-color:${c.color}`:''}" onclick="removeFilter('${c.key}','${escapeHtml(c.value).replace(/'/g,'')}')">
+            ${escapeHtml(c.label)}
+            <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          </button>
+        `).join('')}
+      </div>
+      <button class="ct-clear-inline" onclick="clearFilters()">
+        <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        Clear all <span class="ct-clear-count">${chips.length}</span>
+      </button>
+    </div>
+  `;
+}
 
 /* ====================== DETAIL ====================== */
 
