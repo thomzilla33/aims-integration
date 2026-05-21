@@ -1935,6 +1935,10 @@ body{
 <div class="drawer-overlay" id="aiOverlay" onclick="closeAIDrawer()"></div>
 <aside class="ai-drawer" id="aiDrawer"></aside>
 
+<!-- Helix Data Studio handoff drawer -->
+<div class="drawer-overlay" id="helixOverlay" onclick="closeHelix()"></div>
+<aside class="drawer" id="helixDrawer"></aside>
+
 <!-- Toasts -->
 <div class="toast-container" id="toasts"></div>
 
@@ -2120,6 +2124,14 @@ const STUDIO_USAGE = {
   'internal-billing': { agentic:{count:4, unit:'calls/day', detail:'1 agent'} }
 };
 
+// Vendor metadata (engineering brief §2) — a vendor owns multiple providers
+const VENDORS = {
+  google:    { name:'Google',    logo:'google',                color:'#4285F4' },
+  microsoft: { name:'Microsoft', logo:'microsoft',             color:'#0078D4' },
+  atlassian: { name:'Atlassian', logo:'atlassian',             color:'#0052CC' },
+  amazon:    { name:'Amazon',    logo:'amazon',                color:'#FF9900' },
+};
+
 // Iconify 'logos' set slugs (full-color brand logos) — only for brands available.
 // CDN: https://api.iconify.design/logos:{slug}.svg
 // Brands without a slug fall back to a colored monogram automatically.
@@ -2173,15 +2185,18 @@ const INTEGRATIONS = [
     multiTenant:true
   },
 
-  // Productivity & Docs (4)
-  { slug:'google-workspace', name:'Google Workspace', vendor:'Google', category:'productivity', color:'#4285F4',
-    desc:'Read Docs, Sheets, Calendar and Gmail across the workspace.',
-    capabilities:['tools','knowledge'], authMethods:['oauth','service'], source:'official',
-    connected:true, health:'healthy', lastRun:'8 min ago', errors24h:0,
-    connectedBy:{name:'Thomas González',initials:'TG'}, connectedAt:'2 weeks ago',
-    studios:{governance:true,agentic:true,workforce:false}, allowPersonal:true,
-    scopes:['drive.readonly','calendar','gmail.send'],
-    rolesGov:['Knowledge Curators'], rolesAg:['Agent Builders']
+  // Productivity & Docs — Google vendor split into separate providers (engineering brief §2)
+  { slug:'gsheets', name:'Google Sheets', vendor:'Google', category:'productivity', color:'#0F9D58', vendorGroup:'google',
+    desc:'Read and write to Google Sheets — query rows, append data, format ranges.',
+    capabilities:['tools'], authMethods:['oauth','service'], source:'official', connected:false
+  },
+  { slug:'gmail', name:'Gmail', vendor:'Google', category:'productivity', color:'#EA4335', vendorGroup:'google',
+    desc:'Send emails, read threads, manage labels through the Gmail API.',
+    capabilities:['tools','data_sync'], authMethods:['oauth','per_user'], source:'official', connected:false
+  },
+  { slug:'gcal', name:'Google Calendar', vendor:'Google', category:'productivity', color:'#4285F4', vendorGroup:'google',
+    desc:'Create events, check availability, manage attendees and meeting rooms.',
+    capabilities:['tools','data_sync'], authMethods:['oauth'], source:'official', connected:false
   },
   { slug:'m365', name:'Microsoft 365', vendor:'Microsoft', category:'productivity', color:'#D83B01',
     desc:'Read Word, Excel, Outlook and Calendar through Microsoft Graph.',
@@ -2194,7 +2209,7 @@ const INTEGRATIONS = [
     connectedBy:{name:'Diana Pérez',initials:'DP'}, connectedAt:'5 weeks ago',
     studios:{governance:true,agentic:true,workforce:false}, allowPersonal:false
   },
-  { slug:'confluence', name:'Confluence', vendor:'Atlassian', category:'productivity', color:'#172B4D',
+  { slug:'confluence', name:'Confluence', vendor:'Atlassian', category:'productivity', color:'#172B4D', vendorGroup:'atlassian',
     desc:'Ingest Confluence spaces and pages as knowledge sources.',
     capabilities:['knowledge'], authMethods:['oauth','apikey'], source:'official', connected:false
   },
@@ -2219,7 +2234,7 @@ const INTEGRATIONS = [
   },
 
   // Ticketing (4)
-  { slug:'jira', name:'Jira', vendor:'Atlassian', category:'ticketing', color:'#0052CC',
+  { slug:'jira', name:'Jira', vendor:'Atlassian', category:'ticketing', color:'#0052CC', vendorGroup:'atlassian',
     desc:'Create, update and link Jira issues; react to status changes.',
     capabilities:['tools','triggers'], authMethods:['oauth','apikey'], source:'official',
     connected:true, health:'healthy', lastRun:'5 min ago', errors24h:0,
@@ -2268,7 +2283,7 @@ const INTEGRATIONS = [
   },
 
   // Storage (5)
-  { slug:'gdrive', name:'Google Drive', vendor:'Google', category:'storage', color:'#1FA463',
+  { slug:'gdrive', name:'Google Drive', vendor:'Google', category:'storage', color:'#1FA463', vendorGroup:'google',
     desc:'Index Drive folders as knowledge sources for Governance, or let each user access their own files.',
     capabilities:['knowledge'], authMethods:['oauth','service','per_user'], source:'official',
     connected:true, health:'healthy', lastRun:'30 min ago', errors24h:0,
@@ -2310,7 +2325,7 @@ const INTEGRATIONS = [
     desc:'GitLab repos, merge requests and CI pipelines.',
     capabilities:['tools','triggers'], authMethods:['oauth','apikey'], source:'official', connected:false
   },
-  { slug:'bitbucket', name:'Bitbucket', vendor:'Atlassian', category:'dev', color:'#0052CC',
+  { slug:'bitbucket', name:'Bitbucket', vendor:'Atlassian', category:'dev', color:'#0052CC', vendorGroup:'atlassian',
     desc:'Git hosting integrated with Jira.',
     capabilities:['tools'], authMethods:['oauth'], source:'official', connected:false
   },
@@ -2925,6 +2940,7 @@ function mktCardHTML(i) {
 
   const verified = i.source==='official' ? '<span class="mkt-card-verified" title="Official AIMS-OS integration"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 0.8l1.7 1.7 2.4-.4.8 2.3 2.3.8-.4 2.4L16.3 9.2l-1.7 1.7.4 2.4-2.3.8-.8 2.3-2.4-.4L8 16.7l-1.7-1.7-2.4.4-.8-2.3-2.3-.8.4-2.4L-.3 8.2l1.7-1.7-.4-2.4 2.3-.8.8-2.3 2.4.4L8 .8z" fill="#2B7FFF"/><path d="M5.3 8.2l2 2 3.4-3.6" stroke="#fff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>' : '';
 
+  const vendorMeta = i.vendorGroup && VENDORS[i.vendorGroup];
   return `
     <div class="mkt-card" onclick="navigate('#/integrations/${i.slug}')">
       ${flag}
@@ -2932,7 +2948,7 @@ function mktCardHTML(i) {
         ${logo(i, 'md')}
         <div class="mkt-card-text">
           <div class="mkt-card-name">${escapeHtml(i.name)}${verified}</div>
-          <div class="mkt-card-vendor">${escapeHtml(i.vendor||(cat?cat.label:''))}</div>
+          <div class="mkt-card-vendor">${vendorMeta ? `<span style="display:inline-flex;align-items:center;gap:4px"><img src="https://api.iconify.design/logos:${vendorMeta.logo}.svg" alt="${escapeHtml(vendorMeta.name)}" style="width:10px;height:10px;object-fit:contain" loading="lazy"/>${escapeHtml(vendorMeta.name)} · ${escapeHtml(i.vendor||(cat?cat.label:''))}</span>` : escapeHtml(i.vendor||(cat?cat.label:''))}</div>
         </div>
       </div>
       <div class="mkt-card-desc">${escapeHtml(i.desc)}</div>
@@ -3124,7 +3140,7 @@ function instanceBasicHTML(i, inst) {
           <div class="ov-cap-card"><div class="ov-cap-card-h">Errors (24h)</div><div class="ov-cap-card-d" style="color:${inst.errors24h>0?'var(--red)':'var(--t1)'}">${inst.errors24h||0}</div></div>
         </div>
 
-        ${inst.note ? `<div class="lock-overlay" style="background:rgba(253,199,0,0.04);border-color:rgba(253,199,0,0.22)"><div class="lock-overlay-h" style="color:var(--amber)">⚠ Action needed</div><div class="lock-overlay-p">${escapeHtml(inst.note)}</div><button class="btn btn-primary btn-sm" onclick="toast('Opens Helix Data Studio with mapping pre-loaded','success')">Open in Helix Data Studio →</button></div>` : ''}
+        ${inst.note ? `<div class="lock-overlay" style="background:rgba(253,199,0,0.04);border-color:rgba(253,199,0,0.22)"><div class="lock-overlay-h" style="color:var(--amber)">⚠ Action needed</div><div class="lock-overlay-p">${escapeHtml(inst.note)}</div><button class="btn btn-primary btn-sm" onclick="openHelix('${i.slug}','${inst.id}')">Open in Helix Data Studio →</button></div>` : ''}
       </div>
       <div class="ov-side">
         <h3 style="margin-top:0;margin-bottom:8px">Quick actions</h3>
@@ -4667,6 +4683,91 @@ function aiRender(text) {
   html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
   html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
   return html;
+}
+
+/* ====================== HELIX DATA STUDIO HANDOFF ====================== */
+
+// Engineering brief §8 — Data Sync activation opens the pipe, but data doesn't flow until customer verifies mapping in Helix Data Studio
+const HELIX_DEFAULT_MAPPINGS = {
+  s3: { event:'object_created', fields:[
+    { src:'$.Records[0].s3.object.key',     srcType:'string', target:'document.path',     targetType:'string', confidence:'high' },
+    { src:'$.Records[0].s3.bucket.name',    srcType:'string', target:'document.source',   targetType:'string', confidence:'high' },
+    { src:'$.Records[0].s3.object.size',    srcType:'number', target:'document.size',     targetType:'number', confidence:'high' },
+    { src:'$.Records[0].eventTime',         srcType:'datetime', target:'document.created_at', targetType:'datetime', confidence:'high' },
+    { src:'$.Records[0].userIdentity.principalId', srcType:'string', target:'document.created_by', targetType:'string', confidence:'medium' }
+  ]},
+  github: { event:'pr_opened', fields:[
+    { src:'$.pull_request.id',              srcType:'number', target:'pr.id',            targetType:'number',  confidence:'high' },
+    { src:'$.pull_request.title',           srcType:'string', target:'pr.title',         targetType:'string',  confidence:'high' },
+    { src:'$.pull_request.user.login',      srcType:'string', target:'pr.author',        targetType:'string',  confidence:'high' },
+    { src:'$.pull_request.base.ref',        srcType:'string', target:'pr.target_branch', targetType:'string',  confidence:'high' },
+    { src:'$.pull_request.body',            srcType:'string', target:'pr.description',   targetType:'string',  confidence:'medium' }
+  ]}
+};
+
+function openHelix(slug, instId) {
+  const i = findIntegration(slug); if (!i) return;
+  const inst = instId ? instancesOf(slug).find(x=>x.id===instId) : (instancesOf(slug)[0] || null);
+  const mapping = HELIX_DEFAULT_MAPPINGS[slug] || HELIX_DEFAULT_MAPPINGS.s3;
+
+  const d = $('helixDrawer');
+  d.innerHTML = `
+    <div class="drawer-head">
+      <div class="logo logo-sm" style="background:linear-gradient(135deg,#A78BFA 0%,#06B6D4 100%);color:#fff;font-weight:900">HX</div>
+      <div class="drawer-title">Helix Data Studio · Mapping Review</div>
+      <button class="drawer-close" onclick="closeHelix()">×</button>
+    </div>
+    <div class="drawer-body">
+      <div style="padding:12px 14px;background:rgba(167,139,250,0.06);border:1px solid rgba(167,139,250,0.22);border-radius:var(--r8);margin-bottom:14px;font-size:12px;color:var(--t2);line-height:1.55">
+        <strong style="color:var(--purple)">⚠ Action needed — Mapping pending verification</strong><br>
+        ${escapeHtml(i.name)}${inst?` · ${escapeHtml(inst.name)}`:''} is sending events to AIMS, but data won't flow into the platform until you review and activate the mapping below.
+      </div>
+
+      <h3 style="font-size:13px;font-weight:700;color:var(--t1);margin-bottom:6px">Event: <code style="font-family:'SF Mono',Menlo,monospace;background:rgba(255,255,255,0.04);padding:2px 6px;border-radius:4px;color:var(--cyan)">${mapping.event}</code></h3>
+      <p style="font-size:11.5px;color:var(--t3);margin-bottom:14px">Default mapping pre-loaded from our certified ${escapeHtml(i.name)} connector. Adjust if you have custom fields.</p>
+
+      <div style="background:var(--bg3);border:1px solid var(--line);border-radius:var(--r8);overflow:hidden">
+        <div style="display:grid;grid-template-columns:1fr 1fr 60px;gap:10px;padding:8px 12px;background:var(--hover);font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.05em">
+          <div>From ${escapeHtml(i.name)}</div>
+          <div>To AIMS schema</div>
+          <div style="text-align:right">Confidence</div>
+        </div>
+        ${mapping.fields.map(f => `
+          <div style="display:grid;grid-template-columns:1fr 1fr 60px;gap:10px;padding:10px 12px;border-top:1px solid var(--line);font-size:12px;align-items:center">
+            <div>
+              <code style="font-family:'SF Mono',Menlo,monospace;font-size:11px;color:var(--t1)">${escapeHtml(f.src)}</code>
+              <div style="font-size:10px;color:var(--t3);margin-top:1px">${f.srcType}</div>
+            </div>
+            <div>
+              <code style="font-family:'SF Mono',Menlo,monospace;font-size:11px;color:var(--green)">${escapeHtml(f.target)}</code>
+              <div style="font-size:10px;color:var(--t3);margin-top:1px">${f.targetType}</div>
+            </div>
+            <div style="text-align:right">
+              <span style="font-size:9.5px;font-weight:700;padding:1.5px 6px;border-radius:8px;background:${f.confidence==='high'?'rgba(5,223,114,0.10)':'rgba(253,199,0,0.10)'};color:${f.confidence==='high'?'var(--green)':'var(--amber)'};border:1px solid ${f.confidence==='high'?'rgba(5,223,114,0.22)':'rgba(253,199,0,0.22)'};text-transform:uppercase;letter-spacing:.04em">${f.confidence}</span>
+            </div>
+          </div>
+        `).join('')}
+        <div style="padding:10px 12px;border-top:1px solid var(--line)">
+          <button class="btn btn-ghost btn-sm" style="font-size:11px" onclick="toast('Add custom field mapping')">+ Add custom field mapping</button>
+        </div>
+      </div>
+
+      <div style="margin-top:14px;font-size:11px;color:var(--t3);line-height:1.55">
+        Once activated, AIMS will start ingesting <strong style="color:var(--t1)">${mapping.fields.length} fields</strong> from ${escapeHtml(i.name)} into Helix. You can revise this mapping at any time without disrupting the pipeline.
+      </div>
+    </div>
+    <div class="drawer-foot">
+      <button class="btn btn-ghost btn-sm" onclick="closeHelix()">Cancel</button>
+      <button class="btn btn-primary btn-sm" onclick="closeHelix();toast('Mapping activated · Data is now flowing into Helix','success');setTimeout(()=>{const i=findIntegration('${slug}');if(i){const inst=instancesOf('${slug}').find(x=>x.id==='${instId}');if(inst){inst.status='fully_configured';delete inst.note;route();}}},800)">Activate mapping</button>
+    </div>
+  `;
+  $('helixOverlay').classList.add('open');
+  $('helixDrawer').classList.add('open');
+}
+
+function closeHelix() {
+  $('helixOverlay').classList.remove('open');
+  $('helixDrawer').classList.remove('open');
 }
 
 /* ====================== MOBILE SSB TOGGLE ====================== */
