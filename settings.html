@@ -2234,35 +2234,51 @@ html.theme-light .lock-overlay-p{color:var(--t2)}
 .tour-trigger.seen .tour-trigger-pulse{display:none}
 .tour-trigger.tour-active{display:none}
 
-/* Backdrop — captures clicks during tour */
+/* Transparent click-blocker — no visual dim, the page stays fully visible */
 .tour-overlay{
   position:fixed; inset:0; z-index:150;
-  background:rgba(7,14,28,0.78);
-  backdrop-filter:blur(2px);
-  opacity:0; pointer-events:none;
-  transition:opacity .25s;
+  background:transparent;
+  pointer-events:none;
+  transition:none;
 }
-.tour-overlay.active{opacity:1; pointer-events:auto}
-html.theme-light .tour-overlay{background:rgba(15,23,42,0.55)}
+.tour-overlay.active{pointer-events:auto}
 
-/* Spotlight cutout — uses radial gradient mask */
+/* Spotlight = ring around target, no backdrop dim (page stays fully visible) */
 .tour-spotlight{
   position:fixed; z-index:155;
   pointer-events:none;
   border-radius:14px;
+  border:2px solid var(--cyan);
   box-shadow:
-    0 0 0 9999px rgba(7,14,28,0.78),
-    0 0 0 3px var(--cyan),
-    0 0 32px rgba(6,182,212,0.5);
+    0 0 0 4px rgba(6,182,212,0.18),
+    0 0 32px rgba(6,182,212,0.55),
+    0 0 64px rgba(6,182,212,0.25);
+  background:transparent;
   transition:all .28s cubic-bezier(.4,0,.2,1);
   opacity:0;
+  animation:none;
 }
-.tour-spotlight.active{opacity:1}
+.tour-spotlight.active{
+  opacity:1;
+  animation:tourSpotlightPulse 2s ease-in-out infinite;
+}
+@keyframes tourSpotlightPulse{
+  0%,100%{box-shadow:0 0 0 4px rgba(6,182,212,0.18), 0 0 32px rgba(6,182,212,0.55), 0 0 64px rgba(6,182,212,0.25)}
+  50%{box-shadow:0 0 0 6px rgba(6,182,212,0.28), 0 0 48px rgba(6,182,212,0.70), 0 0 96px rgba(6,182,212,0.35)}
+}
 html.theme-light .tour-spotlight{
+  border-color:var(--accent);
   box-shadow:
-    0 0 0 9999px rgba(15,23,42,0.55),
-    0 0 0 3px var(--accent),
-    0 0 32px rgba(43,127,255,0.4);
+    0 0 0 4px rgba(43,127,255,0.18),
+    0 0 32px rgba(43,127,255,0.50),
+    0 0 64px rgba(43,127,255,0.20);
+}
+html.theme-light .tour-spotlight.active{
+  animation:tourSpotlightPulseLight 2s ease-in-out infinite;
+}
+@keyframes tourSpotlightPulseLight{
+  0%,100%{box-shadow:0 0 0 4px rgba(43,127,255,0.18), 0 0 32px rgba(43,127,255,0.50), 0 0 64px rgba(43,127,255,0.20)}
+  50%{box-shadow:0 0 0 6px rgba(43,127,255,0.28), 0 0 48px rgba(43,127,255,0.65), 0 0 96px rgba(43,127,255,0.30)}
 }
 
 /* Popover with the step content */
@@ -2732,12 +2748,12 @@ html.theme-light .theme-icon-moon{display:block}
 <div class="role-picker" id="rolePicker" onclick="event.stopPropagation()"></div>
 
 <!-- Interactive tour -->
-<button class="tour-trigger" id="tourTrigger" onclick="startTour()" aria-label="Take a guided tour">
+<button class="tour-trigger" id="tourTrigger" onclick="startTour()" aria-label="Start product demo">
   <span class="tour-trigger-pulse"></span>
   <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-    <path d="M2 8l3-3M2 8l3 3M2 8h12M14 4v8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M3 2l11 6-11 6V2z" fill="currentColor"/>
   </svg>
-  Take a tour
+  Demo
 </button>
 <div class="tour-overlay" id="tourOverlay"></div>
 <div class="tour-spotlight" id="tourSpotlight"></div>
