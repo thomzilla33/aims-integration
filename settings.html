@@ -2204,6 +2204,150 @@ html.theme-light .lock-overlay{background:#FAFBFC; border-color:var(--line)}
 html.theme-light .lock-overlay-h{color:var(--t1)}
 html.theme-light .lock-overlay-p{color:var(--t2)}
 
+/* ════════════════════════════════════════════════════════
+   INTERACTIVE TOUR — self-guided walkthrough
+   ════════════════════════════════════════════════════════ */
+
+/* Floating trigger button (always visible bottom-right) */
+.tour-trigger{
+  position:fixed; bottom:24px; right:24px; z-index:80;
+  display:inline-flex; align-items:center; gap:7px;
+  padding:10px 16px; border-radius:9999px;
+  background:linear-gradient(135deg, #06B6D4 0%, #A78BFA 100%);
+  color:#fff; border:none; cursor:pointer;
+  font-family:inherit; font-size:13px; font-weight:600;
+  box-shadow:0 8px 24px rgba(6,182,212,0.40), 0 2px 8px rgba(0,0,0,0.30);
+  transition:transform .15s, box-shadow .15s;
+}
+.tour-trigger:hover{transform:translateY(-2px); box-shadow:0 12px 32px rgba(6,182,212,0.55), 0 4px 12px rgba(0,0,0,0.40)}
+.tour-trigger svg{flex-shrink:0}
+.tour-trigger-pulse{
+  position:absolute; inset:0; border-radius:inherit;
+  border:2px solid rgba(6,182,212,0.6);
+  animation:tourPulse 2s ease-out infinite;
+  pointer-events:none;
+}
+@keyframes tourPulse{
+  0%{transform:scale(1);opacity:.8}
+  100%{transform:scale(1.25);opacity:0}
+}
+.tour-trigger.seen .tour-trigger-pulse{display:none}
+.tour-trigger.tour-active{display:none}
+
+/* Backdrop — captures clicks during tour */
+.tour-overlay{
+  position:fixed; inset:0; z-index:150;
+  background:rgba(7,14,28,0.78);
+  backdrop-filter:blur(2px);
+  opacity:0; pointer-events:none;
+  transition:opacity .25s;
+}
+.tour-overlay.active{opacity:1; pointer-events:auto}
+html.theme-light .tour-overlay{background:rgba(15,23,42,0.55)}
+
+/* Spotlight cutout — uses radial gradient mask */
+.tour-spotlight{
+  position:fixed; z-index:155;
+  pointer-events:none;
+  border-radius:14px;
+  box-shadow:
+    0 0 0 9999px rgba(7,14,28,0.78),
+    0 0 0 3px var(--cyan),
+    0 0 32px rgba(6,182,212,0.5);
+  transition:all .28s cubic-bezier(.4,0,.2,1);
+  opacity:0;
+}
+.tour-spotlight.active{opacity:1}
+html.theme-light .tour-spotlight{
+  box-shadow:
+    0 0 0 9999px rgba(15,23,42,0.55),
+    0 0 0 3px var(--accent),
+    0 0 32px rgba(43,127,255,0.4);
+}
+
+/* Popover with the step content */
+.tour-popover{
+  position:fixed; z-index:160;
+  width:360px; max-width:calc(100vw - 32px);
+  background:linear-gradient(180deg, rgba(20,28,48,0.98) 0%, rgba(13,19,35,0.98) 100%);
+  border:1px solid var(--line-strong);
+  border-radius:var(--r12);
+  backdrop-filter:blur(24px) saturate(1.8);
+  box-shadow:0 16px 48px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.04);
+  padding:18px 20px;
+  opacity:0; transform:scale(0.96) translateY(4px); pointer-events:none;
+  transition:opacity .2s ease-out, transform .25s cubic-bezier(.34,1.56,.64,1);
+}
+.tour-popover.active{opacity:1; transform:scale(1) translateY(0); pointer-events:auto}
+html.theme-light .tour-popover{
+  background:linear-gradient(180deg, #FFFFFF 0%, #FAFBFC 100%);
+  border-color:var(--line-strong);
+  box-shadow:0 16px 48px rgba(15,23,42,0.18), 0 0 0 1px rgba(15,23,42,0.04);
+}
+
+.tour-popover-header{
+  display:flex; align-items:center; gap:10px; margin-bottom:8px;
+}
+.tour-popover-step{
+  font-size:10.5px; font-weight:700; letter-spacing:.10em;
+  text-transform:uppercase; color:var(--cyan);
+  padding:2px 8px; border-radius:10px;
+  background:rgba(6,182,212,0.10); border:1px solid rgba(6,182,212,0.25);
+}
+.tour-popover-skip{
+  margin-left:auto;
+  background:transparent; border:none; cursor:pointer;
+  color:var(--t3); font-size:11px; font-weight:500;
+  padding:4px 8px; border-radius:5px;
+  font-family:inherit;
+  transition:.12s;
+}
+.tour-popover-skip:hover{background:var(--hover); color:var(--t1)}
+
+.tour-popover-title{
+  font-size:16px; font-weight:700; color:var(--t1);
+  letter-spacing:-.01em; line-height:1.3; margin-bottom:8px;
+}
+.tour-popover-body{
+  font-size:13px; line-height:1.6; color:var(--t2);
+  margin-bottom:16px;
+}
+.tour-popover-body strong{color:var(--t1); font-weight:600}
+.tour-popover-body code{
+  font-family:'SF Mono',Menlo,monospace; font-size:12px;
+  background:rgba(6,182,212,0.10); color:var(--cyan);
+  padding:1.5px 5px; border-radius:4px;
+  border:1px solid rgba(6,182,212,0.22);
+}
+
+.tour-popover-footer{
+  display:flex; align-items:center; gap:10px;
+  padding-top:12px; border-top:1px solid var(--line);
+}
+.tour-progress{
+  display:inline-flex; gap:4px; flex:1;
+}
+.tour-progress-dot{
+  width:6px; height:6px; border-radius:50%;
+  background:var(--hover-strong);
+  transition:background .15s, transform .15s;
+}
+.tour-progress-dot.current{background:var(--cyan); transform:scale(1.4)}
+.tour-progress-dot.done{background:rgba(6,182,212,0.45)}
+.tour-btn{
+  padding:7px 14px; font-size:12.5px; font-weight:600;
+  border-radius:var(--r6); cursor:pointer; border:none;
+  font-family:inherit; transition:.14s;
+  display:inline-flex; align-items:center; gap:5px;
+}
+.tour-btn-prev{background:transparent; color:var(--t2); border:1px solid var(--line)}
+.tour-btn-prev:hover{background:var(--hover); color:var(--t1); border-color:var(--line-strong)}
+.tour-btn-next{
+  background:linear-gradient(135deg, #06B6D4 0%, #155DFC 100%);
+  color:#fff; box-shadow:0 2px 8px rgba(6,182,212,0.30);
+}
+.tour-btn-next:hover{transform:translateY(-1px); box-shadow:0 4px 12px rgba(6,182,212,0.45)}
+
 /* Theme toggle icons */
 .theme-icon-moon{display:none}
 .theme-icon-sun{display:block}
@@ -2586,6 +2730,18 @@ html.theme-light .theme-icon-moon{display:block}
 <!-- Role/Group picker popover -->
 <div class="rp-overlay" id="rpOverlay" onclick="closeRolePicker()"></div>
 <div class="role-picker" id="rolePicker" onclick="event.stopPropagation()"></div>
+
+<!-- Interactive tour -->
+<button class="tour-trigger" id="tourTrigger" onclick="startTour()" aria-label="Take a guided tour">
+  <span class="tour-trigger-pulse"></span>
+  <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+    <path d="M2 8l3-3M2 8l3 3M2 8h12M14 4v8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+  Take a tour
+</button>
+<div class="tour-overlay" id="tourOverlay"></div>
+<div class="tour-spotlight" id="tourSpotlight"></div>
+<div class="tour-popover" id="tourPopover"></div>
 
 <!-- Toasts -->
 <div class="toast-container" id="toasts"></div>
@@ -5429,6 +5585,219 @@ function aiRender(text) {
   html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
   return html;
 }
+
+/* ====================== INTERACTIVE TOUR ====================== */
+
+const TOUR_STEPS = [
+  {
+    title:'Welcome to AIMS-OS Integrations',
+    body:'This is the workspace surface for connecting every external tool — Slack, Salesforce, Snowflake, GitHub, anything. Let\'s take a 90-second tour. Use <strong>← →</strong> or the buttons below to navigate.',
+    route:'#/integrations'
+  },
+  {
+    title:'Active in your workspace',
+    body:'See what\'s already connected at a glance. Each avatar shows real-time health: <strong>green</strong> = healthy, <strong>amber</strong> = degraded, <strong>red</strong> = failed. Hover to see which studios use it.',
+    route:'#/integrations',
+    target:'.active-strip'
+  },
+  {
+    title:'One smart filter toolbar',
+    body:'Filter by <strong>Studio</strong>, <strong>Source</strong>, <strong>Category</strong>, or <strong>Capability</strong>. Active filters appear as removable chips at top. Sort and search live in the header.',
+    route:'#/integrations',
+    target:'#catalogToolbar',
+    scrollToTarget:true
+  },
+  {
+    title:'Provider ≠ Instance',
+    body:'A provider can be activated <strong>multiple times</strong>. Notice S3 has 3 instances — Production, Dev, Analytics — each with its own credentials, status, and audit trail. This is core to the model.',
+    route:'#/integrations/s3',
+    target:'.inst-section',
+    scrollToTarget:true
+  },
+  {
+    title:'Per-instance management',
+    body:'Click any instance to manage it. Five tabs: <code>Basic Info</code> · <code>Capabilities</code> · <code>Authentication</code> · <code>Logs</code> · <code>Audit</code>. Notice this S3 — Analytics is "partially configured" — Helix Data Studio mapping pending.',
+    route:'#/integrations/s3/instances/s3-analytics',
+    target:'.tabs'
+  },
+  {
+    title:'Cascading governance',
+    body:'Permissions cascade: <strong>Integration → Workflow → Agent</strong>. Each layer can restrict (never expand) what the layer above allows. This is what Mike asked for after the early MCP experiment.',
+    route:'#/integrations/slack',
+    detailTab:'permissions',
+    target:'.gov-layers',
+    scrollToTarget:true
+  },
+  {
+    title:'Used in studios',
+    body:'See real usage per studio: <strong>47 calls/day</strong> in Agentic, <strong>1,247 tables</strong> indexed in Governance, etc. Answers the "where is this used?" question instantly.',
+    route:'#/integrations/snowflake',
+    target:'.used-in-wrap',
+    scrollToTarget:true
+  },
+  {
+    title:'Ask AI about any integration',
+    body:'Context-aware AI. It knows the integration\'s current state, scopes, capabilities. Ask "how do I connect this securely?" or "what can agents do with this?" — answers are tailored, not generic.',
+    route:'#/integrations/slack',
+    target:'.btn-ai'
+  },
+  {
+    title:'Schema-driven activation',
+    body:'When you connect a provider, the wizard renders the auth form <strong>from a schema</strong> — no custom code per provider. 6 steps: name → auth method → authenticate → choose capabilities → scope → confirm.',
+    route:'#/integrations/teams',
+    target:'.btn-primary',
+    pulse:true
+  },
+  {
+    title:'That\'s the tour',
+    body:'You\'ve seen the core model. Explore freely now — every card is clickable, every filter is live. Full documentation at <code>/docs/DEMO.md</code> in the repo. Welcome to AIMS-OS Integrations.',
+    route:'#/integrations'
+  }
+];
+
+let tourState = { active:false, stepIndex:0 };
+
+function startTour() {
+  tourState = { active:true, stepIndex:0 };
+  try { localStorage.setItem('aims-tour-seen','1'); } catch(e){}
+  $('tourTrigger').classList.add('tour-active');
+  $('tourOverlay').classList.add('active');
+  paintTourStep();
+}
+
+function endTour() {
+  tourState.active = false;
+  $('tourTrigger').classList.remove('tour-active');
+  $('tourTrigger').classList.add('seen');
+  $('tourOverlay').classList.remove('active');
+  $('tourSpotlight').classList.remove('active');
+  $('tourPopover').classList.remove('active');
+}
+
+function tourNext() {
+  if (tourState.stepIndex >= TOUR_STEPS.length - 1) { endTour(); return; }
+  tourState.stepIndex++;
+  paintTourStep();
+}
+
+function tourPrev() {
+  if (tourState.stepIndex <= 0) return;
+  tourState.stepIndex--;
+  paintTourStep();
+}
+
+function paintTourStep() {
+  if (!tourState.active) return;
+  const step = TOUR_STEPS[tourState.stepIndex];
+  const isFirst = tourState.stepIndex === 0;
+  const isLast = tourState.stepIndex === TOUR_STEPS.length - 1;
+
+  // Navigate route if needed
+  if (step.route && location.hash !== step.route) {
+    location.hash = step.route;
+  }
+  // Set detail tab if needed (after route)
+  if (step.detailTab) {
+    setTimeout(() => {
+      const slug = location.hash.split('/')[2];
+      if (slug) setDetailTab(slug, step.detailTab);
+    }, 100);
+  }
+
+  // Wait for route to render, then position spotlight + popover
+  setTimeout(() => {
+    const popover = $('tourPopover');
+    const spotlight = $('tourSpotlight');
+
+    // Render popover content
+    popover.innerHTML = `
+      <div class="tour-popover-header">
+        <span class="tour-popover-step">Step ${tourState.stepIndex+1} of ${TOUR_STEPS.length}</span>
+        <button class="tour-popover-skip" onclick="endTour()">Skip tour</button>
+      </div>
+      <div class="tour-popover-title">${step.title}</div>
+      <div class="tour-popover-body">${step.body}</div>
+      <div class="tour-popover-footer">
+        <div class="tour-progress">
+          ${TOUR_STEPS.map((_, i) => `<div class="tour-progress-dot ${i===tourState.stepIndex?'current':i<tourState.stepIndex?'done':''}"></div>`).join('')}
+        </div>
+        ${!isFirst ? `<button class="tour-btn tour-btn-prev" onclick="tourPrev()">← Back</button>` : ''}
+        <button class="tour-btn tour-btn-next" onclick="${isLast?'endTour()':'tourNext()'}">${isLast?'Finish':'Next →'}</button>
+      </div>
+    `;
+
+    // Position spotlight on target (if specified)
+    if (step.target) {
+      const targetEl = document.querySelector(step.target);
+      if (targetEl) {
+        if (step.scrollToTarget) {
+          targetEl.scrollIntoView({ behavior:'smooth', block:'center' });
+        }
+        setTimeout(() => {
+          const rect = targetEl.getBoundingClientRect();
+          const pad = 8;
+          spotlight.style.left = (rect.left - pad) + 'px';
+          spotlight.style.top  = (rect.top - pad) + 'px';
+          spotlight.style.width  = (rect.width + pad*2) + 'px';
+          spotlight.style.height = (rect.height + pad*2) + 'px';
+          spotlight.classList.add('active');
+
+          // Position popover — prefer below target, fall back to right/above
+          const popoverWidth = 360;
+          const popoverHeight = popover.offsetHeight || 280;
+          const margin = 16;
+          let popLeft, popTop;
+          // Try below
+          if (rect.bottom + popoverHeight + margin < window.innerHeight) {
+            popTop = rect.bottom + 16;
+            popLeft = Math.min(Math.max(rect.left, 16), window.innerWidth - popoverWidth - 16);
+          } else if (rect.top - popoverHeight - margin > 0) {
+            // Above
+            popTop = rect.top - popoverHeight - 16;
+            popLeft = Math.min(Math.max(rect.left, 16), window.innerWidth - popoverWidth - 16);
+          } else {
+            // Center on screen
+            popTop = (window.innerHeight - popoverHeight) / 2;
+            popLeft = (window.innerWidth - popoverWidth) / 2;
+          }
+          popover.style.left = popLeft + 'px';
+          popover.style.top  = popTop + 'px';
+          popover.classList.add('active');
+        }, step.scrollToTarget ? 350 : 50);
+      } else {
+        // Target not found — center the popover
+        spotlight.classList.remove('active');
+        popover.style.left = ((window.innerWidth - 360) / 2) + 'px';
+        popover.style.top  = ((window.innerHeight - 280) / 2) + 'px';
+        popover.classList.add('active');
+      }
+    } else {
+      // No target — center on screen
+      spotlight.classList.remove('active');
+      popover.style.left = ((window.innerWidth - 360) / 2) + 'px';
+      popover.style.top  = ((window.innerHeight - 280) / 2) + 'px';
+      popover.classList.add('active');
+    }
+  }, step.route ? 250 : 50);
+}
+
+// Keyboard nav
+document.addEventListener('keydown', (e) => {
+  if (!tourState.active) return;
+  if (e.key === 'Escape') endTour();
+  else if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); tourNext(); }
+  else if (e.key === 'ArrowLeft') { e.preventDefault(); tourPrev(); }
+});
+
+// Mark trigger as 'seen' on load if user has already taken the tour
+(function markTourSeen(){
+  try {
+    if (localStorage.getItem('aims-tour-seen')) {
+      const btn = $('tourTrigger');
+      if (btn) btn.classList.add('seen');
+    }
+  } catch(e){}
+})();
 
 /* ====================== THEME TOGGLE ====================== */
 
