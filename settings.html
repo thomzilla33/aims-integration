@@ -5747,11 +5747,21 @@ function paintTourStep() {
       const targetEl = document.querySelector(step.target);
       if (targetEl) {
         if (step.scrollToTarget) {
-          targetEl.scrollIntoView({ behavior:'smooth', block:'center' });
+          // Custom scroll: place target just below sticky topbar (60px) + a comfortable gap
+          const scrollContainer = document.querySelector('.content');
+          const targetRect = targetEl.getBoundingClientRect();
+          const TOPBAR_OFFSET = 80;
+          if (scrollContainer) {
+            const containerTop = scrollContainer.getBoundingClientRect().top;
+            const scrollDelta = targetRect.top - containerTop - TOPBAR_OFFSET;
+            scrollContainer.scrollBy({ top: scrollDelta, behavior: 'smooth' });
+          } else {
+            targetEl.scrollIntoView({ behavior:'smooth', block:'start' });
+          }
         }
         setTimeout(() => {
           const rect = targetEl.getBoundingClientRect();
-          const pad = 8;
+          const pad = 6;
           spotlight.style.left = (rect.left - pad) + 'px';
           spotlight.style.top  = (rect.top - pad) + 'px';
           spotlight.style.width  = (rect.width + pad*2) + 'px';
