@@ -38,9 +38,12 @@ Then open `http://localhost:5500/`.
 7. **Personal Integrations** — sidebar item. Same UI scoped to personal connections.
 8. **AI Assistant** — `✨ Ask AI` button on any integration detail. Streaming responses with contextual answers per integration, suggested prompts, and follow-up suggestions.
 
-## Design spec
+## Documentation
 
-The product decisions, IA, and visual system are documented in [`docs/spec.md`](docs/spec.md).
+| Document | Purpose |
+|---|---|
+| **[`docs/DEMO.md`](docs/DEMO.md)** | **Demo walkthrough** — mental model, navigation paths, lifecycle, brief coverage, demo script. Start here. |
+| [`docs/spec.md`](docs/spec.md) | Design spec — product decisions, IA, and visual system rationale. |
 
 ## Stack
 
