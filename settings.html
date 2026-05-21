@@ -992,28 +992,25 @@ body{
 .active-strip-text{flex:1; min-width:0}
 .active-strip-title{font-size:13px; font-weight:700; color:var(--t1); margin-bottom:2px; display:flex; align-items:center; gap:8px}
 .active-strip-sub{font-size:12px; color:var(--t2)}
-.active-strip-avatars{display:flex; align-items:center; flex-shrink:0}
+.active-strip-avatars{display:flex; align-items:center; gap:6px; flex-shrink:0}
 .active-avatar{
-  position:relative; cursor:pointer; transition:transform .12s, z-index 0s .15s;
-  margin-left:-8px; z-index:1;
+  position:relative; cursor:pointer; transition:transform .12s;
 }
-.active-avatar:first-child{margin-left:0}
-.active-avatar:hover{transform:translateY(-2px); z-index:10; transition:transform .12s, z-index 0s 0s}
-.active-avatar .logo{border:2px solid var(--bg)}
+.active-avatar:hover{transform:translateY(-2px)}
+.active-avatar .logo{border:1px solid var(--line)}
 .active-dot{
   position:absolute; bottom:-1px; right:-1px;
-  width:10px; height:10px; border-radius:50%;
+  width:9px; height:9px; border-radius:50%;
   border:2px solid var(--bg);
 }
 .active-dot.health-healthy{background:var(--green)}
 .active-dot.health-degraded{background:var(--amber)}
 .active-dot.health-failed{background:var(--red)}
 .active-more{
-  width:32px; height:32px; border-radius:var(--r8);
-  background:var(--hover); border:2px solid var(--bg);
-  color:var(--t1); font-size:11px; font-weight:700;
+  height:32px; padding:0 10px; border-radius:var(--r8);
+  background:var(--hover); border:1px solid var(--line);
+  color:var(--t2); font-size:11px; font-weight:600;
   display:flex; align-items:center; justify-content:center;
-  margin-left:-8px; z-index:0;
 }
 .active-strip-cta{flex-shrink:0}
 
@@ -3415,14 +3412,14 @@ function renderHome() {
           <div class="active-strip-sub">${connected.length} integrations connected · last update ${escapeHtml(connected[0].lastRun||'—')}</div>
         </div>
         <div class="active-strip-avatars">
-          ${connected.slice(0,7).map(i => `
+          ${connected.slice(0,5).map(i => `
             <div class="active-avatar" title="${escapeHtml(i.name)} · ${i.health}" onclick="navigate('#/integrations/${i.slug}')">
               ${logo(i, 'active')}
               <span class="active-dot health-${i.health}"></span>
               ${activeStudioDotsHTML(i)}
             </div>
           `).join('')}
-          ${connected.length>7 ? `<div class="active-more">+${connected.length-7}</div>` : ''}
+          ${connected.length>5 ? `<div class="active-more">+${connected.length-5} more</div>` : ''}
         </div>
         <button class="btn btn-ghost btn-sm active-strip-cta" onclick="scrollToCatalog()">View all</button>
       </div>
