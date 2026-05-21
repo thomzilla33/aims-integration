@@ -1243,18 +1243,7 @@ body{
 .used-in-metric{font-size:11px; color:var(--t2); margin-top:1px}
 .used-in-detail{font-size:10px; color:var(--t3); margin-top:1px}
 
-/* Active strip — corner dots on avatars */
-.active-avatar-dots{
-  position:absolute; bottom:-3px; right:-3px;
-  display:flex; gap:2px;
-}
-.active-studio-dot{
-  width:6px; height:6px; border-radius:50%;
-  border:1.5px solid var(--bg);
-}
-.active-studio-dot.studio-gov{background:var(--green)}
-.active-studio-dot.studio-ag{background:var(--purple)}
-.active-studio-dot.studio-wf{background:var(--accent)}
+/* Active strip — studio dots removed; studio info now lives in card chips + detail's Used-in section */
 
 /* ── Role/Group picker popover ── */
 .rp-overlay{
@@ -3281,15 +3270,6 @@ function governanceLayersHTML(integration) {
   `;
 }
 
-function activeStudioDotsHTML(integration) {
-  const studios = ['governance','agentic','workforce'];
-  const activeStudios = studios.filter(s => getStudioState(integration, s) === 'active');
-  if (activeStudios.length === 0) return '';
-  return `<div class="active-avatar-dots">${activeStudios.map(s => {
-    const meta = STUDIO_META[s];
-    return `<span class="active-studio-dot studio-${meta.cls}" title="${escapeHtml(meta.label)}"></span>`;
-  }).join('')}</div>`;
-}
 
 /* ====================== ROUTER ====================== */
 
@@ -3412,13 +3392,16 @@ function renderHome() {
           <div class="active-strip-sub">${connected.length} integrations connected · last update ${escapeHtml(connected[0].lastRun||'—')}</div>
         </div>
         <div class="active-strip-avatars">
-          ${connected.slice(0,5).map(i => `
-            <div class="active-avatar" title="${escapeHtml(i.name)} · ${i.health}" onclick="navigate('#/integrations/${i.slug}')">
-              ${logo(i, 'active')}
-              <span class="active-dot health-${i.health}"></span>
-              ${activeStudioDotsHTML(i)}
-            </div>
-          `).join('')}
+          ${connected.slice(0,5).map(i => {
+            const studios = ['governance','agentic','workforce'].filter(s => getStudioState(i, s) === 'active').map(s => STUDIO_META[s].label);
+            const tooltip = `${i.name} · ${i.health}${studios.length ? '\nActive in: '+studios.join(', ') : ''}`;
+            return `
+              <div class="active-avatar" title="${escapeHtml(tooltip)}" onclick="navigate('#/integrations/${i.slug}')">
+                ${logo(i, 'active')}
+                <span class="active-dot health-${i.health}"></span>
+              </div>
+            `;
+          }).join('')}
           ${connected.length>5 ? `<div class="active-more">+${connected.length-5} more</div>` : ''}
         </div>
         <button class="btn btn-ghost btn-sm active-strip-cta" onclick="scrollToCatalog()">View all</button>
