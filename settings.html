@@ -2153,6 +2153,13 @@ const INTEGRATIONS = [
   { slug:'slack', name:'Slack', vendor:'Slack Technologies', category:'communication', color:'#4A154B',
     desc:'Send messages, read channels, manage members and react to events.',
     capabilities:['tools','triggers','channels'], authMethods:['oauth','apikey'], source:'official',
+    multiTenant:true,
+    useCases:[
+      'Route agent escalations to the right team channel — sales lands in #ai-sales, ops in #ai-ops, with full thread context preserved.',
+      'Let agents answer questions in-thread when they\'re @-mentioned, with the rest of the team watching the reasoning live.',
+      'Build a Slack-first inbox for your Workforce: every external email, ticket, or call summary lands as a Slack thread that an agent can triage.',
+      'Wake up an Agentic Network on critical alerts — message in #pagerduty triggers the on-call workflow with all context loaded.'
+    ],
     connected:true, health:'healthy', lastRun:'2 min ago', errors24h:0,
     connectedBy:{name:'María González',initials:'MG'}, connectedAt:'3 days ago',
     studios:{governance:false,agentic:true,workforce:true}, allowPersonal:true,
@@ -2173,7 +2180,8 @@ const INTEGRATIONS = [
   },
   { slug:'teams', name:'Microsoft Teams', vendor:'Microsoft', category:'communication', color:'#5059C9',
     desc:'Post to Teams channels, manage chats and meetings.',
-    capabilities:['tools','channels'], authMethods:['oauth'], source:'official', connected:false
+    capabilities:['tools','channels'], authMethods:['oauth'], source:'official', connected:false,
+    multiTenant:true
   },
   { slug:'email', name:'Email (SMTP/IMAP)', vendor:'AIMS-OS', category:'communication', color:'#2B7FFF',
     desc:'Send and receive emails through SMTP and IMAP providers.',
@@ -2264,6 +2272,13 @@ const INTEGRATIONS = [
   { slug:'snowflake', name:'Snowflake', vendor:'Snowflake Inc.', category:'data', color:'#29B5E8',
     desc:'Query Snowflake warehouses; use tables as knowledge sources.',
     capabilities:['knowledge','tools'], authMethods:['oauth','apikey','service'], source:'official',
+    multiTenant:false,
+    useCases:[
+      'Give agents direct SQL access to your data warehouse — let them answer "show me last quarter\'s churn by segment" without writing custom backends.',
+      'Index your business-critical tables (customers, orders, contracts) as a Governance Knowledge Pack. Agents reason over them with role-based row-level security preserved.',
+      'Wire a workflow that runs every morning: query Snowflake for SLA violations, post them to Slack, escalate the top 3 to ops via Zendesk.',
+      'Power live dashboards inside Comm Hub — agents answer "what\'s our cash position right now" with real Snowflake numbers, not stale screenshots.'
+    ],
     connected:true, health:'healthy', lastRun:'4 min ago', errors24h:0,
     connectedBy:{name:'María González',initials:'MG'}, connectedAt:'3 weeks ago',
     studios:{governance:true,agentic:true,workforce:false}, allowPersonal:false,
@@ -2315,6 +2330,7 @@ const INTEGRATIONS = [
   { slug:'github', name:'GitHub', vendor:'GitHub Inc.', category:'dev', color:'#181717',
     desc:'Repos, issues, PRs and Actions — full development context.',
     capabilities:['tools','triggers','knowledge'], authMethods:['oauth','apikey'], source:'official',
+    multiTenant:false,
     connected:true, health:'healthy', lastRun:'1 min ago', errors24h:0,
     connectedBy:{name:'Thomas González',initials:'TG'}, connectedAt:'4 months ago',
     studios:{governance:true,agentic:true,workforce:false}, allowPersonal:true,
@@ -2932,10 +2948,15 @@ function mktCardHTML(i) {
                i.source==='partner' ? '<span class="mkt-card-flag partner">Partner</span>' : '';
 
   const instCount = instancesOf(i.slug).length;
+  // Compute total invocations from STUDIO_USAGE (engineering brief §13.5 — counting usage)
+  const usage = STUDIO_USAGE[i.slug];
+  const totalCalls = usage ? Object.values(usage).reduce((sum, u) => sum + (u.count || 0), 0) : 0;
   const stateLine = i.connected
     ? (instCount > 1
-        ? `<span class="inst-count" title="${instCount} instances of this provider"><span class="inst-count-dot"></span>${instCount} instances</span>`
-        : `<span class="mkt-card-state ${i.health||'healthy'}"><svg width="8" height="8" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="currentColor"/></svg>${i.health==='healthy'?'Connected':i.health==='degraded'?'Degraded':'Failed'}</span>`)
+        ? `<span class="inst-count" title="${instCount} instances of this provider"><span class="inst-count-dot"></span>${instCount} instances${totalCalls>0?` · ${totalCalls.toLocaleString()} calls/day`:''}</span>`
+        : (totalCalls > 0
+            ? `<span class="mkt-card-state ${i.health||'healthy'}"><svg width="8" height="8" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="currentColor"/></svg>${totalCalls.toLocaleString()} calls/day</span>`
+            : `<span class="mkt-card-state ${i.health||'healthy'}"><svg width="8" height="8" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="currentColor"/></svg>${i.health==='healthy'?'Connected':i.health==='degraded'?'Degraded':'Failed'}</span>`))
     : `<button class="mkt-card-cta" onclick="event.stopPropagation();openConnect('${i.slug}')">Connect</button>`;
 
   const verified = i.source==='official' ? '<span class="mkt-card-verified" title="Official AIMS-OS integration"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 0.8l1.7 1.7 2.4-.4.8 2.3 2.3.8-.4 2.4L16.3 9.2l-1.7 1.7.4 2.4-2.3.8-.8 2.3-2.4-.4L8 16.7l-1.7-1.7-2.4.4-.8-2.3-2.3-.8.4-2.4L-.3 8.2l1.7-1.7-.4-2.4 2.3-.8.8-2.3 2.4.4L8 .8z" fill="#2B7FFF"/><path d="M5.3 8.2l2 2 3.4-3.6" stroke="#fff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>' : '';
