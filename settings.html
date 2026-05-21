@@ -1259,6 +1259,164 @@ body{
 .active-studio-dot.studio-ag{background:var(--purple)}
 .active-studio-dot.studio-wf{background:var(--accent)}
 
+/* ── Role/Group picker popover ── */
+.rp-overlay{
+  position:fixed; inset:0; z-index:90;
+  pointer-events:none;
+}
+.rp-overlay.open{pointer-events:auto}
+.role-picker{
+  position:fixed; z-index:95;
+  width:340px; max-width:calc(100vw - 24px);
+  background:linear-gradient(180deg, rgba(20,28,48,0.98) 0%, rgba(13,19,35,0.98) 100%);
+  border:1px solid var(--line-strong);
+  border-radius:var(--r12);
+  backdrop-filter:blur(24px) saturate(1.8);
+  box-shadow:0 12px 48px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.04);
+  display:none; flex-direction:column;
+  opacity:0; transform:translateY(-6px) scale(.98);
+  transition:opacity .14s ease-out, transform .14s cubic-bezier(.34,1.56,.64,1);
+}
+.role-picker.open{display:flex; opacity:1; transform:translateY(0) scale(1)}
+.role-picker::before{
+  content:''; position:absolute; top:-5px; left:24px;
+  width:10px; height:10px; background:inherit;
+  border-left:1px solid var(--line-strong); border-top:1px solid var(--line-strong);
+  transform:rotate(45deg);
+}
+.rp-header{
+  display:flex; align-items:center; gap:10px;
+  padding:14px 14px 10px;
+}
+.rp-header-title{
+  flex:1; font-size:13px; font-weight:700; color:var(--t1);
+  line-height:1.3;
+}
+.rp-header-sub{font-size:10.5px; color:var(--t3); font-weight:500; margin-top:1px}
+.rp-close{
+  width:22px; height:22px; border-radius:var(--r6);
+  background:transparent; border:none; color:var(--t2);
+  cursor:pointer; font-size:16px;
+  display:flex; align-items:center; justify-content:center;
+}
+.rp-close:hover{background:var(--hover); color:var(--t1)}
+
+.rp-search{position:relative; padding:0 14px 10px}
+.rp-search input{
+  width:100%; height:32px;
+  background:rgba(255,255,255,0.04); border:1px solid var(--line);
+  border-radius:8px; padding:0 12px 0 30px;
+  color:var(--t1); font-size:12px; font-family:inherit; outline:none;
+  transition:border-color .14s, background .14s;
+}
+.rp-search input::placeholder{color:var(--t3)}
+.rp-search input:focus{
+  border-color:rgba(43,127,255,0.4);
+  background:rgba(43,127,255,0.05);
+}
+.rp-search-ico{
+  position:absolute; left:24px; top:50%; transform:translateY(-50%);
+  color:var(--t3); pointer-events:none;
+}
+
+.rp-body{
+  flex:1; overflow-y:auto; max-height:340px;
+  padding:0 8px 8px;
+}
+.rp-body::-webkit-scrollbar{width:5px}
+.rp-body::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08); border-radius:3px}
+
+.rp-section{padding:8px 6px 4px}
+.rp-section-label{
+  display:flex; align-items:center; gap:6px;
+  font-size:9.5px; font-weight:700; letter-spacing:.08em;
+  text-transform:uppercase; color:var(--t3);
+  padding:0 4px 4px;
+}
+.rp-section-label .rp-section-count{
+  font-size:9px; padding:1px 5px; border-radius:8px;
+  background:var(--hover); color:var(--t3); font-weight:600;
+  letter-spacing:.02em;
+}
+
+.rp-item{
+  display:flex; align-items:center; gap:10px;
+  padding:7px 8px; border-radius:var(--r6);
+  cursor:pointer; transition:background .12s;
+  position:relative;
+}
+.rp-item:hover:not(.added){background:rgba(255,255,255,0.04)}
+.rp-item.added{opacity:.45; cursor:default}
+.rp-item.added::after{
+  content:'Already added'; position:absolute; right:8px; top:50%; transform:translateY(-50%);
+  font-size:9.5px; color:var(--green); font-weight:600;
+}
+.rp-item.selected{background:rgba(43,127,255,0.08)}
+.rp-checkbox{
+  width:14px; height:14px; border-radius:4px;
+  border:1px solid var(--line-strong); background:var(--hover);
+  flex-shrink:0; display:flex; align-items:center; justify-content:center;
+  transition:.12s; color:#fff; font-size:10px; font-weight:700;
+}
+.rp-item.selected .rp-checkbox{background:var(--accent); border-color:var(--accent)}
+.rp-item.added .rp-checkbox{
+  background:rgba(5,223,114,0.15); border-color:rgba(5,223,114,0.30);
+  color:var(--green);
+}
+.rp-item-text{flex:1; min-width:0}
+.rp-item-label{
+  font-size:12.5px; font-weight:500; color:var(--t1);
+  display:flex; align-items:center; gap:6px;
+}
+.rp-item-meta{
+  font-size:10.5px; color:var(--t3); margin-top:1px;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.rp-item-count{
+  font-size:10px; color:var(--t2); flex-shrink:0;
+  background:var(--hover); padding:1.5px 6px; border-radius:8px;
+  border:1px solid var(--line); font-weight:500;
+}
+
+.rp-all-members{
+  background:linear-gradient(135deg, rgba(253,199,0,0.04) 0%, rgba(253,199,0,0.02) 100%);
+  border:1px solid rgba(253,199,0,0.22);
+}
+.rp-all-members .rp-item-label{color:var(--amber)}
+.rp-all-members:hover:not(.added){background:rgba(253,199,0,0.08)}
+.rp-warn-chip{
+  display:inline-flex; align-items:center; gap:3px;
+  font-size:9px; font-weight:700; padding:1px 5px; border-radius:8px;
+  background:rgba(253,199,0,0.12); color:var(--amber);
+  border:1px solid rgba(253,199,0,0.22); letter-spacing:.04em;
+  text-transform:uppercase;
+}
+
+.rp-empty{
+  padding:20px; text-align:center; color:var(--t3); font-size:11.5px;
+}
+
+.rp-footer{
+  display:flex; align-items:center; justify-content:space-between; gap:8px;
+  padding:10px 14px; border-top:1px solid var(--line);
+  background:rgba(0,0,0,0.20);
+  border-radius:0 0 var(--r12) var(--r12);
+}
+.rp-create-link{
+  font-size:11.5px; color:var(--cyan); text-decoration:none; font-weight:500;
+  display:inline-flex; align-items:center; gap:4px;
+}
+.rp-create-link:hover{text-decoration:underline}
+.rp-commit{
+  padding:6px 13px; font-size:12px; font-weight:600;
+  background:var(--grad); color:#fff; border:none;
+  border-radius:var(--r6); cursor:pointer; font-family:inherit;
+  transition:opacity .12s, transform .1s;
+  box-shadow:0 2px 8px rgba(21,93,252,0.30);
+}
+.rp-commit:hover:not(:disabled){transform:translateY(-1px)}
+.rp-commit:disabled{opacity:.35; cursor:not-allowed; box-shadow:none}
+
 /* ── Provider + Instances UX ── */
 
 /* Instance count badge on cards */
@@ -1939,6 +2097,10 @@ body{
 <div class="drawer-overlay" id="helixOverlay" onclick="closeHelix()"></div>
 <aside class="drawer" id="helixDrawer"></aside>
 
+<!-- Role/Group picker popover -->
+<div class="rp-overlay" id="rpOverlay" onclick="closeRolePicker()"></div>
+<div class="role-picker" id="rolePicker" onclick="event.stopPropagation()"></div>
+
 <!-- Toasts -->
 <div class="toast-container" id="toasts"></div>
 
@@ -2123,6 +2285,35 @@ const STUDIO_USAGE = {
   datadog: { agentic:{count:2, unit:'triggers/day', detail:'1 agent'}, workforce:{count:1, unit:'channels', detail:'1 route'} },
   'internal-billing': { agentic:{count:4, unit:'calls/day', detail:'1 agent'} }
 };
+
+// Studio roles (workspace-defined, scoped per studio)
+const STUDIO_ROLES = {
+  governance: [
+    { id:'gov-knowledge-curators', label:'Knowledge Curators', members:8,  desc:'Maintain truth planes and approve sources' },
+    { id:'gov-truth-plane-admins', label:'Truth Plane Admins', members:3,  desc:'Configure governance policies and audit' },
+    { id:'gov-readers',            label:'Readers',            members:24, desc:'Read-only access to knowledge packs' }
+  ],
+  agentic: [
+    { id:'ag-agent-builders',      label:'Agent Builders',      members:12, desc:'Create and configure agents' },
+    { id:'ag-workflow-admins',     label:'Workflow Admins',     members:4,  desc:'Deploy and version agentic networks' },
+    { id:'ag-network-architects',  label:'Network Architects',  members:6,  desc:'Design multi-agent topologies' },
+    { id:'ag-test-runners',        label:'Test Runners',        members:9,  desc:'Run agent eval suites' }
+  ],
+  workforce: [
+    { id:'wf-channel-admins', label:'Channel Admins',   members:5,  desc:'Manage channels, routing, escalation' },
+    { id:'wf-supervisors',    label:'Supervisors',      members:7,  desc:'Monitor and intervene in live sessions' },
+    { id:'wf-agents',         label:'Customer Agents',  members:18, desc:'Handle conversations end-to-end' }
+  ]
+};
+
+// Workspace-wide groups/teams (cross-studio)
+const WORKSPACE_GROUPS = [
+  { id:'sales-pod',          label:'Sales Pod',         members:11 },
+  { id:'engineering',        label:'Engineering',       members:23 },
+  { id:'ai-research',        label:'AI Research',       members:5  },
+  { id:'customer-success',   label:'Customer Success',  members:14 },
+  { id:'leadership',         label:'Leadership Team',   members:6  }
+];
 
 // Vendor metadata (engineering brief §2) — a vendor owns multiple providers
 const VENDORS = {
@@ -3487,7 +3678,7 @@ function detailPermissions(i) {
                 <div class="studio-roles-label">Who can use it</div>
                 <div class="studio-roles">
                   ${roles.length===0 ? '<span style="font-size:11px;color:var(--t3)">All members of this studio</span>' : roles.map(r=>`<span class="role-chip">${escapeHtml(r)}</span>`).join('')}
-                  <button class="role-add" onclick="toast('Role/group selector opened')">+ Add role</button>
+                  <button class="role-add" onclick="openRolePicker('${i.slug}','${k}',event)">+ Add role</button>
                 </div>
               ` : '<div style="font-size:11px;color:var(--t3);margin-top:4px">Enable the toggle to scope to specific roles</div>'}
             </div>
@@ -4705,6 +4896,169 @@ function aiRender(text) {
   html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
   return html;
 }
+
+/* ====================== ROLE / GROUP PICKER ====================== */
+
+let rolePickerState = { open:false, slug:null, studio:null, search:'', selected:new Set() };
+
+function openRolePicker(slug, studio, ev) {
+  ev?.stopPropagation();
+  const btn = ev?.currentTarget;
+  rolePickerState = { open:true, slug, studio, search:'', selected:new Set() };
+
+  const rect = btn ? btn.getBoundingClientRect() : { left: 100, top: 200, bottom: 220 };
+  const popover = $('rolePicker');
+
+  paintRolePicker();
+
+  // Position: below the button, aligned to left edge
+  let left = rect.left;
+  let top = rect.bottom + 8;
+  // If popover goes off right edge, shift left
+  if (left + 340 > window.innerWidth - 12) left = window.innerWidth - 340 - 12;
+  // If popover goes off bottom, position above the button
+  if (top + 380 > window.innerHeight - 12) top = rect.top - 380 - 8;
+  popover.style.left = Math.max(12, left) + 'px';
+  popover.style.top  = Math.max(12, top) + 'px';
+
+  $('rpOverlay').classList.add('open');
+  popover.classList.add('open');
+  setTimeout(() => { document.querySelector('.rp-search input')?.focus(); }, 100);
+}
+
+function closeRolePicker() {
+  rolePickerState.open = false;
+  $('rpOverlay').classList.remove('open');
+  $('rolePicker').classList.remove('open');
+}
+
+function paintRolePicker() {
+  const s = rolePickerState; if (!s.open) return;
+  const i = findIntegration(s.slug); if (!i) return;
+  const studioMeta = STUDIO_META[s.studio];
+  const rolesKey = 'roles' + (s.studio==='governance'?'Gov':s.studio==='agentic'?'Ag':'Wf');
+  const existingRoles = i[rolesKey] || [];
+
+  const q = (s.search||'').toLowerCase();
+  const filterFn = (item) => !q || item.label.toLowerCase().includes(q) || (item.desc||'').toLowerCase().includes(q);
+
+  const studioRoles = (STUDIO_ROLES[s.studio]||[]).filter(filterFn);
+  const groups = WORKSPACE_GROUPS.filter(filterFn);
+  const allMembersCount = (studioRoles.reduce((a,b)=>a+(b.members||0),0)) || 47;
+  const showAllMembers = !q || 'all members'.includes(q);
+
+  // Count total members in current selection (to compute warning)
+  const selectedExpansion = [...s.selected].reduce((sum, sel) => {
+    const r = (STUDIO_ROLES[s.studio]||[]).find(x=>x.label===sel) || WORKSPACE_GROUPS.find(x=>x.label===sel);
+    return sum + (r?.members||0);
+  }, 0);
+  const showWarning = selectedExpansion > 15;
+
+  const renderItem = (item, kind) => {
+    const added = existingRoles.includes(item.label);
+    const selected = s.selected.has(item.label);
+    return `
+      <div class="rp-item ${added?'added':''} ${selected?'selected':''}" ${added?'':`onclick="toggleRolePickerItem('${item.label.replace(/'/g,"\\'")}')"`}>
+        <div class="rp-checkbox">${added?'✓':selected?'✓':''}</div>
+        <div class="rp-item-text">
+          <div class="rp-item-label">${escapeHtml(item.label)}${kind==='group'?'<span style="font-size:10px;color:var(--t3);font-weight:500">· Group</span>':''}</div>
+          ${item.desc ? `<div class="rp-item-meta">${escapeHtml(item.desc)}</div>` : ''}
+        </div>
+        <span class="rp-item-count">${item.members} ${item.members===1?'person':'people'}</span>
+      </div>
+    `;
+  };
+
+  $('rolePicker').innerHTML = `
+    <div class="rp-header">
+      <div style="flex:1;min-width:0">
+        <div class="rp-header-title">Add role or group to ${escapeHtml(studioMeta.label)}</div>
+        <div class="rp-header-sub">Only roles defined in this studio · Groups span the workspace</div>
+      </div>
+      <button class="rp-close" onclick="closeRolePicker()" aria-label="Close">×</button>
+    </div>
+
+    <div class="rp-search">
+      <svg class="rp-search-ico" width="12" height="12" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4" stroke="currentColor" stroke-width="1.3"/><path d="M9.5 9.5L12 12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      <input type="text" placeholder="Search roles, groups, teams…" value="${escapeHtml(s.search)}" oninput="rolePickerState.search=this.value;paintRolePicker();setTimeout(()=>document.querySelector('.rp-search input')?.focus(),0)"/>
+    </div>
+
+    <div class="rp-body">
+      ${showAllMembers ? `
+        <div class="rp-section">
+          <div class="rp-section-label">All members <span class="rp-section-count">Permissive</span></div>
+          ${(()=>{
+            const allLabel = `All ${studioMeta.label} members`;
+            const added = existingRoles.includes(allLabel);
+            const selected = s.selected.has(allLabel);
+            return `
+              <div class="rp-item rp-all-members ${added?'added':''} ${selected?'selected':''}" ${added?'':`onclick="toggleRolePickerItem('${allLabel.replace(/'/g,"\\'")}')"`}>
+                <div class="rp-checkbox">${added?'✓':selected?'✓':''}</div>
+                <div class="rp-item-text">
+                  <div class="rp-item-label">All ${escapeHtml(studioMeta.label)} members <span class="rp-warn-chip">Broad</span></div>
+                  <div class="rp-item-meta">Anyone with access to this studio (no role restriction)</div>
+                </div>
+                <span class="rp-item-count">${allMembersCount} people</span>
+              </div>
+            `;
+          })()}
+        </div>
+      ` : ''}
+
+      ${studioRoles.length > 0 ? `
+        <div class="rp-section">
+          <div class="rp-section-label">${escapeHtml(studioMeta.label)} roles <span class="rp-section-count">${studioRoles.length}</span></div>
+          ${studioRoles.map(r => renderItem(r, 'role')).join('')}
+        </div>
+      ` : ''}
+
+      ${groups.length > 0 ? `
+        <div class="rp-section">
+          <div class="rp-section-label">Workspace groups <span class="rp-section-count">${groups.length}</span></div>
+          ${groups.map(g => renderItem(g, 'group')).join('')}
+        </div>
+      ` : ''}
+
+      ${studioRoles.length===0 && groups.length===0 && !showAllMembers ? `
+        <div class="rp-empty">
+          No matches for "${escapeHtml(q)}"<br>
+          <a class="rp-create-link" href="#" onclick="closeRolePicker();toast('Settings → Roles & Permissions','success');return false">Create a new role →</a>
+        </div>
+      ` : ''}
+    </div>
+
+    <div class="rp-footer">
+      <a class="rp-create-link" href="#" onclick="closeRolePicker();toast('Opens Settings → Roles & Permissions','success');return false">+ Create new role</a>
+      ${showWarning ? `<span class="rp-warn-chip" style="margin-left:auto;margin-right:8px" title="Significant expansion">⚠ ${selectedExpansion}+ people</span>` : ''}
+      <button class="rp-commit" ${s.selected.size===0?'disabled':''} onclick="commitRolePicker()">Add ${s.selected.size>0?s.selected.size:''}</button>
+    </div>
+  `;
+}
+
+function toggleRolePickerItem(label) {
+  if (rolePickerState.selected.has(label)) rolePickerState.selected.delete(label);
+  else rolePickerState.selected.add(label);
+  paintRolePicker();
+}
+
+function commitRolePicker() {
+  const s = rolePickerState; if (!s.open || s.selected.size===0) return;
+  const i = findIntegration(s.slug); if (!i) return;
+  const rolesKey = 'roles' + (s.studio==='governance'?'Gov':s.studio==='agentic'?'Ag':'Wf');
+  if (!i[rolesKey]) i[rolesKey] = [];
+  s.selected.forEach(label => {
+    if (!i[rolesKey].includes(label)) i[rolesKey].push(label);
+  });
+  const count = s.selected.size;
+  closeRolePicker();
+  toast(`Added ${count} ${count===1?'role':'roles'} to ${STUDIO_META[s.studio].label}`, 'success');
+  paintDetail(i);
+}
+
+// Close picker on Escape
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && rolePickerState.open) closeRolePicker();
+});
 
 /* ====================== HELIX DATA STUDIO HANDOFF ====================== */
 
