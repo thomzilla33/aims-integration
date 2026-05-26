@@ -5596,9 +5596,12 @@ function gateBannerHTML(i) {
 }
 
 // Route the gate action based on the status
+// needs_mapping / schema_drift hand off to Data Studio (cross-functional surface).
+// auth issues stay in Admin Studio (Connect wizard).
 function handleGateAction(slug, status) {
   if (status === 'needs_mapping' || status === 'schema_drift') {
-    openHelix(slug);
+    // Cross-link: open Data Studio at the connection detail (mapping tab is default)
+    window.location.href = 'data-studio.html#/connections/' + slug;
   } else if (status === 'auth_expired' || status === 'auth_failed') {
     openConnect(slug);
   } else {
@@ -8638,6 +8641,7 @@ function openHelix(slug, instId) {
     </div>
     <div class="drawer-foot">
       <button class="btn btn-ghost btn-sm" onclick="closeHelix()">Cancel</button>
+      <a class="btn btn-ghost btn-sm" href="data-studio.html#/connections/${slug}" style="text-decoration:none">Open full mapping in Data Studio →</a>
       <button class="btn btn-primary btn-sm" onclick="closeHelix();toast('Mapping activated · Data is now flowing into Helix','success');setTimeout(()=>{const i=findIntegration('${slug}');if(i){const inst=instancesOf('${slug}').find(x=>x.id==='${instId}');if(inst){inst.status='fully_configured';delete inst.note;route();}}},800)">Activate mapping</button>
     </div>
   `;
