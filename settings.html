@@ -431,6 +431,10 @@ html.persona-user [data-admin-only]{display:none !important}
 }
 .btn-primary{background:var(--grad); color:#fff; box-shadow:0 2px 10px rgba(21,93,252,0.3)}
 .btn-primary:hover{transform:translateY(-1px); box-shadow:0 4px 14px rgba(21,93,252,0.4)}
+/* Outline variant of primary: same emphasis level but visually paired with a sibling primary */
+.btn-primary.btn-outline{background:transparent; color:var(--cyan); border-color:rgba(6,182,212,0.45); box-shadow:none}
+.btn-primary.btn-outline:hover{background:rgba(6,182,212,0.08); border-color:rgba(6,182,212,0.65); transform:translateY(-1px); box-shadow:0 2px 8px rgba(6,182,212,0.15)}
+html.theme-light .btn-primary.btn-outline{color:var(--cyan); border-color:rgba(6,182,212,0.50)}
 .btn-ghost{background:var(--hover); color:var(--t1); border-color:var(--line)}
 .btn-ghost:hover{background:var(--hover-strong)}
 .btn-danger{background:rgba(239,68,68,0.10); color:var(--red); border-color:rgba(239,68,68,0.2)}
@@ -5129,8 +5133,8 @@ function homeTabStripHTML(connectedCount, currentTab) {
         <span class="home-tab-count">${INTEGRATIONS.length}</span>
       </button>
       <span style="flex:1"></span>
-      <a class="btn btn-ghost btn-sm" href="#/request" style="text-decoration:none">+ Request integration</a>
-      <a class="btn btn-ghost btn-sm" href="#/build" style="text-decoration:none">+ Build your own</a>
+      <a class="btn btn-primary btn-sm" href="#/request" style="text-decoration:none">+ Request integration</a>
+      <a class="btn btn-primary btn-outline btn-sm" href="#/build" style="text-decoration:none">+ Build your own</a>
     </div>
   `;
 }
