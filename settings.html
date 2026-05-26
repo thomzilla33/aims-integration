@@ -65,6 +65,55 @@ body{
 }
 .tb-context-chev{color:var(--t2); flex-shrink:0; transition:transform .15s}
 
+/* ── Mode toggle (Browse / Operate) — orchestration thesis ── */
+.tb-mode-toggle{
+  display:inline-flex; align-items:center; gap:2px; margin-left:8px;
+  padding:3px; height:34px;
+  background:rgba(255,255,255,0.04); border:1px solid var(--line); border-radius:9px;
+  flex-shrink:0;
+}
+.tb-mode-btn{
+  display:inline-flex; align-items:center; gap:6px; height:26px; padding:0 10px;
+  background:transparent; border:none; cursor:pointer;
+  color:var(--t2); font-family:inherit; font-size:12px; font-weight:600;
+  border-radius:6px; transition:background .15s, color .15s;
+  letter-spacing:.01em;
+}
+.tb-mode-btn:hover{color:var(--t1); background:var(--hover)}
+.tb-mode-btn.active{
+  background:var(--cyan); color:#001318;
+  box-shadow:0 1px 0 rgba(0,0,0,.18), 0 0 0 1px rgba(0,0,0,.08) inset;
+}
+.tb-mode-btn.active svg{color:#001318}
+.tb-mode-btn svg{color:currentColor}
+.tb-mode-badge{
+  display:inline-flex; align-items:center; justify-content:center;
+  min-width:16px; height:16px; padding:0 5px;
+  background:var(--amber); color:#1a0f00;
+  font-size:10px; font-weight:800; border-radius:8px; line-height:1;
+}
+.tb-mode-badge:empty{display:none}
+@media (max-width:780px){
+  .tb-mode-btn span:not(.tb-mode-badge){display:none}
+  .tb-mode-btn{padding:0 8px}
+}
+
+/* ── Persona pill (Admin / User view) ── */
+.tb-persona{
+  display:inline-flex; align-items:center; gap:6px; height:30px; padding:0 11px;
+  background:rgba(255,255,255,0.04); border:1px solid var(--line); border-radius:18px;
+  color:var(--t2); font-family:inherit; font-size:12px; font-weight:600;
+  cursor:pointer; transition:background .15s, color .15s, border-color .15s;
+  flex-shrink:0;
+}
+.tb-persona:hover{background:var(--hover); color:var(--t1); border-color:var(--line-strong)}
+.tb-persona-ic{color:currentColor; transition:transform .15s}
+.tb-persona.is-user{background:rgba(6,182,212,0.08); color:var(--cyan); border-color:rgba(6,182,212,0.3)}
+@media (max-width:900px){.tb-persona-label{display:none} .tb-persona{padding:0 8px}}
+
+/* Hide admin-only surfaces when persona=user */
+html.persona-user [data-admin-only]{display:none !important}
+
 .tb-search-btn{
   width:340px; flex-shrink:0; height:32px;
   background:var(--hover); border:1px solid var(--line);
@@ -1123,6 +1172,289 @@ body{
 .mkt-card-flag.new{background:rgba(5,223,114,0.12); color:var(--green); border:1px solid rgba(5,223,114,0.25)}
 .mkt-card-flag.partner{background:rgba(236,72,153,0.10); color:var(--pink); border:1px solid rgba(236,72,153,0.22)}
 .mkt-card-flag.private{background:rgba(167,139,250,0.10); color:var(--purple); border:1px solid rgba(167,139,250,0.22)}
+
+/* ── Status bucket chip (tier-1 indicator per orchestration thesis) ── */
+.mkt-card-status{
+  position:absolute; top:14px; right:14px;
+  display:inline-flex; align-items:center; gap:5px;
+  font-size:10px; font-weight:700; padding:3px 8px 3px 7px;
+  border-radius:20px; line-height:1;
+  letter-spacing:.01em; white-space:nowrap;
+  max-width:140px; overflow:hidden; text-overflow:ellipsis;
+}
+.mkt-card-status-dot{
+  width:6px; height:6px; border-radius:50%; flex-shrink:0;
+  background:currentColor; box-shadow:0 0 0 2px color-mix(in srgb, currentColor 18%, transparent);
+}
+.mkt-card-status.status-working{
+  background:rgba(5,223,114,0.10); color:var(--green); border:1px solid rgba(5,223,114,0.25);
+}
+.mkt-card-status.status-needs_attention{
+  background:rgba(253,199,0,0.10); color:var(--amber); border:1px solid rgba(253,199,0,0.28);
+}
+.mkt-card-status.status-needs_attention .mkt-card-status-dot{
+  animation:status-pulse 1.6s ease-in-out infinite;
+}
+@keyframes status-pulse{
+  0%,100%{box-shadow:0 0 0 2px color-mix(in srgb, currentColor 20%, transparent)}
+  50%{box-shadow:0 0 0 5px color-mix(in srgb, currentColor 4%, transparent)}
+}
+.mkt-card-status.status-inactive{
+  background:rgba(148,163,184,0.10); color:var(--t3); border:1px solid var(--line);
+}
+/* When both status chip and source flag exist, stack them */
+.mkt-card-status + .mkt-card-flag,
+.mkt-card-flag + .mkt-card-status{
+  top:38px;
+}
+.mkt-card-usage{
+  font-size:11px; color:var(--t3); font-weight:500;
+  display:inline-flex; align-items:center; gap:5px;
+}
+
+/* ──────────────────────────────────────────────────────────
+   OPERATE VIEW (orchestration thesis)
+   "Status of your data infrastructure" instead of "Here are integrations"
+   ────────────────────────────────────────────────────────── */
+.op-hero{
+  display:flex; gap:32px; align-items:center; justify-content:space-between;
+  padding:36px 32px 28px;
+  border-bottom:1px solid var(--line);
+}
+.op-hero-left{flex:1; min-width:0}
+.op-hero-eyebrow{
+  display:inline-flex; align-items:center; gap:10px; margin-bottom:14px;
+}
+.op-mode-tag{
+  display:inline-flex; align-items:center; gap:5px; height:22px; padding:0 9px;
+  background:rgba(6,182,212,0.10); color:var(--cyan);
+  border:1px solid rgba(6,182,212,0.28); border-radius:11px;
+  font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.06em;
+}
+.op-hero-sub{font-size:12px; color:var(--t3); font-weight:500}
+.op-hero-title{
+  font-size:30px; font-weight:800; color:var(--t1); margin-bottom:8px;
+  letter-spacing:-.02em; line-height:1.15;
+}
+.op-hero-desc{font-size:14px; color:var(--t2); line-height:1.55; max-width:580px}
+.op-hero-right{
+  display:flex; gap:24px; flex-shrink:0; padding-left:24px;
+  border-left:1px solid var(--line);
+}
+.op-kpi{text-align:right}
+.op-kpi-n{font-size:30px; font-weight:800; line-height:1; letter-spacing:-.02em}
+.op-kpi-l{font-size:11px; color:var(--t3); margin-top:5px; text-transform:uppercase; letter-spacing:.05em; font-weight:600}
+
+@media (max-width:860px){
+  .op-hero{flex-direction:column; align-items:flex-start; gap:20px}
+  .op-hero-right{border-left:none; padding-left:0; gap:18px}
+  .op-kpi{text-align:left}
+  .op-hero-title{font-size:22px}
+}
+
+/* Tabs */
+.op-tabs{
+  display:flex; align-items:center; gap:6px;
+  padding:14px 32px; border-bottom:1px solid var(--line);
+  background:var(--bg);
+  position:sticky; top:0; z-index:5;
+  backdrop-filter:blur(10px) saturate(140%); -webkit-backdrop-filter:blur(10px) saturate(140%);
+}
+.op-tab{
+  display:inline-flex; align-items:center; gap:8px; height:32px; padding:0 12px;
+  background:transparent; border:1px solid transparent;
+  color:var(--t2); font-family:inherit; font-size:13px; font-weight:600;
+  cursor:pointer; border-radius:8px; transition:background .15s, color .15s, border-color .15s;
+}
+.op-tab:hover{background:var(--hover); color:var(--t1)}
+.op-tab.active{background:var(--hover-strong); color:var(--t1); border-color:var(--line)}
+.op-tab-count{
+  display:inline-flex; align-items:center; justify-content:center;
+  min-width:22px; height:18px; padding:0 6px;
+  font-size:10px; font-weight:800; border-radius:9px; line-height:1;
+}
+.op-tab-count-warn{background:rgba(253,199,0,0.15); color:var(--amber)}
+.op-tab-count-ok{background:rgba(5,223,114,0.12); color:var(--green)}
+.op-tab-count-idle{background:rgba(148,163,184,0.15); color:var(--t3)}
+.op-tab-count-neutral{background:var(--hover); color:var(--t2)}
+.op-link{
+  color:var(--cyan); font-size:13px; font-weight:600; text-decoration:none;
+  padding:0 10px; height:32px; display:inline-flex; align-items:center;
+}
+.op-link:hover{text-decoration:underline}
+
+/* List */
+.op-list{padding:8px 24px 32px; display:flex; flex-direction:column; gap:6px}
+.op-row{
+  display:grid; grid-template-columns:160px 1fr 32px 140px; gap:16px;
+  align-items:center; padding:14px 14px 14px 18px;
+  background:var(--bg2); border:1px solid var(--line); border-radius:10px;
+  cursor:pointer; transition:border-color .15s, background .15s;
+}
+.op-row:hover{border-color:var(--line-strong); background:var(--hover-strong)}
+.op-row-status .mkt-card-status{font-size:11px; padding:4px 9px}
+.op-row-main{display:flex; align-items:center; gap:12px; min-width:0}
+.op-row-text{min-width:0; flex:1}
+.op-row-name{font-size:14px; font-weight:700; color:var(--t1); margin-bottom:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.op-row-meta{
+  display:flex; align-items:center; gap:6px; flex-wrap:wrap;
+  font-size:12px; color:var(--t3); font-weight:500;
+}
+.op-row-meta .op-dot{color:var(--line-strong); font-weight:400}
+.op-row-owner{display:flex; align-items:center; justify-content:center}
+.op-row-avatar{
+  width:26px; height:26px; border-radius:50%;
+  background:linear-gradient(135deg,#06B6D4,#A78BFA);
+  color:#fff; font-size:10px; font-weight:800;
+  display:flex; align-items:center; justify-content:center; letter-spacing:-.02em;
+}
+.op-row-action{display:flex; justify-content:flex-end}
+.op-cta{
+  display:inline-flex; align-items:center; gap:6px; height:30px; padding:0 12px;
+  font-family:inherit; font-size:12px; font-weight:700;
+  border-radius:7px; cursor:pointer; transition:transform .12s, background .15s;
+  white-space:nowrap;
+}
+.op-cta:hover{transform:translateY(-1px)}
+.op-cta-warn{background:var(--amber); color:#1a0f00; border:1px solid var(--amber)}
+.op-cta-warn:hover{background:#e3b400}
+.op-cta-ok{background:transparent; color:var(--t1); border:1px solid var(--line-strong)}
+.op-cta-ok:hover{background:var(--hover)}
+.op-cta-neutral{background:transparent; color:var(--t2); border:1px solid var(--line)}
+.op-cta-neutral:hover{color:var(--t1); border-color:var(--line-strong); background:var(--hover)}
+.op-cta-disabled{opacity:.5; cursor:not-allowed}
+.op-cta-disabled:hover{transform:none}
+
+.op-empty{
+  text-align:center; padding:48px 24px;
+  background:var(--bg2); border:1px dashed var(--line); border-radius:12px;
+}
+.op-empty-ic{
+  width:48px; height:48px; border-radius:50%;
+  background:rgba(5,223,114,0.10); color:var(--green);
+  display:inline-flex; align-items:center; justify-content:center;
+  font-size:24px; font-weight:800; margin-bottom:14px;
+}
+.op-empty-t{font-size:15px; font-weight:700; color:var(--t1); margin-bottom:4px}
+.op-empty-d{font-size:13px; color:var(--t3)}
+
+@media (max-width:780px){
+  .op-row{grid-template-columns:1fr; gap:10px; padding:14px}
+  .op-row-status{order:1}
+  .op-row-main{order:2}
+  .op-row-owner{display:none}
+  .op-row-action{order:3; justify-content:flex-start}
+}
+
+/* ──────────────────────────────────────────────────────────
+   SETUP PROGRESS (Connected → Map → Validate → Publish)
+   Lives in the integration detail head, just below "Used in".
+   ────────────────────────────────────────────────────────── */
+.setup-progress{
+  display:flex; align-items:flex-start;
+  padding:16px 18px; margin-top:18px;
+  background:var(--bg2); border:1px solid var(--line); border-radius:10px;
+  gap:0;
+}
+.sp-step{
+  display:flex; align-items:center; gap:10px;
+  position:relative; flex:1; min-width:0;
+}
+.sp-step-marker{
+  width:24px; height:24px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0; position:relative; z-index:1;
+  font-family:inherit;
+}
+.sp-step.sp-done .sp-step-marker{
+  background:rgba(5,223,114,0.16); color:var(--green);
+  border:1.5px solid rgba(5,223,114,0.40);
+}
+.sp-step.sp-current .sp-step-marker{
+  background:rgba(253,199,0,0.16); color:var(--amber);
+  border:1.5px solid rgba(253,199,0,0.50);
+}
+.sp-step.sp-error .sp-step-marker{
+  background:rgba(239,68,68,0.16); color:var(--red);
+  border:1.5px solid rgba(239,68,68,0.45);
+}
+.sp-step.sp-pending .sp-step-marker{
+  background:var(--hover); color:var(--t3);
+  border:1.5px dashed var(--line-strong);
+}
+.sp-step-pulse{
+  width:8px; height:8px; border-radius:50%;
+  background:var(--amber);
+  box-shadow:0 0 0 0 rgba(253,199,0,0.6);
+  animation:sp-pulse 1.4s ease-in-out infinite;
+}
+@keyframes sp-pulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(253,199,0,0.5)}
+  50%{box-shadow:0 0 0 6px rgba(253,199,0,0)}
+}
+.sp-step-text{flex:1; min-width:0; line-height:1.25}
+.sp-step-label{font-size:12px; font-weight:700; color:var(--t1); letter-spacing:.01em}
+.sp-step.sp-pending .sp-step-label{color:var(--t3); font-weight:600}
+.sp-step-sub{font-size:11px; color:var(--t2); margin-top:1px}
+.sp-step.sp-error .sp-step-sub{color:var(--red)}
+.sp-step.sp-current .sp-step-sub{color:var(--amber)}
+.sp-step-bar{
+  flex:1; height:2px; min-width:24px;
+  background:var(--line); margin:0 8px;
+  border-radius:2px;
+}
+.sp-step.sp-done + .sp-step .sp-step-bar,
+.sp-step.sp-done .sp-step-bar{
+  background:linear-gradient(90deg, rgba(5,223,114,0.45) 0%, rgba(5,223,114,0.45) 100%);
+}
+
+@media (max-width:780px){
+  .setup-progress{flex-direction:column; align-items:stretch; gap:14px}
+  .sp-step-bar{display:none}
+}
+
+/* ──────────────────────────────────────────────────────────
+   GATE BANNER (orchestration thesis: graduated gatekeeping)
+   ────────────────────────────────────────────────────────── */
+.gate-banner{
+  display:flex; align-items:center; gap:16px;
+  padding:14px 18px; margin:0 32px 18px;
+  border-radius:10px; border:1px solid transparent;
+}
+.gate-banner-warn{
+  background:color-mix(in srgb, var(--amber) 8%, transparent);
+  border-color:color-mix(in srgb, var(--amber) 28%, transparent);
+}
+.gate-banner-bad{
+  background:color-mix(in srgb, var(--red) 8%, transparent);
+  border-color:color-mix(in srgb, var(--red) 28%, transparent);
+}
+.gate-banner-ic{
+  width:36px; height:36px; border-radius:9px;
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+}
+.gate-banner-warn .gate-banner-ic{background:rgba(253,199,0,0.14); color:var(--amber)}
+.gate-banner-bad  .gate-banner-ic{background:rgba(239,68,68,0.14); color:var(--red)}
+.gate-banner-body{flex:1; min-width:0}
+.gate-banner-title{
+  display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+  font-size:14px; font-weight:700; color:var(--t1);
+  margin-bottom:3px; letter-spacing:.01em;
+}
+.gate-banner-desc{font-size:13px; color:var(--t2); line-height:1.5}
+.gate-banner-actions{flex-shrink:0}
+.gate-chip{
+  display:inline-flex; align-items:center; height:18px; padding:0 7px;
+  font-size:10px; font-weight:800; border-radius:9px; line-height:1;
+  letter-spacing:.04em; text-transform:uppercase;
+}
+.gate-chip-warn{background:rgba(253,199,0,0.18); color:var(--amber); border:1px solid rgba(253,199,0,0.36)}
+.gate-chip-block{background:rgba(239,68,68,0.18); color:var(--red); border:1px solid rgba(239,68,68,0.36)}
+
+@media (max-width:780px){
+  .gate-banner{flex-direction:column; align-items:flex-start; gap:12px}
+  .gate-banner-actions{align-self:flex-end}
+}
 
 /* ── Build your own promo card ── */
 .build-promo{
@@ -2515,6 +2847,19 @@ html.theme-light .theme-icon-moon{display:block}
         <svg class="tb-context-chev" width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 4.5L6 8l3.5-3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
     </div>
+
+    <!-- Mode toggle (Browse / Operate) — orchestration thesis -->
+    <div class="tb-mode-toggle" role="group" aria-label="Mode" id="tbModeToggle">
+      <button class="tb-mode-btn" data-mode="browse" onclick="setMode('browse')" type="button" title="Discover and connect integrations">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.4"/><path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        <span>Browse</span>
+      </button>
+      <button class="tb-mode-btn" data-mode="operate" onclick="setMode('operate')" type="button" title="Monitor health, mapping and usage">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 13h12M4 13V8M7.5 13V5M11 13V9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        <span>Operate</span>
+        <span class="tb-mode-badge" id="tbOperateBadge" aria-hidden="true"></span>
+      </button>
+    </div>
   </div>
 
   <button class="tb-search-btn" type="button" onclick="toast('Global search · ⌘K')" aria-label="Search">
@@ -2539,6 +2884,12 @@ html.theme-light .theme-icon-moon{display:block}
     </span>
     <button class="icon-btn" aria-label="Settings menu" onclick="toast('Already in Settings')">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+    </button>
+    <span class="tb-divider-v"></span>
+    <!-- Persona pill (Admin / User view) — orchestration thesis -->
+    <button class="tb-persona" id="tbPersonaBtn" type="button" onclick="togglePersona()" title="Switch between admin and end-user views">
+      <svg class="tb-persona-ic" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M3 5l3 3 3-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="tb-persona-label" id="tbPersonaLabel">Admin view</span>
     </button>
     <span class="tb-divider-v"></span>
     <div class="tb-identity" role="group" aria-label="Workspace and account">
@@ -2670,7 +3021,7 @@ html.theme-light .theme-icon-moon{display:block}
             <svg class="ssb-item-lock" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2.5" y="5.5" width="7" height="5" rx="1"/><path d="M4 5.5V4a2 2 0 014 0v1.5" stroke-linecap="round"/></svg>
           </button>
 
-          <button class="ssb-item" data-route="audit">
+          <button class="ssb-item" data-route="audit" data-admin-only>
             <span class="ssb-item-ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="3" y="2" width="10" height="12" rx="1.2"/><path d="M5.5 5.5h5M5.5 8h5M5.5 10.5h3"/></svg></span>
             <span class="ssb-item-label">Audit log</span>
           </button>
@@ -2923,13 +3274,86 @@ const AUTH_PATTERNS = {
 };
 
 // Status vocab (engineering brief §13.4)
+// Status taxonomy (3-bucket model per orchestration thesis)
+//   working          = integration is usable, no admin action required
+//   needs_attention  = integration is reachable but blocking adoption (mapping, drift, auth)
+//   inactive         = integration is not in use (disconnected, paused, draft)
 const STATUS_META = {
-  fully_configured:     { label:'Fully configured',     color:'#05DF72', cls:'ok'   },
-  partially_configured: { label:'Partially configured', color:'#FDC700', cls:'warn' },
-  auth_failed:          { label:'Authentication failed',color:'#EF4444', cls:'bad'  },
-  token_expired:        { label:'API key expired',      color:'#EF4444', cls:'bad'  },
-  provider_down:        { label:'Provider down',        color:'#EF4444', cls:'bad'  }
+  // ── WORKING bucket ──
+  active:               { label:'Active',                color:'#05DF72', cls:'ok',   bucket:'working',         desc:'In use by at least one workflow or agent' },
+  ready:                { label:'Ready to use',          color:'#05DF72', cls:'ok',   bucket:'working',         desc:'Fully mapped and validated, not yet used' },
+  fully_configured:     { label:'Ready to use',          color:'#05DF72', cls:'ok',   bucket:'working',         desc:'Fully mapped and validated, not yet used' }, // back-compat alias
+  // ── NEEDS ATTENTION bucket ──
+  needs_mapping:        { label:'Needs mapping',         color:'#FDC700', cls:'warn', bucket:'needs_attention', desc:'Custom fields are pending mapping in Data Studio' },
+  schema_drift:         { label:'Schema drift',          color:'#FDC700', cls:'warn', bucket:'needs_attention', desc:'New fields detected upstream that are not mapped' },
+  partially_configured: { label:'Needs mapping',         color:'#FDC700', cls:'warn', bucket:'needs_attention', desc:'Custom fields are pending mapping in Data Studio' }, // back-compat alias
+  auth_expired:         { label:'Auth expired',          color:'#EF4444', cls:'bad',  bucket:'needs_attention', desc:'OAuth token or API key needs to be refreshed' },
+  auth_failed:          { label:'Auth failed',           color:'#EF4444', cls:'bad',  bucket:'needs_attention', desc:'Credentials were rejected by the provider' }, // back-compat alias
+  token_expired:        { label:'Auth expired',          color:'#EF4444', cls:'bad',  bucket:'needs_attention', desc:'OAuth token or API key needs to be refreshed' }, // back-compat alias
+  rate_limited:         { label:'Rate limited',          color:'#EF4444', cls:'bad',  bucket:'needs_attention', desc:'Provider quota exceeded, calls are being throttled' },
+  provider_down:        { label:'Provider down',         color:'#EF4444', cls:'bad',  bucket:'needs_attention', desc:'The upstream provider is reporting an outage' },
+  // ── INACTIVE bucket ──
+  not_connected:        { label:'Not connected',         color:'#94A3B8', cls:'idle', bucket:'inactive',        desc:'Never been connected by this workspace' },
+  paused:               { label:'Paused',                color:'#94A3B8', cls:'idle', bucket:'inactive',        desc:'Temporarily disabled, credentials kept for resume' },
+  draft:                { label:'Draft',                 color:'#94A3B8', cls:'idle', bucket:'inactive',        desc:'Activation was started but never completed' }
 };
+
+// Bucket meta for chips and views
+const BUCKET_META = {
+  working:         { label:'Working',         shortLabel:'OK',        color:'#05DF72', tone:'ok'   },
+  needs_attention: { label:'Needs attention', shortLabel:'ATTENTION', color:'#FDC700', tone:'warn' },
+  inactive:        { label:'Inactive',        shortLabel:'INACTIVE',  color:'#94A3B8', tone:'idle' }
+};
+
+// Helper: return the bucket for an integration based on its derived status
+function bucketOf(status) {
+  return (STATUS_META[status] || STATUS_META.not_connected).bucket;
+}
+
+// Helper: derive an integration's status from its instances, health and flags
+// Order of resolution:
+//   1. If not connected → not_connected
+//   2. If has instances, surface the worst instance bucket
+//   3. Otherwise map health + explicit flags
+function deriveStatus(integration) {
+  if (!integration.connected) return 'not_connected';
+
+  // Instance-level resolution (most specific)
+  const instances = (typeof PROVIDER_INSTANCES !== 'undefined' && PROVIDER_INSTANCES[integration.slug]) || [];
+  if (instances.length > 0) {
+    const withBucket = instances.map(inst => ({ inst, status: inst.status || 'ready', bucket: bucketOf(inst.status || 'ready') }));
+    const bad = withBucket.find(x => x.bucket === 'needs_attention');
+    if (bad) return bad.status;
+    const ok = withBucket.find(x => x.bucket === 'working');
+    if (ok) return ok.status === 'active' ? 'active' : 'ready';
+    return 'paused';
+  }
+
+  // No instances: derive from integration-level signals
+  if (integration.needsMapping) return 'needs_mapping';
+  if (integration.schemaDrift) return 'schema_drift';
+  if (integration.health === 'failed') return 'auth_expired';
+  if (integration.health === 'degraded') return 'schema_drift'; // upstream provider changed
+
+  // Healthy + connected: active if has usage, ready otherwise
+  const usage = (typeof STUDIO_USAGE !== 'undefined') ? STUDIO_USAGE[integration.slug] : null;
+  const hasUsage = usage && Object.values(usage).some(u => (u.count || 0) > 0);
+  return hasUsage ? 'active' : 'ready';
+}
+
+// Gatekeeping (orchestration thesis: warn / require_ack / block)
+//   working bucket     → no gate (CTAs enabled)
+//   needs_attention    → warn or require_ack depending on severity
+//   inactive           → block (CTAs that depend on it are disabled)
+function gateLevel(integration) {
+  const status = deriveStatus(integration);
+  const bucket = bucketOf(status);
+  if (bucket === 'working') return 'none';
+  if (bucket === 'inactive') return 'block';
+  // needs_attention: auth issues block; mapping issues warn + require ack
+  if (status === 'auth_expired' || status === 'auth_failed' || status === 'rate_limited' || status === 'provider_down') return 'block';
+  return 'require_ack';
+}
 
 // Per-integration studio usage (mock telemetry data)
 const STUDIO_USAGE = {
@@ -3287,6 +3711,11 @@ const AUDIT_EVENTS = [
 /* ====================== STATE ====================== */
 
 const state = {
+  // ── Orchestration thesis: mode + persona ──
+  mode: (localStorage.getItem('aims_mode') || 'browse'),       // 'browse' | 'operate'
+  persona: (localStorage.getItem('aims_persona') || 'admin'),  // 'admin' | 'user'
+  operateTab: 'needs_attention',                                // default landing tab inside Operate
+  // ── Catalog filter state ──
   activeSrc:'all',
   activeCats:new Set(),
   activeCaps:new Set(),
@@ -3585,6 +4014,11 @@ function route() {
 /* ====================== HOME ====================== */
 
 function renderHome() {
+  // Orchestration thesis: when in Operate mode, render the orchestration surface instead
+  if (state.mode === 'operate' && state.persona === 'admin') {
+    return renderOperateHome();
+  }
+
   const connected = INTEGRATIONS.filter(i=>i.connected);
   const withIssues = connected.filter(i=>i.health==='degraded'||i.health==='failed').length;
   const total = INTEGRATIONS.length;
@@ -3791,6 +4225,148 @@ function renderHome() {
   `;
 }
 
+/* ── Operate view (orchestration thesis: status of your data infrastructure) ── */
+function renderOperateHome() {
+  // Bucket all integrations
+  const connected = INTEGRATIONS.filter(i => i.connected);
+  const byBucket = { working: [], needs_attention: [], inactive: [] };
+  connected.forEach(i => {
+    byBucket[bucketOf(deriveStatus(i))].push(i);
+  });
+  // "Inactive" tab in Operate = paused / draft instances (NOT not_connected, those live in Browse)
+  // For demo simplicity, fold not-yet-connected into Browse and only show truly inactive here
+  const notConnected = INTEGRATIONS.filter(i => !i.connected).length;
+
+  const counts = {
+    needs_attention: byBucket.needs_attention.length,
+    working: byBucket.working.length,
+    inactive: byBucket.inactive.length
+  };
+
+  const tab = state.operateTab || 'needs_attention';
+  const visible = (tab === 'all')
+    ? connected
+    : byBucket[tab] || [];
+
+  const tabBtn = (id, label, count, accent) =>
+    `<button class="op-tab ${tab===id?'active':''}" data-bucket="${id}" onclick="setOperateTab('${id}')">
+       <span class="op-tab-label">${label}</span>
+       <span class="op-tab-count op-tab-count-${accent}">${count}</span>
+     </button>`;
+
+  $('content').innerHTML = `
+    <section class="op-hero">
+      <div class="op-hero-left">
+        <div class="op-hero-eyebrow">
+          <span class="op-mode-tag">Operate</span>
+          <span class="op-hero-sub">Status of your data infrastructure</span>
+        </div>
+        <h1 class="op-hero-title">${counts.needs_attention > 0
+          ? `<span style="color:var(--amber)">${counts.needs_attention}</span> integration${counts.needs_attention===1?'':'s'} need your attention`
+          : `Everything is running clean`}</h1>
+        <p class="op-hero-desc">${counts.needs_attention > 0
+          ? 'Resolve mapping gaps, expired credentials and schema drift before they break workflows downstream.'
+          : 'All connected integrations are mapped, validated and authenticated. Browse the catalog to add more.'}</p>
+      </div>
+      <div class="op-hero-right">
+        <div class="op-kpi"><div class="op-kpi-n" style="color:var(--green)">${counts.working}</div><div class="op-kpi-l">Working</div></div>
+        <div class="op-kpi"><div class="op-kpi-n" style="color:var(--amber)">${counts.needs_attention}</div><div class="op-kpi-l">Needs attention</div></div>
+        <div class="op-kpi"><div class="op-kpi-n" style="color:var(--t3)">${counts.inactive}</div><div class="op-kpi-l">Inactive</div></div>
+      </div>
+    </section>
+
+    <div class="op-tabs" role="tablist" aria-label="Filter by status">
+      ${tabBtn('needs_attention', 'Needs attention', counts.needs_attention, 'warn')}
+      ${tabBtn('working', 'Working', counts.working, 'ok')}
+      ${tabBtn('inactive', 'Inactive', counts.inactive, 'idle')}
+      ${tabBtn('all', 'All connected', connected.length, 'neutral')}
+      <span style="flex:1"></span>
+      <a class="op-link" href="#/integrations" onclick="setMode('browse');return false;">Browse catalog →</a>
+    </div>
+
+    <div class="op-list">
+      ${visible.length === 0
+        ? `<div class="op-empty">
+             <div class="op-empty-ic">✓</div>
+             <div class="op-empty-t">Nothing here</div>
+             <div class="op-empty-d">${tab === 'needs_attention' ? 'All integrations are healthy.' : tab === 'working' ? 'No working integrations yet.' : 'Switch tabs to see other integrations.'}</div>
+           </div>`
+        : visible.map(opRowHTML).join('')}
+    </div>
+  `;
+}
+
+// One row per integration in the Operate list — surfaces status, action, owner, usage
+function opRowHTML(i) {
+  const status = deriveStatus(i);
+  const meta = STATUS_META[status] || STATUS_META.not_connected;
+  const bucket = bucketOf(status);
+  const gate = gateLevel(i);
+  const cat = CATEGORIES.find(c => c.slug === i.category);
+  const instances = (typeof PROVIDER_INSTANCES !== 'undefined' && PROVIDER_INSTANCES[i.slug]) || [];
+  const usage = STUDIO_USAGE[i.slug] || {};
+  const totalCalls = Object.values(usage).reduce((s,u) => s + (u.count||0), 0);
+  const workflowsUsing = Object.values(usage).reduce((s,u) => {
+    const m = /(\d+)\s*(agent|route|channel)/.exec(u.detail||'');
+    return s + (m ? parseInt(m[1],10) : 0);
+  }, 0);
+
+  const actionLabel = {
+    needs_mapping: 'Finish mapping',
+    schema_drift: 'Resolve drift',
+    auth_expired: 'Reauthenticate',
+    auth_failed: 'Reauthenticate',
+    rate_limited: 'Review quota',
+    provider_down: 'Check status',
+    paused: 'Resume',
+    draft: 'Continue setup',
+    ready: 'Use it',
+    active: 'Open detail',
+    not_connected: 'Connect'
+  }[status] || 'Open detail';
+
+  const actionTone = bucket === 'needs_attention' ? 'warn' : (bucket === 'working' ? 'ok' : 'neutral');
+  const actionHref = (status === 'needs_mapping' || status === 'schema_drift')
+    ? `#/integrations/${i.slug}`
+    : `#/integrations/${i.slug}`;
+  const isBlocked = gate === 'block' && bucket === 'needs_attention';
+
+  return `
+    <div class="op-row" onclick="navigate('#/integrations/${i.slug}')">
+      <div class="op-row-status">
+        <span class="mkt-card-status status-${bucket}" style="position:static" title="${escapeHtml(meta.desc)}">
+          <span class="mkt-card-status-dot"></span>${escapeHtml(meta.label)}
+        </span>
+      </div>
+      <div class="op-row-main">
+        ${logo(i, 'sm')}
+        <div class="op-row-text">
+          <div class="op-row-name">${escapeHtml(i.name)}</div>
+          <div class="op-row-meta">
+            ${cat ? `<span style="color:${cat.color}">${cat.label}</span>` : ''}
+            ${instances.length > 0 ? `<span class="op-dot">·</span><span>${instances.length} instance${instances.length===1?'':'s'}</span>` : ''}
+            ${totalCalls > 0 ? `<span class="op-dot">·</span><span>${totalCalls.toLocaleString()} calls/day</span>` : ''}
+            ${workflowsUsing > 0 ? `<span class="op-dot">·</span><span>used in ${workflowsUsing} workflow${workflowsUsing===1?'':'s'}</span>` : ''}
+          </div>
+        </div>
+      </div>
+      <div class="op-row-owner">
+        ${i.connectedBy ? `<span class="op-row-avatar" title="Connected by ${escapeHtml(i.connectedBy.name)}">${escapeHtml(i.connectedBy.initials)}</span>` : ''}
+      </div>
+      <div class="op-row-action">
+        ${isBlocked
+          ? `<button class="op-cta op-cta-${actionTone}" onclick="event.stopPropagation();navigate('${actionHref}')">${escapeHtml(actionLabel)}<svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M4 2l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`
+          : `<button class="op-cta op-cta-${actionTone}" onclick="event.stopPropagation();navigate('${actionHref}')">${escapeHtml(actionLabel)}<svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M4 2l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`}
+      </div>
+    </div>
+  `;
+}
+
+function setOperateTab(tab) {
+  state.operateTab = tab;
+  renderOperateHome();
+}
+
 function mktCardHTML(i) {
   const cat = CATEGORIES.find(c=>c.slug===i.category);
   const flag = i.source==='private' ? '<span class="mkt-card-flag private">Private</span>' :
@@ -3800,12 +4376,22 @@ function mktCardHTML(i) {
   // Compute total invocations from STUDIO_USAGE (engineering brief §13.5 — counting usage)
   const usage = STUDIO_USAGE[i.slug];
   const totalCalls = usage ? Object.values(usage).reduce((sum, u) => sum + (u.count || 0), 0) : 0;
+
+  // ── Status bucket chip (orchestration thesis: tier-1 indicator) ──
+  const derivedStatus = deriveStatus(i);
+  const bucket = bucketOf(derivedStatus);
+  const bucketMeta = BUCKET_META[bucket];
+  const statusMeta = STATUS_META[derivedStatus] || STATUS_META.not_connected;
+  const statusChip = i.connected
+    ? `<span class="mkt-card-status status-${bucket}" title="${escapeHtml(statusMeta.label)} — ${escapeHtml(statusMeta.desc)}"><span class="mkt-card-status-dot"></span>${escapeHtml(statusMeta.label)}</span>`
+    : '';
+
   const stateLine = i.connected
     ? (instCount > 1
         ? `<span class="inst-count" title="${instCount} instances of this provider"><span class="inst-count-dot"></span>${instCount} instances${totalCalls>0?` · ${totalCalls.toLocaleString()} calls/day`:''}</span>`
         : (totalCalls > 0
-            ? `<span class="mkt-card-state ${i.health||'healthy'}"><svg width="8" height="8" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="currentColor"/></svg>${totalCalls.toLocaleString()} calls/day</span>`
-            : `<span class="mkt-card-state ${i.health||'healthy'}"><svg width="8" height="8" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="currentColor"/></svg>${i.health==='healthy'?'Connected':i.health==='degraded'?'Degraded':'Failed'}</span>`))
+            ? `<span class="mkt-card-usage">${totalCalls.toLocaleString()} calls/day</span>`
+            : `<span class="mkt-card-usage">Connected</span>`))
     : `<button class="mkt-card-cta" onclick="event.stopPropagation();openConnect('${i.slug}')">Connect</button>`;
 
   const verified = i.source==='official' ? '<span class="mkt-card-verified" title="Official AIMS-OS integration"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 0.8l1.7 1.7 2.4-.4.8 2.3 2.3.8-.4 2.4L16.3 9.2l-1.7 1.7.4 2.4-2.3.8-.8 2.3-2.4-.4L8 16.7l-1.7-1.7-2.4.4-.8-2.3-2.3-.8.4-2.4L-.3 8.2l1.7-1.7-.4-2.4 2.3-.8.8-2.3 2.4.4L8 .8z" fill="#2B7FFF"/><path d="M5.3 8.2l2 2 3.4-3.6" stroke="#fff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>' : '';
@@ -3814,6 +4400,7 @@ function mktCardHTML(i) {
   return `
     <div class="mkt-card" onclick="navigate('#/integrations/${i.slug}')">
       ${flag}
+      ${statusChip}
       <div class="mkt-card-row">
         ${logo(i, 'md')}
         <div class="mkt-card-text">
@@ -3903,6 +4490,141 @@ function renderDetail(slug) {
   paintDetail(i);
 }
 
+// Setup progress bar (orchestration thesis: Connected → Mapped → Validated → Published → Active)
+function setupProgressHTML(i) {
+  const status = deriveStatus(i);
+  // Each step has: { key, label, state: 'done' | 'current' | 'pending' | 'error' }
+  let steps;
+  if (status === 'not_connected') {
+    steps = [
+      { key:'connect',   label:'Connect',   state:'current' },
+      { key:'map',       label:'Map fields',state:'pending' },
+      { key:'validate',  label:'Validate',  state:'pending' },
+      { key:'publish',   label:'Publish',   state:'pending' }
+    ];
+  } else if (status === 'draft') {
+    steps = [
+      { key:'connect',   label:'Connect',   state:'current', sub:'Setup in progress' },
+      { key:'map',       label:'Map fields',state:'pending' },
+      { key:'validate',  label:'Validate',  state:'pending' },
+      { key:'publish',   label:'Publish',   state:'pending' }
+    ];
+  } else if (status === 'auth_expired' || status === 'auth_failed') {
+    steps = [
+      { key:'connect',   label:'Connect',   state:'error',   sub:'Reauthenticate' },
+      { key:'map',       label:'Map fields',state:'pending' },
+      { key:'validate',  label:'Validate',  state:'pending' },
+      { key:'publish',   label:'Publish',   state:'pending' }
+    ];
+  } else if (status === 'needs_mapping' || status === 'schema_drift') {
+    steps = [
+      { key:'connect',   label:'Connect',   state:'done' },
+      { key:'map',       label:'Map fields',state:status === 'schema_drift' ? 'error' : 'current', sub: status === 'schema_drift' ? 'New fields detected' : 'In Data Studio' },
+      { key:'validate',  label:'Validate',  state:'pending' },
+      { key:'publish',   label:'Publish',   state:'pending' }
+    ];
+  } else if (status === 'rate_limited' || status === 'provider_down') {
+    steps = [
+      { key:'connect',   label:'Connect',   state:'done' },
+      { key:'map',       label:'Map fields',state:'done' },
+      { key:'validate',  label:'Validate',  state:'error',   sub: status === 'rate_limited' ? 'Quota exceeded' : 'Upstream down' },
+      { key:'publish',   label:'Publish',   state:'pending' }
+    ];
+  } else if (status === 'ready') {
+    steps = [
+      { key:'connect',   label:'Connect',   state:'done' },
+      { key:'map',       label:'Map fields',state:'done' },
+      { key:'validate',  label:'Validate',  state:'done' },
+      { key:'publish',   label:'Publish',   state:'current', sub:'Ready to publish' }
+    ];
+  } else if (status === 'paused') {
+    steps = [
+      { key:'connect',   label:'Connect',   state:'done' },
+      { key:'map',       label:'Map fields',state:'done' },
+      { key:'validate',  label:'Validate',  state:'done' },
+      { key:'publish',   label:'Publish',   state:'done',    sub:'Paused' }
+    ];
+  } else {
+    // active (default for connected and working)
+    steps = [
+      { key:'connect',   label:'Connect',   state:'done' },
+      { key:'map',       label:'Map fields',state:'done' },
+      { key:'validate',  label:'Validate',  state:'done' },
+      { key:'publish',   label:'Published', state:'done' }
+    ];
+  }
+
+  return `
+    <div class="setup-progress" aria-label="Setup progress">
+      ${steps.map((s, idx) => `
+        <div class="sp-step sp-${s.state}">
+          <div class="sp-step-marker">
+            ${s.state === 'done'    ? '<svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M3 8l3 3 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' : ''}
+            ${s.state === 'error'   ? '<svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>' : ''}
+            ${s.state === 'current' ? '<span class="sp-step-pulse"></span>' : ''}
+            ${s.state === 'pending' ? `<span style="font-size:10px;font-weight:700;color:var(--t3)">${idx+1}</span>` : ''}
+          </div>
+          <div class="sp-step-text">
+            <div class="sp-step-label">${escapeHtml(s.label)}</div>
+            ${s.sub ? `<div class="sp-step-sub">${escapeHtml(s.sub)}</div>` : ''}
+          </div>
+          ${idx < steps.length - 1 ? '<div class="sp-step-bar"></div>' : ''}
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+// Banner that surfaces the gating action on a needs-attention integration
+function gateBannerHTML(i) {
+  const status = deriveStatus(i);
+  const bucket = bucketOf(status);
+  if (bucket !== 'needs_attention') return '';
+  const meta = STATUS_META[status] || STATUS_META.not_connected;
+  const gate = gateLevel(i);
+  const copy = {
+    needs_mapping:   { title:`${i.name} has custom fields pending mapping`,    body:'Data Studio detected fields that AIMS could not auto-map. Until they are resolved, workflows that reference them will be blocked.',                cta:'Resolve in Data Studio', href:`#/integrations/${i.slug}` },
+    schema_drift:    { title:`Schema drift detected for ${i.name}`,            body:'The upstream provider added or renamed fields. Existing workflows still run, but new fields are not flowing into Helix until you confirm the mapping.', cta:'Review changes',          href:`#/integrations/${i.slug}` },
+    auth_expired:    { title:`${i.name} authentication has expired`,           body:'OAuth token or API key is no longer valid. All capability calls will fail until credentials are refreshed.',                                            cta:'Reauthenticate',          href:`#/integrations/${i.slug}` },
+    auth_failed:     { title:`${i.name} authentication failed`,                body:'The provider rejected the stored credentials. Refresh them to bring this integration back online.',                                                    cta:'Reauthenticate',          href:`#/integrations/${i.slug}` },
+    rate_limited:    { title:`${i.name} is rate-limited by the provider`,      body:'Quota exceeded. Calls are being throttled. Consider upgrading the plan or staggering the workflow trigger.',                                          cta:'Open provider quota',     href:`#/integrations/${i.slug}` },
+    provider_down:   { title:`${i.name} is reporting an outage upstream`,      body:'The provider is unavailable. We will resume calls automatically when the provider recovers.',                                                         cta:'Check status page',       href:`#/integrations/${i.slug}` }
+  }[status] || { title:meta.label, body:meta.desc, cta:'Open detail', href:`#/integrations/${i.slug}` };
+
+  const gateChip = gate === 'block'
+    ? '<span class="gate-chip gate-chip-block">Use in workflows blocked</span>'
+    : '<span class="gate-chip gate-chip-warn">Use with caution</span>';
+
+  return `
+    <div class="gate-banner gate-banner-${meta.cls}" role="alert">
+      <div class="gate-banner-ic">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 9v4M12 17h.01M10.3 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="gate-banner-body">
+        <div class="gate-banner-title">
+          ${escapeHtml(copy.title)}
+          ${gateChip}
+        </div>
+        <div class="gate-banner-desc">${escapeHtml(copy.body)}</div>
+      </div>
+      <div class="gate-banner-actions">
+        <button class="btn btn-primary btn-sm" onclick="event.stopPropagation();handleGateAction('${i.slug}','${status}')">${escapeHtml(copy.cta)} →</button>
+      </div>
+    </div>
+  `;
+}
+
+// Route the gate action based on the status
+function handleGateAction(slug, status) {
+  if (status === 'needs_mapping' || status === 'schema_drift') {
+    openHelix(slug);
+  } else if (status === 'auth_expired' || status === 'auth_failed') {
+    openConnect(slug);
+  } else {
+    toast(`Action queued for ${slug}`);
+  }
+}
+
 function paintDetail(i) {
   const cat = CATEGORIES.find(c=>c.slug===i.category);
   $('content').innerHTML = `
@@ -3913,6 +4635,8 @@ function paintDetail(i) {
       <span class="crumb-sep">›</span>
       <span class="crumb-current">${escapeHtml(i.name)}</span>
     </div>
+
+    ${gateBannerHTML(i)}
 
     <div class="detail-head">
       <div class="detail-row">
@@ -3945,10 +4669,14 @@ function paintDetail(i) {
         </div>
       </div>
       ${usedInHTML(i)}
+      ${setupProgressHTML(i)}
     </div>
 
     <div class="tabs">
-      ${['overview','capabilities','permissions','logs','audit'].map(t => `<button class="tab ${state.detailTab===t?'active':''}" onclick="setDetailTab('${i.slug}','${t}')">${t.charAt(0).toUpperCase()+t.slice(1)}</button>`).join('')}
+      ${(state.persona === 'user'
+          ? ['overview','capabilities']
+          : ['overview','capabilities','permissions','logs','audit']
+        ).map(t => `<button class="tab ${state.detailTab===t?'active':''}" onclick="setDetailTab('${i.slug}','${t}')">${t.charAt(0).toUpperCase()+t.slice(1)}</button>`).join('')}
     </div>
 
     <div class="detail-body">
@@ -5841,6 +6569,77 @@ function toggleTheme() {
   } catch(e){}
 })();
 
+/* ====================== MODE + PERSONA (orchestration thesis) ====================== */
+
+// Browse vs Operate: where the user is mentally
+function setMode(mode) {
+  if (mode !== 'browse' && mode !== 'operate') return;
+  if (state.mode === mode) return;
+  state.mode = mode;
+  try { localStorage.setItem('aims_mode', mode); } catch(e){}
+  paintModeToggle();
+  // Reset to home when switching modes so the user sees the new surface
+  if (location.hash.startsWith('#/integrations') && location.hash.split('/').length <= 2) {
+    route();
+  } else {
+    // Go home so the mode change is immediately visible
+    location.hash = '#/integrations';
+  }
+}
+
+function paintModeToggle() {
+  const grp = document.getElementById('tbModeToggle');
+  if (!grp) return;
+  grp.querySelectorAll('.tb-mode-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.mode === state.mode);
+  });
+  // Update the "needs attention" badge on the Operate button
+  const badge = document.getElementById('tbOperateBadge');
+  if (badge) {
+    const count = INTEGRATIONS.filter(i => i.connected && bucketOf(deriveStatus(i)) === 'needs_attention').length;
+    badge.textContent = count > 0 ? String(count) : '';
+  }
+}
+
+// Admin vs User: how much surface do we expose
+function togglePersona() {
+  state.persona = (state.persona === 'admin') ? 'user' : 'admin';
+  try { localStorage.setItem('aims_persona', state.persona); } catch(e){}
+  paintPersonaPill();
+  // If switching to user while in Operate, snap to Browse (users don't operate)
+  if (state.persona === 'user' && state.mode === 'operate') {
+    state.mode = 'browse';
+    try { localStorage.setItem('aims_mode', 'browse'); } catch(e){}
+    paintModeToggle();
+  }
+  toast(`Switched to ${state.persona === 'admin' ? 'Admin' : 'End-user'} view`);
+  route();
+}
+
+function paintPersonaPill() {
+  const btn = document.getElementById('tbPersonaBtn');
+  const label = document.getElementById('tbPersonaLabel');
+  if (!btn || !label) return;
+  if (state.persona === 'user') {
+    btn.classList.add('is-user');
+    label.textContent = 'End-user view';
+    document.documentElement.classList.add('persona-user');
+  } else {
+    btn.classList.remove('is-user');
+    label.textContent = 'Admin view';
+    document.documentElement.classList.remove('persona-user');
+  }
+  // In end-user view, the Operate mode is hidden (users don't see orchestration)
+  const operateBtn = document.querySelector('.tb-mode-btn[data-mode="operate"]');
+  if (operateBtn) operateBtn.style.display = (state.persona === 'user') ? 'none' : '';
+}
+
+// Paint mode + persona controls on initial load
+function paintShellControls() {
+  paintModeToggle();
+  paintPersonaPill();
+}
+
 /* ====================== ROLE / GROUP PICKER ====================== */
 
 let rolePickerState = { open:false, slug:null, studio:null, search:'', selected:new Set() };
@@ -6138,6 +6937,9 @@ document.querySelectorAll('.ssb-item:not(.disabled)').forEach(b => {
 document.querySelectorAll('.ssb-item.disabled').forEach(b => {
   b.addEventListener('click', () => toast(`${b.querySelector('.ssb-label').textContent} — Coming soon`, 'success'));
 });
+
+// Paint shell controls (mode toggle + persona pill) on initial load
+paintShellControls();
 
 route();
 </script>

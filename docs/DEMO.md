@@ -336,7 +336,51 @@ That covers the architectural model + the polish layer + the AI moments + the wo
 
 ---
 
-## 19. Stack
+## 19. Orchestration update (May 2026)
+
+After a working session with Mike Dullea (founder), the prototype was rotated around an explicit thesis:
+
+> Integrations is the **control plane** for an agentic data infrastructure, not just a marketplace.
+> Data Studio (Sebastian) does the deep field mapping. Integrations orchestrates the lifecycle, surfaces system truth, and gatekeeps usage.
+
+### 3 decisions locked
+
+**1. Browse and Operate coexist with a mode toggle in the topbar.**
+Browse is the marketplace surface (discovery, partners, BYO). Operate is the orchestration surface (status, needs attention, setup progress). Same data, different framing. End users default to Browse; admins default to Operate.
+
+**2. Gatekeeping is graduated, not binary.**
+- *Warn:* card surfaces a warning, workflows still work
+- *Require ack:* workflow author has to acknowledge a banner on click, logged in audit
+- *Block:* CTA is visibly disabled with a tooltip explaining why
+
+The gate level is decided by criticality of the broken signal (auth blocks, mapping requires ack, drift warns), not by a `% mapped` metric.
+
+**3. Persona split: Admin view vs End-user view, with a visible toggle.**
+Admin sees everything (audit, mapping, schema versions, request inbox). End user sees a stripped-down catalog with only the basics. The toggle lives in the topbar next to the workspace badge.
+
+### Status taxonomy
+
+8 states grouped into 3 visual buckets, surfaced as a single tier-1 chip on each card.
+
+| Bucket | States | Color |
+|---|---|---|
+| Working | `active`, `ready` | green |
+| Needs Attention | `needs_mapping`, `schema_drift`, `auth_expired`, `auth_failed`, `rate_limited`, `provider_down` | amber / red |
+| Inactive | `not_connected`, `paused`, `draft` | gray |
+
+Each card shows only the bucket chip. The specific state is surfaced inside the detail page (gate banner + setup progress bar).
+
+### Where to see it in the live prototype
+
+1. Open the prototype. Click **Operate** in the topbar mode toggle. The home becomes a triage view with a Needs Attention tab as the default.
+2. Click any row to open the detail. A yellow or red **gate banner** explains the action required.
+3. Below the breadcrumb, a horizontal **setup progress bar** shows `Connect → Map → Validate → Publish` with the current step pulsing.
+4. Click the **persona pill** in the top-right to toggle End-user view. Audit log and audit tabs disappear from the navigation.
+5. Switch back to **Browse** to see the original marketplace. Cards now show a single status bucket chip in the top-right corner.
+
+---
+
+## 20. Stack
 
 Zero-dependency vanilla HTML / CSS / JS. ~4.5k lines in a single file. All state in-memory.
 
