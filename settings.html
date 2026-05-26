@@ -85,6 +85,36 @@ body{
   box-shadow:0 1px 0 rgba(0,0,0,.18), 0 0 0 1px rgba(0,0,0,.08) inset;
 }
 .tb-mode-btn.active svg{color:#001318}
+/* Operate active state uses amber instead of cyan — signals triage/monitoring */
+.tb-mode-btn[data-mode="operate"].active{
+  background:var(--amber); color:#1a0f00;
+}
+.tb-mode-btn[data-mode="operate"].active svg{color:#1a0f00}
+/* Amber accent on the topbar when in Operate mode — visible across all pages */
+html.mode-operate .topbar{
+  border-bottom-color:rgba(253,199,0,0.22);
+  box-shadow:0 1px 0 rgba(253,199,0,0.10);
+}
+html.mode-operate .topbar::after{
+  content:''; position:absolute; left:0; right:0; bottom:-1px; height:2px;
+  background:linear-gradient(90deg, transparent 0%, rgba(253,199,0,0.40) 50%, transparent 100%);
+  pointer-events:none;
+}
+/* Mode-operate row above content (sticky strip with subtle amber tint) */
+.mode-banner{
+  display:none;
+  position:sticky; top:0; z-index:4;
+  padding:6px 16px;
+  background:rgba(253,199,0,0.06);
+  border-bottom:1px solid rgba(253,199,0,0.18);
+  font-size:11px; color:var(--amber); font-weight:600;
+  letter-spacing:.02em;
+  text-align:center;
+  backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+}
+html.mode-operate .mode-banner{display:block}
+.mode-banner-dot{display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--amber); margin-right:8px; vertical-align:middle; animation:mode-pulse 1.8s ease-in-out infinite}
+@keyframes mode-pulse{0%,100%{opacity:.5}50%{opacity:1}}
 .tb-mode-btn svg{color:currentColor}
 .tb-mode-badge{
   display:inline-flex; align-items:center; justify-content:center;
@@ -3654,6 +3684,9 @@ html.theme-light .theme-icon-moon{display:block}
     </div>
   </div>
 </header>
+
+<!-- Operate-mode strip (only visible when html.mode-operate) -->
+<div class="mode-banner"><span class="mode-banner-dot"></span>Operate mode · monitoring the data infrastructure</div>
 
 <!-- App layout: sidebar + main -->
 <div class="app">
@@ -8677,6 +8710,7 @@ function setMode(mode) {
   if (state.mode === mode) return;
   state.mode = mode;
   try { localStorage.setItem('aims_mode', mode); } catch(e){}
+  document.documentElement.classList.toggle('mode-operate', mode === 'operate');
   paintModeToggle();
   // Reset to home when switching modes so the user sees the new surface
   if (location.hash.startsWith('#/integrations') && location.hash.split('/').length <= 2) {
@@ -8736,6 +8770,7 @@ function paintPersonaPill() {
 
 // Paint mode + persona controls on initial load
 function paintShellControls() {
+  document.documentElement.classList.toggle('mode-operate', state.mode === 'operate');
   paintModeToggle();
   paintPersonaPill();
 }
