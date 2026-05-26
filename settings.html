@@ -652,8 +652,8 @@ html.theme-light .btn-primary.btn-outline{color:var(--cyan); border-color:rgba(6
 .tab-locked-p{font-size:12px; color:var(--t2); margin-bottom:14px}
 
 /* ── Capabilities tab ── */
-.cap-grp{margin-bottom:18px}
-.cap-grp-head{display:flex; align-items:center; gap:8px; padding:10px 14px; background:var(--bg3); border:1px solid var(--line); border-radius:var(--r8) var(--r8) 0 0; border-bottom:none}
+.cap-grp{background:var(--bg2); border:1px solid var(--line); border-radius:12px; margin-bottom:14px; overflow:hidden}
+.cap-grp-head{display:flex; align-items:center; gap:10px; padding:14px 18px 10px; background:transparent; border:none}
 .cap-grp-icon{width:24px; height:24px; border-radius:var(--r6); display:flex; align-items:center; justify-content:center}
 .cap-grp-icon.tools{background:rgba(167,139,250,0.12); color:var(--purple)}
 .cap-grp-icon.knowledge{background:rgba(5,223,114,0.10); color:var(--green)}
@@ -661,8 +661,8 @@ html.theme-light .btn-primary.btn-outline{color:var(--cyan); border-color:rgba(6
 .cap-grp-icon.channels{background:rgba(6,182,212,0.10); color:var(--cyan)}
 .cap-grp-title{font-size:13px; font-weight:600; color:var(--t1); flex:1}
 .cap-grp-count{font-size:11px; color:var(--t2)}
-.cap-grp-body{border:1px solid var(--line); border-radius:0 0 var(--r8) var(--r8); overflow:hidden}
-.cap-row{display:grid; grid-template-columns:1fr 2fr auto auto; gap:12px; padding:10px 14px; border-bottom:1px solid var(--line); align-items:center; font-size:12px}
+.cap-grp-body{padding:0 18px 14px; border-top:1px solid var(--line); margin-top:4px}
+.cap-row{display:grid; grid-template-columns:1fr 2fr auto auto; gap:12px; padding:10px 6px; border-bottom:1px solid rgba(255,255,255,0.04); align-items:center; font-size:12px}
 .cap-row:last-child{border-bottom:none}
 .cap-row:hover{background:var(--hover)}
 .cap-row-name{font-weight:600; color:var(--t1); font-family:'SF Mono','Menlo',monospace; font-size:12px}
@@ -677,11 +677,11 @@ html.theme-light .btn-primary.btn-outline{color:var(--cyan); border-color:rgba(6
 .cap-grp.disabled .cap-grp-head{cursor:not-allowed}
 
 /* ── Permissions tab ── */
-.perm-card{background:var(--bg3); border:1px solid var(--line); border-radius:var(--r10); padding:16px; margin-bottom:14px}
-.perm-card h3{font-size:13px; font-weight:700; color:var(--t1); margin-bottom:4px}
-.perm-card .perm-sub{font-size:12px; color:var(--t2); margin-bottom:14px}
+.perm-card{background:var(--bg2); border:1px solid var(--line); border-radius:12px; padding:18px 20px; margin-bottom:14px}
+.perm-card h3{font-size:14px; font-weight:700; color:var(--t1); margin:0 0 4px; letter-spacing:-0.005em}
+.perm-card .perm-sub{font-size:12px; color:var(--t2); margin:0 0 14px; line-height:1.5}
 .studio-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:10px}
-.studio-card{background:var(--bg); border:1px solid var(--line); border-radius:var(--r8); padding:12px}
+.studio-card{background:var(--bg3); border:none; border-radius:8px; padding:12px}
 .studio-head{display:flex; align-items:center; gap:8px; margin-bottom:10px}
 .studio-ico{width:28px; height:28px; border-radius:var(--r6); display:flex; align-items:center; justify-content:center}
 .studio-ico.gov{background:rgba(5,223,114,0.10); color:var(--green)}
@@ -702,12 +702,12 @@ html.theme-light .btn-primary.btn-outline{color:var(--cyan); border-color:rgba(6
 .save-bar-text{flex:1; font-size:12px; color:var(--amber); font-weight:500}
 
 /* ── Audit tab/page ── */
-.audit-head{margin-bottom:14px; font-size:12px; color:var(--t2)}
+.audit-head{margin:0 0 14px; font-size:12.5px; color:var(--t2); line-height:1.5}
 .audit-filters{display:flex; gap:8px; align-items:center; flex-wrap:wrap; padding:10px 14px; background:var(--bg3); border:1px solid var(--line); border-radius:var(--r8); margin-bottom:14px}
 .audit-filter{display:flex; align-items:center; gap:6px; font-size:12px; color:var(--t2)}
 .audit-filter-input{background:var(--hover); border:1px solid var(--line); border-radius:var(--r6); padding:4px 8px; color:var(--t1); font-size:12px; font-family:inherit; outline:none}
 .audit-count{margin-left:auto; font-size:11px; color:var(--t3)}
-.audit-table{width:100%; border-collapse:collapse; background:var(--bg3); border:1px solid var(--line); border-radius:var(--r8); overflow:hidden}
+.audit-table{width:100%; border-collapse:collapse; background:transparent; border:1px solid var(--line); border-radius:8px; overflow:hidden}
 .audit-table th, .audit-table td{text-align:left; padding:10px 12px; font-size:12px; border-bottom:1px solid var(--line)}
 .audit-table th{background:var(--hover); color:var(--t3); font-weight:600; font-size:10px; text-transform:uppercase; letter-spacing:.05em}
 .audit-table tbody tr{cursor:pointer; transition:background .12s}
@@ -1896,6 +1896,24 @@ html.theme-light .btn-primary.btn-outline{color:var(--cyan); border-color:rgba(6
   .ov-widget-h{flex-wrap:wrap; padding:14px 14px 10px}
   .ov-widget-body{padding:0 14px 14px}
 }
+
+
+/* Logs / Audit widget body — extra room for toolbar + table without double padding */
+.ov-widget .log-toolbar{margin:0 0 12px}
+.ov-widget .audit-table{margin-top:0}
+/* Inside a widget, the cap-grp's nested rows already sit on a flat bg via cap-grp-body */
+.ov-widget .cap-grp{margin-bottom:14px; border:none; background:transparent}
+.ov-widget .cap-grp:last-child{margin-bottom:0}
+/* Save bar inside a widget keeps its sticky look */
+.ov-widget .save-bar{margin:14px -20px -18px; border-radius:0 0 12px 12px}
+
+
+/* Widget footer for actions row */
+.ov-widget-foot{
+  display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+  padding:14px 18px 18px; border-top:1px solid rgba(255,255,255,0.04);
+}
+.ov-widget-foot .btn-ghost{justify-content:flex-start}
 
 /* ── Build your own promo card ── */
 .build-promo{
@@ -5727,39 +5745,72 @@ function renderInstanceDetail(slug, instId) {
 }
 
 function instanceBasicHTML(i, inst) {
+  const status = STATUS_META[inst.status] || STATUS_META.fully_configured;
   return `
     <div class="ov-cols">
       <div class="ov-main">
-        <h3>About this instance</h3>
-        <p>This is one of <strong>${instancesOf(i.slug).length}</strong> active instances of <strong>${escapeHtml(i.name)}</strong> in your workspace. It has its own credentials, status, and audit trail. Changes you make here only affect this instance.</p>
 
-        <h3>Configuration</h3>
-        <div class="ov-side" style="background:var(--bg3); padding:14px; margin:0; height:auto">
-          <div class="ov-side-row"><span class="ov-side-k">Instance ID</span><span class="ov-side-v" style="font-family:'SF Mono',Menlo,monospace">${escapeHtml(inst.id)}</span></div>
-          <div class="ov-side-row"><span class="ov-side-k">Display name</span><span class="ov-side-v">${escapeHtml(inst.name)}</span></div>
-          <div class="ov-side-row"><span class="ov-side-k">Auth mode</span><span class="ov-side-v">${inst.authMode==='aims_managed'?'AIMS-managed subaccount':'Bring-your-own-key (BYOK)'}</span></div>
-          <div class="ov-side-row"><span class="ov-side-k">Auth method</span><span class="ov-side-v">${inst.authMethod==='oauth'?'OAuth 2.0':inst.authMethod==='apikey'?'API token':'Service account'}</span></div>
-          ${inst.region ? `<div class="ov-side-row"><span class="ov-side-k">Region</span><span class="ov-side-v" style="font-family:'SF Mono',Menlo,monospace">${escapeHtml(inst.region)}</span></div>` : ''}
-          <div class="ov-side-row"><span class="ov-side-k">Activated by</span><span class="ov-side-v">${escapeHtml(inst.connectedBy.name)} · ${escapeHtml(inst.connectedAt)}</span></div>
-        </div>
+        <section class="ov-widget">
+          <header class="ov-widget-h">
+            <h3 class="ov-widget-title">About this instance</h3>
+            <span class="ov-widget-meta">1 of ${instancesOf(i.slug).length} ${instancesOf(i.slug).length===1?'instance':'instances'}</span>
+          </header>
+          <div class="ov-widget-body">
+            <p>This is one of <strong>${instancesOf(i.slug).length}</strong> active instances of <strong>${escapeHtml(i.name)}</strong> in your workspace. It has its own credentials, status, and audit trail. Changes you make here only affect this instance.</p>
+          </div>
+        </section>
 
-        <h3>Health snapshot</h3>
-        <div class="ov-cap-cards">
-          <div class="ov-cap-card"><div class="ov-cap-card-h">Status</div><div class="ov-cap-card-d"><span class="inst-row-status ${(STATUS_META[inst.status]||STATUS_META.fully_configured).cls}">● ${(STATUS_META[inst.status]||STATUS_META.fully_configured).label}</span></div></div>
-          <div class="ov-cap-card"><div class="ov-cap-card-h">Last run</div><div class="ov-cap-card-d">${escapeHtml(inst.lastRun||'—')}</div></div>
-          <div class="ov-cap-card"><div class="ov-cap-card-h">Errors (24h)</div><div class="ov-cap-card-d" style="color:${inst.errors24h>0?'var(--red)':'var(--t1)'}">${inst.errors24h||0}</div></div>
-        </div>
+        <section class="ov-widget">
+          <header class="ov-widget-h">
+            <h3 class="ov-widget-title">Configuration</h3>
+          </header>
+          <div class="ov-widget-body ov-side-body">
+            <div class="ov-side-row"><span class="ov-side-k">Instance ID</span><span class="ov-side-v" style="font-family:'SF Mono',Menlo,monospace">${escapeHtml(inst.id)}</span></div>
+            <div class="ov-side-row"><span class="ov-side-k">Display name</span><span class="ov-side-v">${escapeHtml(inst.name)}</span></div>
+            <div class="ov-side-row"><span class="ov-side-k">Auth mode</span><span class="ov-side-v">${inst.authMode==='aims_managed'?'AIMS-managed subaccount':'Bring-your-own-key (BYOK)'}</span></div>
+            <div class="ov-side-row"><span class="ov-side-k">Auth method</span><span class="ov-side-v">${inst.authMethod==='oauth'?'OAuth 2.0':inst.authMethod==='apikey'?'API token':'Service account'}</span></div>
+            ${inst.region ? `<div class="ov-side-row"><span class="ov-side-k">Region</span><span class="ov-side-v" style="font-family:'SF Mono',Menlo,monospace">${escapeHtml(inst.region)}</span></div>` : ''}
+            <div class="ov-side-row"><span class="ov-side-k">Activated by</span><span class="ov-side-v">${escapeHtml(inst.connectedBy.name)} · ${escapeHtml(inst.connectedAt)}</span></div>
+          </div>
+        </section>
 
-        ${inst.note ? `<div class="lock-overlay" style="background:rgba(253,199,0,0.04);border-color:rgba(253,199,0,0.22)"><div class="lock-overlay-h" style="color:var(--amber)">⚠ Action needed</div><div class="lock-overlay-p">${escapeHtml(inst.note)}</div><button class="btn btn-primary btn-sm" onclick="openHelix('${i.slug}','${inst.id}')">Open in Helix Data Studio →</button></div>` : ''}
+        <section class="ov-widget">
+          <header class="ov-widget-h">
+            <h3 class="ov-widget-title">Health snapshot</h3>
+            <span class="ov-widget-meta">Last 24h</span>
+          </header>
+          <div class="ov-widget-body">
+            <div class="ov-cap-cards">
+              <div class="ov-cap-card"><div class="ov-cap-card-h">Status</div><div class="ov-cap-card-d"><span class="inst-row-status ${status.cls}">● ${status.label}</span></div></div>
+              <div class="ov-cap-card"><div class="ov-cap-card-h">Last run</div><div class="ov-cap-card-d">${escapeHtml(inst.lastRun||'—')}</div></div>
+              <div class="ov-cap-card"><div class="ov-cap-card-h">Errors (24h)</div><div class="ov-cap-card-d" style="color:${inst.errors24h>0?'var(--red)':'var(--t1)'}">${inst.errors24h||0}</div></div>
+            </div>
+          </div>
+        </section>
+
+        ${inst.note ? `
+          <section class="ov-widget" style="border-color:rgba(253,199,0,0.30); background:color-mix(in srgb, var(--amber) 4%, var(--bg2))">
+            <div class="ov-widget-body">
+              <div class="lock-overlay-h" style="color:var(--amber)">⚠ Action needed</div>
+              <div class="lock-overlay-p">${escapeHtml(inst.note)}</div>
+              <button class="btn btn-primary btn-sm" onclick="openHelix('${i.slug}','${inst.id}')">Open in Helix Data Studio →</button>
+            </div>
+          </section>
+        ` : ''}
       </div>
-      <div class="ov-side">
-        <h3 style="margin-top:0;margin-bottom:8px">Quick actions</h3>
-        <div style="display:flex;flex-direction:column;gap:6px">
-          <button class="btn btn-ghost btn-sm" onclick="setInstanceTab('${i.slug}','${inst.id}','capabilities')">Manage capabilities →</button>
-          <button class="btn btn-ghost btn-sm" onclick="setInstanceTab('${i.slug}','${inst.id}','auth')">Rotate credentials →</button>
-          <button class="btn btn-ghost btn-sm" onclick="setInstanceTab('${i.slug}','${inst.id}','logs')">View execution logs →</button>
-        </div>
-      </div>
+      <aside class="ov-side">
+        <section class="ov-widget">
+          <header class="ov-widget-h">
+            <h3 class="ov-widget-title">Quick actions</h3>
+          </header>
+          <div class="ov-widget-body" style="display:flex; flex-direction:column; gap:8px">
+            <button class="btn btn-ghost btn-sm" style="justify-content:flex-start" onclick="setInstanceTab('${i.slug}','${inst.id}','capabilities')">Manage capabilities →</button>
+            <button class="btn btn-ghost btn-sm" style="justify-content:flex-start" onclick="setInstanceTab('${i.slug}','${inst.id}','auth')">Rotate credentials →</button>
+            <button class="btn btn-ghost btn-sm" style="justify-content:flex-start" onclick="setInstanceTab('${i.slug}','${inst.id}','logs')">View execution logs →</button>
+            <button class="btn btn-ghost btn-sm" style="justify-content:flex-start" onclick="setInstanceTab('${i.slug}','${inst.id}','audit')">View audit log →</button>
+          </div>
+        </section>
+      </aside>
     </div>
   `;
 }
@@ -5797,22 +5848,25 @@ function instanceCapsHTML(i, inst) {
 }
 
 function instanceAuthHTML(i, inst) {
+  const methodLabel = inst.authMethod==='oauth'?'OAuth 2.0':inst.authMethod==='apikey'?'API token':'Service account';
   return `
-    <div class="perm-card">
-      <h3>${inst.authMethod==='oauth'?'OAuth 2.0':inst.authMethod==='apikey'?'API token':'Service account'}</h3>
-      <div class="perm-sub">Renew, rotate, or replace credentials without re-running the activation wizard.</div>
-      <div class="ov-side" style="background:var(--bg3); padding:14px; margin:0; height:auto">
+    <section class="ov-widget">
+      <header class="ov-widget-h">
+        <h3 class="ov-widget-title">${methodLabel}</h3>
+        <span class="ov-widget-meta">Renew, rotate or replace credentials without re-running activation</span>
+      </header>
+      <div class="ov-widget-body ov-side-body">
         <div class="ov-side-row"><span class="ov-side-k">Connected as</span><span class="ov-side-v">${escapeHtml(inst.name)}</span></div>
         <div class="ov-side-row"><span class="ov-side-k">Auth mode</span><span class="ov-side-v">${inst.authMode==='aims_managed'?'AIMS-managed':'BYOK'}</span></div>
         <div class="ov-side-row"><span class="ov-side-k">Last rotated</span><span class="ov-side-v">${escapeHtml(inst.connectedAt)}</span></div>
         <div class="ov-side-row"><span class="ov-side-k">Status</span><span class="ov-side-v">${(STATUS_META[inst.status]||STATUS_META.fully_configured).label}</span></div>
       </div>
-      <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap">
+      <footer class="ov-widget-foot">
         <button class="btn btn-primary btn-sm" onclick="toast('Credential rotation flow started — wizard form opens here','success')">Rotate now</button>
         <button class="btn btn-ghost btn-sm" onclick="toast('Re-authentication initiated','success')">Re-authenticate</button>
         <button class="btn btn-ghost btn-sm" onclick="toast('Test connection passed','success')">Test connection</button>
-      </div>
-    </div>
+      </footer>
+    </section>
   `;
 }
 
@@ -5824,17 +5878,21 @@ function instancePermissionsHTML(i, inst) {
   const overrideActive = !!override;
 
   return `
-    <div class="perm-card">
-      <h3>Who can use ${escapeHtml(inst.name)}?</h3>
-      <div class="perm-sub">Defaults are inherited from <a href="#/integrations/${i.slug}" onclick="setDetailTab('${i.slug}','permissions');return false" style="color:var(--cyan);text-decoration:none">${escapeHtml(i.name)} provider permissions</a>. Override here when this instance should be available to fewer studios than the others.</div>
+    <section class="ov-widget">
+      <header class="ov-widget-h">
+        <h3 class="ov-widget-title">Who can use ${escapeHtml(inst.name)}?</h3>
+        <span class="ov-widget-meta">Inherited from <a href="#/integrations/${i.slug}" onclick="setDetailTab('${i.slug}','permissions');return false" style="color:var(--cyan);text-decoration:none">provider permissions</a></span>
+      </header>
+      <div class="ov-widget-body">
+        <p style="font-size:12.5px;color:var(--t2);line-height:1.55;margin:0 0 14px">Override here when this instance should be available to fewer studios than the others.</p>
 
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:rgba(167,139,250,0.05);border:1px solid rgba(167,139,250,0.20);border-radius:8px;margin-bottom:16px">
-        <div>
-          <div style="font-size:12.5px;font-weight:700;color:var(--t1);margin-bottom:2px">Override provider defaults</div>
-          <div style="font-size:11.5px;color:var(--t2);line-height:1.5">${overrideActive ? 'This instance has its own studio access rules.' : 'This instance follows the provider permissions.'}</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:rgba(167,139,250,0.05);border:1px solid rgba(167,139,250,0.20);border-radius:8px;margin-bottom:16px">
+          <div>
+            <div style="font-size:12.5px;font-weight:700;color:var(--t1);margin-bottom:2px">Override provider defaults</div>
+            <div style="font-size:11.5px;color:var(--t2);line-height:1.5">${overrideActive ? 'This instance has its own studio access rules.' : 'This instance follows the provider permissions.'}</div>
+          </div>
+          <div class="toggle ${overrideActive?'on':''}" onclick="toggleInstanceOverride('${i.slug}','${inst.id}')"></div>
         </div>
-        <div class="toggle ${overrideActive?'on':''}" onclick="toggleInstanceOverride('${i.slug}','${inst.id}')"></div>
-      </div>
 
       <div class="ov-cap-cards" style="grid-template-columns:repeat(3,1fr)">
         ${['governance','agentic','workforce'].map(k => {
@@ -5853,9 +5911,17 @@ function instancePermissionsHTML(i, inst) {
         }).join('')}
       </div>
 
-      <h3 style="margin-top:22px">Why per-instance permissions?</h3>
-      <p style="font-size:12.5px;color:var(--t2);line-height:1.6">Example: ${escapeHtml(i.name)} for production might be allowed in Agentic and Workforce, but the ${escapeHtml(inst.name)} sandbox instance might be restricted to Agentic only so end users do not accidentally hit dev data through Workforce channels.</p>
-    </div>
+      </div>
+    </section>
+
+    <section class="ov-widget">
+      <header class="ov-widget-h">
+        <h3 class="ov-widget-title">Why per-instance permissions?</h3>
+      </header>
+      <div class="ov-widget-body">
+        <p style="font-size:12.5px;color:var(--t2);line-height:1.6;margin:0">Example: ${escapeHtml(i.name)} for production might be allowed in Agentic and Workforce, but the ${escapeHtml(inst.name)} sandbox instance might be restricted to Agentic only so end users do not accidentally hit dev data through Workforce channels.</p>
+      </div>
+    </section>
   `;
 }
 
@@ -6038,9 +6104,17 @@ function instanceLogsHTML(i, inst) {
   const studioOpts = [['all','All studios'],['agentic','Agentic'],['workforce','Workforce'],['governance','Governance']];
 
   return `
-    <div class="audit-head">Execution logs for <strong style="color:var(--t1)">${escapeHtml(inst.name)}</strong> · <a href="#" onclick="toast('CSV export queued');return false" style="color:var(--accent);text-decoration:none">Export CSV →</a></div>
+    <section class="ov-widget">
+      <header class="ov-widget-h">
+        <h3 class="ov-widget-title">Execution logs</h3>
+        <div class="ov-widget-actions">
+          <span class="ov-widget-meta">Each row is a single tool invocation</span>
+          <a href="#" onclick="toast('CSV export queued');return false" style="color:var(--cyan);font-size:12px;font-weight:600;text-decoration:none">Export CSV →</a>
+        </div>
+      </header>
+      <div class="ov-widget-body">
 
-    <div class="log-toolbar">
+        <div class="log-toolbar">
       <div class="log-filters">
         <label class="log-filter">
           <span class="log-filter-l">Date</span>
@@ -6082,7 +6156,9 @@ function instanceLogsHTML(i, inst) {
       ${paginatorHTML(page, totalPages, totalRows, s.pageSize, 'setLogsPage')}
     `}
 
-    <div style="margin-top:14px;font-size:11px;color:var(--t3)">Logs are kept for 90 days for SOC 2 compliance. Older logs are exported to your configured SIEM if enabled.</div>
+        <div style="margin-top:14px;font-size:11px;color:var(--t3)">Logs are kept for 90 days for SOC 2 compliance. Older logs are exported to your configured SIEM if enabled.</div>
+      </div>
+    </section>
   `;
 }
 
@@ -6114,9 +6190,17 @@ function instanceAuditHTML(i, inst) {
   const uniqueActors = ['all', ...Array.from(new Set(allAudit.map(a => a.actor)))];
 
   return `
-    <div class="audit-head">Configuration audit for <strong style="color:var(--t1)">${escapeHtml(inst.name)}</strong> · <a href="#/audit" style="color:var(--accent);text-decoration:none">View workspace audit log →</a></div>
+    <section class="ov-widget">
+      <header class="ov-widget-h">
+        <h3 class="ov-widget-title">Configuration audit</h3>
+        <div class="ov-widget-actions">
+          <span class="ov-widget-meta">Every change to this instance</span>
+          <a href="#/audit" style="color:var(--cyan);font-size:12px;font-weight:600;text-decoration:none">Workspace audit log →</a>
+        </div>
+      </header>
+      <div class="ov-widget-body">
 
-    <div class="log-toolbar">
+        <div class="log-toolbar">
       <div class="log-filters">
         <label class="log-filter">
           <span class="log-filter-l">Date</span>
@@ -6155,6 +6239,8 @@ function instanceAuditHTML(i, inst) {
       </table>
       ${paginatorHTML(page, totalPages, totalRows, s.pageSize, 'setAuditPage')}
     `}
+      </div>
+    </section>
   `;
 }
 
@@ -6559,17 +6645,19 @@ function detailProviderActivity(i) {
   });
 
   return `
-    <div class="audit-head">
-      <strong style="color:var(--t1)">Provider activity</strong> for ${escapeHtml(i.name)} · Last 30 days
-      <br><span style="font-size:11px;color:var(--t3)">Lifecycle events only (instance created, deleted, integration added). For execution logs and full audit detail, open a specific instance.</span>
-    </div>
-    ${instances.length > 0 ? `
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;padding:10px 14px;background:rgba(6,182,212,0.05);border:1px solid rgba(6,182,212,0.18);border-radius:8px">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="color:var(--cyan);flex-shrink:0"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.6"/><path d="M12 8v4M12 16h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-        <span style="font-size:12px;color:var(--t2);line-height:1.5">Full execution logs and configuration audit live per instance. <a href="#/integrations/${i.slug}/instances/${instances[0].id}" style="color:var(--cyan)">Open ${escapeHtml(instances[0].name)} →</a></span>
-      </div>
-    ` : ''}
-    <table class="audit-table">
+    <section class="ov-widget">
+      <header class="ov-widget-h">
+        <h3 class="ov-widget-title">Provider activity</h3>
+        <span class="ov-widget-meta">Last 30 days · lifecycle events only</span>
+      </header>
+      <div class="ov-widget-body">
+        ${instances.length > 0 ? `
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;padding:10px 14px;background:rgba(6,182,212,0.05);border:1px solid rgba(6,182,212,0.18);border-radius:8px">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="color:var(--cyan);flex-shrink:0"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.6"/><path d="M12 8v4M12 16h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            <span style="font-size:12px;color:var(--t2);line-height:1.5">Full execution logs and configuration audit live per instance. <a href="#/integrations/${i.slug}/instances/${instances[0].id}" style="color:var(--cyan)">Open ${escapeHtml(instances[0].name)} →</a></span>
+          </div>
+        ` : ''}
+        <table class="audit-table">
       <thead><tr><th>Timestamp</th><th>Event</th><th>Target</th><th>Actor</th><th></th></tr></thead>
       <tbody>
         ${events.map(e => `
@@ -6582,10 +6670,12 @@ function detailProviderActivity(i) {
           </tr>
         `).join('')}
       </tbody>
-    </table>
-    <div style="margin-top:14px;font-size:11px;color:var(--t3);line-height:1.55">
-      Provider activity is the macro view. Open an instance to see its execution logs (every API call) and audit log (every config change).
-    </div>
+        </table>
+        <div style="margin-top:14px;font-size:11px;color:var(--t3);line-height:1.55">
+          Provider activity is the macro view. Open an instance to see its execution logs (every API call) and audit log (every config change).
+        </div>
+      </div>
+    </section>
   `;
 }
 
