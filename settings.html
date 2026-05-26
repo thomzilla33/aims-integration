@@ -2123,6 +2123,57 @@ html.theme-light .btn-primary.btn-outline{color:var(--cyan); border-color:rgba(6
   .ct-sep-dot{display:none}
 }
 
+
+/* ──────────────────────────────────────────────────────────
+   STUDIO SWITCHER DROPDOWN (P1 from design critique)
+   Click the topbar studio name to switch surfaces.
+   ────────────────────────────────────────────────────────── */
+.studio-switcher{
+  position:absolute; top:calc(100% + 8px); left:0; z-index:60;
+  min-width:340px; max-width:380px;
+  background:var(--bg2); border:1px solid var(--line);
+  border-radius:12px;
+  box-shadow:0 18px 48px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.02);
+  padding:6px;
+  opacity:0; transform:translateY(-4px) scale(.98);
+  pointer-events:none;
+  transition:opacity .15s ease, transform .15s ease;
+}
+.studio-switcher.open{opacity:1; transform:translateY(0) scale(1); pointer-events:auto}
+.studio-switcher-h{
+  padding:10px 12px 8px;
+  font-size:10.5px; font-weight:800; color:var(--t3);
+  text-transform:uppercase; letter-spacing:.08em;
+}
+.studio-switcher-item{
+  display:flex; align-items:center; gap:11px;
+  padding:9px 10px; border-radius:8px;
+  text-decoration:none; color:var(--t1);
+  transition:background .12s;
+}
+.studio-switcher-item:hover{background:var(--hover)}
+.studio-switcher-item.active{background:var(--hover-strong)}
+.studio-switcher-ico{
+  width:30px; height:30px; border-radius:7px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+}
+.studio-switcher-text{flex:1; min-width:0}
+.studio-switcher-name{font-size:13px; font-weight:700; color:var(--t1); line-height:1.3}
+.studio-switcher-desc{font-size:11px; color:var(--t3); margin-top:2px; line-height:1.4}
+.studio-switcher-current{
+  font-size:9.5px; font-weight:800; padding:2px 7px; border-radius:8px;
+  background:rgba(6,182,212,0.10); color:var(--cyan);
+  border:1px solid rgba(6,182,212,0.22);
+  text-transform:uppercase; letter-spacing:.05em; line-height:1;
+  flex-shrink:0;
+}
+.studio-switcher-arrow{color:var(--t3); font-size:14px; flex-shrink:0; padding-right:4px}
+.studio-switcher-foot{
+  padding:8px 12px 6px; margin-top:4px;
+  font-size:10.5px; color:var(--t3); line-height:1.4;
+  border-top:1px solid var(--line);
+}
+
 /* ── Build your own promo card ── */
 .build-promo{
   margin:8px 32px 24px; padding:20px 24px;
@@ -3499,7 +3550,7 @@ html.theme-light .theme-icon-moon{display:block}
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
     </button>
     <div class="tb-context-wrap">
-      <button class="tb-context" type="button" onclick="toast('App switcher — coming soon')" aria-haspopup="menu">
+      <button class="tb-context" type="button" onclick="event.stopPropagation();toggleStudioSwitcher()" aria-haspopup="menu" aria-expanded="false" id="tbContextBtn">
         <div class="tb-context-logo" style="background:var(--grad-app)">
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
             <circle cx="8" cy="8" r="1.6" fill="#fff"/>
@@ -3513,6 +3564,41 @@ html.theme-light .theme-icon-moon{display:block}
         <span class="tb-context-name">Settings</span>
         <svg class="tb-context-chev" width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 4.5L6 8l3.5-3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
+      <div class="studio-switcher" id="studioSwitcher" role="menu" aria-hidden="true">
+        <div class="studio-switcher-h">Switch surface</div>
+      <a href="settings.html" class="studio-switcher-item active" data-surface="admin">
+        <div class="studio-switcher-ico" style="background:rgba(6,182,212,0.10);color:#06B6D4;border:1px solid rgba(6,182,212,0.22)">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="2"/><circle cx="3" cy="3" r="1.3"/><circle cx="13" cy="3" r="1.3"/><circle cx="3" cy="13" r="1.3"/><circle cx="13" cy="13" r="1.3"/><path d="M4.1 4.1l2.5 2.5M11.9 4.1L9.4 6.6M4.1 11.9l2.5-2.5M11.9 11.9L9.4 9.4"/></svg>
+        </div>
+        <div class="studio-switcher-text">
+          <div class="studio-switcher-name">Admin Studio · Integrations</div>
+          <div class="studio-switcher-desc">Authenticate and govern credentials</div>
+        </div>
+        <span class="studio-switcher-current">Current</span>
+      </a>
+      <a href="data-studio.html" class="studio-switcher-item" data-surface="data">
+        <div class="studio-switcher-ico" style="background:rgba(16,185,129,0.10);color:#10B981;border:1px solid rgba(16,185,129,0.22)">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="12" height="10" rx="1.2"/><path d="M2 6.5h12M2 9.5h12M5.5 3v10M10.5 3v10"/></svg>
+        </div>
+        <div class="studio-switcher-text">
+          <div class="studio-switcher-name">Data Studio</div>
+          <div class="studio-switcher-desc">Map data flow into AIMS tables</div>
+        </div>
+        <span class="studio-switcher-arrow">↗</span>
+      </a>
+      <a href="agent-tools.html" class="studio-switcher-item" data-surface="agent">
+        <div class="studio-switcher-ico" style="background:rgba(167,139,250,0.10);color:#A78BFA;border:1px solid rgba(167,139,250,0.22)">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="1.5" y="4.5" width="4" height="3" rx=".8"/><rect x="6.5" y="1.5" width="4" height="3" rx=".8"/><rect x="6.5" y="7.5" width="4" height="3" rx=".8"/><path d="M5.5 6h1M5.5 3H6a.5.5 0 01.5.5v1"/></svg>
+        </div>
+        <div class="studio-switcher-text">
+          <div class="studio-switcher-name">Agent Studio · Tools</div>
+          <div class="studio-switcher-desc">Configure tools and wrappers for agents</div>
+        </div>
+        <span class="studio-switcher-arrow">↗</span>
+      </a>
+        <div class="studio-switcher-foot">Cross-functional — same workspace, three views</div>
+      </div>
+
     </div>
 
     <!-- Mode toggle (Browse / Operate) — orchestration thesis -->
@@ -9117,6 +9203,39 @@ document.querySelectorAll('.ssb-item.disabled').forEach(b => {
 });
 
 // Paint shell controls (mode toggle + persona pill) on initial load
+
+function toggleStudioSwitcher() {
+  const el = document.getElementById('studioSwitcher');
+  const btn = document.getElementById('tbContextBtn');
+  if (!el) return;
+  const isOpen = el.classList.toggle('open');
+  if (btn) btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  el.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
+}
+
+document.addEventListener('click', (e) => {
+  const sw = document.getElementById('studioSwitcher');
+  if (!sw || !sw.classList.contains('open')) return;
+  if (!e.target.closest('#studioSwitcher') && !e.target.closest('#tbContextBtn')) {
+    sw.classList.remove('open');
+    sw.setAttribute('aria-hidden', 'true');
+    const btn = document.getElementById('tbContextBtn');
+    if (btn) btn.setAttribute('aria-expanded', 'false');
+  }
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Escape') return;
+  const sw = document.getElementById('studioSwitcher');
+  if (sw && sw.classList.contains('open')) {
+    sw.classList.remove('open');
+    sw.setAttribute('aria-hidden', 'true');
+    const btn = document.getElementById('tbContextBtn');
+    if (btn) btn.setAttribute('aria-expanded', 'false');
+  }
+});
+
+
 paintShellControls();
 
 // Paint requests pending indicator
