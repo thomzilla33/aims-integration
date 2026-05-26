@@ -5571,14 +5571,128 @@ function paintDrawer() {
   }
 
   else if (s.step === 5) {
-    const studios = Object.keys(s.studios).filter(k=>s.studios[k]).map(k=>STUDIO_META[k].label).join(', ');
+    // Step 6 of 7 — Map fields (Data Studio handoff in wizard flow)
+    const mapping = fieldMappingFor(i.slug);
+    const customCount = mapping.customFields.length;
+    const customMappedCount = customCount - (s.mappingSkipped ? customCount : (s.mappingDecisions ? Object.values(s.mappingDecisions).filter(v => v === 'skip').length : 0));
+
     body = `
-      <div class="drawer-step-h">Step 6 of 6 · Confirm</div>
+      <div class="drawer-step-h">Step 6 of 7 · Map fields</div>
+      <div class="drawer-step-title">Connect ${escapeHtml(i.name)} fields to your AIMS schema</div>
+      <p style="font-size:12px;color:var(--t2);margin-bottom:14px;line-height:1.55">
+        Before agents can read or write data, AIMS needs to know what each field means. We auto-mapped the standard ones from our certified connector. Help us with the rest, or finish in Data Studio for full control.
+      </p>
+
+      <!-- Auto-mapped section (collapsed) -->
+      <div class="map-section map-section-ok">
+        <div class="map-section-h" onclick="toggleMapSection('auto')">
+          <span class="map-section-ic map-ic-ok"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M3 8l3 3 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <div class="map-section-text">
+            <div class="map-section-title">Auto-mapped (${mapping.autoCount} ${mapping.autoCount===1?'field':'fields'})</div>
+            <div class="map-section-sub">Standard fields we recognized from the ${escapeHtml(i.name)} connector. 100% confidence.</div>
+          </div>
+          <svg class="map-section-chev ${s.mapAutoOpen?'open':''}" width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        ${s.mapAutoOpen ? `
+          <div class="map-section-body">
+            <p style="font-size:11px;color:var(--t3);padding:0 14px 10px">Examples: <code>name</code>, <code>email</code>, <code>created_at</code>, <code>updated_at</code>, <code>id</code>… and ${mapping.autoCount-5} more. Open Data Studio to inspect each one.</p>
+          </div>
+        ` : ''}
+      </div>
+
+      <!-- Custom fields needing attention -->
+      ${customCount > 0 ? `
+        <div class="map-section map-section-warn">
+          <div class="map-section-h" style="cursor:default">
+            <span class="map-section-ic map-ic-warn">!</span>
+            <div class="map-section-text">
+              <div class="map-section-title">Needs your attention (${customCount} custom ${customCount===1?'field':'fields'})</div>
+              <div class="map-section-sub">These don't match any known ${escapeHtml(i.name)} field. Our AI suggested matches where it could.</div>
+            </div>
+          </div>
+          <div class="map-rows">
+            ${mapping.customFields.map((f, idx) => {
+              const decision = (s.mappingDecisions && s.mappingDecisions[idx]) || (f.suggested ? 'accept' : 'create');
+              const isAccept = decision === 'accept';
+              const isCreate = decision === 'create';
+              const isSkip = decision === 'skip';
+              return `
+                <div class="map-row">
+                  <div class="map-from">
+                    <code class="map-field-code">${escapeHtml(f.name)}</code>
+                    <div class="map-field-meta">${escapeHtml(f.type)}</div>
+                  </div>
+                  <div class="map-arrow">
+                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </div>
+                  <div class="map-decision">
+                    ${f.suggested ? `
+                      <label class="map-option ${isAccept?'selected':''}">
+                        <input type="radio" name="map-${idx}" ${isAccept?'checked':''} onchange="setMapDecision(${idx},'accept')"/>
+                        <div class="map-option-text">
+                          <div class="map-option-label"><code class="map-target-code">${escapeHtml(f.suggested)}</code><span class="map-confidence map-conf-${f.confidence>=85?'high':f.confidence>=60?'med':'low'}">${f.confidence}% match</span></div>
+                          <div class="map-option-sub">Suggested by AI based on field name + type</div>
+                        </div>
+                      </label>
+                    ` : ''}
+                    <label class="map-option ${isCreate?'selected':''}">
+                      <input type="radio" name="map-${idx}" ${isCreate?'checked':''} onchange="setMapDecision(${idx},'create')"/>
+                      <div class="map-option-text">
+                        <div class="map-option-label">Create new field</div>
+                        <div class="map-option-sub">Add <code class="map-target-code">${escapeHtml(f.name.replace(/__c$/,'').toLowerCase())}</code> to your AIMS schema</div>
+                      </div>
+                    </label>
+                    <label class="map-option map-option-skip ${isSkip?'selected':''}">
+                      <input type="radio" name="map-${idx}" ${isSkip?'checked':''} onchange="setMapDecision(${idx},'skip')"/>
+                      <div class="map-option-text">
+                        <div class="map-option-label">Skip this field</div>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      ` : `
+        <div class="map-section map-section-clean">
+          <div class="map-section-h" style="cursor:default">
+            <span class="map-section-ic map-ic-ok"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M3 8l3 3 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <div class="map-section-text">
+              <div class="map-section-title">Nothing else to map</div>
+              <div class="map-section-sub">${escapeHtml(i.name)} doesn't expose any custom fields in your tenant. You're good to go.</div>
+            </div>
+          </div>
+        </div>
+      `}
+
+      <!-- Helix CTA -->
+      <div class="map-helix-cta">
+        <div class="map-helix-text">
+          <div class="map-helix-title">Need full control?</div>
+          <div class="map-helix-sub">Edit formulas, calculated fields and table definitions in Data Studio.</div>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="openHelix('${i.slug}')">Open Data Studio →</button>
+      </div>
+    `;
+    footer = `<button class="btn btn-ghost btn-sm" onclick="drawerPrev()">← Back</button><button class="btn btn-primary btn-sm" onclick="drawerNext()">Continue →</button>`;
+  }
+
+  else if (s.step === 6) {
+    const studios = Object.keys(s.studios).filter(k=>s.studios[k]).map(k=>STUDIO_META[k].label).join(', ');
+    const mapping = fieldMappingFor(i.slug);
+    const customCount = mapping.customFields.length;
+    const decisions = s.mappingDecisions || {};
+    const skipCount = Object.values(decisions).filter(v => v === 'skip').length;
+    const mappedCount = customCount - skipCount;
+    body = `
+      <div class="drawer-step-h">Step 7 of 7 · Confirm</div>
       <div class="drawer-step-title">Review and connect</div>
       <div class="confirm-summary">
         <strong>${escapeHtml(i.name)}</strong> will be available in <strong>${escapeHtml(studios||'no studios')}</strong>.<br>
         Authentication: <strong>${s.authMethod==='oauth'?'OAuth 2.0':s.authMethod==='apikey'?'API token':'Service account'}</strong>${s.displayName?' · "'+escapeHtml(s.displayName)+'"':''}.<br>
         ${i.capabilities.length} ${i.capabilities.length===1?'capability':'capabilities'} enabled · Visible to Workspace Admins.<br>
+        Field mapping: <strong style="color:var(--green)">${mapping.autoCount} auto-mapped</strong>${customCount>0?`, <strong style="color:var(--green)">${mappedCount} custom resolved</strong>${skipCount>0?`, <strong style="color:var(--t3)">${skipCount} skipped</strong>`:''}`:''}.<br>
         Personal connections ${s.allowPersonal?'<strong style="color:var(--green)">allowed</strong>':'<strong style="color:var(--t3)">disabled</strong>'}.
       </div>
       <p style="font-size:12px;color:var(--t2)">After connecting, you can refine per-studio roles, manage capabilities and view audit events.</p>
@@ -5600,6 +5714,15 @@ function paintDrawer() {
 function selectAuth(m){ state.drawerState.authMethod = m; paintDrawer() }
 function drawerNext(){ state.drawerState.step++; paintDrawer() }
 function drawerPrev(){ state.drawerState.step--; paintDrawer() }
+function toggleMapSection(which){
+  if (which === 'auto') state.drawerState.mapAutoOpen = !state.drawerState.mapAutoOpen;
+  paintDrawer();
+}
+function setMapDecision(idx, decision){
+  state.drawerState.mappingDecisions = state.drawerState.mappingDecisions || {};
+  state.drawerState.mappingDecisions[idx] = decision;
+  paintDrawer();
+}
 function toggleDrawerStudio(k){ state.drawerState.studios[k] = !state.drawerState.studios[k]; paintDrawer() }
 function simulateOAuth(){
   toast('Opening OAuth popup…','success');
@@ -6854,6 +6977,59 @@ document.addEventListener('keydown', (e) => {
 });
 
 /* ====================== HELIX DATA STUDIO HANDOFF ====================== */
+
+// Mock field mappings shown in the wizard step "Map fields" and in the Helix drawer.
+// Auto-count is the number of standard fields we auto-mapped. customFields are the ones
+// that need human attention — exactly the scenario Mike described in the founder session
+// (Salesforce custom objects with names AIMS does not know).
+const MOCK_FIELD_MAPPING = {
+  salesforce: {
+    autoCount: 42,
+    customFields: [
+      { name: 'rep_quota_attainment_pct__c',     type: 'number',   suggested: 'rep_quota_pct',     confidence: 92 },
+      { name: 'lifetime_value_estimate__c',      type: 'number',   suggested: 'ltv_estimate',      confidence: 90 },
+      { name: 'roi_calc__c',                     type: 'number',   suggested: 'roi',               confidence: 85 },
+      { name: 'gary_crossley_special_status__c', type: 'string',   suggested: 'dealership_status', confidence: 58 },
+      { name: 'pink_fluffy_slippers_qty__c',     type: 'number',   suggested: null,                confidence: 0  },
+      { name: 'abcd_classification__c',          type: 'string',   suggested: null,                confidence: 0  }
+    ]
+  },
+  hubspot: {
+    autoCount: 38,
+    customFields: [
+      { name: 'pipeline_velocity__c',  type: 'number', suggested: 'deal_velocity', confidence: 88 },
+      { name: 'lead_score_v2__c',      type: 'number', suggested: 'lead_score',    confidence: 95 },
+      { name: 'custom_lifecycle__c',   type: 'string', suggested: 'lifecycle',     confidence: 70 }
+    ]
+  },
+  snowflake: {
+    autoCount: 124,
+    customFields: [
+      { name: 'fact_dealership_kpi__cf', type: 'number', suggested: 'kpi_value',      confidence: 90 },
+      { name: 'attribute_holdback__cf',  type: 'number', suggested: 'holdback',       confidence: 75 }
+    ]
+  },
+  zendesk: {
+    autoCount: 31,
+    customFields: [
+      { name: 'csat_dispatch_v3', type: 'string', suggested: 'csat_response', confidence: 80 }
+    ]
+  },
+  github: {
+    autoCount: 22,
+    customFields: []
+  },
+  default: {
+    autoCount: 28,
+    customFields: [
+      { name: 'custom_field_a', type: 'string', suggested: 'custom_a', confidence: 75 }
+    ]
+  }
+};
+
+function fieldMappingFor(slug) {
+  return MOCK_FIELD_MAPPING[slug] || MOCK_FIELD_MAPPING.default;
+}
 
 // Engineering brief §8 — Data Sync activation opens the pipe, but data doesn't flow until customer verifies mapping in Helix Data Studio
 const HELIX_DEFAULT_MAPPINGS = {
