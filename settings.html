@@ -2055,6 +2055,66 @@ html.theme-light .btn-primary.btn-outline{color:var(--cyan); border-color:rgba(6
   .auth-flow-arrow{font-size:12px}
 }
 
+
+/* ──────────────────────────────────────────────────────────
+   SIMPLIFIED CATALOG TOOLBAR (Sprint 6 / Edgardo feedback)
+   "Esto de filtros es una alucinación · ya en el Figma debería
+   ser simples". Goes from 5 rows to 3 visible rows + active
+   chips. Removes the verbose row-prefix labels (Source / Studio /
+   Capability / State) in favor of grouped chip rails with dot
+   separators.
+   ────────────────────────────────────────────────────────── */
+.catalog-toolbar-simple{
+  padding:12px 14px 10px;
+  gap:8px;
+}
+.catalog-toolbar-simple .ct-header{
+  padding-bottom:8px;
+  border-bottom:1px solid rgba(255,255,255,0.04);
+  margin-bottom:0;
+}
+.catalog-toolbar-simple .ct-header .ct-search{flex:1; max-width:380px; min-width:200px}
+.catalog-toolbar-simple .ct-row{padding-top:6px; border-top:none}
+
+/* Categories single-row scroller */
+.ct-row-cats{padding:6px 0 4px}
+.ct-pills-scroll{
+  display:flex; gap:6px; flex-wrap:nowrap;
+  overflow-x:auto; padding-bottom:4px; margin-bottom:-4px;
+  scrollbar-width:thin;
+  scroll-behavior:smooth;
+}
+.ct-pills-scroll::-webkit-scrollbar{height:5px}
+.ct-pills-scroll::-webkit-scrollbar-track{background:transparent}
+.ct-pills-scroll::-webkit-scrollbar-thumb{background:var(--line); border-radius:4px}
+.ct-pills-scroll::-webkit-scrollbar-thumb:hover{background:var(--line-strong)}
+.ct-pills-scroll .ct-cat{flex-shrink:0}
+
+/* Compact filter rail */
+.ct-row-mini{
+  display:flex; flex-wrap:wrap; gap:6px 4px; align-items:center;
+}
+.ct-mini-group{display:inline-flex; gap:4px; flex-wrap:wrap; align-items:center}
+.ct-sep-dot{
+  color:var(--t3); font-size:10px; opacity:.6;
+  padding:0 2px; user-select:none; flex-shrink:0;
+}
+.ct-clear-all{
+  margin-left:auto; padding:5px 11px;
+  background:transparent; border:1px solid transparent;
+  color:var(--t3); cursor:pointer; font-family:inherit;
+  font-size:11.5px; font-weight:600; border-radius:6px;
+  transition:color .12s, background .12s, border-color .12s;
+}
+.ct-clear-all:hover{color:var(--red); background:rgba(239,68,68,0.06); border-color:rgba(239,68,68,0.20)}
+
+@media (max-width:780px){
+  .catalog-toolbar-simple .ct-header{flex-wrap:wrap; gap:8px}
+  .catalog-toolbar-simple .ct-search{max-width:none; flex:1 1 100%; order:3}
+  .ct-row-mini{gap:4px 2px}
+  .ct-sep-dot{display:none}
+}
+
 /* ── Build your own promo card ── */
 .build-promo{
   margin:8px 32px 24px; padding:20px 24px;
@@ -5138,74 +5198,65 @@ function renderHome() {
 
     <div class="mkt-section" id="catalogSection">
 
-      <div class="catalog-toolbar" id="catalogToolbar">
-        <!-- Header: title + count + sort + search -->
+      <div class="catalog-toolbar catalog-toolbar-simple" id="catalogToolbar">
+        <!-- Row 1: title + count + search + sort -->
         <div class="ct-header">
           <div class="ct-title-group">
-            <div class="ct-title">${isFiltering ? 'Filtered results' : 'Browse all integrations'}</div>
+            <div class="ct-title">${isFiltering ? 'Filtered results' : 'Browse all'}</div>
             <div class="ct-count" id="ctCount">${filtered.length}</div>
-            <div class="ct-header-sort">
-              <button class="ct-header-sort-btn ${(state.sortBy||'popular')==='popular'?'active':''}" onclick="setSort('popular')">Popular</button>
-              <button class="ct-header-sort-btn ${state.sortBy==='alphabetical'?'active':''}" onclick="setSort('alphabetical')">A–Z</button>
-              <button class="ct-header-sort-btn ${state.sortBy==='recent'?'active':''}" onclick="setSort('recent')">Recent</button>
-            </div>
           </div>
           <div class="ct-search">
             <svg class="ct-search-ic" width="13" height="13" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4" stroke="currentColor" stroke-width="1.3"/><path d="M9.5 9.5L12 12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-            <input type="text" placeholder="Search Slack, Salesforce, Snowflake…" value="${escapeHtml(state.search)}" oninput="setSearch(this.value)"/>
+            <input type="text" placeholder="Search integrations…" value="${escapeHtml(state.search)}" oninput="setSearch(this.value)"/>
+          </div>
+          <div class="ct-header-sort">
+            <button class="ct-header-sort-btn ${(state.sortBy||'popular')==='popular'?'active':''}" onclick="setSort('popular')">Popular</button>
+            <button class="ct-header-sort-btn ${state.sortBy==='alphabetical'?'active':''}" onclick="setSort('alphabetical')">A–Z</button>
+            <button class="ct-header-sort-btn ${state.sortBy==='recent'?'active':''}" onclick="setSort('recent')">Recent</button>
           </div>
         </div>
 
         <!-- Active filter chips (only when filtering) -->
         ${activeChipsHTML()}
 
-        <!-- Source tabs + Build your own -->
-        <div class="ct-row">
-          <span class="ct-label">Source</span>
-          <div class="ct-tabs">
-            ${['all','official','partner','private'].map(s => {
-              const count = s==='all' ? total : INTEGRATIONS.filter(i=>i.source===s).length;
-              const label = s==='all' ? 'All' : s.charAt(0).toUpperCase()+s.slice(1);
-              return `<button class="ct-tab ${state.activeSrc===s?'active':''}" onclick="setSrc('${s}')">${label} <span class="ct-tab-count">${count}</span></button>`;
-            }).join('')}
-          </div>
-          <span class="ct-sep-v"></span>
-          <a class="ct-build-link" href="#/build">+ Build your own</a>
-        </div>
-
-        <!-- Studio filter (NEW position — integrated into toolbar) -->
-        <div class="ct-row">
-          <span class="ct-label">Studio</span>
-          <button class="ct-mini ${!state.activeStudio?'active':''}" style="${!state.activeStudio?'background:rgba(43,127,255,0.10);border-color:rgba(43,127,255,0.30);color:var(--accent)':''}" onclick="setStudio(null)">All <span style="opacity:.6;font-size:10px;margin-left:3px">${total}</span></button>
-          ${Object.keys(STUDIO_META).map(s => {
-            const meta = STUDIO_META[s];
-            const count = INTEGRATIONS.filter(it => it.studios && it.studios[s]).length;
-            const active = state.activeStudio === s;
-            const style = active ? `background:color-mix(in srgb, ${meta.color} 12%, transparent);border-color:color-mix(in srgb, ${meta.color} 35%, transparent);color:${meta.color}` : '';
-            return `<button class="ct-mini ${active?'active':''}" style="${style}" onclick="setStudio('${s}')"><span style="display:inline-flex;color:${active?meta.color:'inherit'};margin-right:4px;vertical-align:middle">${meta.icon}</span>${escapeHtml(meta.label)} <span style="opacity:.6;font-size:10px;margin-left:3px">${count}</span></button>`;
-          }).join('')}
-        </div>
-
-        <!-- Categories — top 5 + More -->
-        <div class="ct-row">
-          <span class="ct-label">Category</span>
-          <div class="ct-pills">
-            ${(state.catMoreOpen ? CATEGORIES : CATEGORIES.slice(0, 5)).map(c => {
+        <!-- Row 2: Categories — single horizontal scrolling pill rail -->
+        <div class="ct-row ct-row-cats">
+          <div class="ct-pills ct-pills-scroll">
+            ${CATEGORIES.map(c => {
               const active = state.activeCats.has(c.slug);
               return `<button class="ct-cat ${active?'active':''}" style="--cat-color:${c.color}" onclick="toggleCat('${c.slug}')"><span class="ct-cat-ico" style="color:${c.color}">${c.icon}</span>${escapeHtml(c.label)}</button>`;
             }).join('')}
-            ${CATEGORIES.length > 5 ? `<button class="ct-cat-more ${state.catMoreOpen?'open':''}" onclick="toggleCatMore()">${state.catMoreOpen?'Less ▴':`More <span style="opacity:.6">${CATEGORIES.length-5}</span> ▾`}</button>` : ''}
           </div>
         </div>
 
-        <!-- Refinements: capability + state -->
-        <div class="ct-row">
-          <span class="ct-label">Capability</span>
-          ${CAP_TYPES.map(k => `<button class="ct-mini cap-${k} ${state.activeCaps.has(k)?'active':''}" onclick="toggleCap('${k}')">${escapeHtml(CAP_META[k].label)}</button>`).join('')}
-          <span class="ct-sep-v"></span>
-          <span class="ct-label">State</span>
-          <button class="ct-mini state-on ${state.activeStates.has('connected')?'active':''}" onclick="toggleState('connected')">Connected</button>
-          <button class="ct-mini state-off ${state.activeStates.has('not_connected')?'active':''}" onclick="toggleState('not_connected')">Not connected</button>
+        <!-- Row 3: Compact filter rail (capability · state · studio · source) -->
+        <div class="ct-row ct-row-mini">
+          <div class="ct-mini-group" data-group="capability">
+            ${CAP_TYPES.map(k => `<button class="ct-mini cap-${k} ${state.activeCaps.has(k)?'active':''}" onclick="toggleCap('${k}')">${escapeHtml(CAP_META[k].label)}</button>`).join('')}
+          </div>
+          <span class="ct-sep-dot">·</span>
+          <div class="ct-mini-group" data-group="state">
+            <button class="ct-mini state-on ${state.activeStates.has('connected')?'active':''}" onclick="toggleState('connected')">Connected</button>
+            <button class="ct-mini state-off ${state.activeStates.has('not_connected')?'active':''}" onclick="toggleState('not_connected')">Not connected</button>
+          </div>
+          <span class="ct-sep-dot">·</span>
+          <div class="ct-mini-group" data-group="studio">
+            ${Object.keys(STUDIO_META).map(s => {
+              const meta = STUDIO_META[s];
+              const active = state.activeStudio === s;
+              const style = active ? `background:color-mix(in srgb, ${meta.color} 12%, transparent);border-color:color-mix(in srgb, ${meta.color} 35%, transparent);color:${meta.color}` : '';
+              return `<button class="ct-mini ${active?'active':''}" style="${style}" onclick="setStudio('${active ? 'null' : s}')"><span style="display:inline-flex;color:${active?meta.color:'inherit'};margin-right:4px;vertical-align:middle">${meta.icon}</span>${escapeHtml(meta.label)}</button>`;
+            }).join('')}
+          </div>
+          <span class="ct-sep-dot">·</span>
+          <div class="ct-mini-group" data-group="source">
+            ${['official','partner','private'].map(s => {
+              const active = state.activeSrc === s;
+              const label = s.charAt(0).toUpperCase()+s.slice(1);
+              return `<button class="ct-mini ${active?'active':''}" onclick="setSrc('${active ? 'all' : s}')">${label}</button>`;
+            }).join('')}
+          </div>
+          ${isFiltering ? `<button class="ct-clear-all" onclick="clearFilters()">Clear all</button>` : ''}
         </div>
       </div>
 
@@ -5555,7 +5606,11 @@ function toggleCap(c){ state.activeCaps.has(c) ? state.activeCaps.delete(c) : st
 function toggleState(s){ state.activeStates.has(s) ? state.activeStates.delete(s) : state.activeStates.add(s); renderHome() }
 function setSearch(v){ state.search = v; renderHome(); setTimeout(()=>{ const inp=document.querySelector('.search-input'); if(inp){inp.focus();inp.setSelectionRange(v.length,v.length)} },0) }
 function clearFilters(){ state.activeCats.clear(); state.activeCaps.clear(); state.activeStates.clear(); state.search=''; state.activeSrc='all'; state.activeStudio=null; renderHome() }
-function setStudio(s){ state.activeStudio = (state.activeStudio===s)?null:s; renderHome() }
+function setStudio(s){
+  if (s === 'null') s = null;
+  state.activeStudio = (state.activeStudio===s)?null:s;
+  renderHome();
+}
 function setSort(s){ state.sortBy = s; renderHome() }
 function toggleCatMore(){ state.catMoreOpen = !state.catMoreOpen; renderHome() }
 
