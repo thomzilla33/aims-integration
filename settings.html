@@ -8778,6 +8778,25 @@ paintShellControls();
   dot.style.display = pending > 0 ? '' : 'none';
 })();
 
+// Honor ?request=<name> URL param coming from Data Studio request CTA.
+// Pre-fills the integration name on the request form, then navigates to it.
+(function honorRequestParam(){
+  try {
+    const url = new URL(window.location.href);
+    const requested = url.searchParams.get('request');
+    if (requested !== null) {
+      requestFormState.integrationName = requested || '';
+      // Clean the URL so reload does not re-trigger
+      url.searchParams.delete('request');
+      window.history.replaceState({}, '', url.pathname + (url.search || '') + (url.hash || '#/request'));
+      // Force route to the form
+      if (!location.hash.startsWith('#/request')) {
+        location.hash = '#/request';
+      }
+    }
+  } catch(e){}
+})();
+
 route();
 </script>
 
