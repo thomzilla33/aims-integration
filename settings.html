@@ -1808,6 +1808,75 @@ html.theme-light .btn-primary.btn-outline{color:var(--cyan); border-color:rgba(6
 }
 .mkt-hero-anchor-link:hover{text-decoration:underline}
 
+
+/* ──────────────────────────────────────────────────────────
+   OVERVIEW WIDGETS — consistent card pattern for every section
+   ────────────────────────────────────────────────────────── */
+.ov-widget{
+  background:var(--bg2);
+  border:1px solid var(--line);
+  border-radius:12px;
+  margin-bottom:14px;
+  overflow:hidden;
+}
+.ov-widget:last-child{margin-bottom:0}
+.ov-widget-h{
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  padding:14px 18px 10px;
+}
+.ov-widget-title{
+  font-size:14px; font-weight:700; color:var(--t1);
+  letter-spacing:-0.005em; margin:0;
+  display:inline-flex; align-items:center; gap:10px;
+}
+.ov-widget-title h3{font-size:inherit; font-weight:inherit; color:inherit; margin:0}
+.ov-widget-eyebrow{
+  font-size:10px; font-weight:700; color:var(--t3);
+  text-transform:uppercase; letter-spacing:.08em;
+}
+.ov-widget-meta{
+  font-size:11px; color:var(--t3); font-weight:500;
+}
+.ov-widget-actions{display:inline-flex; gap:6px; align-items:center}
+.ov-widget-body{
+  padding:0 18px 18px;
+  font-size:13px; color:var(--t2); line-height:1.6;
+}
+.ov-widget-body p{margin:0; line-height:1.6}
+.ov-widget-body p + p{margin-top:10px}
+
+/* When a widget has no header content (CTA-only), tighten body padding */
+.ov-widget-cta .ov-widget-body{padding:20px}
+
+/* Right-column side widget: condensed key-value rows */
+.ov-side-body{padding:6px 18px 14px}
+.ov-side-body .ov-side-row{padding:9px 0; border-bottom:1px solid var(--line)}
+.ov-side-body .ov-side-row:last-child{border-bottom:none}
+
+/* Capability sub-cards inside the "What you can do with it" widget:
+   slightly lighter background so the nesting hierarchy reads cleanly */
+.ov-widget .ov-cap-card{background:var(--bg3); border-color:var(--line)}
+.ov-widget .ov-cap-cards{margin:0}
+
+/* Used-in widget body: cards inside should not be doubled */
+.ov-widget .used-in-grid{margin:0}
+.used-in-wrap{margin:0}
+
+/* Override the old h3 styles that no longer apply (kept for back-compat
+   but flat headings inside .ov-widget should not have extra spacing) */
+.ov-widget .ov-widget-title{margin-top:0; margin-bottom:0}
+
+/* Instances widget: tweak header inline */
+#instances .ov-widget-h{padding-bottom:10px}
+#instances .inst-add-btn{font-size:12px; padding:5px 10px; background:var(--hover); border:1px solid var(--line); border-radius:7px; color:var(--t1); cursor:pointer; font-weight:600}
+#instances .inst-add-btn:hover{background:var(--hover-strong); border-color:var(--line-strong)}
+#instances .inst-list{padding:0 18px 16px; display:flex; flex-direction:column; gap:6px}
+
+@media (max-width:780px){
+  .ov-widget-h{flex-wrap:wrap; padding:14px 14px 10px}
+  .ov-widget-body{padding:0 14px 14px}
+}
+
 /* ── Build your own promo card ── */
 .build-promo{
   margin:8px 32px 24px; padding:20px 24px;
@@ -4211,36 +4280,41 @@ function studioChipsHTML(integration) {
 function usedInHTML(integration) {
   const studios = ['governance','agentic','workforce'];
   return `
-    <div class="used-in-wrap">
-      <div class="used-in-label">Used in</div>
-      <div class="used-in-grid">
-        ${studios.map(s => {
-          const meta = STUDIO_META[s];
-          const st = getStudioState(integration, s);
-          const usage = (STUDIO_USAGE[integration.slug] || {})[s];
-          const klass = st==='disabled' ? 'unused' : 'used';
-          let metric = 'Not enabled';
-          let detail = '';
-          if (st==='active' && usage) {
-            metric = `<strong style="color:var(--t1)">${usage.count.toLocaleString()}</strong> ${escapeHtml(usage.unit)}`;
-            detail = usage.detail || '';
-          } else if (st==='idle') {
-            metric = 'Enabled · no recent usage';
-            detail = 'Last 7 days';
-          }
-          return `
-            <div class="used-in-card studio-${meta.cls} ${klass}" ${st!=='disabled'?`onclick="navigate('#/integrations/${integration.slug}');setDetailTab('${integration.slug}','permissions')"`:''}>
-              <div class="used-in-ico">${meta.icon}</div>
-              <div class="used-in-text">
-                <div class="used-in-name">${meta.label}</div>
-                <div class="used-in-metric">${metric}</div>
-                ${detail?`<div class="used-in-detail">${escapeHtml(detail)}</div>`:''}
+    <section class="ov-widget">
+      <header class="ov-widget-h">
+        <span class="ov-widget-eyebrow">Used in studios</span>
+        <span class="ov-widget-meta">Click any active studio to manage its permissions</span>
+      </header>
+      <div class="ov-widget-body">
+        <div class="used-in-grid">
+          ${studios.map(s => {
+            const meta = STUDIO_META[s];
+            const st = getStudioState(integration, s);
+            const usage = (STUDIO_USAGE[integration.slug] || {})[s];
+            const klass = st==='disabled' ? 'unused' : 'used';
+            let metric = 'Not enabled';
+            let detail = '';
+            if (st==='active' && usage) {
+              metric = `<strong style="color:var(--t1)">${usage.count.toLocaleString()}</strong> ${escapeHtml(usage.unit)}`;
+              detail = usage.detail || '';
+            } else if (st==='idle') {
+              metric = 'Enabled · no recent usage';
+              detail = 'Last 7 days';
+            }
+            return `
+              <div class="used-in-card studio-${meta.cls} ${klass}" ${st!=='disabled'?`onclick="navigate('#/integrations/${integration.slug}');setDetailTab('${integration.slug}','permissions')"`:''}>
+                <div class="used-in-ico">${meta.icon}</div>
+                <div class="used-in-text">
+                  <div class="used-in-name">${meta.label}</div>
+                  <div class="used-in-metric">${metric}</div>
+                  ${detail?`<div class="used-in-detail">${escapeHtml(detail)}</div>`:''}
+                </div>
               </div>
-            </div>
-          `;
-        }).join('')}
+            `;
+          }).join('')}
+        </div>
       </div>
-    </div>
+    </section>
   `;
 }
 
@@ -4248,12 +4322,12 @@ function instancesSectionHTML(integration) {
   const instances = instancesOf(integration.slug);
   if (instances.length === 0) return '';
   return `
-    <div class="inst-section">
-      <div class="inst-section-h">
-        <div class="inst-section-title">Instances <span class="inst-count"><span class="inst-count-dot"></span>${instances.length} active</span></div>
+    <section class="ov-widget" id="instances">
+      <header class="ov-widget-h">
+        <h3 class="ov-widget-title">Instances <span class="inst-count"><span class="inst-count-dot"></span>${instances.length} active</span></h3>
         <button class="inst-add-btn" onclick="openConnect('${integration.slug}')">+ Add another instance</button>
-      </div>
-      <div class="inst-list">
+      </header>
+      <div class="ov-widget-body inst-list">
         ${instances.map(inst => {
           const status = STATUS_META[inst.status] || STATUS_META.fully_configured;
           const totalCaps = (inst.activeCaps.tool?.length||0) + (inst.activeCaps.data_sync?.length||0) + (inst.activeCaps.mcp?.length||0);
@@ -4284,7 +4358,7 @@ function instancesSectionHTML(integration) {
           `;
         }).join('')}
       </div>
-    </div>
+    </section>
   `;
 }
 
@@ -6069,51 +6143,86 @@ function detailOverview(i) {
     ${i.connected ? usedInHTML(i) : ''}
     <div class="ov-cols">
       <div class="ov-main">
-        <h3>About this integration</h3>
-        <p>${escapeHtml(i.desc)} This connector exposes ${i.capabilities.length} ${i.capabilities.length===1?'capability':'capabilities'} that can be consumed from any studio in AIMS-OS, subject to the permissions configured by your workspace admin.</p>
-        <p>${escapeHtml(i.vendor)} is a recognized vendor in the ${escapeHtml((CATEGORIES.find(c=>c.slug===i.category)||{}).label||'')} category. The integration is maintained ${i.source==='official'?'by AIMS-OS':i.source==='partner'?'by '+(i.partnerBy||'a verified partner'):'by your workspace team'}.</p>
 
-        <h3>What you can do with it</h3>
-        <div class="ov-cap-cards">
-          ${i.capabilities.map(c => `
-            <div class="ov-cap-card">
-              <div class="ov-cap-card-h"><span class="cap-chip ${c}">${escapeHtml(CAP_META[c].label)}</span></div>
-              <div class="ov-cap-card-d">${capDescriptionForIntegration(i, c)}</div>
+        <section class="ov-widget">
+          <header class="ov-widget-h">
+            <h3 class="ov-widget-title">About this integration</h3>
+          </header>
+          <div class="ov-widget-body">
+            <p>${escapeHtml(i.desc)} This connector exposes ${i.capabilities.length} ${i.capabilities.length===1?'capability':'capabilities'} that can be consumed from any studio in AIMS-OS, subject to the permissions configured by your workspace admin.</p>
+            <p style="margin-top:10px">${escapeHtml(i.vendor)} is a recognized vendor in the ${escapeHtml((CATEGORIES.find(c=>c.slug===i.category)||{}).label||'')} category. The integration is maintained ${i.source==='official'?'by AIMS-OS':i.source==='partner'?'by '+(i.partnerBy||'a verified partner'):'by your workspace team'}.</p>
+          </div>
+        </section>
+
+        <section class="ov-widget">
+          <header class="ov-widget-h">
+            <h3 class="ov-widget-title">What you can do with it</h3>
+            <span class="ov-widget-meta">${i.capabilities.length} capabilit${i.capabilities.length===1?'y':'ies'} declared by the connector</span>
+          </header>
+          <div class="ov-widget-body">
+            <div class="ov-cap-cards">
+              ${i.capabilities.map(c => `
+                <div class="ov-cap-card">
+                  <div class="ov-cap-card-h"><span class="cap-chip ${c}">${escapeHtml(CAP_META[c].label)}</span></div>
+                  <div class="ov-cap-card-d">${capDescriptionForIntegration(i, c)}</div>
+                </div>
+              `).join('')}
             </div>
-          `).join('')}
-        </div>
+          </div>
+        </section>
 
-        <h3>Use cases</h3>
-        <ul class="ov-uses">
-          ${(i.useCases||defaultUseCases(i)).map(u=>`<li>${escapeHtml(u)}</li>`).join('')}
-        </ul>
+        <section class="ov-widget">
+          <header class="ov-widget-h">
+            <h3 class="ov-widget-title">Use cases</h3>
+          </header>
+          <div class="ov-widget-body">
+            <ul class="ov-uses">
+              ${(i.useCases||defaultUseCases(i)).map(u=>`<li>${escapeHtml(u)}</li>`).join('')}
+            </ul>
+          </div>
+        </section>
 
         ${i.scopes ? `
-          <h3>Required scopes</h3>
-          <div class="scope-chips">${i.scopes.map(s=>`<span class="scope-chip">${escapeHtml(s)}</span>`).join('')}</div>
+          <section class="ov-widget">
+            <header class="ov-widget-h">
+              <h3 class="ov-widget-title">Required scopes</h3>
+              <span class="ov-widget-meta">${i.scopes.length} OAuth scope${i.scopes.length===1?'':'s'} requested</span>
+            </header>
+            <div class="ov-widget-body">
+              <div class="scope-chips">${i.scopes.map(s=>`<span class="scope-chip">${escapeHtml(s)}</span>`).join('')}</div>
+            </div>
+          </section>
         ` : ''}
 
         ${!i.connected ? `
-          <div class="lock-overlay" style="margin-top:24px">
-            <div class="lock-overlay-h">Before you connect</div>
-            <div class="lock-overlay-p">This integration will request the scopes shown above. Capabilities, Permissions and Audit unlock once connected.</div>
-            <button class="btn btn-primary btn-sm" onclick="openConnect('${i.slug}')">Connect ${escapeHtml(i.name)}</button>
-          </div>
+          <section class="ov-widget ov-widget-cta">
+            <div class="ov-widget-body">
+              <div class="lock-overlay-h">Before you connect</div>
+              <div class="lock-overlay-p">This integration will request the scopes shown above. Capabilities, Permissions and Audit unlock once connected.</div>
+              <button class="btn btn-primary btn-sm" onclick="openConnect('${i.slug}')">Connect ${escapeHtml(i.name)}</button>
+            </div>
+          </section>
         ` : ''}
 
         ${instancesSectionHTML(i)}
       </div>
 
-      <div class="ov-side">
-        <h3 style="margin-top:0;margin-bottom:8px">Integration details</h3>
-        <div class="ov-side-row"><span class="ov-side-k">Maintainer</span><span class="ov-side-v">${i.source==='official'?'AIMS-OS':i.source==='partner'?escapeHtml(i.partnerBy||'Verified partner'):'Built by your workspace'}</span></div>
-        <div class="ov-side-row"><span class="ov-side-k">Version</span><span class="ov-side-v">2.4.1 · <a href="#" onclick="toast('Changelog opened');return false;">Changelog</a></span></div>
-        <div class="ov-side-row"><span class="ov-side-k">Documentation</span><span class="ov-side-v"><a href="#" onclick="toast('Docs opened in new tab');return false;">View docs ↗</a></span></div>
-        <div class="ov-side-row"><span class="ov-side-k">Support</span><span class="ov-side-v">${i.source==='official'?'support@aims-os.ai':i.source==='partner'?'partner-support@'+(i.partnerBy||'partner').toLowerCase().replace(/\s+/g,'')+'.com':'internal'}</span></div>
-        <div class="ov-side-row"><span class="ov-side-k">Data residency</span><span class="ov-side-v">US-East · EU available</span></div>
-        <div class="ov-side-row"><span class="ov-side-k">Compliance</span><div class="ov-comp"><span class="src-badge">SOC 2</span><span class="src-badge">ISO 27001</span><span class="src-badge">GDPR</span></div></div>
-        <div class="ov-side-row"><span class="ov-side-k">Last security review</span><span class="ov-side-v">2026-03-10</span></div>
-      </div>
+      <aside class="ov-side">
+        <section class="ov-widget">
+          <header class="ov-widget-h">
+            <h3 class="ov-widget-title">Integration details</h3>
+          </header>
+          <div class="ov-widget-body ov-side-body">
+            <div class="ov-side-row"><span class="ov-side-k">Maintainer</span><span class="ov-side-v">${i.source==='official'?'AIMS-OS':i.source==='partner'?escapeHtml(i.partnerBy||'Verified partner'):'Built by your workspace'}</span></div>
+            <div class="ov-side-row"><span class="ov-side-k">Version</span><span class="ov-side-v">2.4.1 · <a href="#" onclick="toast('Changelog opened');return false;">Changelog</a></span></div>
+            <div class="ov-side-row"><span class="ov-side-k">Documentation</span><span class="ov-side-v"><a href="#" onclick="toast('Docs opened in new tab');return false;">View docs ↗</a></span></div>
+            <div class="ov-side-row"><span class="ov-side-k">Support</span><span class="ov-side-v">${i.source==='official'?'support@aims-os.ai':i.source==='partner'?'partner-support@'+(i.partnerBy||'partner').toLowerCase().replace(/\s+/g,'')+'.com':'internal'}</span></div>
+            <div class="ov-side-row"><span class="ov-side-k">Data residency</span><span class="ov-side-v">US-East · EU available</span></div>
+            <div class="ov-side-row"><span class="ov-side-k">Compliance</span><div class="ov-comp"><span class="src-badge">SOC 2</span><span class="src-badge">ISO 27001</span><span class="src-badge">GDPR</span></div></div>
+            <div class="ov-side-row"><span class="ov-side-k">Last security review</span><span class="ov-side-v">2026-03-10</span></div>
+          </div>
+        </section>
+      </aside>
     </div>
   `;
 }
