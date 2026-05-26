@@ -8459,68 +8459,102 @@ function aiRender(text) {
 
 const TOUR_STEPS = [
   {
-    title:'Welcome to AIMS-OS Integrations',
-    body:'This is the workspace surface for connecting every external tool — Slack, Salesforce, Snowflake, GitHub, anything. Let\'s take a 90-second tour. Use <strong>← →</strong> or the buttons below to navigate.',
-    route:'#/integrations'
+    title:'Welcome to AIMS-OS',
+    body:'You are in <strong>Admin Studio · Integrations</strong> — one of three cross-functional surfaces. We will walk through it, then point you to Data Studio and Agent Studio. About 3 minutes. Use <strong>← →</strong> or the buttons below.',
+    route:'#/integrations',
+    mode:'browse',
+    persona:'admin'
   },
   {
-    title:'Active in your workspace',
-    body:'See what\'s already connected at a glance. Each avatar shows real-time health: <strong>green</strong> = healthy, <strong>amber</strong> = degraded, <strong>red</strong> = failed. Hover to see which studios use it.',
+    title:'Three studios, one workspace',
+    body:'Click the <strong>Admin Studio</strong> name in the topbar to open the studio switcher. The three surfaces filter the same integrations by what they expose: Admin authenticates · Data Studio maps the data flow · Agent Studio configures Tools.',
     route:'#/integrations',
-    target:'.active-strip'
+    target:'#tbContextBtn',
+    openSwitcher:true
   },
   {
-    title:'One smart filter toolbar',
-    body:'Filter by <strong>Studio</strong>, <strong>Source</strong>, <strong>Category</strong>, or <strong>Capability</strong>. Active filters appear as removable chips at top. Sort and search live in the header.',
+    title:'Two modes inside Admin Studio',
+    body:'<strong>Browse</strong> is for discovery (the catalog and active connections). <strong>Operate</strong> is for triage (status of your data infrastructure). End-users default to Browse, admins to Operate.',
     route:'#/integrations',
+    target:'#tbModeToggle'
+  },
+  {
+    title:'Operate mode signals everywhere',
+    body:'When you switch to Operate, the topbar gets an amber accent line and this strip appears. No matter how deep you navigate (instances, wizards, audit), you always know you are operating, not browsing.',
+    route:'#/integrations',
+    mode:'operate',
+    target:'.mode-banner',
+    scrollToTarget:true
+  },
+  {
+    title:'Triage view: Needs Attention first',
+    body:'Operate landing has 3 KPIs: Working, Needs attention, Inactive. The default tab is <strong>Needs Attention</strong> so issues surface immediately.',
+    route:'#/integrations',
+    mode:'operate',
+    target:'.op-hero',
+    scrollToTarget:true
+  },
+  {
+    title:'Already integrated vs Marketplace',
+    body:'Back in Browse, the home has two tabs. <strong>Already integrated</strong> shows what your workspace has, grouped by category. <strong>Marketplace</strong> is the full catalog. Search filters both.',
+    route:'#/integrations',
+    mode:'browse',
+    target:'.home-tabs'
+  },
+  {
+    title:'Simplified filter toolbar',
+    body:'Categories live on a single horizontal scroller. Other filters (capability, state, studio, source) sit on one chip rail with dot separators — no more verbose row labels.',
+    route:'#/integrations',
+    mode:'browse',
     target:'#catalogToolbar',
     scrollToTarget:true
   },
   {
-    title:'Provider ≠ Instance',
-    body:'A provider can be activated <strong>multiple times</strong>. Notice S3 has 3 instances — Production, Dev, Analytics — each with its own credentials, status, and audit trail. This is core to the model.',
-    route:'#/integrations/s3',
-    target:'.inst-section',
-    scrollToTarget:true
-  },
-  {
-    title:'Per-instance management',
-    body:'Click any instance to manage it. Five tabs: <code>Basic Info</code> · <code>Capabilities</code> · <code>Authentication</code> · <code>Logs</code> · <code>Audit</code>. Notice this S3 — Analytics is "partially configured" — Helix Data Studio mapping pending.',
-    route:'#/integrations/s3/instances/s3-analytics',
-    target:'.tabs'
-  },
-  {
-    title:'Cascading governance',
-    body:'Permissions cascade: <strong>Integration → Workflow → Agent</strong>. Each layer can restrict (never expand) what the layer above allows. This is what Mike asked for after the early MCP experiment.',
+    title:'Provider detail is a catalog view',
+    body:'Capabilities at provider level are read-only — they describe what the integration offers. Activation happens per <strong>instance</strong>. Each instance has its own credentials, capabilities, logs and audit.',
     route:'#/integrations/slack',
-    detailTab:'permissions',
-    target:'.gov-layers',
+    target:'.detail-head',
     scrollToTarget:true
   },
   {
-    title:'Used in studios',
-    body:'See real usage per studio: <strong>47 calls/day</strong> in Agentic, <strong>1,247 tables</strong> indexed in Governance, etc. Answers the "where is this used?" question instantly.',
-    route:'#/integrations/snowflake',
-    target:'.used-in-wrap',
+    title:'Gate banner — hand off to Data Studio',
+    body:'Salesforce has schema drift. The amber gate banner names the issue and offers a cross-link to <strong>Data Studio</strong> where the field mapping resolution lives. Cross-functional surfaces in action.',
+    route:'#/integrations/salesforce',
+    target:'.gate-banner',
     scrollToTarget:true
   },
   {
-    title:'Ask AI about any integration',
-    body:'Context-aware AI. It knows the integration\'s current state, scopes, capabilities. Ask "how do I connect this securely?" or "what can agents do with this?" — answers are tailored, not generic.',
-    route:'#/integrations/slack',
-    target:'.btn-ai'
-  },
-  {
-    title:'Schema-driven activation',
-    body:'When you connect a provider, the wizard renders the auth form <strong>from a schema</strong> — no custom code per provider. 6 steps: name → auth method → authenticate → choose capabilities → scope → confirm.',
+    title:'Six auth patterns to choose from',
+    body:'Click Connect on any integration. Step 2 shows the 6 patterns: OAuth, API token, Service account, Username+password, Per-user, Manual. Each has its own identity model (personal vs service vs per-user) and a visual flow diagram on step 3.',
     route:'#/integrations/teams',
-    target:'.btn-primary',
+    target:'.detail-actions .btn-primary',
     pulse:true
   },
   {
-    title:'That\'s the tour',
-    body:'You\'ve seen the core model. Explore freely now — every card is clickable, every filter is live. Full documentation at <code>/docs/DEMO.md</code> in the repo. Welcome to AIMS-OS Integrations.',
-    route:'#/integrations'
+    title:'Request what we do not have',
+    body:'End users can request a new integration. The form has 5 sections — requester, business intent, source system, data sensitivity, timeline. Goes to a managed services queue.',
+    route:'#/integrations',
+    mode:'browse',
+    target:'.build-promo:nth-of-type(2)',
+    scrollToTarget:true
+  },
+  {
+    title:'Requests inbox',
+    body:'The other side of the request flow. Admins see all pending requests with priority, age, business intent and PII flags. Approve, quote, reject inline.',
+    route:'#/requests',
+    target:'.op-hero'
+  },
+  {
+    title:'Admin vs End-user persona',
+    body:'The persona pill switches between admin and end-user views. End-users do not see audit logs or the requests inbox. Activation buttons become Request buttons when they hit a connection that is not authenticated.',
+    route:'#/integrations',
+    target:'#tbPersonaBtn'
+  },
+  {
+    title:'Continue in Data Studio & Agent Studio',
+    body:'Open the studio switcher again to jump to <strong>Data Studio</strong> (field mapping, schema drift resolution) or <strong>Agent Studio · Tools</strong> (raw tools and pre-configured wrappers). Both have their own walkthroughs to explore.<br><br>Full docs at <code>/docs/DEMO.md</code>.',
+    route:'#/integrations',
+    mode:'browse'
   }
 ];
 
@@ -8541,6 +8575,9 @@ function endTour() {
   $('tourOverlay').classList.remove('active');
   $('tourSpotlight').classList.remove('active');
   $('tourPopover').classList.remove('active');
+  // Close studio switcher if the tour left it open
+  const switcher = document.getElementById('studioSwitcher');
+  if (switcher) { switcher.classList.remove('open'); switcher.setAttribute('aria-hidden', 'true'); }
 }
 
 function tourNext() {
@@ -8561,9 +8598,34 @@ function paintTourStep() {
   const isFirst = tourState.stepIndex === 0;
   const isLast = tourState.stepIndex === TOUR_STEPS.length - 1;
 
+  // Apply mode + persona overrides BEFORE route
+  if (step.mode && state.mode !== step.mode) {
+    state.mode = step.mode;
+    try { localStorage.setItem('aims_mode', step.mode); } catch(e){}
+    document.documentElement.classList.toggle('mode-operate', step.mode === 'operate');
+    paintModeToggle();
+  }
+  if (step.persona && state.persona !== step.persona) {
+    state.persona = step.persona;
+    try { localStorage.setItem('aims_persona', step.persona); } catch(e){}
+    paintPersonaPill();
+  }
+  // Studio switcher action (open dropdown when step highlights it)
+  const switcher = document.getElementById('studioSwitcher');
+  if (switcher) {
+    if (step.openSwitcher) {
+      switcher.classList.add('open');
+      switcher.setAttribute('aria-hidden', 'false');
+    } else if (switcher.classList.contains('open')) {
+      switcher.classList.remove('open');
+      switcher.setAttribute('aria-hidden', 'true');
+    }
+  }
   // Navigate route if needed
   if (step.route && location.hash !== step.route) {
     location.hash = step.route;
+  } else if (step.route && step.mode) {
+    route();
   }
   // Set detail tab if needed (after route)
   if (step.detailTab) {
