@@ -3561,7 +3561,7 @@ html.theme-light .theme-icon-moon{display:block}
             <path d="M4 4L7 7M12 4L9 7M4 12L7 9M12 12L9 9" stroke="#fff" stroke-width="1.1" stroke-linecap="round"/>
           </svg>
         </div>
-        <span class="tb-context-name">Settings</span>
+        <span class="tb-context-name">Admin Studio</span>
         <svg class="tb-context-chev" width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 4.5L6 8l3.5-3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
       <div class="studio-switcher" id="studioSwitcher" role="menu" aria-hidden="true">
@@ -3735,32 +3735,14 @@ html.theme-light .theme-icon-moon{display:block}
       <!-- Scrollable nav -->
       <div class="ssb-scroll">
 
-        <!-- Data Studio — control plane for the workspace's data infrastructure -->
+        <!-- Integrations — the marketplace + activation surface of Admin Studio -->
         <div class="ssb-group">
-          <div class="ssb-grp-h"><span class="ssb-grp-label">Data Studio</span></div>
+          <div class="ssb-grp-h"><span class="ssb-grp-label">Integrations</span></div>
 
           <button class="ssb-item" data-route="integrations">
-            <span class="ssb-item-ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="8" cy="8" r="2"/><circle cx="3" cy="3" r="1.3"/><circle cx="13" cy="3" r="1.3"/><circle cx="3" cy="13" r="1.3"/><circle cx="13" cy="13" r="1.3"/><path d="M4.1 4.1l2.5 2.5M11.9 4.1L9.4 6.6M4.1 11.9l2.5-2.5M11.9 11.9L9.4 9.4"/></svg></span>
-            <span class="ssb-item-label">Connections</span>
+            <span class="ssb-item-ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="8" cy="8" r="2"/><circle cx="3" cy="3" r="1.3"/><circle cx="13" cy="3" r="1.3"/><circle cx="13" cy="3" r="1.3"/><circle cx="3" cy="13" r="1.3"/><circle cx="13" cy="13" r="1.3"/><path d="M4.1 4.1l2.5 2.5M11.9 4.1L9.4 6.6M4.1 11.9l2.5-2.5M11.9 11.9L9.4 9.4"/></svg></span>
+            <span class="ssb-item-label">Integrations</span>
             <span class="ssb-item-alert" title="1 integration failing"></span>
-          </button>
-
-          <button class="ssb-item disabled" data-route="tables" title="Tables — Coming soon">
-            <span class="ssb-item-ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"><rect x="2" y="3" width="12" height="10" rx="1.2"/><path d="M2 6.5h12M2 9.5h12M5.5 3v10M10.5 3v10" stroke-linecap="round"/></svg></span>
-            <span class="ssb-item-label">Tables</span>
-            <span class="ssb-item-badge ssb-badge-soon">Soon</span>
-          </button>
-
-          <button class="ssb-item disabled" data-route="mappings" title="Field mappings — Coming soon">
-            <span class="ssb-item-ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="4" height="3" rx=".6"/><rect x="2" y="10" width="4" height="3" rx=".6"/><rect x="10" y="3" width="4" height="3" rx=".6"/><rect x="10" y="10" width="4" height="3" rx=".6"/><path d="M6 4.5h2v7h2M6 11.5h2v-7h2"/></svg></span>
-            <span class="ssb-item-label">Field mappings</span>
-            <span class="ssb-item-badge ssb-badge-soon">Soon</span>
-          </button>
-
-          <button class="ssb-item disabled" data-route="schema" title="Schema versions — Coming soon">
-            <span class="ssb-item-ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="4.5" cy="4" r="1.8"/><circle cx="4.5" cy="12" r="1.8"/><circle cx="11.5" cy="8" r="1.8"/><path d="M4.5 5.8v4.4M6.2 4.6l4.1 2.6M6.2 11.4l4.1-2.6"/></svg></span>
-            <span class="ssb-item-label">Schema versions</span>
-            <span class="ssb-item-badge ssb-badge-soon">Soon</span>
           </button>
 
           <button class="ssb-item" data-admin-only data-route="requests" title="Integration requests">
@@ -3768,6 +3750,20 @@ html.theme-light .theme-icon-moon{display:block}
             <span class="ssb-item-label">Requests</span>
             <span class="ssb-item-alert" id="reqAlertDot" title="Pending requests"></span>
           </button>
+        </div>
+
+        <div class="ssb-group">
+          <div class="ssb-grp-h"><span class="ssb-grp-label">Cross-functional</span></div>
+          <a class="ssb-item" href="data-studio.html" style="text-decoration:none">
+            <span class="ssb-item-ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="12" height="10" rx="1.2"/><path d="M2 6.5h12M2 9.5h12M5.5 3v10M10.5 3v10"/></svg></span>
+            <span class="ssb-item-label">Data Studio</span>
+            <span style="font-size:11px; color:var(--t3); margin-left:auto">↗</span>
+          </a>
+          <a class="ssb-item" href="agent-tools.html" style="text-decoration:none">
+            <span class="ssb-item-ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="1.5" y="4.5" width="4" height="3" rx=".8"/><rect x="6.5" y="1.5" width="4" height="3" rx=".8"/><rect x="6.5" y="7.5" width="4" height="3" rx=".8"/></svg></span>
+            <span class="ssb-item-label">Agent Studio · Tools</span>
+            <span style="font-size:11px; color:var(--t3); margin-left:auto">↗</span>
+          </a>
         </div>
 
         <div class="ssb-group">
@@ -4824,7 +4820,7 @@ function renderRequestForm() {
     </div>
     <div class="req-form">
       <div class="req-form-hero">
-        <span class="mkt-hero-eyebrow-tag" style="margin-bottom:10px">Data Studio · Requests</span>
+        <span class="mkt-hero-eyebrow-tag" style="margin-bottom:10px">Integrations · Request</span>
         <h1 class="req-form-title">Request a new integration</h1>
         <p class="req-form-sub">Tell us what you need and why. The AIMS managed services team will respond within one business day with scope, timeline and a price quote.</p>
       </div>
@@ -5550,7 +5546,6 @@ function renderIntegratedHome(connected) {
 
   $('content').innerHTML = `
     <section class="mkt-hero" style="padding-bottom:28px">
-      <div class="mkt-hero-eyebrow"><span class="mkt-hero-eyebrow-tag">Data Studio · Connections</span></div>
       <h1 class="mkt-hero-title">${connected.length} integration${connected.length===1?'':'s'} active in this workspace</h1>
       <p class="mkt-hero-sub">${totalInstances} instance${totalInstances===1?'':'s'} across ${Object.keys(grouped).length} ${Object.keys(grouped).length===1?'category':'categories'}.${withIssues > 0 ? ` <strong style="color:var(--amber)">${withIssues} need your attention.</strong>` : ''} Find what your team is already using before connecting something new.</p>
       <div class="mkt-search-wrap">
