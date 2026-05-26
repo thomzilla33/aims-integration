@@ -375,6 +375,14 @@ html.persona-user [data-admin-only]{display:none !important}
   border:1px solid rgba(5,223,114,0.22); flex-shrink:0;
   letter-spacing:.05em; line-height:1; text-transform:uppercase;
 }
+.ssb-item-badge{
+  font-size:8.5px; font-weight:700; padding:2px 6px; border-radius:8px;
+  flex-shrink:0; letter-spacing:.05em; line-height:1; text-transform:uppercase;
+}
+.ssb-badge-soon{
+  background:rgba(167,139,250,0.10); color:var(--purple);
+  border:1px solid rgba(167,139,250,0.22);
+}
 .ssb-item-kbd{
   font-family:inherit; font-size:9.5px; font-weight:600;
   padding:1.5px 5px; border-radius:4px;
@@ -995,6 +1003,13 @@ html.persona-user [data-admin-only]{display:none !important}
   content:''; position:absolute; top:-100px; left:50%; transform:translateX(-50%);
   width:600px; height:200px; background:radial-gradient(circle, rgba(43,127,255,0.18), transparent 70%);
   pointer-events:none; filter:blur(40px);
+}
+.mkt-hero-eyebrow{display:flex; justify-content:center; margin-bottom:14px}
+.mkt-hero-eyebrow-tag{
+  display:inline-flex; align-items:center; gap:5px; height:22px; padding:0 10px;
+  background:rgba(6,182,212,0.10); color:var(--cyan);
+  border:1px solid rgba(6,182,212,0.28); border-radius:11px;
+  font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.06em;
 }
 .mkt-hero-title{font-size:32px; font-weight:700; color:var(--t1); letter-spacing:-.02em; margin-bottom:10px; position:relative; padding-top:12px}
 .mkt-hero-sub{font-size:14px; color:var(--t2); max-width:540px; margin:0 auto 26px; position:relative; line-height:1.6}
@@ -2982,6 +2997,41 @@ html.theme-light .theme-icon-moon{display:block}
       <!-- Scrollable nav -->
       <div class="ssb-scroll">
 
+        <!-- Data Studio — control plane for the workspace's data infrastructure -->
+        <div class="ssb-group">
+          <div class="ssb-grp-h"><span class="ssb-grp-label">Data Studio</span></div>
+
+          <button class="ssb-item" data-route="integrations">
+            <span class="ssb-item-ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="8" cy="8" r="2"/><circle cx="3" cy="3" r="1.3"/><circle cx="13" cy="3" r="1.3"/><circle cx="3" cy="13" r="1.3"/><circle cx="13" cy="13" r="1.3"/><path d="M4.1 4.1l2.5 2.5M11.9 4.1L9.4 6.6M4.1 11.9l2.5-2.5M11.9 11.9L9.4 9.4"/></svg></span>
+            <span class="ssb-item-label">Connections</span>
+            <span class="ssb-item-alert" title="1 integration failing"></span>
+          </button>
+
+          <button class="ssb-item disabled" data-route="tables" title="Tables — Coming soon">
+            <span class="ssb-item-ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"><rect x="2" y="3" width="12" height="10" rx="1.2"/><path d="M2 6.5h12M2 9.5h12M5.5 3v10M10.5 3v10" stroke-linecap="round"/></svg></span>
+            <span class="ssb-item-label">Tables</span>
+            <span class="ssb-item-badge ssb-badge-soon">Soon</span>
+          </button>
+
+          <button class="ssb-item disabled" data-route="mappings" title="Field mappings — Coming soon">
+            <span class="ssb-item-ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="4" height="3" rx=".6"/><rect x="2" y="10" width="4" height="3" rx=".6"/><rect x="10" y="3" width="4" height="3" rx=".6"/><rect x="10" y="10" width="4" height="3" rx=".6"/><path d="M6 4.5h2v7h2M6 11.5h2v-7h2"/></svg></span>
+            <span class="ssb-item-label">Field mappings</span>
+            <span class="ssb-item-badge ssb-badge-soon">Soon</span>
+          </button>
+
+          <button class="ssb-item disabled" data-route="schema" title="Schema versions — Coming soon">
+            <span class="ssb-item-ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="4.5" cy="4" r="1.8"/><circle cx="4.5" cy="12" r="1.8"/><circle cx="11.5" cy="8" r="1.8"/><path d="M4.5 5.8v4.4M6.2 4.6l4.1 2.6M6.2 11.4l4.1-2.6"/></svg></span>
+            <span class="ssb-item-label">Schema versions</span>
+            <span class="ssb-item-badge ssb-badge-soon">Soon</span>
+          </button>
+
+          <button class="ssb-item disabled" data-admin-only data-route="requests" title="Requests inbox — Coming soon">
+            <span class="ssb-item-ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="12" height="10" rx="1.2"/><path d="M2 5l6 4 6-4"/></svg></span>
+            <span class="ssb-item-label">Requests</span>
+            <span class="ssb-item-badge ssb-badge-soon">Soon</span>
+          </button>
+        </div>
+
         <div class="ssb-group">
           <div class="ssb-grp-h"><span class="ssb-grp-label">Workspace</span></div>
 
@@ -3001,12 +3051,6 @@ html.theme-light .theme-icon-moon{display:block}
             <span class="ssb-item-ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"><path d="M8 1.5L2 4v4C2 11.5 4.5 14 8 14.5c3.5-.5 6-3 6-6.5V4L8 1.5z"/><path d="M5.5 8l2 2 3.5-4" stroke-linecap="round"/></svg></span>
             <span class="ssb-item-label">Roles & Permissions</span>
             <svg class="ssb-item-lock" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2.5" y="5.5" width="7" height="5" rx="1"/><path d="M4 5.5V4a2 2 0 014 0v1.5" stroke-linecap="round"/></svg>
-          </button>
-
-          <button class="ssb-item" data-route="integrations">
-            <span class="ssb-item-ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="8" cy="8" r="2"/><circle cx="3" cy="3" r="1.3"/><circle cx="13" cy="3" r="1.3"/><circle cx="3" cy="13" r="1.3"/><circle cx="13" cy="13" r="1.3"/><path d="M4.1 4.1l2.5 2.5M11.9 4.1L9.4 6.6M4.1 11.9l2.5-2.5M11.9 11.9L9.4 9.4"/></svg></span>
-            <span class="ssb-item-label">Integrations</span>
-            <span class="ssb-item-alert" title="1 integration failing"></span>
           </button>
 
           <button class="ssb-item disabled" data-route="models" title="Models & Providers — Coming soon">
@@ -4631,7 +4675,9 @@ function paintDetail(i) {
     <div class="breadcrumb">
       <a href="#/integrations">Settings</a>
       <span class="crumb-sep">›</span>
-      <a href="#/integrations">Integrations</a>
+      <a href="#/integrations">Data Studio</a>
+      <span class="crumb-sep">›</span>
+      <a href="#/integrations">Connections</a>
       <span class="crumb-sep">›</span>
       <span class="crumb-current">${escapeHtml(i.name)}</span>
     </div>
@@ -4709,7 +4755,9 @@ function renderInstanceDetail(slug, instId) {
     <div class="breadcrumb">
       <a href="#/integrations">Settings</a>
       <span class="crumb-sep">›</span>
-      <a href="#/integrations">Integrations</a>
+      <a href="#/integrations">Data Studio</a>
+      <span class="crumb-sep">›</span>
+      <a href="#/integrations">Connections</a>
       <span class="crumb-sep">›</span>
       <a href="#/integrations/${i.slug}">${escapeHtml(i.name)}</a>
       <span class="crumb-sep">›</span>
@@ -5688,7 +5736,9 @@ function renderBuildChooser() {
     <div class="breadcrumb">
       <a href="#/integrations">Settings</a>
       <span class="crumb-sep">›</span>
-      <a href="#/integrations">Integrations</a>
+      <a href="#/integrations">Data Studio</a>
+      <span class="crumb-sep">›</span>
+      <a href="#/integrations">Connections</a>
       <span class="crumb-sep">›</span>
       <span class="crumb-current">Build your own</span>
     </div>
@@ -6935,7 +6985,10 @@ document.querySelectorAll('.ssb-item:not(.disabled)').forEach(b => {
   });
 });
 document.querySelectorAll('.ssb-item.disabled').forEach(b => {
-  b.addEventListener('click', () => toast(`${b.querySelector('.ssb-label').textContent} — Coming soon`, 'success'));
+  b.addEventListener('click', () => {
+    const label = b.querySelector('.ssb-item-label, .ssb-label');
+    toast(`${label ? label.textContent : 'This feature'} — Coming soon`, 'success');
+  });
 });
 
 // Paint shell controls (mode toggle + persona pill) on initial load

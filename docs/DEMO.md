@@ -378,6 +378,20 @@ Each card shows only the bucket chip. The specific state is surfaced inside the 
 4. Click the **persona pill** in the top-right to toggle End-user view. Audit log and audit tabs disappear from the navigation.
 5. Switch back to **Browse** to see the original marketplace. Cards now show a single status bucket chip in the top-right corner.
 
+### Data Studio rebrand
+
+The sub-sidebar now has a dedicated **Data Studio** section containing:
+
+- **Connections** (the surface this prototype builds out, the former "Integrations")
+- **Tables** (coming soon, will host Sebastian's table definitions)
+- **Field mappings** (coming soon, the auto-map + custom-flag UI)
+- **Schema versions** (coming soon, history per table)
+- **Requests** (coming soon, the request inbox from the Mike call)
+
+Breadcrumbs are now `Settings > Data Studio > Connections > [integration]` instead of the previous `Settings > Integrations > [integration]`. The Browse home hero gained a `Data Studio · Connections` eyebrow that frames the marketplace as one of Data Studio's surfaces, not a standalone product.
+
+This locks the architectural decision from the founder session: **Integrations is the control plane of Data Studio, not a sibling**. Sebastian's field mapping engine lives in Data Studio; this prototype is what hands off to it.
+
 ---
 
 ## 20. Stack
