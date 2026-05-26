@@ -1939,6 +1939,14 @@ html.theme-light .btn-primary.btn-outline{color:var(--cyan); border-color:rgba(6
 .inst-cap-row-mcp .inst-cap-name{font-family:inherit; font-size:12.5px}
 
 
+
+/* Auth method selection groups (Sprint 5 follow-up) */
+.auth-group-label{
+  font-size:10.5px; font-weight:800; color:var(--t3);
+  text-transform:uppercase; letter-spacing:.06em;
+  margin-bottom:8px;
+}
+
 /* ──────────────────────────────────────────────────────────
    AUTH PATTERN HERO (Sprint 5)
    Per-pattern visual differentiation for the wizard auth step.
@@ -7170,25 +7178,47 @@ function paintDrawer() {
   }
 
   else if (s.step === 1) {
+    // Split patterns into "Recommended by this provider" (declared in authMethods)
+    // and "Other patterns available". Both groups render the same auth-card.
+    // Edgardo: "la definición de cuál variante usa cada integración es configuración,
+    // pero el flujo visual de cada tipo sí debés prototiparlo."
+    const allPatterns = ['oauth', 'apikey', 'service', 'basic', 'per_user', 'manual'];
+    const recommended = i.authMethods.filter(m => allPatterns.includes(m));
+    const others = allPatterns.filter(m => !i.authMethods.includes(m));
+
+    const renderCard = (m) => {
+      const pattern = AUTH_PATTERNS[m]; if (!pattern) return '';
+      const sel = s.authMethod===m ? 'selected' : '';
+      const isRecommended = i.authMethods.includes(m);
+      return `
+        <div class="auth-card ${sel}" onclick="selectAuth('${m}')">
+          <div class="auth-card-h">
+            <span class="auth-name"><span style="margin-right:5px">${pattern.icon}</span>${escapeHtml(pattern.label)}</span>
+            ${isRecommended && pattern.badge ? `<span class="badge">${escapeHtml(pattern.badge)}</span>` : ''}
+            ${!isRecommended ? `<span class="badge" style="background:rgba(148,163,184,0.10);color:var(--t3);border-color:var(--line)">Alternative</span>` : ''}
+          </div>
+          <div class="auth-card-desc">${escapeHtml(pattern.desc)}</div>
+        </div>
+      `;
+    };
+
     body = `
       <div class="drawer-step-h">Step 2 of 7 · Authentication method</div>
       <div class="drawer-step-title">Choose how to connect to ${escapeHtml(i.name)}</div>
       <p style="font-size:11.5px;color:var(--t3);margin-bottom:14px;font-style:italic;line-height:1.55">
-        ⚙ Methods below are declared by the provider's metadata. The form on the next step renders from the chosen pattern's UI schema — no custom code per provider (engineering brief §10).
+        ⚙ Each pattern below renders from its own UI schema on the next step — no custom code per provider (engineering brief §10).
       </p>
-      ${i.authMethods.map(m => {
-        const pattern = AUTH_PATTERNS[m]; if (!pattern) return '';
-        const sel = s.authMethod===m ? 'selected' : '';
-        return `
-          <div class="auth-card ${sel}" onclick="selectAuth('${m}')">
-            <div class="auth-card-h">
-              <span class="auth-name"><span style="margin-right:5px">${pattern.icon}</span>${escapeHtml(pattern.label)}</span>
-              ${pattern.badge?`<span class="badge">${escapeHtml(pattern.badge)}</span>`:''}
-            </div>
-            <div class="auth-card-desc">${escapeHtml(pattern.desc)}</div>
-          </div>
-        `;
-      }).join('')}
+
+      ${recommended.length > 0 ? `
+        <div class="auth-group-label">Recommended for ${escapeHtml(i.name)}</div>
+        ${recommended.map(renderCard).join('')}
+      ` : ''}
+
+      ${others.length > 0 ? `
+        <div class="auth-group-label" style="margin-top:18px">Other auth patterns supported by AIMS-OS</div>
+        <p style="font-size:11px;color:var(--t3);margin-bottom:10px;line-height:1.5">${escapeHtml(i.name)} did not declare these in its provider metadata, but you can still pick one — useful when the provider's recommended flow does not match your security requirements.</p>
+        ${others.map(renderCard).join('')}
+      ` : ''}
     `;
     footer = `<button class="btn btn-ghost btn-sm" onclick="drawerPrev()">← Back</button><button class="btn btn-primary btn-sm" onclick="drawerNext()">Continue →</button>`;
   }
