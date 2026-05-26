@@ -6,9 +6,10 @@ Design prototypes for the next generation of agentic operations at AIMS-OS.
 
 | Prototype | Description | Open |
 |---|---|---|
-| **Integrations** (Settings) | Transversal Settings surface with a marketplace-style Integrations catalog. 40 integrations across 11 business categories, real brand logos, OAuth/API key/Service-account connect flows, per-studio permissions, workspace-wide audit log, private integration builder (Webhook · OpenAPI · SDK), and a contextual AI Assistant. | [`settings.html`](settings.html) |
+| **Integrations · Admin Studio** | Where you authenticate and govern connections. 40 integrations across 11 business categories, OAuth / API key / Service-account flows, per-studio permissions, instance lifecycle, paginated audit + execution logs. The control plane for credentials and access. | [`settings.html`](settings.html) |
+| **Data Studio** | Where data actually flows. Field mapping for authenticated connections with Data Sync. Auto-mapped + custom fields with AI suggestions, schema drift detection, tables connected, sync activity. Cross-functional with Admin Studio. | [`data-studio.html`](data-studio.html) |
 
-More prototypes will land here as we build them out.
+The two surfaces are explicitly cross-functional: Admin Studio activates a connection, Data Studio maps its data.
 
 ## Local preview
 
@@ -25,18 +26,23 @@ Then open `http://localhost:5500/`.
 
 ## Walkthrough
 
-1. **Hub** — `index.html` shows the Integrations card. Click it.
-2. **Marketplace home** — search hero, category strip, "Active in your workspace" with health dots, featured integration, popular grid, "New from verified partners", "Build your own" promo, and a full browse-all section with source tabs and filter pills.
-3. **Integration detail** — click any card. Four tabs:
-   - **Overview** — vendor info, capabilities, use cases, required OAuth scopes, compliance badges.
-   - **Capabilities** — Tools / Knowledge sources / Triggers / Channels, each with toggles and metadata.
-   - **Permissions** — toggle availability per studio (Governance/Agentic/Workforce) and per role.
-   - **Audit** — events filtered to this integration.
-4. **Connect drawer** — click `Connect` on any non-connected integration. Wizard with auth method choice (OAuth / API token / Service account), scope selection per studio, and confirmation.
-5. **Audit log** — sidebar item or `Audit log →` from the page header. Filterable table with severity, actor, resource, IP, and expandable JSON details.
-6. **Build your own** — `+ Build your own` tab in the catalog. Three methods: Webhook builder (6-step wizard), OpenAPI import, Code SDK.
-7. **Personal Integrations** — sidebar item. Same UI scoped to personal connections.
-8. **AI Assistant** — `✨ Ask AI` button on any integration detail. Streaming responses with contextual answers per integration, suggested prompts, and follow-up suggestions.
+### Admin Studio (`settings.html`)
+
+1. **Hub** — `index.html` shows two cards. Click **Integrations · Admin Studio**.
+2. **Browse home** — tab strip "Already integrated" vs "Marketplace". Hero with status counts, featured integration, popular grid, partners, request promo. Full catalog below with sticky filter toolbar.
+3. **Operate mode** — toggle in the topbar. Switches to a triage view with KPIs and a "Needs Attention" tab as default.
+4. **Provider detail** — click any card. Four tabs (Overview, Capabilities, Permissions, Activity). Capabilities is read-only at provider level — activation happens per instance. Activity shows lifecycle events only; full logs live per instance.
+5. **Instance detail** — click any instance in the Overview's Instances widget. Six tabs (Basic Info, Capabilities, Authentication, Permissions, Logs, Audit). Logs and Audit have pagination + filters.
+6. **Connect wizard** — 7 steps including a new Map fields step that hands off to Data Studio when custom fields need attention.
+7. **Request flow** — `+ Request integration` button anywhere. 5-section form for new integration requests + an inbox queue at `#/requests`.
+8. **Gate banner** — when a connection has drift or pending mapping, an amber banner offers "Resolve in Data Studio →" which cross-navigates to the Data Studio surface.
+
+### Data Studio (`data-studio.html`)
+
+1. **Connections list** — only authenticated connections with Data Sync. Each card shows status, instance count, events/hr, drift indicator.
+2. **Connection detail** — four tabs (Overview, Field mapping, Tables connected, Activity).
+3. **Field mapping** — the centerpiece. Per source event, an accordion with auto-mapped fields (collapsed by default) and custom fields needing decisions (accept AI suggestion, create new schema field, or skip). Sticky activation bar at the bottom.
+4. **Cross-link back** — "Admin Studio" button in the topbar opens `settings.html` for credential management.
 
 ## Documentation
 

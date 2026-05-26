@@ -18,6 +18,7 @@
     .card-desc{font-size:12px;color:#64748b;line-height:1.6}
     .card-tag{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;margin-top:4px;width:fit-content}
     .tag-cyan{background:rgba(6,182,212,.1);color:#06B6D4;border:1px solid rgba(6,182,212,.22)}
+    .tag-emerald{background:rgba(16,185,129,.10);color:#10B981;border:1px solid rgba(16,185,129,.22)}
     .coming{margin-top:32px;font-size:11px;color:#475569;letter-spacing:.05em;text-transform:uppercase}
     .ft{margin-top:48px;font-size:11px;color:#334155;text-align:center;line-height:1.6}
     .ft a{color:#64748b;text-decoration:none}
@@ -27,7 +28,7 @@
 <body>
   <div class="logo">AIMS-OS</div>
   <h1>Prototype Hub</h1>
-  <p class="sub">Design prototypes for the next generation of agentic operations. This sneak peek showcases the transversal Settings surface and its Integrations marketplace.</p>
+  <p class="sub">Design prototypes for the next generation of agentic operations. Two cross-functional surfaces: the Admin Studio where you authenticate integrations, and the Data Studio where their data actually flows.</p>
 
   <div class="grid">
     <a class="card" href="settings.html">
@@ -41,9 +42,21 @@
           <path d="M4.1 4.1l2.5 2.5M11.9 4.1L9.4 6.6M4.1 11.9l2.5-2.5M11.9 11.9L9.4 9.4" stroke="#06B6D4" stroke-width="1.2" stroke-linecap="round"/>
         </svg>
       </div>
-      <div class="card-title">Integrations</div>
-      <div class="card-desc">Workspace Settings — catalog of 40 integrations across 11 categories, OAuth and API key connections, per-studio permissions, audit log, private builder, and AI Assistant.</div>
-      <span class="card-tag tag-cyan">Platform · Settings</span>
+      <div class="card-title">Integrations · Admin Studio</div>
+      <div class="card-desc">Global activation and authentication. Catalog of 40 connectors, OAuth and API key, per-studio permissions, instance lifecycle, audit. The control plane for credentials and access.</div>
+      <span class="card-tag tag-cyan">Platform · Admin</span>
+    </a>
+
+    <a class="card" href="data-studio.html">
+      <div class="card-ico" style="background:rgba(16,185,129,.10);border:1px solid rgba(16,185,129,.22)">
+        <svg width="18" height="18" viewBox="0 0 16 16" fill="none">
+          <rect x="2" y="3" width="12" height="10" rx="1.2" stroke="#10B981" stroke-width="1.2"/>
+          <path d="M2 6.5h12M2 9.5h12M5.5 3v10M10.5 3v10" stroke="#10B981" stroke-width="1.1" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="card-title">Data Studio</div>
+      <div class="card-desc">Where data actually flows. Field mapping, table definitions, schema versions, templates. Cross-functional with Admin Studio — only shows integrations that are authenticated with Data Sync.</div>
+      <span class="card-tag tag-emerald">Data · Cross-functional</span>
     </a>
   </div>
 
