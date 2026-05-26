@@ -1938,6 +1938,123 @@ html.theme-light .btn-primary.btn-outline{color:var(--cyan); border-color:rgba(6
 }
 .inst-cap-row-mcp .inst-cap-name{font-family:inherit; font-size:12.5px}
 
+
+/* ──────────────────────────────────────────────────────────
+   AUTH PATTERN HERO (Sprint 5)
+   Per-pattern visual differentiation for the wizard auth step.
+   Communicates identity model, credential, refresh, and flow at a glance.
+   ────────────────────────────────────────────────────────── */
+.auth-hero{
+  background:var(--bg2); border:1px solid var(--line); border-radius:12px;
+  padding:16px 18px; margin-bottom:18px;
+  overflow:hidden;
+}
+.auth-hero-top{
+  display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+  margin-bottom:14px;
+}
+.auth-identity-badge{
+  display:inline-flex; align-items:center; gap:5px; height:22px; padding:0 10px;
+  font-size:10.5px; font-weight:800; text-transform:uppercase; letter-spacing:.05em;
+  border-radius:11px; line-height:1;
+}
+.auth-id-personal{background:rgba(43,127,255,0.12); color:var(--accent); border:1px solid rgba(43,127,255,0.30)}
+.auth-id-service{background:rgba(167,139,250,0.12); color:var(--purple); border:1px solid rgba(167,139,250,0.30)}
+.auth-id-per_user{background:rgba(6,182,212,0.12); color:var(--cyan); border:1px solid rgba(6,182,212,0.30)}
+.auth-id-mixed{background:rgba(253,199,0,0.12); color:var(--amber); border:1px solid rgba(253,199,0,0.30)}
+.auth-identity-desc{font-size:12px; color:var(--t2); font-weight:500}
+
+/* Flow diagram (3 nodes + arrows) */
+.auth-flow{
+  display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+  padding:14px; margin-bottom:14px;
+  background:rgba(255,255,255,0.02); border-radius:10px;
+  justify-content:center;
+}
+.auth-flow-node{
+  display:flex; flex-direction:column; align-items:center; gap:5px;
+  min-width:64px;
+  color:var(--t1);
+}
+.auth-flow-node svg{color:var(--t2); transition:color .15s}
+.auth-flow-l{font-size:10px; color:var(--t3); font-weight:600; letter-spacing:.02em; text-align:center}
+.auth-flow-arrow{color:var(--t3); font-size:14px; font-weight:600}
+.auth-flow-arrow-back{font-size:13px; opacity:.7}
+
+.auth-flow-user svg{color:var(--accent)}
+.auth-flow-provider .logo{margin:0}
+.auth-flow-aims{}
+.auth-flow-key, .auth-flow-token{align-items:center}
+.auth-key-snippet{
+  font-family:'SF Mono',Menlo,monospace; font-size:11px;
+  background:rgba(167,139,250,0.10); color:var(--purple);
+  padding:5px 8px; border-radius:5px;
+  border:1px solid rgba(167,139,250,0.22);
+}
+.auth-flow-token .auth-key-snippet{background:rgba(5,223,114,0.10); color:var(--green); border-color:rgba(5,223,114,0.22)}
+.auth-flow-file svg{color:var(--purple)}
+.auth-flow-creds svg{color:var(--accent)}
+.auth-flow-exchange{color:var(--cyan)}
+.auth-flow-users{align-items:center}
+.auth-user-dot{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:24px; height:24px; border-radius:50%; color:#fff;
+  font-size:10px; font-weight:800;
+  border:2px solid var(--bg2);
+}
+
+/* Manual flow uses numbered steps instead of nodes */
+.auth-flow-step{
+  display:flex; flex-direction:column; align-items:center; gap:5px;
+  min-width:64px;
+}
+.auth-flow-num{
+  width:26px; height:26px; border-radius:50%;
+  background:rgba(253,199,0,0.14); color:var(--amber);
+  border:1.5px solid rgba(253,199,0,0.36);
+  display:flex; align-items:center; justify-content:center;
+  font-size:11px; font-weight:800;
+}
+
+/* Facts grid: 3 columns */
+.auth-facts{
+  display:grid; grid-template-columns:repeat(3,1fr); gap:10px;
+  padding-top:12px; border-top:1px solid var(--line);
+  margin-bottom:0;
+}
+.auth-fact-k{font-size:9.5px; font-weight:700; color:var(--t3); text-transform:uppercase; letter-spacing:.06em; margin-bottom:3px}
+.auth-fact-v{font-size:12px; color:var(--t1); font-weight:600; line-height:1.4}
+
+/* How it works collapsible */
+.auth-howit{margin-top:12px; padding-top:12px; border-top:1px solid var(--line)}
+.auth-howit summary{
+  font-size:11.5px; font-weight:700; color:var(--cyan);
+  cursor:pointer; user-select:none;
+  display:inline-flex; align-items:center; gap:6px;
+  list-style:none;
+}
+.auth-howit summary::-webkit-details-marker{display:none}
+.auth-howit summary::before{
+  content:'▸'; display:inline-block; transition:transform .15s; font-size:10px;
+}
+.auth-howit[open] summary::before{transform:rotate(90deg)}
+.auth-howit ol{margin:10px 0 0; padding-left:20px}
+.auth-howit li{font-size:12px; color:var(--t2); line-height:1.55; margin-bottom:4px}
+
+/* Pattern-specific accent tinting on the hero border */
+.auth-hero-oauth{border-color:color-mix(in srgb, var(--accent) 22%, var(--line))}
+.auth-hero-apikey{border-color:color-mix(in srgb, var(--purple) 22%, var(--line))}
+.auth-hero-service{border-color:color-mix(in srgb, var(--purple) 22%, var(--line))}
+.auth-hero-basic{border-color:color-mix(in srgb, var(--accent) 18%, var(--line))}
+.auth-hero-per_user{border-color:color-mix(in srgb, var(--cyan) 22%, var(--line))}
+.auth-hero-manual{border-color:color-mix(in srgb, var(--amber) 22%, var(--line))}
+
+@media (max-width:520px){
+  .auth-facts{grid-template-columns:1fr; gap:8px}
+  .auth-flow{gap:4px}
+  .auth-flow-arrow{font-size:12px}
+}
+
 /* ── Build your own promo card ── */
 .build-promo{
   margin:8px 32px 24px; padding:20px 24px;
@@ -6800,6 +6917,154 @@ function closeDrawer() {
   $('drawer').classList.remove('open');
 }
 
+
+// Visual differentiation per auth pattern (Sprint 5 / Edgardo feedback).
+// Each pattern gets a hero with identity badge + facts grid + compact flow diagram.
+function authPatternHero(integration, pattern) {
+  const i = integration;
+  const presets = {
+    oauth: {
+      identity:'personal',  identityLabel:'You',           identityDesc:'Sign in as a person',
+      stored:'Refresh token', refresh:'Automatic',         bestFor:'SaaS apps with user-level data',
+      diagram:`
+        <div class="auth-flow-node auth-flow-user"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="9" r="3" stroke="currentColor" stroke-width="1.6"/><path d="M5 19c0-3 3-5 7-5s7 2 7 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><span class="auth-flow-l">You</span></div>
+        <span class="auth-flow-arrow">→</span>
+        <div class="auth-flow-node auth-flow-provider">${logo(i, 'sm')}<span class="auth-flow-l">${escapeHtml(i.name)}</span></div>
+        <span class="auth-flow-arrow auth-flow-arrow-back">↩</span>
+        <div class="auth-flow-node auth-flow-aims">${aimsBadge()}<span class="auth-flow-l">AIMS</span></div>
+      `,
+      howItWorks: [
+        `Click Continue to open ${escapeHtml(i.name)} in a popup.`,
+        `Authorize as yourself with your own ${escapeHtml(i.name)} account.`,
+        `AIMS receives a refresh token. We rotate it on schedule.`,
+        `Tool calls are attributed to you in audit logs.`
+      ]
+    },
+    apikey: {
+      identity:'service',   identityLabel:'Service',       identityDesc:'No human identity',
+      stored:'Long-lived API token', refresh:'Manual (rotate when stale)', bestFor:'Server-to-server, no user context needed',
+      diagram:`
+        <div class="auth-flow-node auth-flow-provider">${logo(i, 'sm')}<span class="auth-flow-l">${escapeHtml(i.name)}</span></div>
+        <span class="auth-flow-arrow">→</span>
+        <div class="auth-flow-node auth-flow-key"><code class="auth-key-snippet">sk_live_•••</code><span class="auth-flow-l">API token</span></div>
+        <span class="auth-flow-arrow">→</span>
+        <div class="auth-flow-node auth-flow-aims">${aimsBadge()}<span class="auth-flow-l">AIMS</span></div>
+      `,
+      howItWorks: [
+        `Generate an API token in your ${escapeHtml(i.name)} admin settings.`,
+        `Paste it below — AIMS stores it encrypted in your tenant vault.`,
+        `All tool calls run as the same service identity, not as any user.`,
+        `Rotate the token periodically from your ${escapeHtml(i.name)} dashboard.`
+      ]
+    },
+    service: {
+      identity:'service',   identityLabel:'Service account', identityDesc:'Server-to-server, signed JWT',
+      stored:'JSON key file (private key)', refresh:'Per-request JWT, key signed', bestFor:'Cloud APIs (Google, AWS, Azure)',
+      diagram:`
+        <div class="auth-flow-node auth-flow-provider">${logo(i, 'sm')}<span class="auth-flow-l">${escapeHtml(i.name)}</span></div>
+        <span class="auth-flow-arrow">→</span>
+        <div class="auth-flow-node auth-flow-file"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M5 3h9l5 5v13H5V3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M14 3v5h5" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><text x="12" y="17" font-family="monospace" font-size="5" text-anchor="middle" fill="currentColor">JSON</text></svg><span class="auth-flow-l">key file</span></div>
+        <span class="auth-flow-arrow">→</span>
+        <div class="auth-flow-node auth-flow-aims">${aimsBadge()}<span class="auth-flow-l">AIMS</span></div>
+      `,
+      howItWorks: [
+        `Create a service account in the provider's admin console.`,
+        `Download the JSON key file and upload it below.`,
+        `AIMS signs each request with the private key (no token stored).`,
+        `Delete the service account in the provider to revoke access.`
+      ]
+    },
+    basic: {
+      identity:'service',   identityLabel:'Service (via your account)', identityDesc:'Token exchange flow',
+      stored:'Rotating token (password not stored)', refresh:'Every 24h, automatic', bestFor:'Legacy systems with no OAuth or API keys',
+      diagram:`
+        <div class="auth-flow-node auth-flow-creds"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="3" y="6" width="18" height="3" rx="1" stroke="currentColor" stroke-width="1.6"/><rect x="3" y="13" width="18" height="3" rx="1" stroke="currentColor" stroke-width="1.6"/><circle cx="6" cy="7.5" r=".8" fill="currentColor"/><circle cx="6" cy="14.5" r=".8" fill="currentColor"/></svg><span class="auth-flow-l">User + pass</span></div>
+        <span class="auth-flow-arrow">→</span>
+        <div class="auth-flow-node auth-flow-exchange"><span style="font-size:18px">⇄</span><span class="auth-flow-l">exchange</span></div>
+        <span class="auth-flow-arrow">→</span>
+        <div class="auth-flow-node auth-flow-token"><code class="auth-key-snippet">tok_•••</code><span class="auth-flow-l">token</span></div>
+      `,
+      howItWorks: [
+        `Provide your ${escapeHtml(i.name)} username and password below.`,
+        `AIMS exchanges them for a rotating token, then forgets the password.`,
+        `The token is automatically refreshed every 24 hours.`,
+        `Your password never leaves the AIMS exchange step.`
+      ]
+    },
+    per_user: {
+      identity:'per_user',  identityLabel:'Each end user',  identityDesc:'Per-user OAuth on first use',
+      stored:'Per-user tokens (isolated)', refresh:'Per-user, on demand', bestFor:'Tools that should respect user-level permissions',
+      diagram:`
+        <div class="auth-flow-node auth-flow-users">
+          <div style="display:flex;align-items:center;gap:-4px"><span class="auth-user-dot" style="background:#A78BFA">M</span><span class="auth-user-dot" style="background:#06B6D4;margin-left:-6px">E</span><span class="auth-user-dot" style="background:#FDC700;margin-left:-6px">T</span></div>
+          <span class="auth-flow-l">Each user</span>
+        </div>
+        <span class="auth-flow-arrow">→</span>
+        <div class="auth-flow-node auth-flow-provider">${logo(i, 'sm')}<span class="auth-flow-l">${escapeHtml(i.name)}</span></div>
+        <span class="auth-flow-arrow">→</span>
+        <div class="auth-flow-node auth-flow-aims">${aimsBadge()}<span class="auth-flow-l">AIMS</span></div>
+      `,
+      howItWorks: [
+        `Add ${escapeHtml(i.name)} once here at the workspace level.`,
+        `First time a user invokes it, AIMS shows them a consent prompt.`,
+        `They authorize with their own ${escapeHtml(i.name)} session.`,
+        `Tool calls run as that user; permissions follow what they granted.`
+      ]
+    },
+    manual: {
+      identity:'mixed',     identityLabel:'Provider-specific', identityDesc:'Multi-step external setup',
+      stored:'Client ID + Secret + custom config', refresh:'Provider-specific', bestFor:'Providers without OAuth or clean API keys',
+      diagram:`
+        <div class="auth-flow-step"><span class="auth-flow-num">1</span><span class="auth-flow-l">Create app</span></div>
+        <span class="auth-flow-arrow">→</span>
+        <div class="auth-flow-step"><span class="auth-flow-num">2</span><span class="auth-flow-l">Whitelist IPs</span></div>
+        <span class="auth-flow-arrow">→</span>
+        <div class="auth-flow-step"><span class="auth-flow-num">3</span><span class="auth-flow-l">Configure</span></div>
+        <span class="auth-flow-arrow">→</span>
+        <div class="auth-flow-step"><span class="auth-flow-num">4</span><span class="auth-flow-l">Paste creds</span></div>
+      `,
+      howItWorks: [
+        `Follow the numbered checklist below — most steps happen outside AIMS.`,
+        `Some require external whitelisting or admin actions in the provider.`,
+        `Use the video walkthrough for the trickier steps.`,
+        `Paste the final credentials at the end to complete activation.`
+      ]
+    }
+  };
+
+  const p = presets[pattern];
+  if (!p) return '';
+
+  return `
+    <div class="auth-hero auth-hero-${pattern}">
+      <div class="auth-hero-top">
+        <span class="auth-identity-badge auth-id-${p.identity}">${escapeHtml(p.identityLabel)}</span>
+        <span class="auth-identity-desc">${escapeHtml(p.identityDesc)}</span>
+      </div>
+      <div class="auth-flow">
+        ${p.diagram}
+      </div>
+      <div class="auth-facts">
+        <div class="auth-fact"><div class="auth-fact-k">Stored</div><div class="auth-fact-v">${escapeHtml(p.stored)}</div></div>
+        <div class="auth-fact"><div class="auth-fact-k">Refresh</div><div class="auth-fact-v">${escapeHtml(p.refresh)}</div></div>
+        <div class="auth-fact"><div class="auth-fact-k">Best for</div><div class="auth-fact-v">${escapeHtml(p.bestFor)}</div></div>
+      </div>
+      <details class="auth-howit">
+        <summary>How it works</summary>
+        <ol>
+          ${p.howItWorks.map(h => `<li>${h}</li>`).join('')}
+        </ol>
+      </details>
+    </div>
+  `;
+}
+
+// Small AIMS-OS badge used inside the auth flow diagrams
+function aimsBadge() {
+  return `<div style="width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#2B7FFF,#A78BFA);display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:900;letter-spacing:-.02em">AI</div>`;
+}
+
+
 function paintDrawer() {
   const s = state.drawerState; if(!s) return;
   const i = s.integration;
@@ -6810,7 +7075,7 @@ function paintDrawer() {
 
   if (s.step === 0) {
     body = `
-      <div class="drawer-step-h">Step 1 of 6 · Name your instance</div>
+      <div class="drawer-step-h">Step 1 of 7 · Name your instance</div>
       <div class="drawer-step-title">Name and describe this ${escapeHtml(i.name)} instance</div>
       <p style="font-size:12px;color:var(--t2);margin-bottom:14px;line-height:1.55">
         You can activate ${escapeHtml(i.name)} multiple times — for example one for production, one for dev, one for analytics. Each <strong style="color:var(--t1)">instance</strong> has its own credentials, status, and audit log.
@@ -6851,7 +7116,7 @@ function paintDrawer() {
 
   else if (s.step === 1) {
     body = `
-      <div class="drawer-step-h">Step 2 of 6 · Authentication method</div>
+      <div class="drawer-step-h">Step 2 of 7 · Authentication method</div>
       <div class="drawer-step-title">Choose how to connect to ${escapeHtml(i.name)}</div>
       <p style="font-size:11.5px;color:var(--t3);margin-bottom:14px;font-style:italic;line-height:1.55">
         ⚙ Methods below are declared by the provider's metadata. The form on the next step renders from the chosen pattern's UI schema — no custom code per provider (engineering brief §10).
@@ -6876,8 +7141,9 @@ function paintDrawer() {
   else if (s.step === 2) {
     if (s.authMethod==='oauth') {
       body = `
-        <div class="drawer-step-h">Step 2 of 6 · OAuth 2.0</div>
+        <div class="drawer-step-h">Step 3 of 7 · OAuth 2.0</div>
         <div class="drawer-step-title">Authorize with ${escapeHtml(i.name)}</div>
+        ${authPatternHero(i, 'oauth')}
         ${s.authenticated ? `
           <div class="connected-panel">
             <strong>✓ Connected as AIMS Workspace</strong>
@@ -6898,8 +7164,9 @@ function paintDrawer() {
     }
     else if (s.authMethod==='apikey') {
       body = `
-        <div class="drawer-step-h">Step 2 of 6 · API token</div>
+        <div class="drawer-step-h">Step 3 of 7 · API token</div>
         <div class="drawer-step-title">Paste your ${escapeHtml(i.name)} token</div>
+        ${authPatternHero(i, 'apikey')}
         <div class="field-group">
           <label class="field-label">${escapeHtml(i.name)} token</label>
           <input class="input" type="password" placeholder="xoxb-1234-abcd-…" value="${escapeHtml(s.apiKey)}" oninput="state.drawerState.apiKey=this.value;state.drawerState.apiKeyValid=false;paintDrawer();setTimeout(()=>{document.querySelector('.drawer input').focus()},0)"/>
@@ -6919,8 +7186,9 @@ function paintDrawer() {
     }
     else if (s.authMethod==='service') {
       body = `
-        <div class="drawer-step-h">Step 2 of 6 · Service account</div>
+        <div class="drawer-step-h">Step 3 of 7 · Service account</div>
         <div class="drawer-step-title">Upload your service account key</div>
+        ${authPatternHero(i, 'service')}
         <div class="field-group">
           ${s.authenticated ? `
             <div class="connected-panel"><strong>✓ Key validated</strong>Project: aims-prod · Account: ai-agent@aims.iam.gserviceaccount.com</div>
@@ -6938,9 +7206,9 @@ function paintDrawer() {
     else if (s.authMethod==='basic') {
       // Engineering brief §9 — Username/password → token
       body = `
-        <div class="drawer-step-h">Step 2 of 6 · Username + password</div>
+        <div class="drawer-step-h">Step 3 of 7 · Username + password</div>
         <div class="drawer-step-title">Provide credentials for ${escapeHtml(i.name)}</div>
-        <p style="font-size:12px;color:var(--t2);margin-bottom:14px">We'll exchange your credentials for a token and refresh it on schedule. Your password is never stored — only the rotating token.</p>
+        ${authPatternHero(i, 'basic')}
         <div class="field-group">
           <label class="field-label">Username</label>
           <input class="input" type="text" placeholder="user@company.com"/>
@@ -6962,11 +7230,9 @@ function paintDrawer() {
     else if (s.authMethod==='per_user') {
       // Engineering brief §9 — Per-user authentication
       body = `
-        <div class="drawer-step-h">Step 2 of 6 · Per-user authentication</div>
+        <div class="drawer-step-h">Step 3 of 7 · Per-user authentication</div>
         <div class="drawer-step-title">Each user will sign in individually</div>
-        <p style="font-size:12px;color:var(--t2);margin-bottom:14px;line-height:1.55">
-          With this pattern, the integration is <strong style="color:var(--t1)">added once</strong> here, but each end user must authenticate before they can use it. Tool calls then run under the user's identity — preserving the principle of least privilege.
-        </p>
+        ${authPatternHero(i, 'per_user')}
         <div class="connected-panel" style="background:rgba(43,127,255,0.06);border-color:rgba(43,127,255,0.20);color:var(--accent);margin:0">
           <strong>How it works</strong>
           1. AIMS-OS shows a consent prompt to the user the first time an agent tries to use ${escapeHtml(i.name)}<br>
@@ -6986,11 +7252,9 @@ function paintDrawer() {
       // Engineering brief §13.6 — "Design for the ugliest provider"
       const steps = AUTH_PATTERNS.manual.schema.steps;
       body = `
-        <div class="drawer-step-h">Step 2 of 6 · Manual setup</div>
+        <div class="drawer-step-h">Step 3 of 7 · Manual setup</div>
         <div class="drawer-step-title">Multi-step setup for ${escapeHtml(i.name)}</div>
-        <p style="font-size:12px;color:var(--t2);margin-bottom:14px;line-height:1.55">
-          This provider requires a few external steps before we can connect. Follow the checklist below — we've included a video walkthrough for the trickier parts.
-        </p>
+        ${authPatternHero(i, 'manual')}
         <a href="${AUTH_PATTERNS.manual.schema.video}" style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--cyan);text-decoration:none;margin-bottom:14px" onclick="event.preventDefault();toast('Video walkthrough — coming soon')">
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 2v12l10-6L3 2z" fill="currentColor"/></svg>
           Watch 3-minute walkthrough
@@ -7023,7 +7287,7 @@ function paintDrawer() {
 
   else if (s.step === 3) {
     body = `
-      <div class="drawer-step-h">Step 3 of 6 · Choose capabilities</div>
+      <div class="drawer-step-h">Step 4 of 7 · Choose capabilities</div>
       <div class="drawer-step-title">What can ${escapeHtml(i.name)} do for you?</div>
       <p style="font-size:12px;color:var(--t2);margin-bottom:14px;line-height:1.55">
         Activate only what you need. You can change this later from the instance's <strong>Capabilities</strong> tab. Anything turned off here cannot be used by any agent in your tenant.
@@ -7048,7 +7312,7 @@ function paintDrawer() {
 
   else if (s.step === 4) {
     body = `
-      <div class="drawer-step-h">Step 4 of 6 · Initial scope</div>
+      <div class="drawer-step-h">Step 5 of 7 · Initial scope</div>
       <div class="drawer-step-title">Where should this integration be available?</div>
       <div class="field-group">
         ${Object.keys(STUDIO_META).map(k=>`
