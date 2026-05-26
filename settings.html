@@ -1853,14 +1853,34 @@ html.theme-light .btn-primary.btn-outline{color:var(--cyan); border-color:rgba(6
 .ov-side-body .ov-side-row{padding:9px 0; border-bottom:1px solid var(--line)}
 .ov-side-body .ov-side-row:last-child{border-bottom:none}
 
-/* Capability sub-cards inside the "What you can do with it" widget:
-   slightly lighter background so the nesting hierarchy reads cleanly */
-.ov-widget .ov-cap-card{background:var(--bg3); border-color:var(--line)}
+/* ── Flatten nested cards: avoid the "doble cerramiento" when a card
+       sits inside a .ov-widget. Removes inner borders, keeps subtle bg
+       hierarchy + accent color via inset box-shadow. ── */
+.ov-widget .used-in-grid,
 .ov-widget .ov-cap-cards{margin:0}
-
-/* Used-in widget body: cards inside should not be doubled */
-.ov-widget .used-in-grid{margin:0}
 .used-in-wrap{margin:0}
+
+.ov-widget .used-in-card{
+  border:none; background:var(--bg3);
+  transition:background .14s, box-shadow .14s, transform .14s;
+}
+.ov-widget .used-in-card.used:hover{background:var(--bg2); transform:translateY(-1px)}
+.ov-widget .used-in-card.studio-gov.used{box-shadow:inset 3px 0 0 var(--green)}
+.ov-widget .used-in-card.studio-ag.used{box-shadow:inset 3px 0 0 var(--purple)}
+.ov-widget .used-in-card.studio-wf.used{box-shadow:inset 3px 0 0 var(--accent)}
+.ov-widget .used-in-card.studio-gov.used:hover{box-shadow:inset 3px 0 0 var(--green), 0 2px 8px rgba(0,0,0,.18)}
+.ov-widget .used-in-card.studio-ag.used:hover{box-shadow:inset 3px 0 0 var(--purple), 0 2px 8px rgba(0,0,0,.18)}
+.ov-widget .used-in-card.studio-wf.used:hover{box-shadow:inset 3px 0 0 var(--accent), 0 2px 8px rgba(0,0,0,.18)}
+
+.ov-widget .ov-cap-card{
+  border:none; background:var(--bg3);
+}
+/* Instance rows inside the Instances widget: lighter borders, no double frame */
+.ov-widget #instances .inst-row, .ov-widget .inst-row{
+  background:var(--bg3); border:1px solid rgba(255,255,255,0.04);
+}
+.ov-widget .inst-row:hover{background:var(--bg2); border-color:var(--line)}
+
 
 /* Override the old h3 styles that no longer apply (kept for back-compat
    but flat headings inside .ov-widget should not have extra spacing) */
