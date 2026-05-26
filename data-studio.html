@@ -998,8 +998,6 @@ function renderConnections() {
 
   $('content').innerHTML = `
     <div class="breadcrumb">
-      <a href="index.html">Hub</a><span class="crumb-sep">›</span>
-      <a href="#/connections">Data Studio</a><span class="crumb-sep">›</span>
       <span class="crumb-current">Connections</span>
     </div>
 
@@ -1129,7 +1127,7 @@ function renderConnectionDetail(slug) {
   const c = DS_CONNECTIONS[slug];
   if (!c) {
     $('content').innerHTML = `
-      <div class="breadcrumb"><a href="index.html">Hub</a><span class="crumb-sep">›</span><a href="#/connections">Connections</a><span class="crumb-sep">›</span><span class="crumb-current">Not found</span></div>
+      <div class="breadcrumb"><a href="#/connections">Connections</a><span class="crumb-sep">›</span><span class="crumb-current">Not found</span></div>
       <div class="ds-placeholder">
         <div class="ds-placeholder-t">Connection not found</div>
         <div class="ds-placeholder-d">No connection named <code>${escapeHtml(slug)}</code> is authenticated in your workspace. <a href="settings.html#/integrations" style="color:var(--cyan)">Open Admin Studio</a> to add one.</div>
@@ -1142,8 +1140,6 @@ function renderConnectionDetail(slug) {
 
   $('content').innerHTML = `
     <div class="breadcrumb">
-      <a href="index.html">Hub</a><span class="crumb-sep">›</span>
-      <a href="#/connections">Data Studio</a><span class="crumb-sep">›</span>
       <a href="#/connections">Connections</a><span class="crumb-sep">›</span>
       <span class="crumb-current">${escapeHtml(c.name)}</span>
     </div>
@@ -1462,8 +1458,6 @@ function activateMapping(slug) {
 function renderPlaceholder(title, desc) {
   $('content').innerHTML = `
     <div class="breadcrumb">
-      <a href="index.html">Hub</a><span class="crumb-sep">›</span>
-      <a href="#/connections">Data Studio</a><span class="crumb-sep">›</span>
       <span class="crumb-current">${escapeHtml(title)}</span>
     </div>
 

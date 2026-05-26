@@ -4800,9 +4800,7 @@ function renderRequestForm() {
     // Success state after submit
     $('content').innerHTML = `
       <div class="breadcrumb">
-        <a href="#/integrations">Settings</a><span class="crumb-sep">›</span>
-        <a href="#/integrations">Data Studio</a><span class="crumb-sep">›</span>
-        <a href="#/integrations">Connections</a><span class="crumb-sep">›</span>
+        <a href="#/integrations">Integrations</a><span class="crumb-sep">›</span>
         <span class="crumb-current">Request integration</span>
       </div>
       <div class="req-success">
@@ -4821,9 +4819,7 @@ function renderRequestForm() {
 
   $('content').innerHTML = `
     <div class="breadcrumb">
-      <a href="#/integrations">Settings</a><span class="crumb-sep">›</span>
-      <a href="#/integrations">Data Studio</a><span class="crumb-sep">›</span>
-      <a href="#/integrations">Connections</a><span class="crumb-sep">›</span>
+      <a href="#/integrations">Integrations</a><span class="crumb-sep">›</span>
       <span class="crumb-current">Request integration</span>
     </div>
     <div class="req-form">
@@ -4999,8 +4995,6 @@ function renderRequestsInbox() {
 
   $('content').innerHTML = `
     <div class="breadcrumb">
-      <a href="#/integrations">Settings</a><span class="crumb-sep">›</span>
-      <a href="#/integrations">Data Studio</a><span class="crumb-sep">›</span>
       <span class="crumb-current">Requests</span>
     </div>
     <section class="op-hero">
@@ -5905,11 +5899,7 @@ function paintDetail(i) {
   const cat = CATEGORIES.find(c=>c.slug===i.category);
   $('content').innerHTML = `
     <div class="breadcrumb">
-      <a href="#/integrations">Settings</a>
-      <span class="crumb-sep">›</span>
-      <a href="#/integrations">Data Studio</a>
-      <span class="crumb-sep">›</span>
-      <a href="#/integrations">Connections</a>
+      <a href="#/integrations">Integrations</a>
       <span class="crumb-sep">›</span>
       <span class="crumb-current">${escapeHtml(i.name)}</span>
     </div>
@@ -5982,11 +5972,7 @@ function renderInstanceDetail(slug, instId) {
 
   $('content').innerHTML = `
     <div class="breadcrumb">
-      <a href="#/integrations">Settings</a>
-      <span class="crumb-sep">›</span>
-      <a href="#/integrations">Data Studio</a>
-      <span class="crumb-sep">›</span>
-      <a href="#/integrations">Connections</a>
+      <a href="#/integrations">Integrations</a>
       <span class="crumb-sep">›</span>
       <a href="#/integrations/${i.slug}">${escapeHtml(i.name)}</a>
       <span class="crumb-sep">›</span>
@@ -7700,10 +7686,6 @@ function renderAudit() {
 
   $('content').innerHTML = `
     <div class="breadcrumb">
-      <a href="#/integrations">Settings</a>
-      <span class="crumb-sep">›</span>
-      <span>Workspace</span>
-      <span class="crumb-sep">›</span>
       <span class="crumb-current">Audit log</span>
     </div>
 
@@ -7795,11 +7777,7 @@ function toggleAuditExpand(idx) { auditFilters.expanded = auditFilters.expanded=
 function renderBuildChooser() {
   $('content').innerHTML = `
     <div class="breadcrumb">
-      <a href="#/integrations">Settings</a>
-      <span class="crumb-sep">›</span>
-      <a href="#/integrations">Data Studio</a>
-      <span class="crumb-sep">›</span>
-      <a href="#/integrations">Connections</a>
+      <a href="#/integrations">Integrations</a>
       <span class="crumb-sep">›</span>
       <span class="crumb-current">Build your own</span>
     </div>
@@ -7877,7 +7855,7 @@ function renderBuildWebhook() {
   const steps = ['Basics','Authentication','Define actions','Capabilities','Test & Preview','Publish'];
   $('content').innerHTML = `
     <div class="breadcrumb">
-      <a href="#/integrations">Settings</a>
+      <a href="#/integrations">Integrations</a>
       <span class="crumb-sep">›</span>
       <a href="#/build">Build your own</a>
       <span class="crumb-sep">›</span>
@@ -8016,7 +7994,7 @@ function publishWebhook() {
 function renderBuildOpenAPI() {
   $('content').innerHTML = `
     <div class="breadcrumb">
-      <a href="#/integrations">Settings</a><span class="crumb-sep">›</span>
+      <a href="#/integrations">Integrations</a><span class="crumb-sep">›</span>
       <a href="#/build">Build your own</a><span class="crumb-sep">›</span>
       <span class="crumb-current">Import OpenAPI</span>
     </div>
@@ -8074,7 +8052,7 @@ function simulateOpenAPI() {
 function renderBuildSDK() {
   $('content').innerHTML = `
     <div class="breadcrumb">
-      <a href="#/integrations">Settings</a><span class="crumb-sep">›</span>
+      <a href="#/integrations">Integrations</a><span class="crumb-sep">›</span>
       <a href="#/build">Build your own</a><span class="crumb-sep">›</span>
       <span class="crumb-current">Code SDK</span>
     </div>
@@ -8135,10 +8113,6 @@ function renderPersonal() {
   ];
   $('content').innerHTML = `
     <div class="breadcrumb">
-      <a href="#/integrations">Settings</a>
-      <span class="crumb-sep">›</span>
-      <span>Personal</span>
-      <span class="crumb-sep">›</span>
       <span class="crumb-current">My Integrations</span>
     </div>
 
@@ -8194,7 +8168,6 @@ function renderPersonalDetail(slug) {
   const i = findIntegration(slug); if(!i){ renderNotFound(slug); return }
   $('content').innerHTML = `
     <div class="breadcrumb">
-      <a href="#/integrations">Settings</a><span class="crumb-sep">›</span>
       <a href="#/personal">My Integrations</a><span class="crumb-sep">›</span>
       <span class="crumb-current">${escapeHtml(i.name)}</span>
     </div>
