@@ -726,10 +726,16 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
 
       <div class="ssb-group">
         <span class="ssb-grp-label">Cross-functional</span>
-        <button class="ssb-item disabled" title="Open Admin Studio for credential management" onclick="window.location.href='settings.html'">
-          <span class="ssb-item-ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="9" cy="6" r="2"/><path d="M5 13c0-2.2 1.8-4 4-4s4 1.8 4 4"/><path d="M3 8L1 6l2-2"/></svg></span>
-          <span class="ssb-item-label">Manage credentials ↗</span>
-        </button>
+        <a class="ssb-item" href="settings.html" style="text-decoration:none">
+          <span class="ssb-item-ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="8" cy="8" r="2"/><circle cx="3" cy="3" r="1.3"/><circle cx="13" cy="3" r="1.3"/><circle cx="3" cy="13" r="1.3"/><circle cx="13" cy="13" r="1.3"/><path d="M4.1 4.1l2.5 2.5M11.9 4.1L9.4 6.6M4.1 11.9l2.5-2.5M11.9 11.9L9.4 9.4"/></svg></span>
+          <span class="ssb-item-label">Admin Studio</span>
+          <span style="font-size:11px; color:var(--t3); margin-left:auto">↗</span>
+        </a>
+        <a class="ssb-item" href="agent-tools.html" style="text-decoration:none">
+          <span class="ssb-item-ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="1.5" y="4.5" width="4" height="3" rx=".8"/><rect x="6.5" y="1.5" width="4" height="3" rx=".8"/><rect x="6.5" y="7.5" width="4" height="3" rx=".8"/></svg></span>
+          <span class="ssb-item-label">Agent Studio · Tools</span>
+          <span style="font-size:11px; color:var(--t3); margin-left:auto">↗</span>
+        </a>
       </div>
     </div>
   </aside>
