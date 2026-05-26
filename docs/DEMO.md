@@ -386,11 +386,67 @@ The sub-sidebar now has a dedicated **Data Studio** section containing:
 - **Tables** (coming soon, will host Sebastian's table definitions)
 - **Field mappings** (coming soon, the auto-map + custom-flag UI)
 - **Schema versions** (coming soon, history per table)
-- **Requests** (coming soon, the request inbox from the Mike call)
+- **Requests** (live, see below)
 
 Breadcrumbs are now `Settings > Data Studio > Connections > [integration]` instead of the previous `Settings > Integrations > [integration]`. The Browse home hero gained a `Data Studio · Connections` eyebrow that frames the marketplace as one of Data Studio's surfaces, not a standalone product.
 
 This locks the architectural decision from the founder session: **Integrations is the control plane of Data Studio, not a sibling**. Sebastian's field mapping engine lives in Data Studio; this prototype is what hands off to it.
+
+### Connect → Map (wizard step 6 of 7)
+
+The activation wizard is now **7 steps** instead of 6. A new step `Map fields` sits between Initial scope and Confirm. It implements Mike's "peanut butter cup" handoff: AIMS auto-maps the standard fields it recognizes, then asks the customer to resolve the custom ones.
+
+Visible sections in the new step:
+
+- **Auto-mapped (N fields)** — collapsible, defaults closed because no action is needed. Shows count with a green checkmark.
+- **Needs your attention (N custom fields)** — expanded. Per Mike's Salesforce custom-objects scenario, each row offers three radio options:
+  - *Accept AI suggestion* (with a confidence chip: high / med / low)
+  - *Create new field* in your AIMS schema, with a derived name preview
+  - *Skip this field*
+  Salesforce demo includes `pink_fluffy_slippers__c`, `abcd_classification__c` (no suggestion) and `rep_quota_attainment_pct__c` (92% match suggestion).
+- **Open Data Studio CTA** — for users who want the full mapping experience, jumps to the Helix drawer.
+
+The Confirm step (now step 7) shows the mapping summary: `N auto-mapped, M custom resolved, K skipped`.
+
+### Request inbox (Mike's "8000 employees" reality)
+
+A new surface for requesting integrations the catalog does not have, with a managed services queue on the other side.
+
+Two entry points:
+
+1. **Catalog home** has a second promo card (amber) below the Build your own promo: "Need something custom? Request it from the AIMS team."
+2. **Sub-sidebar** under Data Studio has a **Requests** item with a yellow alert dot when there are pending reviews.
+
+The request form has 5 sections that mirror what Mike sketched in his Claude artifact:
+
+1. Who is asking and for whom (requester, department, scope, business owner)
+2. Business intent (free-text use case)
+3. Source system (integration name, vendor, action types: read / write / push)
+4. Data sensitivity (PII / financial / compliance — radio: no / maybe / yes)
+5. Timeline + scale (urgent / 2 weeks / quarter / no rush, # of users)
+
+Submit goes to a confirmation screen with a generated ticket ID, then back to the inbox.
+
+The inbox itself is a queue view with KPI counts (Pending, Quoted, In progress, Delivered), tabs for filtering, and one row per request. Each row shows:
+
+- Status chip with bucket-tinted color
+- Priority tag (High priority when urgent)
+- Integration name + truncated business intent
+- Vendor + action types + PII / financial flags
+- Requester avatar + dept + age
+- Quoted price + ETA (when applicable)
+- Per-status CTA (Review / Approve quote / Track progress / View delivery / View notes)
+
+Mock data ships with 6 requests in different states (pending, quoted, in progress, delivered, rejected) including pricing examples ($2,800 to $18,500) per Mike's "$52,000 for a workflow" framing.
+
+### Spreadsheet as a first-class source
+
+Per Mike's "Ford sends us a spreadsheet every Monday" example:
+
+- **Spreadsheet** is now a featured AIMS-OS card in the Data category of the catalog. Auth method is `manual / multi-step checklist` (drop file or set up an email rule).
+- **Build your own** now has a 4th method card titled **From spreadsheet** alongside Webhook, OpenAPI, and Code SDK. Best for "one-off datasets, vendor weekly reports".
+
+These cover the long tail of data sources that don't have an API but matter to the workflow.
 
 ---
 
