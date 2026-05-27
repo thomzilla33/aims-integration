@@ -587,6 +587,193 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
   .map-arrow{display:none}
 }
 
+
+/* ============ ONBOARDING EMPTY STATE ============ */
+.ob-empty{
+  background:linear-gradient(135deg, rgba(16,185,129,0.06) 0%, rgba(43,127,255,0.05) 50%, rgba(167,139,250,0.04) 100%);
+  border:1px solid rgba(16,185,129,0.22);
+  border-radius:16px;
+  padding:42px 48px;
+  position:relative;
+  overflow:hidden;
+  margin-bottom:28px;
+}
+.ob-empty::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at 88% 18%, rgba(16,185,129,0.10), transparent 50%);
+  pointer-events:none;
+}
+.ob-empty-grid{
+  display:grid;grid-template-columns:1fr 260px;gap:48px;
+  align-items:center;position:relative;z-index:1;
+}
+@media (max-width:900px){
+  .ob-empty{padding:30px 26px}
+  .ob-empty-grid{grid-template-columns:1fr;gap:24px}
+}
+.ob-empty-eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:5px 11px;
+  background:rgba(16,185,129,0.12);color:var(--emerald);
+  border:1px solid rgba(16,185,129,0.32);
+  border-radius:99px;
+  font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+  margin-bottom:16px;
+}
+.ob-empty-eyebrow-dot{
+  width:6px;height:6px;border-radius:50%;background:var(--emerald);
+  box-shadow:0 0 0 3px rgba(16,185,129,0.20);
+}
+.ob-empty-title{
+  font-size:32px;font-weight:800;color:var(--t1);
+  letter-spacing:-.025em;line-height:1.12;margin-bottom:10px;
+}
+.ob-empty-desc{
+  font-size:14px;color:var(--t2);line-height:1.55;
+  max-width:520px;margin-bottom:22px;
+}
+.ob-empty-steps{
+  display:flex;flex-direction:column;gap:8px;margin-bottom:24px;
+}
+.ob-empty-step{
+  display:flex;align-items:center;gap:11px;
+  font-size:12.5px;color:var(--t2);line-height:1.4;
+}
+.ob-empty-step-n{
+  width:22px;height:22px;border-radius:50%;
+  background:rgba(255,255,255,0.05);
+  border:1px solid var(--line);color:var(--t3);
+  font-size:11px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.ob-empty-step b{color:var(--t1);font-weight:600}
+.ob-empty-actions{display:flex;gap:10px;align-items:center}
+.ob-empty-btn-primary{
+  display:inline-flex;align-items:center;gap:8px;
+  height:42px;padding:0 18px;
+  background:linear-gradient(135deg, #10B981 0%, #059669 100%);
+  color:#fff;font-family:inherit;font-size:13px;font-weight:700;
+  border:none;border-radius:9px;cursor:pointer;
+  box-shadow:0 8px 24px -8px rgba(16,185,129,0.5), inset 0 1px 0 rgba(255,255,255,0.16);
+  transition:transform .12s, box-shadow .12s;
+}
+.ob-empty-btn-primary:hover{transform:translateY(-1px);box-shadow:0 10px 28px -8px rgba(16,185,129,0.6), inset 0 1px 0 rgba(255,255,255,0.20)}
+.ob-empty-btn-secondary{
+  display:inline-flex;align-items:center;gap:6px;
+  height:42px;padding:0 14px;
+  background:transparent;color:var(--t2);
+  border:1px solid var(--line-strong);border-radius:9px;
+  font-family:inherit;font-size:12.5px;font-weight:600;cursor:pointer;
+  transition:border-color .12s, color .12s;
+}
+.ob-empty-btn-secondary:hover{border-color:rgba(16,185,129,0.5);color:var(--emerald)}
+.ob-empty-foot{font-size:11.5px;color:var(--t3);margin-top:18px}
+.ob-empty-foot a{color:var(--cyan);text-decoration:none;font-weight:600}
+.ob-empty-foot a:hover{text-decoration:underline}
+.ob-empty-visual{width:260px;height:240px;position:relative;display:flex;align-items:center;justify-content:center}
+.ob-empty-visual-orb{
+  position:absolute;width:120px;height:120px;border-radius:50%;
+  background:linear-gradient(135deg, #10B981, #2B7FFF);
+  opacity:.22;filter:blur(32px);
+}
+.ob-empty-visual-card{
+  background:rgba(12,20,40,0.86);
+  border:1px solid rgba(255,255,255,0.10);
+  border-radius:11px;padding:11px 13px;
+  font-size:11px;color:var(--t2);
+  position:absolute;display:flex;align-items:center;gap:9px;
+  backdrop-filter:blur(8px);
+  box-shadow:0 12px 32px -12px rgba(0,0,0,0.6);
+}
+.ob-empty-visual-card .v-dot{width:7px;height:7px;border-radius:50%;background:var(--emerald);box-shadow:0 0 0 3px rgba(16,185,129,0.18)}
+.ob-empty-visual-card.c1{top:14px;left:-6px}
+.ob-empty-visual-card.c2{top:96px;right:-14px}
+.ob-empty-visual-card.c2 .v-dot{background:var(--cyan);box-shadow:0 0 0 3px rgba(6,182,212,0.18)}
+.ob-empty-visual-card.c3{bottom:22px;left:24px}
+.ob-empty-visual-card.c3 .v-dot{background:var(--purple);box-shadow:0 0 0 3px rgba(167,139,250,0.18)}
+@media (max-width:900px){.ob-empty-visual{display:none}}
+
+/* ============ ONBOARDING MODAL ============ */
+.ob-overlay{
+  position:fixed;inset:0;z-index:300;
+  background:rgba(4,8,18,0.74);backdrop-filter:blur(6px);
+  display:none;align-items:center;justify-content:center;
+  padding:24px;
+  animation:obFade .18s ease-out;
+}
+.ob-overlay.is-open{display:flex}
+@keyframes obFade{from{opacity:0}to{opacity:1}}
+.ob-modal{
+  width:100%;max-width:960px;max-height:90vh;
+  background:#0c1428;
+  border:1px solid rgba(255,255,255,0.10);
+  border-radius:16px;
+  box-shadow:0 32px 80px -20px rgba(0,0,0,0.7), 0 0 0 1px rgba(16,185,129,0.10);
+  display:flex;flex-direction:column;overflow:hidden;
+  animation:obSlide .22s cubic-bezier(.2,.8,.2,1);
+}
+@keyframes obSlide{from{opacity:0;transform:translateY(8px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+.ob-modal-h{padding:18px 26px 14px;border-bottom:1px solid var(--line);flex-shrink:0}
+.ob-modal-h-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.ob-modal-title{display:flex;align-items:center;gap:11px;font-size:14.5px;font-weight:700;color:var(--t1)}
+.ob-modal-step-pill{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:3px 9px;border-radius:99px;
+  background:rgba(16,185,129,0.12);color:var(--emerald);
+  border:1px solid rgba(16,185,129,0.32);
+  font-size:10.5px;font-weight:700;
+}
+.ob-modal-close{
+  width:30px;height:30px;border-radius:8px;background:transparent;border:none;cursor:pointer;
+  color:var(--t3);display:flex;align-items:center;justify-content:center;
+  transition:background .12s, color .12s;
+}
+.ob-modal-close:hover{background:var(--hover);color:var(--t1)}
+.ob-modal-progress{display:flex;gap:5px;height:4px}
+.ob-modal-progress-seg{flex:1;height:100%;border-radius:99px;background:rgba(255,255,255,0.06);transition:background .18s}
+.ob-modal-progress-seg.is-done{background:var(--emerald)}
+.ob-modal-progress-seg.is-current{background:linear-gradient(90deg, var(--emerald) 0%, var(--cyan) 100%)}
+.ob-modal-body{flex:1;overflow-y:auto;padding:28px 30px 24px}
+.ob-modal-f{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 26px;border-top:1px solid var(--line);
+  background:rgba(255,255,255,0.015);flex-shrink:0;gap:12px;
+}
+.ob-modal-f-left,.ob-modal-f-right{display:flex;gap:8px;align-items:center}
+.ob-skip-btn{
+  background:transparent;border:none;color:var(--t3);
+  font-family:inherit;font-size:12px;font-weight:500;
+  cursor:pointer;padding:6px 8px;border-radius:6px;transition:color .12s;
+}
+.ob-skip-btn:hover{color:var(--t2)}
+
+/* Step placeholder used in Sprint 1 */
+.ob-step-placeholder{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:340px;padding:40px 24px;text-align:center;
+}
+.ob-step-placeholder-ic{
+  width:64px;height:64px;border-radius:18px;
+  background:rgba(16,185,129,0.08);
+  border:1px solid rgba(16,185,129,0.22);
+  color:var(--emerald);
+  display:flex;align-items:center;justify-content:center;margin-bottom:18px;
+}
+.ob-step-placeholder-t{font-size:18px;font-weight:700;color:var(--t1);margin-bottom:6px;letter-spacing:-.01em}
+.ob-step-placeholder-d{font-size:13px;color:var(--t2);max-width:460px;line-height:1.55}
+
+/* Sidebar demo trigger */
+.ssb-demo{padding:14px 18px 16px;border-top:1px solid rgba(255,255,255,0.04);flex-shrink:0}
+.ssb-demo-l{font-size:9.5px;font-weight:800;letter-spacing:.10em;color:var(--t3);text-transform:uppercase;margin-bottom:8px}
+.ssb-demo-btn{
+  display:flex;align-items:center;gap:8px;width:100%;padding:8px 10px;
+  background:transparent;border:1px dashed var(--line-strong);border-radius:7px;
+  color:var(--t2);font-family:inherit;font-size:11.5px;font-weight:600;
+  cursor:pointer;transition:border-color .12s, color .12s;
+}
+.ssb-demo-btn:hover{border-color:rgba(16,185,129,0.5);color:var(--emerald)}
+.ssb-demo-btn-ic{flex-shrink:0;color:currentColor}
+
 </style>
 </head>
 <body>
@@ -738,11 +925,54 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
         </a>
       </div>
     </div>
+    <div class="ssb-demo">
+      <div class="ssb-demo-l">Demo controls</div>
+      <button class="ssb-demo-btn" onclick="resetOnboarding()" title="Show first-run empty state">
+        <svg class="ssb-demo-btn-ic" width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8a6 6 0 0 1 10.5-4M14 8a6 6 0 0 1-10.5 4"/><path d="M12 2v3h-3M4 14v-3h3"/></svg>
+        Reset to first-run
+      </button>
+    </div>
   </aside>
 
   <!-- Main content -->
   <main class="content" id="content"></main>
 
+</div>
+
+
+<!-- Onboarding wizard modal -->
+<div class="ob-overlay" id="obOverlay" onclick="if(event.target===this)closeWizard()">
+  <div class="ob-modal" role="dialog" aria-labelledby="obTitle">
+    <header class="ob-modal-h">
+      <div class="ob-modal-h-row">
+        <div class="ob-modal-title">
+          <span id="obTitle">Connect a source</span>
+          <span class="ob-modal-step-pill" id="obStepPill">Step 1 of 6 &middot; Category</span>
+        </div>
+        <button class="ob-modal-close" onclick="closeWizard()" aria-label="Close">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+      <div class="ob-modal-progress" id="obProgress">
+        <div class="ob-modal-progress-seg is-current"></div>
+        <div class="ob-modal-progress-seg"></div>
+        <div class="ob-modal-progress-seg"></div>
+        <div class="ob-modal-progress-seg"></div>
+        <div class="ob-modal-progress-seg"></div>
+        <div class="ob-modal-progress-seg"></div>
+      </div>
+    </header>
+    <div class="ob-modal-body" id="obBody"></div>
+    <footer class="ob-modal-f">
+      <div class="ob-modal-f-left">
+        <button class="btn btn-ghost btn-sm" onclick="wizardBack()" id="obBack">&larr; Back</button>
+      </div>
+      <div class="ob-modal-f-right">
+        <button class="ob-skip-btn" onclick="closeWizard()">Save and resume later</button>
+        <button class="btn btn-primary btn-sm" onclick="wizardNext()" id="obNext">Next &rarr;</button>
+      </div>
+    </footer>
+  </div>
 </div>
 
 <div class="toast-container" id="toasts"></div>
@@ -996,6 +1226,9 @@ function render() {
 /* ====================== CONNECTIONS LIST ====================== */
 
 function renderConnections() {
+  if (typeof isOnboardingPending === 'function' && isOnboardingPending()) {
+    return renderOnboardingEmptyState();
+  }
   const list = Object.values(DS_CONNECTIONS);
   const mapped = list.filter(c => c.mapped);
   const pending = list.filter(c => !c.mapped);
@@ -1515,6 +1748,206 @@ document.addEventListener('keydown', (e) => {
 window.addEventListener('hashchange', render);
 paintPersonaPill();
 render();
+
+/* ============ ONBOARDING WIZARD (Sprint 1: shell only) ============ */
+const WIZARD_STEPS = [
+  { id:'category',  title:'Pick a source category',  hint:'Step 1 of 6 · Category' },
+  { id:'connector', title:'Pick a connector',        hint:'Step 2 of 6 · Connector' },
+  { id:'auth',      title:'Authenticate',            hint:'Step 3 of 6 · Auth' },
+  { id:'preview',   title:'Preview detected data',   hint:'Step 4 of 6 · Preview' },
+  { id:'mapping',   title:'Map fields',              hint:'Step 5 of 6 · Mapping' },
+  { id:'sync',      title:'Sync settings',           hint:'Step 6 of 6 · Sync' }
+];
+
+let obState = (function(){
+  try {
+    const raw = localStorage.getItem('aims_ds_onboarding');
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  return { phase:'complete', step:0, category:null, connector:null, auth:{}, mapping:[], sync:{} };
+})();
+
+function persistOb() {
+  try { localStorage.setItem('aims_ds_onboarding', JSON.stringify(obState)); } catch(e){}
+}
+
+function isOnboardingPending() { return obState.phase === 'pending'; }
+
+function resetOnboarding() {
+  obState = { phase:'pending', step:0, category:null, connector:null, auth:{}, mapping:[], sync:{} };
+  persistOb();
+  toast('Onboarding reset — Data Studio is in first-run mode');
+  render();
+}
+
+function startOver() {
+  if (!confirm('Discard your wizard progress and start over from step 1?')) return;
+  obState = { phase:'pending', step:0, category:null, connector:null, auth:{}, mapping:[], sync:{} };
+  persistOb();
+  render();
+}
+
+function skipOnboardingDemo() {
+  obState.phase = 'complete';
+  persistOb();
+  toast('Onboarding skipped — showing populated demo state');
+  render();
+}
+
+function completeOnboarding() {
+  obState.phase = 'complete';
+  persistOb();
+}
+
+function openWizard() {
+  if (obState.phase !== 'pending') obState.phase = 'pending';
+  persistOb();
+  paintWizard();
+  $('obOverlay').classList.add('is-open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeWizard() {
+  persistOb();
+  $('obOverlay').classList.remove('is-open');
+  document.body.style.overflow = '';
+  // refresh empty state in case the user advanced steps
+  if (isOnboardingPending()) render();
+}
+
+function paintWizard() {
+  const idx = Math.max(0, Math.min(obState.step, WIZARD_STEPS.length - 1));
+  const s = WIZARD_STEPS[idx];
+  $('obStepPill').textContent = s.hint;
+  const segs = $('obProgress').children;
+  for (let i = 0; i < segs.length; i++) {
+    segs[i].classList.toggle('is-done', i < idx);
+    segs[i].classList.toggle('is-current', i === idx);
+  }
+  $('obBack').style.visibility = idx === 0 ? 'hidden' : 'visible';
+  $('obNext').textContent = (idx === WIZARD_STEPS.length - 1) ? 'Finish setup →' : 'Next →';
+  $('obBody').innerHTML = renderWizardStep(s.id);
+}
+
+function renderWizardStep(stepId) {
+  // Sprint 1 placeholder — real step UI lands in Sprint 2/3
+  const s = WIZARD_STEPS.find(x => x.id === stepId);
+  return `
+    <div class="ob-step-placeholder">
+      <div class="ob-step-placeholder-ic">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/>
+        </svg>
+      </div>
+      <div class="ob-step-placeholder-t">${escapeHtml(s.title)}</div>
+      <div class="ob-step-placeholder-d">Step UI lands in Sprint 2 (category + connector + auth) and Sprint 3 (preview + mapping + sync). This is a Sprint 1 chrome preview — modal, progress bar, resumable state, and footer actions are wired. Use Next/Back to step through.</div>
+    </div>
+  `;
+}
+
+function wizardNext() {
+  if (obState.step < WIZARD_STEPS.length - 1) {
+    obState.step += 1;
+    persistOb();
+    paintWizard();
+  } else {
+    completeOnboarding();
+    closeWizard();
+    toast('Onboarding complete — Data Studio is ready');
+    render();
+  }
+}
+
+function wizardBack() {
+  if (obState.step > 0) {
+    obState.step -= 1;
+    persistOb();
+    paintWizard();
+  }
+}
+
+function renderOnboardingEmptyState() {
+  const resuming = obState.step > 0;
+  $('content').innerHTML = `
+    <div class="breadcrumb"><span class="crumb-current">Connections</span></div>
+
+    <section class="ob-empty">
+      <div class="ob-empty-grid">
+        <div>
+          <div class="ob-empty-eyebrow">
+            <span class="ob-empty-eyebrow-dot"></span>
+            ${resuming ? `Setup paused at step ${obState.step + 1} of 6` : 'First-run setup &middot; about 5 minutes'}
+          </div>
+          <h1 class="ob-empty-title">${resuming ? 'Pick up where you left off' : 'Welcome to Data Studio'}</h1>
+          <p class="ob-empty-desc">${resuming ? 'Your wizard progress is saved locally. Continue from where you stopped, or start over if you want a fresh setup.' : 'Connect your first source and start shaping data for your agents and teams. Six quick steps, about five minutes.'}</p>
+
+          ${resuming ? '' : `
+          <div class="ob-empty-steps">
+            <div class="ob-empty-step"><span class="ob-empty-step-n">1</span><span>Pick a <b>category</b> — CRM, ERP, Project mgmt, Marketing, Support, Custom or File</span></div>
+            <div class="ob-empty-step"><span class="ob-empty-step-n">2</span><span>Choose a <b>connector</b> from that category</span></div>
+            <div class="ob-empty-step"><span class="ob-empty-step-n">3</span><span><b>Authenticate</b> with the vendor</span></div>
+            <div class="ob-empty-step"><span class="ob-empty-step-n">4</span><span><b>Preview</b> what we detected in your data</span></div>
+            <div class="ob-empty-step"><span class="ob-empty-step-n">5</span><span>Confirm AI-suggested <b>field mapping</b></span></div>
+            <div class="ob-empty-step"><span class="ob-empty-step-n">6</span><span>Set sync <b>cadence</b> and finish</span></div>
+          </div>
+          `}
+
+          <div class="ob-empty-actions">
+            <button class="ob-empty-btn-primary" onclick="openWizard()">
+              ${resuming ? `Resume at step ${obState.step + 1}` : 'Connect your first source'}
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            ${resuming
+              ? `<button class="ob-empty-btn-secondary" onclick="startOver()">Start over</button>`
+              : `<button class="ob-empty-btn-secondary" onclick="skipOnboardingDemo()">Skip for demo</button>`}
+          </div>
+
+          <div class="ob-empty-foot">
+            Don&rsquo;t have credentials handy? <a href="#" onclick="event.preventDefault();toast('We would email setup instructions to your IT contact.')">Email setup instructions</a> &middot; <a href="agent-tools.html">Explore Agent Studio first</a>
+          </div>
+        </div>
+
+        <div class="ob-empty-visual">
+          <div class="ob-empty-visual-orb"></div>
+          <div class="ob-empty-visual-card c1"><span class="v-dot"></span> 4,210 events/hr</div>
+          <div class="ob-empty-visual-card c2"><span class="v-dot"></span> AI mapping &middot; 92%</div>
+          <div class="ob-empty-visual-card c3"><span class="v-dot"></span> 7 categories</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="ds-section-divider">
+      <hr/>
+      <span class="ds-section-divider-label">Browse what is available</span>
+      <hr/>
+    </div>
+
+    <div class="ds-section">
+      <div class="ds-section-h">
+        <div>
+          <div class="ds-section-title">Data Sync candidates <span style="font-size:11px;font-weight:600;color:var(--t3);margin-left:6px">${DS_CATALOG.length}</span></div>
+          <div class="ds-section-sub">A preview of the catalog. The wizard will pull from this list at step 2.</div>
+        </div>
+      </div>
+      <div class="ds-grid">
+        ${DS_CATALOG.slice(0, 6).map(c => `
+          <div class="ds-card is-inactive">
+            <span class="ds-card-status is-inactive"><span class="ds-card-status-dot"></span>Not activated</span>
+            <div class="ds-card-row">
+              ${dsLogo(c)}
+              <div>
+                <div class="ds-card-name">${escapeHtml(c.name)}</div>
+                <div class="ds-card-vendor">${escapeHtml(c.vendor)}</div>
+              </div>
+            </div>
+            <div style="font-size:11.5px; color:var(--t2); line-height:1.5">${escapeHtml(c.desc)}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
 </script>
 
 </body>
