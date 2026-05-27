@@ -1176,6 +1176,105 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
 .ob-summary-row b{font-weight:700}
 .ob-summary-row .mono{font-family:ui-monospace, SFMono-Regular, Menlo, monospace;color:var(--cyan)}
 
+
+/* ============ STEP DONE (Sprint 4) ============ */
+.ob-done-hero{
+  display:flex;align-items:center;gap:18px;
+  padding:22px 24px;margin-bottom:18px;
+  background:linear-gradient(135deg, rgba(16,185,129,0.10) 0%, rgba(43,127,255,0.05) 100%);
+  border:1px solid rgba(16,185,129,0.32);
+  border-radius:14px;position:relative;overflow:hidden;
+}
+.ob-done-hero::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at 88% 30%, rgba(16,185,129,0.16), transparent 55%);
+  pointer-events:none;
+}
+.ob-done-hero-ic{
+  width:56px;height:56px;border-radius:14px;
+  background:linear-gradient(135deg, #10B981, #059669);
+  color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  box-shadow:0 8px 22px -8px rgba(16,185,129,0.55), inset 0 1px 0 rgba(255,255,255,0.22);
+  position:relative;z-index:1;
+}
+.ob-done-hero-body{position:relative;z-index:1;flex:1;min-width:0}
+.ob-done-hero-eyebrow{
+  font-size:10px;font-weight:800;letter-spacing:.10em;text-transform:uppercase;
+  color:var(--emerald);margin-bottom:5px;
+}
+.ob-done-hero-title{font-size:22px;font-weight:800;color:var(--t1);letter-spacing:-.02em;line-height:1.18;margin-bottom:5px}
+.ob-done-hero-desc{font-size:13px;color:var(--t2);line-height:1.5}
+.ob-done-hero-desc .mono{font-family:ui-monospace, SFMono-Regular, Menlo, monospace;color:var(--cyan)}
+
+.ob-done-recap{
+  border:1px solid var(--line);border-radius:11px;overflow:hidden;
+  margin-bottom:20px;
+}
+.ob-done-recap-h{
+  padding:10px 14px;
+  background:rgba(255,255,255,0.025);
+  border-bottom:1px solid var(--line);
+  font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--t3);
+}
+.ob-done-recap-row{
+  display:grid;grid-template-columns:130px 1fr;gap:14px;
+  padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.04);
+  font-size:12.5px;
+}
+.ob-done-recap-row:last-child{border-bottom:none}
+.ob-done-recap-l{color:var(--t3);font-weight:600}
+.ob-done-recap-v{color:var(--t1);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ob-done-recap-v .mono{font-family:ui-monospace, SFMono-Regular, Menlo, monospace;color:var(--cyan)}
+.ob-done-recap-v .pill{
+  display:inline-flex;align-items:center;padding:2px 8px;border-radius:99px;
+  background:rgba(16,185,129,0.10);color:var(--emerald);border:1px solid rgba(16,185,129,0.28);
+  font-size:10.5px;font-weight:700;
+}
+.ob-done-recap-logo{width:22px;height:22px;border-radius:6px;background:#fff;padding:3px;display:flex;align-items:center;justify-content:center}
+.ob-done-recap-logo img{width:100%;height:100%;object-fit:contain}
+
+.ob-done-nextrow{
+  font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--t3);
+  margin-bottom:10px;
+}
+.ob-done-cards{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:10px}
+@media (max-width:760px){.ob-done-cards{grid-template-columns:1fr}}
+.ob-done-card{
+  display:flex;flex-direction:column;gap:10px;
+  padding:16px;text-align:left;
+  background:rgba(255,255,255,0.025);
+  border:1px solid var(--line);border-radius:12px;cursor:pointer;
+  font-family:inherit;color:inherit;
+  transition:border-color .14s, background .14s, transform .12s;
+  position:relative;
+}
+.ob-done-card:hover{border-color:rgba(16,185,129,0.4);background:rgba(16,185,129,0.04);transform:translateY(-2px)}
+.ob-done-card.is-primary{
+  background:linear-gradient(135deg, rgba(167,139,250,0.10) 0%, rgba(43,127,255,0.06) 100%);
+  border-color:rgba(167,139,250,0.32);
+}
+.ob-done-card.is-primary:hover{border-color:rgba(167,139,250,0.55);background:linear-gradient(135deg, rgba(167,139,250,0.16) 0%, rgba(43,127,255,0.10) 100%)}
+.ob-done-card-ic{
+  width:36px;height:36px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.ob-done-card.is-primary .ob-done-card-ic{background:rgba(167,139,250,0.14);color:var(--purple);border:1px solid rgba(167,139,250,0.32)}
+.ob-done-card.is-admin .ob-done-card-ic{background:rgba(6,182,212,0.14);color:var(--cyan);border:1px solid rgba(6,182,212,0.32)}
+.ob-done-card.is-again .ob-done-card-ic{background:rgba(16,185,129,0.14);color:var(--emerald);border:1px solid rgba(16,185,129,0.32)}
+.ob-done-card-t{font-size:13.5px;font-weight:700;color:var(--t1);letter-spacing:-.01em}
+.ob-done-card-d{font-size:11.5px;color:var(--t2);line-height:1.5}
+.ob-done-card-cta{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:11.5px;font-weight:700;color:var(--t1);
+  margin-top:auto;padding-top:4px;
+}
+.ob-done-card.is-primary .ob-done-card-cta{color:var(--purple)}
+.ob-done-card.is-admin .ob-done-card-cta{color:var(--cyan)}
+.ob-done-card.is-again .ob-done-card-cta{color:var(--emerald)}
+
+/* Hide back button + progress when in Done state */
+.ob-modal.is-done .ob-modal-progress{visibility:hidden;height:4px}
+
 /* Step placeholder used in Sprint 1 */
 .ob-step-placeholder{
   display:flex;flex-direction:column;align-items:center;justify-content:center;
@@ -1665,7 +1764,19 @@ function renderConnections() {
   if (typeof isOnboardingPending === 'function' && isOnboardingPending()) {
     return renderOnboardingEmptyState();
   }
-  const list = Object.values(DS_CONNECTIONS);
+  // Sprint 4: prepend the freshly-completed connection from the wizard, if any.
+  let list = Object.values(DS_CONNECTIONS);
+  if (obState && obState.lastCompleted && !list.some(x => x.slug === obState.lastCompleted.slug)) {
+    const lc = obState.lastCompleted;
+    list = [{
+      slug: lc.slug, name: lc.name, vendor: lc.vendor, color: lc.color, logo: lc.logo,
+      mapped: true, instances: 1, lastSync: 'just now',
+      eventsPerHour: 12 + Math.floor(Math.random()*80),
+      drift: false, events: [], targetTables: [{ name: lc.object, columns: lc.fieldsIncluded, rows: '—' }],
+      activatedAt: 'just now', activatedBy: 'You',
+      _justCreated: true
+    }].concat(list);
+  }
   const mapped = list.filter(c => c.mapped);
   const pending = list.filter(c => !c.mapped);
   const totalEvents = list.reduce((s, c) => s + c.eventsPerHour, 0);
@@ -2205,13 +2316,11 @@ function persistOb() {
 function isOnboardingPending() { return obState.phase === 'pending'; }
 
 function resetOnboarding() {
-  obState = { phase:'pending', step:0, category:null, connector:null, auth:{}, mapping:[], sync:{} };
+  obState = { phase:'pending', step:0, category:null, connector:null, auth:{}, mapping:[], sync:{}, lastCompleted:null };
   persistOb();
   toast('Onboarding reset — Data Studio is in first-run mode');
-  // Land on the connections home so the empty state shows even if the user
-  // was on a connection detail page.
   if (location.hash && location.hash !== '#/connections' && location.hash !== '#/') {
-    location.hash = '/connections';  // hashchange fires render()
+    location.hash = '/connections';
   } else {
     render();
   }
@@ -2261,6 +2370,26 @@ function closeWizard() {
 }
 
 function paintWizard() {
+  const modal = document.querySelector('.ob-modal');
+  // Sprint 4: Done screen lives past WIZARD_STEPS.length
+  if (obState.step >= WIZARD_STEPS.length) {
+    if (modal) modal.classList.add('is-done');
+    $('obStepPill').textContent = 'All set';
+    const segs = $('obProgress').children;
+    for (let i = 0; i < segs.length; i++) { segs[i].classList.add('is-done'); segs[i].classList.remove('is-current'); }
+    $('obBack').style.visibility = 'hidden';
+    const nextBtn = $('obNext');
+    nextBtn.textContent = 'Open Data Studio dashboard →';
+    nextBtn.style.opacity = '1';
+    nextBtn.onclick = function(){ obFinishAndGo('dashboard'); };
+    $('obBody').innerHTML = renderStep_done();
+    return;
+  }
+
+  if (modal) modal.classList.remove('is-done');
+  // Restore default Next handler in case we're coming back from Done
+  $('obNext').onclick = wizardNext;
+
   const idx = Math.max(0, Math.min(obState.step, WIZARD_STEPS.length - 1));
   const s = WIZARD_STEPS[idx];
   $('obStepPill').textContent = s.hint;
@@ -2272,14 +2401,12 @@ function paintWizard() {
   $('obBack').style.visibility = idx === 0 ? 'hidden' : 'visible';
   const isLast = idx === WIZARD_STEPS.length - 1;
   const nextBtn = $('obNext');
-  // Step-specific Next label
   if (isLast) nextBtn.textContent = 'Create Table Definition →';
   else if (s.id === 'auth')    nextBtn.textContent = 'Preview detected data →';
   else if (s.id === 'preview') nextBtn.textContent = 'Continue to mapping →';
   else if (s.id === 'mapping') nextBtn.textContent = 'Continue to sync →';
   else nextBtn.textContent = 'Next →';
   $('obBody').innerHTML = renderWizardStep(s.id);
-  // Dim Next when the step has unmet requirements (without disabling — clicking it shows a toast)
   nextBtn.style.opacity = wizardCanAdvance() ? '1' : '.55';
 }
 
@@ -2319,12 +2446,11 @@ function wizardNext() {
     persistOb();
     paintWizard();
   } else {
-    // Stamp the final config into state for the Done step (Sprint 4)
+    // Sprint 4: stamp completion and advance into the Done screen (modal stays open).
     obState.completedAt = new Date().toISOString();
-    completeOnboarding();
-    closeWizard();
-    toast('Table Definition created — your first connection is live');
-    render();
+    obState.step = WIZARD_STEPS.length; // past the last index — triggers Done screen
+    persistOb();
+    paintWizard();
   }
 }
 
@@ -3129,9 +3255,149 @@ function obSyncEditIncrField(v) {
 }
 
 
+/* ============ DONE STEP (Sprint 4) ============ */
+function renderStep_done() {
+  const cn = obConnector(obState.connector);
+  if (!cn) return '<div class="ob-step-placeholder"><div class="ob-step-placeholder-t">No connector configured</div></div>';
+  const sample = obSampleFor(cn.slug);
+  const counts = obMappingCounts();
+  const cadence = obState.sync && obState.sync.cadence;
+  const cadenceLabel = ({ realtime:'Real-time', hourly:'Hourly', daily:'Daily', manual:'Manual' })[cadence] || cadence;
+
+  return `
+    <div class="ob-done-hero">
+      <div class="ob-done-hero-ic">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 12l5 5 9-12"/>
+        </svg>
+      </div>
+      <div class="ob-done-hero-body">
+        <div class="ob-done-hero-eyebrow">Setup complete &middot; ${(obState.completedAt ? new Date(obState.completedAt).toLocaleString() : 'just now')}</div>
+        <div class="ob-done-hero-title">${escapeHtml(cn.name)} is live</div>
+        <div class="ob-done-hero-desc">Your <span class="mono">${escapeHtml(sample.object)}</span> data is flowing into Data Studio. Below is a recap, then three ways to keep going.</div>
+      </div>
+    </div>
+
+    <div class="ob-done-recap">
+      <div class="ob-done-recap-h">Configuration recap</div>
+      <div class="ob-done-recap-row">
+        <div class="ob-done-recap-l">Connector</div>
+        <div class="ob-done-recap-v">
+          ${cn.logo ? '<div class="ob-done-recap-logo"><img src="https://api.iconify.design/logos:' + cn.logo + '.svg" alt=""/></div>' : ''}
+          <b>${escapeHtml(cn.name)}</b>
+          <span style="color:var(--t3)">${escapeHtml(cn.vendor)}</span>
+        </div>
+      </div>
+      <div class="ob-done-recap-row">
+        <div class="ob-done-recap-l">Auth method</div>
+        <div class="ob-done-recap-v">
+          <span class="pill">${escapeHtml(obAuthLabel(cn.authType))}</span>
+          <span style="color:var(--t3)">credentials stored encrypted</span>
+        </div>
+      </div>
+      <div class="ob-done-recap-row">
+        <div class="ob-done-recap-l">Table Definition</div>
+        <div class="ob-done-recap-v">
+          <span class="mono">${escapeHtml(sample.object)}</span>
+          <span style="color:var(--t3)">&middot; ${counts.included} of ${counts.total} fields included</span>
+        </div>
+      </div>
+      <div class="ob-done-recap-row">
+        <div class="ob-done-recap-l">AI confirmed</div>
+        <div class="ob-done-recap-v">
+          <b>${counts.accepted}</b> mappings accepted from AI
+          <span style="color:var(--t3)">&middot; ${counts.dismissed} dismissed</span>
+        </div>
+      </div>
+      <div class="ob-done-recap-row">
+        <div class="ob-done-recap-l">Sync cadence</div>
+        <div class="ob-done-recap-v">
+          <b>${escapeHtml(cadenceLabel)}</b>
+          ${obState.sync && obState.sync.incremental ? '<span style="color:var(--t3)">&middot; incremental by <span class="mono">' + escapeHtml(obState.sync.incrementalField || '') + '</span></span>' : ''}
+        </div>
+      </div>
+    </div>
+
+    <div class="ob-done-nextrow">What's next</div>
+    <div class="ob-done-cards">
+      <button class="ob-done-card is-primary" onclick="obFinishAndGo('agent')">
+        <div class="ob-done-card-ic">
+          <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="1.5" y="4.5" width="4" height="3" rx=".8"/><rect x="6.5" y="1.5" width="4" height="3" rx=".8"/><rect x="6.5" y="7.5" width="4" height="3" rx=".8"/><path d="M5.5 6h1M5.5 3H6a.5.5 0 01.5.5v1" stroke-linecap="round"/></svg>
+        </div>
+        <div class="ob-done-card-t">Build agent tools on this data</div>
+        <div class="ob-done-card-d">Wrap your <span style="font-family:ui-monospace,monospace;color:var(--t1)">${escapeHtml(sample.object)}</span> table in agent-callable actions so workers can read, search and act on it.</div>
+        <div class="ob-done-card-cta">Agent Studio &middot; Tools &rarr;</div>
+      </button>
+
+      <button class="ob-done-card is-admin" onclick="obFinishAndGo('admin')">
+        <div class="ob-done-card-ic">
+          <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="2"/><circle cx="3" cy="3" r="1.3"/><circle cx="13" cy="3" r="1.3"/><circle cx="3" cy="13" r="1.3"/><circle cx="13" cy="13" r="1.3"/><path d="M4.1 4.1l2.5 2.5M11.9 4.1L9.4 6.6M4.1 11.9l2.5-2.5M11.9 11.9L9.4 9.4"/></svg>
+        </div>
+        <div class="ob-done-card-t">Set instance permissions</div>
+        <div class="ob-done-card-d">Control which agents and users can read or sync this ${escapeHtml(cn.name)} instance.</div>
+        <div class="ob-done-card-cta">Admin Studio &rarr;</div>
+      </button>
+
+      <button class="ob-done-card is-again" onclick="obFinishAndGo('again')">
+        <div class="ob-done-card-ic">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+        </div>
+        <div class="ob-done-card-t">Add another source</div>
+        <div class="ob-done-card-d">Run the wizard again for a second integration.</div>
+        <div class="ob-done-card-cta">Start over &rarr;</div>
+      </button>
+    </div>
+  `;
+}
+
+/* Sprint 4: track when wizard has finished (modal stays open on Done screen) */
+function obIsDoneScreen() { return obState.phase === 'pending' && obState.step >= WIZARD_STEPS.length; }
+
+function obFinishAndGo(action) {
+  // Stamp completion and persist a fake completed connection so the populated state has the user's choice on top.
+  const cn = obConnector(obState.connector);
+  if (cn) {
+    const sample = obSampleFor(cn.slug);
+    const counts = obMappingCounts();
+    obState.lastCompleted = {
+      slug: cn.slug, name: cn.name, vendor: cn.vendor, logo: cn.logo, color: cn.color,
+      object: sample.object,
+      fieldsIncluded: counts.included, fieldsTotal: counts.total,
+      cadence: (obState.sync && obState.sync.cadence) || 'hourly',
+      authType: cn.authType,
+      completedAt: obState.completedAt || new Date().toISOString()
+    };
+  }
+  completeOnboarding();
+  closeWizard();
+
+  if (action === 'agent') {
+    toast('Opening Agent Studio · Tools…');
+    setTimeout(() => { window.location.href = 'agent-tools.html'; }, 350);
+  } else if (action === 'admin') {
+    toast('Opening Admin Studio…');
+    setTimeout(() => { window.location.href = 'settings.html'; }, 350);
+  } else if (action === 'again') {
+    // Reset wizard, keep tenant in 'pending' onboarding mode, open wizard again
+    obState = { phase:'pending', step:0, category:null, connector:null, auth:{}, mapping:[], sync:{}, lastCompleted: obState.lastCompleted };
+    persistOb();
+    setTimeout(() => { openWizard(); }, 220);
+  } else {
+    // Default: open dashboard (already in Data Studio)
+    render();
+  }
+}
+
+
+
 
 function renderOnboardingEmptyState() {
-  const resuming = obState.step > 0;
+  const resuming = obState.step > 0 && obState.step < WIZARD_STEPS.length;
+  const resumeStepName = resuming ? (WIZARD_STEPS[obState.step].title || '') : '';
+  const resumeLabel = resuming
+    ? `Resume at step ${obState.step + 1} of 6 &middot; ${escapeHtml(resumeStepName)}`
+    : 'First-run setup &middot; about 5 minutes';
+  const lc = obState.lastCompleted;
   $('content').innerHTML = `
     <div class="breadcrumb"><span class="crumb-current">Connections</span></div>
 
@@ -3140,7 +3406,7 @@ function renderOnboardingEmptyState() {
         <div>
           <div class="ob-empty-eyebrow">
             <span class="ob-empty-eyebrow-dot"></span>
-            ${resuming ? `Setup paused at step ${obState.step + 1} of 6` : 'First-run setup &middot; about 5 minutes'}
+            ${resumeLabel}
           </div>
           <h1 class="ob-empty-title">${resuming ? 'Pick up where you left off' : 'Welcome to Data Studio'}</h1>
           <p class="ob-empty-desc">${resuming ? 'Your wizard progress is saved locally. Continue from where you stopped, or start over if you want a fresh setup.' : 'Connect your first source and start shaping data for your agents and teams. Six quick steps, about five minutes.'}</p>
