@@ -1178,6 +1178,44 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
 
 
 
+
+/* ============ FRESH CONNECTION BANNER (after wizard completes) ============ */
+.cn-fresh-banner{
+  display:flex;align-items:center;gap:14px;
+  padding:14px 18px;margin-bottom:18px;
+  background:linear-gradient(135deg, rgba(16,185,129,0.10) 0%, rgba(43,127,255,0.05) 100%);
+  border:1px solid rgba(16,185,129,0.32);
+  border-radius:12px;
+  position:relative;overflow:hidden;
+}
+.cn-fresh-banner::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at 90% 30%, rgba(16,185,129,0.16), transparent 55%);
+  pointer-events:none;
+}
+.cn-fresh-banner-ic{
+  width:38px;height:38px;border-radius:11px;
+  background:linear-gradient(135deg, #10B981, #059669);color:#fff;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  box-shadow:0 6px 16px -6px rgba(16,185,129,0.55), inset 0 1px 0 rgba(255,255,255,0.22);
+  position:relative;z-index:1;
+}
+.cn-fresh-banner-body{position:relative;z-index:1;flex:1;min-width:0}
+.cn-fresh-banner-t{
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+  font-size:13.5px;font-weight:700;color:var(--t1);letter-spacing:-.01em;
+}
+.cn-fresh-banner-pill{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:2px 8px;border-radius:99px;
+  background:rgba(16,185,129,0.16);color:var(--emerald);
+  border:1px solid rgba(16,185,129,0.38);
+  font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
+}
+.cn-fresh-banner-d{font-size:11.5px;color:var(--t2);margin-top:3px;line-height:1.5}
+.cn-fresh-banner-d .mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--t1)}
+.cn-fresh-banner-actions{display:flex;gap:8px;flex-shrink:0;position:relative;z-index:1}
+
 /* ============ QUARANTINE (Step 5 — fields with no AI match) ============ */
 .ob-q-banner{
   display:flex;align-items:center;justify-content:space-between;gap:14px;
@@ -1964,7 +2002,9 @@ function requestIntegration(name) {
 /* ====================== CONNECTION DETAIL ====================== */
 
 function renderConnectionDetail(slug) {
-  const c = DS_CONNECTIONS[slug];
+  // Try the demo seed data first; fall back to a synthesized record from the
+  // wizard's lastCompleted if the user just created this connection.
+  const c = DS_CONNECTIONS[slug] || obSynthConnection(slug);
   if (!c) {
     $('content').innerHTML = `
       <div class="breadcrumb"><a href="#/connections">Connections</a><span class="crumb-sep">›</span><span class="crumb-current">Not found</span></div>
@@ -1977,12 +2017,35 @@ function renderConnectionDetail(slug) {
   }
 
   const pendingCustom = c.events.reduce((s, e) => s + e.custom.filter(f => !f.decision).length, 0);
+  const isFresh = !!c._fresh;
+  const freshAge = isFresh && c._completedAt ? new Date(c._completedAt).toLocaleString() : '';
 
   $('content').innerHTML = `
     <div class="breadcrumb">
       <a href="#/connections">Connections</a><span class="crumb-sep">›</span>
       <span class="crumb-current">${escapeHtml(c.name)}</span>
     </div>
+
+    ${isFresh ? `
+      <div class="cn-fresh-banner">
+        <div class="cn-fresh-banner-ic">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-12"/></svg>
+        </div>
+        <div class="cn-fresh-banner-body">
+          <div class="cn-fresh-banner-t">
+            ${escapeHtml(c.name)} is live
+            <span class="cn-fresh-banner-pill">Created via setup</span>
+          </div>
+          <div class="cn-fresh-banner-d">
+            First sync complete &middot; ${c.eventsPerHour} events/hr &middot; refresh <b>${escapeHtml(obCadenceLabel(c._cadence).toLowerCase())}</b> &middot; ${c.targetTables[0] ? '<span class="mono">' + escapeHtml(c.targetTables[0].name) + '</span> table populated' : ''}
+          </div>
+        </div>
+        <div class="cn-fresh-banner-actions">
+          <a class="btn btn-ghost btn-sm" href="agent-tools.html">Build agent tools &rarr;</a>
+          <button class="btn btn-primary btn-sm" onclick="resetOnboarding()">Connect another &rarr;</button>
+        </div>
+      </div>
+    ` : ''}
 
     <header class="cn-head">
       ${dsLogo(c, true)}
@@ -3601,6 +3664,60 @@ function renderStep_done() {
 
 /* Sprint 4: track when wizard has finished (modal stays open on Done screen) */
 function obIsDoneScreen() { return obState.phase === 'pending' && obState.step >= WIZARD_STEPS.length; }
+
+
+/* ============ SYNTHETIC CONNECTION RECORD (post-wizard) ============ */
+function obSynthConnection(slug) {
+  if (!obState || !obState.lastCompleted || obState.lastCompleted.slug !== slug) return null;
+  const lc = obState.lastCompleted;
+  const rows = (obState.mapping && obState.mapping.rows) || [];
+  const included = rows.filter(r => r.include && r.decision !== 'dismiss');
+  const dismissed = rows.filter(r => r.decision === 'dismiss');
+  const autoSamples = included.slice(0, 6).map(r => ({ src: r.src, tgt: lc.object + '.' + r.studio }));
+  // Fields the user explicitly dismissed become 'custom' entries with decision='skip'
+  // so the detail page can show them as resolved exclusions if anyone toggles open.
+  const customs = dismissed.slice(0, 6).map(r => ({
+    name: r.src,
+    type: r.srcType || r.type,
+    suggested: r.studio || null,
+    confidence: r.confidence,
+    decision: 'skip'
+  }));
+  return {
+    slug: lc.slug,
+    name: lc.name,
+    vendor: lc.vendor,
+    color: lc.color,
+    logo: lc.logo,
+    mapped: true,
+    instances: 1,
+    lastSync: 'just now',
+    eventsPerHour: 18 + Math.floor(Math.random()*60),
+    drift: false,
+    activatedAt: 'just now',
+    activatedBy: 'You',
+    _fresh: true,
+    _completedAt: lc.completedAt,
+    _cadence: lc.cadence,
+    _authType: lc.authType,
+    events: [
+      {
+        name: lc.object + '.row_inserted',
+        rate: (28 + Math.floor(Math.random()*40)) + ' events/hr',
+        autoMappedCount: included.length,
+        autoSamples: autoSamples,
+        custom: customs
+      }
+    ],
+    targetTables: [
+      { name: lc.object, columns: lc.fieldsIncluded, rows: '—' }
+    ]
+  };
+}
+
+function obCadenceLabel(id) {
+  return ({ realtime:'Real-time', hourly:'Hourly', daily:'Daily', manual:'Manual' })[id] || (id || 'Hourly');
+}
 
 function obFinishAndGo(action) {
   // Stamp completion and persist a fake completed connection so the populated state has the user's choice on top.
