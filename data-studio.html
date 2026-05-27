@@ -747,6 +747,214 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
 }
 .ob-skip-btn:hover{color:var(--t2)}
 
+
+/* ============ WIZARD STEP CONTENT ============ */
+.ob-step-h{margin-bottom:18px}
+.ob-step-eyebrow{
+  display:inline-flex;align-items:center;gap:7px;
+  font-size:10px;font-weight:800;letter-spacing:.10em;text-transform:uppercase;
+  color:var(--emerald);margin-bottom:8px;
+}
+.ob-step-eyebrow-dot{width:5px;height:5px;border-radius:50%;background:var(--emerald);box-shadow:0 0 0 3px rgba(16,185,129,0.18)}
+.ob-step-title{font-size:22px;font-weight:800;color:var(--t1);letter-spacing:-.02em;line-height:1.18;margin-bottom:6px}
+.ob-step-desc{font-size:13px;color:var(--t2);line-height:1.55;max-width:560px}
+
+/* Category grid */
+.ob-cat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:4px}
+@media (max-width:760px){.ob-cat-grid{grid-template-columns:1fr}}
+.ob-cat-card{
+  display:flex;align-items:flex-start;gap:14px;
+  padding:16px;
+  background:rgba(255,255,255,0.02);
+  border:1px solid var(--line);
+  border-radius:11px;cursor:pointer;text-align:left;
+  font-family:inherit;color:inherit;
+  transition:border-color .14s, background .14s, transform .12s;
+}
+.ob-cat-card:hover{border-color:rgba(16,185,129,0.4);background:rgba(16,185,129,0.04);transform:translateY(-1px)}
+.ob-cat-card.is-selected{border-color:var(--emerald);background:rgba(16,185,129,0.07);box-shadow:0 0 0 3px rgba(16,185,129,0.10)}
+.ob-cat-ic{
+  width:38px;height:38px;border-radius:10px;
+  background:rgba(16,185,129,0.10);color:var(--emerald);
+  border:1px solid rgba(16,185,129,0.22);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.ob-cat-card.is-selected .ob-cat-ic{background:var(--emerald);color:#fff;border-color:var(--emerald)}
+.ob-cat-body{flex:1;min-width:0}
+.ob-cat-name{font-size:13.5px;font-weight:700;color:var(--t1);margin-bottom:3px}
+.ob-cat-desc{font-size:11.5px;color:var(--t3);line-height:1.45}
+.ob-cat-count{
+  align-self:flex-start;
+  font-size:10.5px;font-weight:700;color:var(--t3);
+  padding:2px 8px;border-radius:99px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid var(--line);
+  flex-shrink:0;
+}
+.ob-cat-card.is-selected .ob-cat-count{background:rgba(16,185,129,0.12);color:var(--emerald);border-color:rgba(16,185,129,0.32)}
+
+/* Connector grid */
+.ob-conn-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:14px;padding:10px 12px;
+  background:rgba(255,255,255,0.025);border:1px solid var(--line);border-radius:9px;
+}
+.ob-conn-header-l{display:flex;align-items:center;gap:10px}
+.ob-conn-header-chip{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:11px;font-weight:700;color:var(--emerald);
+  padding:3px 9px;border-radius:99px;
+  background:rgba(16,185,129,0.10);border:1px solid rgba(16,185,129,0.28);
+}
+.ob-conn-header-edit{
+  background:transparent;border:none;color:var(--t3);
+  font-family:inherit;font-size:11.5px;font-weight:600;cursor:pointer;
+  padding:4px 8px;border-radius:6px;transition:color .12s, background .12s;
+}
+.ob-conn-header-edit:hover{color:var(--t1);background:var(--hover)}
+.ob-conn-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media (max-width:760px){.ob-conn-grid{grid-template-columns:1fr}}
+.ob-conn-card{
+  display:flex;flex-direction:column;gap:8px;
+  padding:14px;
+  background:rgba(255,255,255,0.02);
+  border:1px solid var(--line);
+  border-radius:11px;cursor:pointer;text-align:left;
+  font-family:inherit;color:inherit;
+  transition:border-color .14s, background .14s, transform .12s;
+  position:relative;
+}
+.ob-conn-card:hover{border-color:rgba(16,185,129,0.4);background:rgba(16,185,129,0.04);transform:translateY(-1px)}
+.ob-conn-card.is-selected{border-color:var(--emerald);background:rgba(16,185,129,0.07);box-shadow:0 0 0 3px rgba(16,185,129,0.10)}
+.ob-conn-row{display:flex;align-items:center;gap:11px}
+.ob-conn-logo{width:34px;height:34px;border-radius:8px;background:#fff;padding:5px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.ob-conn-logo img{width:100%;height:100%;object-fit:contain}
+.ob-conn-name{font-size:13.5px;font-weight:700;color:var(--t1);line-height:1.2}
+.ob-conn-vendor{font-size:11px;color:var(--t3);margin-top:1px}
+.ob-conn-desc{font-size:11.5px;color:var(--t2);line-height:1.5}
+.ob-conn-meta{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:auto}
+.ob-conn-tag{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:10px;font-weight:700;letter-spacing:.02em;
+  padding:2px 8px;border-radius:99px;
+}
+.ob-conn-tag.is-popular{background:rgba(245,158,11,0.12);color:var(--amber);border:1px solid rgba(245,158,11,0.32)}
+.ob-conn-tag.is-recommended{background:rgba(43,127,255,0.12);color:var(--blue);border:1px solid rgba(43,127,255,0.32)}
+.ob-conn-tag.auth{background:rgba(255,255,255,0.04);color:var(--t3);border:1px solid var(--line)}
+.ob-conn-empty{
+  grid-column:1/-1;
+  display:flex;align-items:center;justify-content:center;
+  padding:40px 24px;
+  border:1px dashed var(--line-strong);border-radius:11px;
+  font-size:12.5px;color:var(--t3);
+  text-align:center;
+}
+
+/* Auth screens */
+.ob-auth-hero{
+  display:flex;align-items:center;gap:14px;
+  padding:18px;
+  background:linear-gradient(135deg, rgba(16,185,129,0.06) 0%, rgba(43,127,255,0.04) 100%);
+  border:1px solid rgba(16,185,129,0.22);
+  border-radius:12px;
+  margin-bottom:18px;
+}
+.ob-auth-hero-logo{width:48px;height:48px;border-radius:10px;background:#fff;padding:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.ob-auth-hero-logo img{width:100%;height:100%;object-fit:contain}
+.ob-auth-hero-name{font-size:16px;font-weight:800;color:var(--t1);letter-spacing:-.01em}
+.ob-auth-hero-method{font-size:12px;color:var(--t2);margin-top:2px}
+.ob-auth-card{
+  padding:18px 20px;
+  background:rgba(255,255,255,0.025);
+  border:1px solid var(--line);
+  border-radius:11px;
+  margin-bottom:14px;
+}
+.ob-auth-section-t{font-size:12px;font-weight:700;color:var(--t1);margin-bottom:10px;display:flex;align-items:center;gap:7px}
+.ob-perms-list{display:flex;flex-direction:column;gap:7px}
+.ob-perms-item{display:flex;align-items:flex-start;gap:9px;font-size:12px;color:var(--t2);line-height:1.5}
+.ob-perms-check{
+  width:16px;height:16px;border-radius:50%;
+  background:rgba(16,185,129,0.12);color:var(--emerald);
+  border:1px solid rgba(16,185,129,0.32);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;
+}
+.ob-perms-item b{color:var(--t1);font-weight:600}
+.ob-auth-field{margin-bottom:12px}
+.ob-auth-field:last-child{margin-bottom:0}
+.ob-auth-field-l{display:block;font-size:11.5px;font-weight:600;color:var(--t2);margin-bottom:6px}
+.ob-auth-field-l b{color:var(--t1)}
+.ob-auth-input{
+  width:100%;padding:10px 12px;
+  background:#070e1c;border:1px solid var(--line-strong);border-radius:8px;
+  color:var(--t1);font-family:inherit;font-size:13px;
+  transition:border-color .12s;
+}
+.ob-auth-input:focus{outline:none;border-color:var(--emerald)}
+.ob-auth-input::placeholder{color:var(--t3)}
+.ob-auth-input.is-mono{font-family:ui-monospace, SFMono-Regular, Menlo, monospace;font-size:12px}
+.ob-auth-hint{font-size:11px;color:var(--t3);margin-top:5px;line-height:1.45}
+.ob-auth-hint a{color:var(--cyan);text-decoration:none}
+.ob-auth-cta{
+  display:inline-flex;align-items:center;gap:8px;
+  height:42px;padding:0 20px;
+  background:linear-gradient(135deg, #2B7FFF 0%, #1E63CC 100%);
+  color:#fff;font-family:inherit;font-size:13px;font-weight:700;
+  border:none;border-radius:9px;cursor:pointer;
+  box-shadow:0 8px 22px -8px rgba(43,127,255,0.55), inset 0 1px 0 rgba(255,255,255,0.16);
+  transition:transform .12s, box-shadow .12s, opacity .12s;
+}
+.ob-auth-cta:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 10px 26px -8px rgba(43,127,255,0.65)}
+.ob-auth-cta:disabled{opacity:.55;cursor:not-allowed}
+.ob-auth-status{
+  display:flex;align-items:center;gap:10px;
+  padding:11px 14px;
+  background:rgba(43,127,255,0.06);
+  border:1px solid rgba(43,127,255,0.28);
+  border-radius:9px;
+  font-size:12px;color:var(--blue);margin-top:14px;
+}
+.ob-auth-status.is-success{background:rgba(16,185,129,0.07);border-color:rgba(16,185,129,0.32);color:var(--emerald)}
+.ob-auth-spinner{
+  width:14px;height:14px;border-radius:50%;
+  border:2px solid rgba(43,127,255,0.25);border-top-color:var(--blue);
+  animation:obSpin .85s linear infinite;flex-shrink:0;
+}
+@keyframes obSpin{to{transform:rotate(360deg)}}
+.ob-auth-success-ic{
+  width:18px;height:18px;border-radius:50%;
+  background:var(--emerald);color:#fff;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.ob-file-drop{
+  border:2px dashed var(--line-strong);
+  border-radius:12px;
+  padding:30px 20px;text-align:center;
+  font-size:12.5px;color:var(--t2);
+  background:rgba(255,255,255,0.015);
+  cursor:pointer;transition:border-color .12s, background .12s;
+}
+.ob-file-drop:hover{border-color:rgba(16,185,129,0.5);background:rgba(16,185,129,0.04)}
+.ob-file-drop-ic{margin:0 auto 10px;color:var(--emerald)}
+.ob-file-drop-t{font-size:13px;font-weight:700;color:var(--t1);margin-bottom:4px}
+.ob-file-drop-d{font-size:11px;color:var(--t3)}
+.ob-email-inbox{
+  display:flex;align-items:center;gap:10px;
+  padding:12px 14px;
+  background:#070e1c;
+  border:1px solid var(--line-strong);
+  border-radius:9px;
+  font-family:ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size:12.5px;color:var(--cyan);
+}
+.ob-email-inbox-copy{
+  background:transparent;border:1px solid var(--line);
+  color:var(--t2);font-family:inherit;font-size:11px;font-weight:600;
+  padding:5px 11px;border-radius:7px;cursor:pointer;
+  transition:border-color .12s, color .12s;margin-left:auto;
+}
+.ob-email-inbox-copy:hover{border-color:rgba(16,185,129,0.5);color:var(--emerald)}
+
 /* Step placeholder used in Sprint 1 */
 .ob-step-placeholder{
   display:flex;flex-direction:column;align-items:center;justify-content:center;
@@ -1841,12 +2049,19 @@ function paintWizard() {
     segs[i].classList.toggle('is-current', i === idx);
   }
   $('obBack').style.visibility = idx === 0 ? 'hidden' : 'visible';
-  $('obNext').textContent = (idx === WIZARD_STEPS.length - 1) ? 'Finish setup →' : 'Next →';
+  const isLast = idx === WIZARD_STEPS.length - 1;
+  const nextBtn = $('obNext');
+  nextBtn.textContent = isLast ? 'Finish setup →' : 'Next →';
   $('obBody').innerHTML = renderWizardStep(s.id);
+  // Dim Next when the step has unmet requirements (without disabling — clicking it shows a toast)
+  nextBtn.style.opacity = wizardCanAdvance() ? '1' : '.55';
 }
 
 function renderWizardStep(stepId) {
-  // Sprint 1 placeholder — real step UI lands in Sprint 2/3
+  if (stepId === 'category')  return renderStep_category();
+  if (stepId === 'connector') return renderStep_connector();
+  if (stepId === 'auth')      return renderStep_auth();
+  // Sprint 3 will replace these placeholders
   const s = WIZARD_STEPS.find(x => x.id === stepId);
   return `
     <div class="ob-step-placeholder">
@@ -1856,12 +2071,27 @@ function renderWizardStep(stepId) {
         </svg>
       </div>
       <div class="ob-step-placeholder-t">${escapeHtml(s.title)}</div>
-      <div class="ob-step-placeholder-d">Step UI lands in Sprint 2 (category + connector + auth) and Sprint 3 (preview + mapping + sync). This is a Sprint 1 chrome preview — modal, progress bar, resumable state, and footer actions are wired. Use Next/Back to step through.</div>
+      <div class="ob-step-placeholder-d">Step UI lands in Sprint 3. Sprint 2 covered Category, Connector and Auth.</div>
     </div>
   `;
 }
 
+function wizardCanAdvance() {
+  const id = WIZARD_STEPS[obState.step].id;
+  if (id === 'category')  return !!obState.category;
+  if (id === 'connector') return !!obState.connector;
+  if (id === 'auth')      return obState.auth && obState.auth.status === 'connected';
+  return true;
+}
+
 function wizardNext() {
+  if (!wizardCanAdvance()) {
+    const id = WIZARD_STEPS[obState.step].id;
+    if (id === 'category')  toast('Pick a category to continue');
+    else if (id === 'connector') toast('Pick a connector to continue');
+    else if (id === 'auth') toast('Connect to the source to continue');
+    return;
+  }
   if (obState.step < WIZARD_STEPS.length - 1) {
     obState.step += 1;
     persistOb();
@@ -1881,6 +2111,354 @@ function wizardBack() {
     paintWizard();
   }
 }
+
+
+/* ============ ONBOARDING — CATEGORIES + CATALOG ENRICHMENT ============ */
+const OB_CATEGORIES = [
+  { id:'crm',         name:'CRM & Sales',          desc:'Pipelines, deals, contacts',
+    icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7H4M20 12H4M20 17H10"/><circle cx="6" cy="7" r="1"/><circle cx="6" cy="12" r="1"/></svg>' },
+  { id:'pm',          name:'Project management',   desc:'Tasks, projects, docs, wikis',
+    icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/></svg>' },
+  { id:'data',        name:'Data & ERP',           desc:'Warehouses, accounting, ops',
+    icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v6c0 1.7 4 3 9 3s9-1.3 9-3V5M3 11v6c0 1.7 4 3 9 3s9-1.3 9-3v-6"/></svg>' },
+  { id:'marketing',   name:'Marketing',            desc:'Campaigns, events, analytics',
+    icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l16-7v16L3 13z"/><path d="M7 12v4l4 1"/></svg>' },
+  { id:'support',     name:'Customer support',     desc:'Tickets, CSAT, conversations',
+    icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 1 1-16 0 8 8 0 0 1 16 0z"/><path d="M9 10h.01M15 10h.01M8 15c1.5 1 2.5 1.5 4 1.5s2.5-.5 4-1.5"/></svg>' },
+  { id:'custom',      name:'Custom API',           desc:'REST or GraphQL endpoints',
+    icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="8 6 2 12 8 18"/><polyline points="16 6 22 12 16 18"/></svg>' },
+  { id:'file',        name:'File upload & email',  desc:'CSV, XLSX, JSON or email-to-inbox',
+    icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="14 3 14 9 20 9"/></svg>' }
+];
+
+// Map current DS_CATALOG category strings to new taxonomy + enrich with authType + popularity.
+// Don't mutate the existing entries; build a new index.
+const OB_AUTH_OVERRIDES = {
+  hubspot:    { cat:'crm',        authType:'oauth',           popularity:'recommended' },
+  pipedrive:  { cat:'crm',        authType:'oauth',           popularity:null },
+  notion:     { cat:'pm',         authType:'oauth',           popularity:'popular' },
+  asana:      { cat:'pm',         authType:'oauth',           popularity:null },
+  airtable:   { cat:'pm',         authType:'api_key',         popularity:null },
+  gdrive:     { cat:'file',       authType:'oauth',           popularity:null },
+  bigquery:   { cat:'data',       authType:'service_account', popularity:'popular' },
+  mongodb:    { cat:'data',       authType:'api_key',         popularity:null },
+  stripe:     { cat:'data',       authType:'api_key',         popularity:null },
+  mixpanel:   { cat:'marketing',  authType:'api_key',         popularity:'recommended' },
+  segment:    { cat:'marketing',  authType:'oauth',           popularity:null },
+  zendesk:    { cat:'support',    authType:'oauth',           popularity:'popular' }
+};
+// Synthetic entries for the categories that have no real connector in DS_CATALOG
+const OB_SYNTHETIC = [
+  { slug:'rest-api',     name:'Custom REST API',    vendor:'Bring your own',      logo:null,     color:'#2B7FFF', desc:'Endpoint + optional auth header. Polled on schedule.', cat:'custom',  authType:'manual', popularity:null },
+  { slug:'graphql-api',  name:'Custom GraphQL API', vendor:'Bring your own',      logo:null,     color:'#A78BFA', desc:'Endpoint + query. Schema introspection at preview.',    cat:'custom',  authType:'manual', popularity:null },
+  { slug:'csv-upload',   name:'CSV or Excel',       vendor:'AIMS-OS native',      logo:null,     color:'#10B981', desc:'One-off or recurring file upload. Max 50 MB.',          cat:'file',    authType:'file_upload', popularity:'popular' },
+  { slug:'email-inbox',  name:'Email-to-inbox',     vendor:'AIMS-OS native',      logo:null,     color:'#06B6D4', desc:'Forward attachments to a generated address.',           cat:'file',    authType:'email',      popularity:null }
+];
+
+function obAllConnectors() {
+  const enriched = (typeof DS_CATALOG !== 'undefined' ? DS_CATALOG : []).map(c => {
+    const ov = OB_AUTH_OVERRIDES[c.slug] || { cat:'data', authType:'oauth', popularity:null };
+    return Object.assign({}, c, ov);
+  });
+  return enriched.concat(OB_SYNTHETIC);
+}
+function obConnectorsByCategory(catId) {
+  return obAllConnectors().filter(c => c.cat === catId);
+}
+function obCategoryCount(catId) { return obConnectorsByCategory(catId).length; }
+function obConnector(slug) { return obAllConnectors().find(c => c.slug === slug) || null; }
+
+function obConnectorLogo(c, size) {
+  size = size || 34;
+  const sz = size + 'px';
+  if (c.logo) {
+    return `<div class="ob-conn-logo" style="width:${sz};height:${sz}"><img src="https://api.iconify.design/logos:${c.logo}.svg" alt="${escapeHtml(c.name)}" loading="lazy"/></div>`;
+  }
+  const initials = c.name.split(/[\s-]/).filter(Boolean).slice(0,2).map(w=>w[0]).join('').toUpperCase();
+  return `<div class="ob-conn-logo" style="background:${c.color};color:#fff;width:${sz};height:${sz};font-weight:800;font-size:${Math.round(size*0.36)}px">${initials}</div>`;
+}
+
+function obAuthLabel(t) {
+  const m = {
+    oauth:'OAuth 2.0',
+    api_key:'API key',
+    service_account:'Service account',
+    basic:'Basic auth',
+    per_user:'Per-user OAuth',
+    manual:'Manual endpoint',
+    file_upload:'File upload',
+    email:'Email-to-inbox'
+  };
+  return m[t] || t;
+}
+
+/* ============ STEP RENDERERS (Sprint 2) ============ */
+function renderStep_category() {
+  return `
+    <div class="ob-step-h">
+      <div class="ob-step-eyebrow"><span class="ob-step-eyebrow-dot"></span>Step 1 &middot; Category</div>
+      <h2 class="ob-step-title">Where is your data coming from?</h2>
+      <p class="ob-step-desc">Pick the category that best describes your source. We'll narrow the connector catalog in the next step.</p>
+    </div>
+    <div class="ob-cat-grid">
+      ${OB_CATEGORIES.map(cat => `
+        <button class="ob-cat-card ${obState.category === cat.id ? 'is-selected' : ''}" onclick="obPickCategory('${cat.id}')">
+          <span class="ob-cat-ic"><svg width="20" height="20">${cat.icon}</svg></span>
+          <span class="ob-cat-body">
+            <span class="ob-cat-name">${escapeHtml(cat.name)}</span>
+            <span class="ob-cat-desc">${escapeHtml(cat.desc)}</span>
+          </span>
+          <span class="ob-cat-count">${obCategoryCount(cat.id)}</span>
+        </button>
+      `).join('')}
+    </div>
+  `;
+}
+
+function obPickCategory(catId) {
+  obState.category = catId;
+  // If the category changed, clear connector selection
+  const conn = obConnector(obState.connector);
+  if (!conn || conn.cat !== catId) obState.connector = null;
+  persistOb();
+  paintWizard();
+}
+
+function renderStep_connector() {
+  const cat = OB_CATEGORIES.find(x => x.id === obState.category);
+  const list = obState.category ? obConnectorsByCategory(obState.category) : [];
+  return `
+    <div class="ob-step-h">
+      <div class="ob-step-eyebrow"><span class="ob-step-eyebrow-dot"></span>Step 2 &middot; Connector</div>
+      <h2 class="ob-step-title">Pick the connector</h2>
+      <p class="ob-step-desc">${list.length} connector${list.length === 1 ? '' : 's'} available in this category. Popular and Recommended badges are based on workspace data.</p>
+    </div>
+
+    ${cat ? `
+      <div class="ob-conn-header">
+        <div class="ob-conn-header-l">
+          <span class="ob-conn-header-chip">
+            <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 8l4 4 6-8"/></svg>
+            ${escapeHtml(cat.name)}
+          </span>
+          <span style="font-size:11.5px;color:var(--t3)">${list.length} connectors</span>
+        </div>
+        <button class="ob-conn-header-edit" onclick="obState.step=0;persistOb();paintWizard()">&larr; Change category</button>
+      </div>
+    ` : ''}
+
+    <div class="ob-conn-grid">
+      ${list.length === 0 ? `
+        <div class="ob-conn-empty">
+          No connectors found in this category yet.<br/>
+          <a href="settings.html?request=" onclick="event.preventDefault();toast('Request flow lives in Admin Studio.')" style="color:var(--cyan);text-decoration:none;font-weight:600">Request a custom connector &rarr;</a>
+        </div>
+      ` : list.map(cn => `
+        <button class="ob-conn-card ${obState.connector === cn.slug ? 'is-selected' : ''}" onclick="obPickConnector('${cn.slug}')">
+          <div class="ob-conn-row">
+            ${obConnectorLogo(cn, 34)}
+            <div>
+              <div class="ob-conn-name">${escapeHtml(cn.name)}</div>
+              <div class="ob-conn-vendor">${escapeHtml(cn.vendor)}</div>
+            </div>
+          </div>
+          <div class="ob-conn-desc">${escapeHtml(cn.desc)}</div>
+          <div class="ob-conn-meta">
+            ${cn.popularity === 'popular'     ? '<span class="ob-conn-tag is-popular">Popular</span>' : ''}
+            ${cn.popularity === 'recommended' ? '<span class="ob-conn-tag is-recommended">Recommended for you</span>' : ''}
+            <span class="ob-conn-tag auth">${obAuthLabel(cn.authType)}</span>
+          </div>
+        </button>
+      `).join('')}
+    </div>
+  `;
+}
+
+function obPickConnector(slug) {
+  obState.connector = slug;
+  // Reset auth status when switching connectors
+  obState.auth = { status:'idle' };
+  persistOb();
+  paintWizard();
+}
+
+function renderStep_auth() {
+  const cn = obConnector(obState.connector);
+  if (!cn) {
+    return `<div class="ob-step-placeholder"><div class="ob-step-placeholder-t">No connector selected</div><div class="ob-step-placeholder-d">Go back to step 2 and pick a connector before authenticating.</div></div>`;
+  }
+  const status = (obState.auth && obState.auth.status) || 'idle';
+
+  let body = '';
+  if (cn.authType === 'oauth' || cn.authType === 'per_user') {
+    body = `
+      <div class="ob-auth-card">
+        <div class="ob-auth-section-t">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 8l4 4 6-8"/></svg>
+          Permissions we'll request
+        </div>
+        <div class="ob-perms-list">
+          <div class="ob-perms-item"><span class="ob-perms-check"><svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 6l3 3 5-7"/></svg></span><span><b>Read</b> objects from your workspace (no write access)</span></div>
+          <div class="ob-perms-item"><span class="ob-perms-check"><svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 6l3 3 5-7"/></svg></span><span><b>Detect schema changes</b> via webhooks (optional, recommended)</span></div>
+          <div class="ob-perms-item"><span class="ob-perms-check"><svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 6l3 3 5-7"/></svg></span><span><b>List available objects</b> so we can show them in the picker</span></div>
+        </div>
+      </div>
+      <button class="ob-auth-cta" onclick="obAuthRun()" ${status === 'connecting' ? 'disabled' : ''}>
+        ${status === 'connected'
+          ? '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 8l4 4 6-8"/></svg> Connected to ' + escapeHtml(cn.name)
+          : 'Authorize with ' + escapeHtml(cn.name) + ' &rarr;'}
+      </button>
+    `;
+  } else if (cn.authType === 'api_key') {
+    body = `
+      <div class="ob-auth-card">
+        <div class="ob-auth-field">
+          <label class="ob-auth-field-l"><b>API key</b> &middot; required</label>
+          <input class="ob-auth-input is-mono" type="password" placeholder="e.g. sk_live_..." value="${(obState.auth && obState.auth.apiKey) || ''}" oninput="obAuthInput('apiKey', this.value)"/>
+          <div class="ob-auth-hint">Find this in your ${escapeHtml(cn.name)} workspace settings. <a href="#" onclick="event.preventDefault();toast('Video tutorial would open here.')">Need help?</a></div>
+        </div>
+        ${(cn.slug === 'airtable' || cn.slug === 'mongodb') ? `
+        <div class="ob-auth-field">
+          <label class="ob-auth-field-l"><b>Workspace URL</b> &middot; required</label>
+          <input class="ob-auth-input is-mono" type="text" placeholder="${cn.slug === 'airtable' ? 'https://airtable.com/app...' : 'mongodb+srv://cluster.mongodb.net'}" value="${(obState.auth && obState.auth.workspace) || ''}" oninput="obAuthInput('workspace', this.value)"/>
+        </div>
+        ` : ''}
+      </div>
+      <button class="ob-auth-cta" onclick="obAuthRun()" ${status === 'connecting' || !(obState.auth && obState.auth.apiKey) ? 'disabled' : ''}>
+        ${status === 'connected' ? '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 8l4 4 6-8"/></svg> Connected' : 'Test connection &amp; continue &rarr;'}
+      </button>
+    `;
+  } else if (cn.authType === 'service_account') {
+    body = `
+      <div class="ob-auth-card">
+        <div class="ob-auth-section-t">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="3" y="7" width="10" height="7" rx="1.4"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
+          Service account credentials
+        </div>
+        <div class="ob-auth-field">
+          <label class="ob-auth-field-l"><b>JSON key file</b> &middot; paste contents</label>
+          <textarea class="ob-auth-input is-mono" rows="5" placeholder='{ "type":"service_account", "project_id":"...", ... }' oninput="obAuthInput('jsonKey', this.value)">${(obState.auth && obState.auth.jsonKey) || ''}</textarea>
+          <div class="ob-auth-hint">We never store the raw key. AIMS-OS encrypts it with your tenant's KMS key on save.</div>
+        </div>
+      </div>
+      <button class="ob-auth-cta" onclick="obAuthRun()" ${status === 'connecting' || !(obState.auth && obState.auth.jsonKey) ? 'disabled' : ''}>
+        ${status === 'connected' ? '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 8l4 4 6-8"/></svg> Connected' : 'Validate service account &rarr;'}
+      </button>
+    `;
+  } else if (cn.authType === 'manual') {
+    body = `
+      <div class="ob-auth-card">
+        <div class="ob-auth-field">
+          <label class="ob-auth-field-l"><b>Endpoint URL</b> &middot; required</label>
+          <input class="ob-auth-input is-mono" type="text" placeholder="https://api.your-service.com/v1" value="${(obState.auth && obState.auth.endpoint) || ''}" oninput="obAuthInput('endpoint', this.value)"/>
+        </div>
+        <div class="ob-auth-field">
+          <label class="ob-auth-field-l"><b>Authorization header</b> &middot; optional</label>
+          <input class="ob-auth-input is-mono" type="text" placeholder="Bearer ..." value="${(obState.auth && obState.auth.header) || ''}" oninput="obAuthInput('header', this.value)"/>
+          <div class="ob-auth-hint">Will be sent with every request. Stored encrypted.</div>
+        </div>
+      </div>
+      <button class="ob-auth-cta" onclick="obAuthRun()" ${status === 'connecting' || !(obState.auth && obState.auth.endpoint) ? 'disabled' : ''}>
+        ${status === 'connected' ? '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 8l4 4 6-8"/></svg> Connected' : 'Probe endpoint &rarr;'}
+      </button>
+    `;
+  } else if (cn.authType === 'file_upload') {
+    const hasFile = obState.auth && obState.auth.fileName;
+    body = `
+      <div class="ob-file-drop" onclick="obFakeFileUpload()">
+        <div class="ob-file-drop-ic">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+        </div>
+        <div class="ob-file-drop-t">${hasFile ? escapeHtml(obState.auth.fileName) : 'Drop a CSV, XLSX or JSON file'}</div>
+        <div class="ob-file-drop-d">${hasFile ? 'Click to replace &middot; ' + (obState.auth.fileSize || '4.2 MB') : 'or click to browse &middot; max 50 MB'}</div>
+      </div>
+      <button class="ob-auth-cta" onclick="obAuthRun()" ${status === 'connecting' || !hasFile ? 'disabled' : ''} style="margin-top:14px">
+        ${status === 'connected' ? '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 8l4 4 6-8"/></svg> File staged' : 'Parse file &rarr;'}
+      </button>
+    `;
+  } else if (cn.authType === 'email') {
+    const addr = (obState.auth && obState.auth.inboxAddress) || ('ingest-' + Math.random().toString(36).slice(2,8) + '@inbox.aims-os.dev');
+    if (!obState.auth || !obState.auth.inboxAddress) {
+      obState.auth = Object.assign({}, obState.auth, { inboxAddress: addr });
+    }
+    body = `
+      <div class="ob-auth-card">
+        <div class="ob-auth-section-t">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="12" height="10" rx="1.4"/><path d="M2 4l6 5 6-5"/></svg>
+          Forward emails to this address
+        </div>
+        <div class="ob-email-inbox">
+          ${escapeHtml(addr)}
+          <button class="ob-email-inbox-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText('${addr}');toast('Copied to clipboard')">Copy</button>
+        </div>
+        <div class="ob-auth-hint" style="margin-top:10px">Forward any email with an attachment to this address. We will parse CSV/XLSX/JSON attachments automatically. The first email triggers schema detection.</div>
+      </div>
+      <button class="ob-auth-cta" onclick="obAuthRun()">
+        ${status === 'connected' ? '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 8l4 4 6-8"/></svg> Inbox active' : 'Activate inbox &rarr;'}
+      </button>
+    `;
+  } else {
+    body = `<div class="ob-step-placeholder"><div class="ob-step-placeholder-t">Auth pattern: ${escapeHtml(cn.authType)}</div><div class="ob-step-placeholder-d">UI for this pattern is in the next sprint.</div></div>`;
+  }
+
+  return `
+    <div class="ob-step-h">
+      <div class="ob-step-eyebrow"><span class="ob-step-eyebrow-dot"></span>Step 3 &middot; Auth</div>
+      <h2 class="ob-step-title">Authenticate</h2>
+      <p class="ob-step-desc">We use ${escapeHtml(obAuthLabel(cn.authType))} for ${escapeHtml(cn.name)}. Credentials stay encrypted in your tenant.</p>
+    </div>
+
+    <div class="ob-auth-hero">
+      ${obConnectorLogo(cn, 48)}
+      <div>
+        <div class="ob-auth-hero-name">${escapeHtml(cn.name)}</div>
+        <div class="ob-auth-hero-method">${escapeHtml(cn.vendor)} &middot; ${escapeHtml(obAuthLabel(cn.authType))}</div>
+      </div>
+    </div>
+
+    ${body}
+
+    ${status === 'connecting' ? `
+      <div class="ob-auth-status">
+        <span class="ob-auth-spinner"></span>
+        <span>Connecting to ${escapeHtml(cn.name)}&hellip; verifying credentials and listing objects.</span>
+      </div>
+    ` : ''}
+    ${status === 'connected' ? `
+      <div class="ob-auth-status is-success">
+        <span class="ob-auth-success-ic"><svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6l3 3 5-7"/></svg></span>
+        <span>Connected to ${escapeHtml(cn.name)} &middot; detected ${(obState.auth.detected || 8)} objects &middot; preview ready in step 4.</span>
+      </div>
+    ` : ''}
+  `;
+}
+
+function obAuthInput(field, value) {
+  obState.auth = Object.assign({}, obState.auth, { [field]: value });
+  persistOb();
+  // re-paint to update the Connect button disabled state
+  paintWizard();
+}
+
+function obFakeFileUpload() {
+  obState.auth = Object.assign({}, obState.auth, { fileName:'opportunities_q4.csv', fileSize:'2.8 MB' });
+  persistOb();
+  paintWizard();
+}
+
+function obAuthRun() {
+  obState.auth = Object.assign({}, obState.auth, { status:'connecting' });
+  persistOb();
+  paintWizard();
+  setTimeout(() => {
+    obState.auth = Object.assign({}, obState.auth, { status:'connected', detected: 6 + Math.floor(Math.random()*8) });
+    persistOb();
+    paintWizard();
+  }, 1100);
+}
+
 
 function renderOnboardingEmptyState() {
   const resuming = obState.step > 0;
