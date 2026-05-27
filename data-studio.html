@@ -1210,6 +1210,12 @@ function render() {
   paintSsbActive();
   $('content').scrollTop = 0;
 
+  // If onboarding is pending, always show the guided empty state on the connections home.
+  // Other routes (tables, schema, etc.) still render their own placeholders.
+  if (typeof isOnboardingPending === 'function' && isOnboardingPending() && (!parts[0] || parts[0] === 'connections')) {
+    return renderOnboardingEmptyState();
+  }
+
   if (!parts[0] || parts[0] === 'connections') {
     if (parts[1]) return renderConnectionDetail(parts[1]);
     return renderConnections();
@@ -1226,6 +1232,7 @@ function render() {
 /* ====================== CONNECTIONS LIST ====================== */
 
 function renderConnections() {
+  // Defensive: render() should have caught this, but keep the guard.
   if (typeof isOnboardingPending === 'function' && isOnboardingPending()) {
     return renderOnboardingEmptyState();
   }
@@ -1744,11 +1751,6 @@ document.addEventListener('keydown', (e) => {
 });
 
 
-/* ====================== BOOT ====================== */
-window.addEventListener('hashchange', render);
-paintPersonaPill();
-render();
-
 /* ============ ONBOARDING WIZARD (Sprint 1: shell only) ============ */
 const WIZARD_STEPS = [
   { id:'category',  title:'Pick a source category',  hint:'Step 1 of 6 · Category' },
@@ -1777,21 +1779,35 @@ function resetOnboarding() {
   obState = { phase:'pending', step:0, category:null, connector:null, auth:{}, mapping:[], sync:{} };
   persistOb();
   toast('Onboarding reset — Data Studio is in first-run mode');
-  render();
+  // Land on the connections home so the empty state shows even if the user
+  // was on a connection detail page.
+  if (location.hash && location.hash !== '#/connections' && location.hash !== '#/') {
+    location.hash = '/connections';  // hashchange fires render()
+  } else {
+    render();
+  }
 }
 
 function startOver() {
   if (!confirm('Discard your wizard progress and start over from step 1?')) return;
   obState = { phase:'pending', step:0, category:null, connector:null, auth:{}, mapping:[], sync:{} };
   persistOb();
-  render();
+  if (location.hash && location.hash !== '#/connections' && location.hash !== '#/') {
+    location.hash = '/connections';
+  } else {
+    render();
+  }
 }
 
 function skipOnboardingDemo() {
   obState.phase = 'complete';
   persistOb();
   toast('Onboarding skipped — showing populated demo state');
-  render();
+  if (location.hash && location.hash !== '#/connections' && location.hash !== '#/') {
+    location.hash = '/connections';
+  } else {
+    render();
+  }
 }
 
 function completeOnboarding() {
@@ -1948,6 +1964,11 @@ function renderOnboardingEmptyState() {
   `;
 }
 
+
+/* ====================== BOOT ====================== */
+window.addEventListener('hashchange', render);
+paintPersonaPill();
+render();
 </script>
 
 </body>
