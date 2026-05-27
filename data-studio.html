@@ -1455,9 +1455,9 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
     </div>
     <div class="ssb-demo">
       <div class="ssb-demo-l">Demo controls</div>
-      <button class="ssb-demo-btn" onclick="resetOnboarding()" title="Show first-run empty state">
+      <button class="ssb-demo-btn" onclick="resetOnboarding()" title="Show first time setup">
         <svg class="ssb-demo-btn-ic" width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8a6 6 0 0 1 10.5-4M14 8a6 6 0 0 1-10.5 4"/><path d="M12 2v3h-3M4 14v-3h3"/></svg>
-        Reset to first-run
+        Reset to first time setup
       </button>
     </div>
   </aside>
@@ -1750,8 +1750,8 @@ function render() {
   }
   if (parts[0] === 'tables')      return renderPlaceholder('Tables', 'Define your data tables. Composite structures, schemas, calculated fields and template builders. Sebastian is finalizing this surface.');
   if (parts[0] === 'mappings')    return renderPlaceholder('Field mappings', 'Cross-connection mapping overview. For now, edit mappings inside each connection.');
-  if (parts[0] === 'schema')      return renderPlaceholder('Schema versions', 'History of every table definition change, who made it and when.');
-  if (parts[0] === 'templates')   return renderPlaceholder('Templates', 'Pre-built table definitions for common verticals (automotive, finance, healthcare).');
+  if (parts[0] === 'schema')      return renderPlaceholder('Schema versions', 'History of every table change — who made it and when.');
+  if (parts[0] === 'templates')   return renderPlaceholder('Templates', 'Pre-built tables for common verticals (automotive, finance, healthcare).');
   if (parts[0] === 'onboarding')  return renderPlaceholder('Onboarding flow', 'Sebastian designed a setup flow for first-time Data Studio users.');
 
   renderConnections();
@@ -2318,7 +2318,7 @@ function isOnboardingPending() { return obState.phase === 'pending'; }
 function resetOnboarding() {
   obState = { phase:'pending', step:0, category:null, connector:null, auth:{}, mapping:[], sync:{}, lastCompleted:null };
   persistOb();
-  toast('Onboarding reset — Data Studio is in first-run mode');
+  toast('Setup reset — back to first time setup');
   if (location.hash && location.hash !== '#/connections' && location.hash !== '#/') {
     location.hash = '/connections';
   } else {
@@ -2401,7 +2401,7 @@ function paintWizard() {
   $('obBack').style.visibility = idx === 0 ? 'hidden' : 'visible';
   const isLast = idx === WIZARD_STEPS.length - 1;
   const nextBtn = $('obNext');
-  if (isLast) nextBtn.textContent = 'Create Table Definition →';
+  if (isLast) nextBtn.textContent = 'Create table →';
   else if (s.id === 'auth')    nextBtn.textContent = 'Preview detected data →';
   else if (s.id === 'preview') nextBtn.textContent = 'Continue to mapping →';
   else if (s.id === 'mapping') nextBtn.textContent = 'Continue to sync →';
@@ -3010,9 +3010,9 @@ function renderStep_preview() {
 
     <div class="ob-preview-tiles">
       <div class="ob-tile is-accent">
-        <div class="ob-tile-l">Source object</div>
+        <div class="ob-tile-l">Data type</div>
         <div class="ob-tile-v mono">${escapeHtml(sample.object)}</div>
-        <div class="ob-tile-s">Becomes a Table Definition</div>
+        <div class="ob-tile-s">Becomes a table in Data Studio</div>
       </div>
       <div class="ob-tile">
         <div class="ob-tile-l">Fields detected</div>
@@ -3063,7 +3063,7 @@ function renderStep_mapping() {
     <div class="ob-step-h">
       <div class="ob-step-eyebrow"><span class="ob-step-eyebrow-dot"></span>Step 5 &middot; Field mapping</div>
       <h2 class="ob-step-title">Shape your data</h2>
-      <p class="ob-step-desc">Confirm how each detected field becomes a column in your <span class="mono" style="color:var(--cyan);font-family:ui-monospace,monospace">${escapeHtml(sample.object)}</span> Table Definition. AI suggests, you decide.</p>
+      <p class="ob-step-desc">Confirm how each detected field becomes a column in your <span class="mono" style="color:var(--cyan);font-family:ui-monospace,monospace">${escapeHtml(sample.object)}</span> table. AI suggests, you decide.</p>
     </div>
 
     ${counts.aiHighConf > 0 ? `
@@ -3097,7 +3097,7 @@ function renderStep_mapping() {
       <div class="ob-map-row is-header">
         <span></span>
         <span>Source field &middot; sample</span>
-        <span>Studio field name</span>
+        <span>Column name</span>
         <span>Type</span>
         <span>Nullable</span>
         <span>Confidence</span>
@@ -3223,7 +3223,7 @@ function renderStep_sync() {
         <span class="mono">${escapeHtml(cn.name)}</span>
         <span class="ob-summary-arrow">&rarr;</span>
         <span class="mono">${escapeHtml(sample.object)}</span>
-        <span style="color:var(--t3);font-size:11.5px">Table Definition</span>
+        <span style="color:var(--t3);font-size:11.5px">table</span>
       </div>
       <div class="ob-summary-row">
         <span style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;color:var(--emerald)"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 8l4 4 6-8"/></svg></span>
@@ -3296,7 +3296,7 @@ function renderStep_done() {
         </div>
       </div>
       <div class="ob-done-recap-row">
-        <div class="ob-done-recap-l">Table Definition</div>
+        <div class="ob-done-recap-l">Table</div>
         <div class="ob-done-recap-v">
           <span class="mono">${escapeHtml(sample.object)}</span>
           <span style="color:var(--t3)">&middot; ${counts.included} of ${counts.total} fields included</span>
@@ -3325,7 +3325,7 @@ function renderStep_done() {
           <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="1.5" y="4.5" width="4" height="3" rx=".8"/><rect x="6.5" y="1.5" width="4" height="3" rx=".8"/><rect x="6.5" y="7.5" width="4" height="3" rx=".8"/><path d="M5.5 6h1M5.5 3H6a.5.5 0 01.5.5v1" stroke-linecap="round"/></svg>
         </div>
         <div class="ob-done-card-t">Build agent tools on this data</div>
-        <div class="ob-done-card-d">Wrap your <span style="font-family:ui-monospace,monospace;color:var(--t1)">${escapeHtml(sample.object)}</span> table in agent-callable actions so workers can read, search and act on it.</div>
+        <div class="ob-done-card-d">Create actions your agents can use to read, search and act on your <span style="font-family:ui-monospace,monospace;color:var(--t1)">${escapeHtml(sample.object)}</span> table.</div>
         <div class="ob-done-card-cta">Agent Studio &middot; Tools &rarr;</div>
       </button>
 
@@ -3333,8 +3333,8 @@ function renderStep_done() {
         <div class="ob-done-card-ic">
           <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="2"/><circle cx="3" cy="3" r="1.3"/><circle cx="13" cy="3" r="1.3"/><circle cx="3" cy="13" r="1.3"/><circle cx="13" cy="13" r="1.3"/><path d="M4.1 4.1l2.5 2.5M11.9 4.1L9.4 6.6M4.1 11.9l2.5-2.5M11.9 11.9L9.4 9.4"/></svg>
         </div>
-        <div class="ob-done-card-t">Set instance permissions</div>
-        <div class="ob-done-card-d">Control which agents and users can read or sync this ${escapeHtml(cn.name)} instance.</div>
+        <div class="ob-done-card-t">Set who can access this</div>
+        <div class="ob-done-card-d">Control which agents and people can read or sync this ${escapeHtml(cn.name)} connection.</div>
         <div class="ob-done-card-cta">Admin Studio &rarr;</div>
       </button>
 
@@ -3396,7 +3396,7 @@ function renderOnboardingEmptyState() {
   const resumeStepName = resuming ? (WIZARD_STEPS[obState.step].title || '') : '';
   const resumeLabel = resuming
     ? `Resume at step ${obState.step + 1} of 6 &middot; ${escapeHtml(resumeStepName)}`
-    : 'First-run setup &middot; about 5 minutes';
+    : 'First time setup &middot; about 5 minutes';
   const lc = obState.lastCompleted;
   $('content').innerHTML = `
     <div class="breadcrumb"><span class="crumb-current">Connections</span></div>
