@@ -955,6 +955,227 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
 }
 .ob-email-inbox-copy:hover{border-color:rgba(16,185,129,0.5);color:var(--emerald)}
 
+
+/* ============ STEP 6.4 PREVIEW ============ */
+.ob-preview-tiles{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px;
+}
+@media (max-width:760px){.ob-preview-tiles{grid-template-columns:repeat(2,1fr)}}
+.ob-tile{
+  padding:14px 16px;
+  background:rgba(255,255,255,0.025);
+  border:1px solid var(--line);border-radius:11px;
+}
+.ob-tile-l{font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--t3);margin-bottom:7px}
+.ob-tile-v{font-size:18px;font-weight:800;color:var(--t1);letter-spacing:-.01em;line-height:1.1}
+.ob-tile-v.mono{font-family:ui-monospace, SFMono-Regular, Menlo, monospace;font-size:14px}
+.ob-tile-s{font-size:11px;color:var(--t3);margin-top:4px}
+.ob-tile.is-accent{background:linear-gradient(135deg, rgba(16,185,129,0.07), rgba(43,127,255,0.04));border-color:rgba(16,185,129,0.32)}
+.ob-tile.is-accent .ob-tile-v{color:var(--emerald)}
+
+.ob-preview-table-wrap{
+  border:1px solid var(--line);border-radius:11px;overflow:hidden;
+}
+.ob-preview-table-h{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:11px 14px;
+  background:rgba(255,255,255,0.025);
+  border-bottom:1px solid var(--line);
+  font-size:12px;font-weight:700;color:var(--t1);
+}
+.ob-preview-table-h-r{font-size:11px;font-weight:500;color:var(--t3)}
+.ob-preview-table{width:100%;border-collapse:collapse}
+.ob-preview-table th, .ob-preview-table td{
+  padding:9px 14px;text-align:left;font-size:12px;
+  border-bottom:1px solid rgba(255,255,255,0.04);
+}
+.ob-preview-table tr:last-child td{border-bottom:none}
+.ob-preview-table th{
+  font-size:10.5px;font-weight:700;color:var(--t3);
+  letter-spacing:.06em;text-transform:uppercase;
+  background:rgba(255,255,255,0.015);
+}
+.ob-preview-table td{color:var(--t2);font-size:12px}
+.ob-preview-table td.mono{font-family:ui-monospace, SFMono-Regular, Menlo, monospace;color:var(--t1)}
+.ob-preview-table td.sample{color:var(--t3);font-family:ui-monospace, SFMono-Regular, Menlo, monospace;font-size:11.5px}
+.ob-type-pill{
+  display:inline-flex;align-items:center;
+  padding:2px 8px;border-radius:5px;
+  background:rgba(43,127,255,0.10);color:var(--blue);
+  border:1px solid rgba(43,127,255,0.28);
+  font-size:10.5px;font-weight:700;font-family:ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+.ob-type-pill.t-string{background:rgba(43,127,255,0.10);color:var(--blue);border-color:rgba(43,127,255,0.28)}
+.ob-type-pill.t-int,.ob-type-pill.t-decimal,.ob-type-pill.t-number{background:rgba(16,185,129,0.10);color:var(--emerald);border-color:rgba(16,185,129,0.28)}
+.ob-type-pill.t-bool{background:rgba(245,158,11,0.10);color:var(--amber);border-color:rgba(245,158,11,0.28)}
+.ob-type-pill.t-date,.ob-type-pill.t-timestamp{background:rgba(167,139,250,0.10);color:var(--purple);border-color:rgba(167,139,250,0.28)}
+.ob-type-pill.t-enum,.ob-type-pill.t-array,.ob-type-pill.t-ref{background:rgba(6,182,212,0.10);color:var(--cyan);border-color:rgba(6,182,212,0.28)}
+
+/* ============ STEP 6.5 FIELD MAPPING ============ */
+.ob-ai-banner{
+  display:flex;align-items:center;justify-content:space-between;gap:14px;
+  padding:12px 16px;margin-bottom:14px;
+  background:linear-gradient(135deg, rgba(16,185,129,0.07) 0%, rgba(43,127,255,0.04) 100%);
+  border:1px solid rgba(16,185,129,0.28);border-radius:11px;
+}
+.ob-ai-banner-l{display:flex;align-items:center;gap:11px;flex:1;min-width:0}
+.ob-ai-banner-ic{
+  width:32px;height:32px;border-radius:8px;
+  background:linear-gradient(135deg, #10B981, #2B7FFF);color:#fff;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.ob-ai-banner-t{font-size:12.5px;font-weight:700;color:var(--t1);line-height:1.3}
+.ob-ai-banner-d{font-size:11px;color:var(--t2);margin-top:2px}
+.ob-ai-banner-cta{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:7px 13px;
+  background:rgba(16,185,129,0.14);color:var(--emerald);
+  border:1px solid rgba(16,185,129,0.38);border-radius:8px;
+  font-family:inherit;font-size:11.5px;font-weight:700;cursor:pointer;
+  transition:background .12s, border-color .12s;flex-shrink:0;
+}
+.ob-ai-banner-cta:hover{background:rgba(16,185,129,0.22);border-color:rgba(16,185,129,0.55)}
+
+.ob-mapping-summary{
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  margin-bottom:14px;padding:0 2px;
+  font-size:11.5px;color:var(--t3);
+}
+.ob-mapping-summary b{color:var(--t1);font-weight:700}
+.ob-mapping-summary .dot{color:var(--t3)}
+
+.ob-map-table-wrap{border:1px solid var(--line);border-radius:11px;overflow:hidden}
+.ob-map-row{
+  display:grid;
+  grid-template-columns:32px minmax(0,1.3fr) minmax(0,1.4fr) 100px 70px 100px 130px;
+  gap:10px;align-items:center;
+  padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.04);
+  font-size:12px;transition:background .12s, opacity .12s;
+}
+.ob-map-row:last-child{border-bottom:none}
+.ob-map-row.is-header{
+  background:rgba(255,255,255,0.02);
+  padding:9px 14px;
+  font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--t3);
+}
+.ob-map-row.is-confirmed{background:rgba(16,185,129,0.05)}
+.ob-map-row.is-dismissed{opacity:.42;background:rgba(255,255,255,0.015)}
+.ob-map-row.is-dismissed .ob-map-source-name{text-decoration:line-through;color:var(--t3)}
+.ob-map-incl{display:flex;align-items:center;justify-content:center}
+.ob-map-incl input{accent-color:var(--emerald);width:14px;height:14px;cursor:pointer}
+.ob-map-source{min-width:0}
+.ob-map-source-name{font-family:ui-monospace, SFMono-Regular, Menlo, monospace;font-size:11.5px;color:var(--t1);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ob-map-source-sample{font-family:ui-monospace, SFMono-Regular, Menlo, monospace;font-size:10.5px;color:var(--t3);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ob-map-input{
+  width:100%;padding:5px 8px;
+  background:#070e1c;border:1px solid var(--line);border-radius:6px;
+  color:var(--t1);font-family:ui-monospace, SFMono-Regular, Menlo, monospace;font-size:11.5px;
+}
+.ob-map-input:focus{outline:none;border-color:var(--emerald)}
+.ob-map-select{
+  width:100%;padding:5px 7px;
+  background:#070e1c;border:1px solid var(--line);border-radius:6px;
+  color:var(--t1);font-family:ui-monospace, SFMono-Regular, Menlo, monospace;font-size:11px;cursor:pointer;
+}
+.ob-map-null{display:flex;align-items:center;justify-content:center}
+.ob-map-null input{accent-color:var(--t3);width:13px;height:13px;cursor:pointer}
+.ob-map-conf{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:2px 8px;border-radius:99px;
+  font-size:10.5px;font-weight:700;
+}
+.ob-map-conf.c-high{background:rgba(16,185,129,0.12);color:var(--emerald);border:1px solid rgba(16,185,129,0.32)}
+.ob-map-conf.c-mid{background:rgba(43,127,255,0.12);color:var(--blue);border:1px solid rgba(43,127,255,0.32)}
+.ob-map-conf.c-low{background:rgba(245,158,11,0.12);color:var(--amber);border:1px solid rgba(245,158,11,0.32)}
+.ob-map-conf.c-none{background:rgba(255,255,255,0.04);color:var(--t3);border:1px solid var(--line)}
+.ob-map-actions{display:flex;gap:5px;align-items:center;justify-content:flex-end}
+.ob-map-act{
+  background:transparent;border:1px solid var(--line);
+  color:var(--t3);font-family:inherit;font-size:10.5px;font-weight:600;
+  padding:3px 8px;border-radius:5px;cursor:pointer;
+  transition:border-color .12s, color .12s, background .12s;
+}
+.ob-map-act:hover{border-color:var(--line-strong);color:var(--t1)}
+.ob-map-act.is-accept:hover{border-color:rgba(16,185,129,0.5);color:var(--emerald);background:rgba(16,185,129,0.08)}
+.ob-map-act.is-dismiss:hover{border-color:rgba(239,68,68,0.5);color:#ef4444;background:rgba(239,68,68,0.08)}
+.ob-map-act.is-active{background:var(--emerald);border-color:var(--emerald);color:#fff}
+.ob-map-act.is-active.is-dismiss{background:#ef4444;border-color:#ef4444}
+@media (max-width:860px){
+  .ob-map-row{grid-template-columns:30px 1fr 100px;gap:7px;font-size:11.5px}
+  .ob-map-row > :nth-child(4),.ob-map-row > :nth-child(5),.ob-map-row > :nth-child(6),.ob-map-row > :nth-child(7){grid-column:1/-1;margin-left:38px}
+}
+
+/* ============ STEP 6.6 SYNC SETTINGS ============ */
+.ob-sync-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px}
+@media (max-width:760px){.ob-sync-grid{grid-template-columns:repeat(2,1fr)}}
+.ob-sync-card{
+  padding:14px;text-align:left;
+  background:rgba(255,255,255,0.025);
+  border:1px solid var(--line);border-radius:11px;cursor:pointer;
+  font-family:inherit;color:inherit;
+  transition:border-color .12s, background .12s;
+  display:flex;flex-direction:column;gap:5px;align-items:flex-start;
+}
+.ob-sync-card:hover:not(:disabled){border-color:rgba(16,185,129,0.4);background:rgba(16,185,129,0.04)}
+.ob-sync-card.is-selected{border-color:var(--emerald);background:rgba(16,185,129,0.07);box-shadow:0 0 0 3px rgba(16,185,129,0.10)}
+.ob-sync-card:disabled{opacity:.45;cursor:not-allowed}
+.ob-sync-card-ic{
+  width:30px;height:30px;border-radius:8px;
+  background:rgba(16,185,129,0.10);color:var(--emerald);
+  border:1px solid rgba(16,185,129,0.22);
+  display:flex;align-items:center;justify-content:center;margin-bottom:5px;
+}
+.ob-sync-card.is-selected .ob-sync-card-ic{background:var(--emerald);color:#fff;border-color:var(--emerald)}
+.ob-sync-card-n{font-size:13px;font-weight:700;color:var(--t1)}
+.ob-sync-card-d{font-size:11px;color:var(--t3);line-height:1.4}
+.ob-sync-card-tag{font-size:9.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--t3);margin-top:4px}
+
+.ob-incr-card{
+  padding:16px;
+  background:rgba(255,255,255,0.025);
+  border:1px solid var(--line);border-radius:11px;
+}
+.ob-incr-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:10px}
+.ob-incr-t{font-size:13px;font-weight:700;color:var(--t1)}
+.ob-incr-d{font-size:11.5px;color:var(--t2);line-height:1.45;margin-top:2px}
+.ob-toggle{
+  width:34px;height:20px;border-radius:99px;
+  background:var(--line-strong);
+  position:relative;cursor:pointer;flex-shrink:0;
+  transition:background .12s;
+}
+.ob-toggle::after{
+  content:'';position:absolute;
+  width:14px;height:14px;border-radius:50%;
+  background:#fff;top:3px;left:3px;
+  transition:transform .14s;
+}
+.ob-toggle.is-on{background:var(--emerald)}
+.ob-toggle.is-on::after{transform:translateX(14px)}
+
+.ob-summary-card{
+  margin-top:16px;
+  padding:18px 20px;
+  background:linear-gradient(135deg, #0a1228 0%, #0c1428 100%);
+  border:1px solid rgba(16,185,129,0.32);
+  border-radius:12px;
+  box-shadow:0 0 0 1px rgba(16,185,129,0.06) inset;
+}
+.ob-summary-h{
+  display:flex;align-items:center;gap:8px;
+  font-size:10.5px;font-weight:800;letter-spacing:.10em;text-transform:uppercase;
+  color:var(--emerald);margin-bottom:11px;
+}
+.ob-summary-h-dot{width:6px;height:6px;border-radius:50%;background:var(--emerald);box-shadow:0 0 0 3px rgba(16,185,129,0.20)}
+.ob-summary-row{
+  display:flex;align-items:center;gap:11px;
+  padding:5px 0;font-size:13px;color:var(--t1);
+}
+.ob-summary-row + .ob-summary-row{border-top:1px solid rgba(255,255,255,0.04)}
+.ob-summary-arrow{color:var(--t3);font-family:ui-monospace,monospace}
+.ob-summary-row b{font-weight:700}
+.ob-summary-row .mono{font-family:ui-monospace, SFMono-Regular, Menlo, monospace;color:var(--cyan)}
+
 /* Step placeholder used in Sprint 1 */
 .ob-step-placeholder{
   display:flex;flex-direction:column;align-items:center;justify-content:center;
@@ -2051,7 +2272,12 @@ function paintWizard() {
   $('obBack').style.visibility = idx === 0 ? 'hidden' : 'visible';
   const isLast = idx === WIZARD_STEPS.length - 1;
   const nextBtn = $('obNext');
-  nextBtn.textContent = isLast ? 'Finish setup →' : 'Next →';
+  // Step-specific Next label
+  if (isLast) nextBtn.textContent = 'Create Table Definition →';
+  else if (s.id === 'auth')    nextBtn.textContent = 'Preview detected data →';
+  else if (s.id === 'preview') nextBtn.textContent = 'Continue to mapping →';
+  else if (s.id === 'mapping') nextBtn.textContent = 'Continue to sync →';
+  else nextBtn.textContent = 'Next →';
   $('obBody').innerHTML = renderWizardStep(s.id);
   // Dim Next when the step has unmet requirements (without disabling — clicking it shows a toast)
   nextBtn.style.opacity = wizardCanAdvance() ? '1' : '.55';
@@ -2061,19 +2287,12 @@ function renderWizardStep(stepId) {
   if (stepId === 'category')  return renderStep_category();
   if (stepId === 'connector') return renderStep_connector();
   if (stepId === 'auth')      return renderStep_auth();
-  // Sprint 3 will replace these placeholders
+  if (stepId === 'preview')   return renderStep_preview();
+  if (stepId === 'mapping')   return renderStep_mapping();
+  if (stepId === 'sync')      return renderStep_sync();
+  // Fallback (should not hit)
   const s = WIZARD_STEPS.find(x => x.id === stepId);
-  return `
-    <div class="ob-step-placeholder">
-      <div class="ob-step-placeholder-ic">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/>
-        </svg>
-      </div>
-      <div class="ob-step-placeholder-t">${escapeHtml(s.title)}</div>
-      <div class="ob-step-placeholder-d">Step UI lands in Sprint 3. Sprint 2 covered Category, Connector and Auth.</div>
-    </div>
-  `;
+  return `<div class="ob-step-placeholder"><div class="ob-step-placeholder-t">${escapeHtml(s ? s.title : stepId)}</div></div>`;
 }
 
 function wizardCanAdvance() {
@@ -2081,6 +2300,9 @@ function wizardCanAdvance() {
   if (id === 'category')  return !!obState.category;
   if (id === 'connector') return !!obState.connector;
   if (id === 'auth')      return obState.auth && obState.auth.status === 'connected';
+  if (id === 'preview')   return true;   // checkpoint, always advances
+  if (id === 'mapping')   return obState.mapping && obState.mapping.rows && obState.mapping.rows.some(r => r.include);
+  if (id === 'sync')      return obState.sync && obState.sync.cadence;
   return true;
 }
 
@@ -2097,9 +2319,11 @@ function wizardNext() {
     persistOb();
     paintWizard();
   } else {
+    // Stamp the final config into state for the Done step (Sprint 4)
+    obState.completedAt = new Date().toISOString();
     completeOnboarding();
     closeWizard();
-    toast('Onboarding complete — Data Studio is ready');
+    toast('Table Definition created — your first connection is live');
     render();
   }
 }
@@ -2458,6 +2682,452 @@ function obAuthRun() {
     paintWizard();
   }, 1100);
 }
+
+
+/* ============ SAMPLE FIELDS PER CONNECTOR (Sprint 3 preview/mapping) ============ */
+const OB_SAMPLE_FIELDS_BY_SLUG = {
+  hubspot: {
+    object:'contact', pullMs:1820, rows:20,
+    fields:[
+      { name:'vid',                       type:'int',       sample:'4521893',                sug:'id',                  sugType:'int',       conf:96 },
+      { name:'properties.firstname',      type:'string',    sample:'Sarah',                  sug:'first_name',          sugType:'string',    conf:95 },
+      { name:'properties.lastname',       type:'string',    sample:'Chen',                   sug:'last_name',           sugType:'string',    conf:95 },
+      { name:'properties.email',          type:'string',    sample:'sarah@example.com',      sug:'email',               sugType:'string',    conf:97 },
+      { name:'properties.lifecyclestage', type:'string',    sample:'customer',               sug:'lifecycle_stage',     sugType:'enum',      conf:88 },
+      { name:'properties.lead_score',     type:'int',       sample:'72',                     sug:'lead_score',          sugType:'int',       conf:86 },
+      { name:'properties.utm_campaign__c',type:'string',    sample:'q4_launch',              sug:'utm_campaign',        sugType:'string',    conf:78 },
+      { name:'createdate',                type:'timestamp', sample:'2024-08-14T10:22:00Z',   sug:'created_at',          sugType:'timestamp', conf:96 },
+      { name:'lastmodifieddate',          type:'timestamp', sample:'2024-11-02T16:08:14Z',   sug:'updated_at',          sugType:'timestamp', conf:94 },
+      { name:'properties.pink_fluffy_slippers_qty__c', type:'string', sample:'',             sug:'pink_fluffy_slippers',sugType:'string',    conf:42 },
+      { name:'_legacy_v1_flag',           type:'bool',      sample:'false',                  sug:null,                  sugType:null,        conf:0  },
+      { name:'_internal_owner_id',        type:'string',    sample:'INT-882',                sug:null,                  sugType:null,        conf:0  }
+    ]
+  },
+  pipedrive: {
+    object:'deal', pullMs:1240, rows:20,
+    fields:[
+      { name:'id',         type:'int',       sample:'8821',                  sug:'id',          sugType:'int',       conf:97 },
+      { name:'title',      type:'string',    sample:'Acme Q4 renewal',       sug:'title',       sugType:'string',    conf:94 },
+      { name:'value',      type:'decimal',   sample:'52000.00',              sug:'amount',      sugType:'decimal',   conf:91 },
+      { name:'currency',   type:'string',    sample:'USD',                   sug:'currency',    sugType:'enum',      conf:88 },
+      { name:'status',     type:'string',    sample:'open',                  sug:'stage',       sugType:'enum',      conf:84 },
+      { name:'person_id',  type:'int',       sample:'4421',                  sug:'contact_id',  sugType:'ref',       conf:78 },
+      { name:'org_id',     type:'int',       sample:'112',                   sug:'account_id',  sugType:'ref',       conf:76 },
+      { name:'add_time',   type:'timestamp', sample:'2024-09-12T14:00:00Z',  sug:'created_at',  sugType:'timestamp', conf:95 },
+      { name:'update_time',type:'timestamp', sample:'2024-11-08T09:22:00Z',  sug:'updated_at',  sugType:'timestamp', conf:93 },
+      { name:'custom_legacy_grade', type:'string', sample:'B+',              sug:null,          sugType:null,        conf:0  }
+    ]
+  },
+  notion: {
+    object:'page', pullMs:980, rows:20,
+    fields:[
+      { name:'id',                          type:'string',    sample:'1f4a3...',          sug:'id',         sugType:'string',    conf:96 },
+      { name:'properties.Name.title[0].plain_text', type:'string', sample:'Project brief', sug:'name',       sugType:'string',    conf:92 },
+      { name:'properties.Status.select.name',type:'string',   sample:'In progress',       sug:'status',     sugType:'enum',      conf:90 },
+      { name:'properties.Owner.people[0].id',type:'string',   sample:'alice@example.com', sug:'owner_id',   sugType:'ref',       conf:80 },
+      { name:'created_time',                type:'timestamp', sample:'2024-10-01T08:00:00Z', sug:'created_at', sugType:'timestamp', conf:96 },
+      { name:'last_edited_time',            type:'timestamp', sample:'2024-11-09T15:30:00Z', sug:'updated_at', sugType:'timestamp', conf:95 },
+      { name:'archived',                    type:'bool',      sample:'false',             sug:'archived',   sugType:'bool',      conf:84 }
+    ]
+  },
+  zendesk: {
+    object:'ticket', pullMs:1610, rows:20,
+    fields:[
+      { name:'id',           type:'int',       sample:'82441',                 sug:'id',           sugType:'int',       conf:97 },
+      { name:'subject',      type:'string',    sample:'Login failure',         sug:'subject',      sugType:'string',    conf:93 },
+      { name:'description',  type:'text',      sample:'User cannot log in...', sug:'description',  sugType:'text',      conf:90 },
+      { name:'status',       type:'string',    sample:'open',                  sug:'status',       sugType:'enum',      conf:91 },
+      { name:'priority',     type:'string',    sample:'high',                  sug:'priority',     sugType:'enum',      conf:89 },
+      { name:'requester_id', type:'int',       sample:'112',                   sug:'requester_id', sugType:'ref',       conf:82 },
+      { name:'assignee_id',  type:'int',       sample:'88',                    sug:'assignee_id',  sugType:'ref',       conf:80 },
+      { name:'created_at',   type:'timestamp', sample:'2024-11-06T07:14:00Z',  sug:'created_at',   sugType:'timestamp', conf:96 },
+      { name:'updated_at',   type:'timestamp', sample:'2024-11-09T18:02:00Z',  sug:'updated_at',   sugType:'timestamp', conf:94 },
+      { name:'custom_fields.0.value', type:'string', sample:'',                sug:null,           sugType:null,        conf:0  }
+    ]
+  },
+  stripe: {
+    object:'invoice', pullMs:910, rows:20,
+    fields:[
+      { name:'id',            type:'string',    sample:'in_1NbAcK...',        sug:'id',            sugType:'string',    conf:97 },
+      { name:'customer',      type:'string',    sample:'cus_PqA1...',         sug:'customer_id',   sugType:'ref',       conf:90 },
+      { name:'amount_paid',   type:'int',       sample:'29900',               sug:'amount_paid',   sugType:'int',       conf:92 },
+      { name:'currency',      type:'string',    sample:'usd',                 sug:'currency',      sugType:'enum',      conf:89 },
+      { name:'status',        type:'string',    sample:'paid',                sug:'status',        sugType:'enum',      conf:91 },
+      { name:'created',       type:'int',       sample:'1731106800',          sug:'created_at',    sugType:'timestamp', conf:84 },
+      { name:'invoice_pdf',   type:'string',    sample:'https://...',         sug:'invoice_url',   sugType:'string',    conf:79 }
+    ]
+  },
+  bigquery: {
+    object:'analytics_events', pullMs:2340, rows:20,
+    fields:[
+      { name:'event_date',       type:'date',      sample:'2024-11-09',           sug:'event_date',     sugType:'date',      conf:96 },
+      { name:'event_timestamp',  type:'timestamp', sample:'2024-11-09T12:14:22Z', sug:'event_timestamp',sugType:'timestamp', conf:95 },
+      { name:'event_name',       type:'string',    sample:'page_view',            sug:'event_name',     sugType:'enum',      conf:90 },
+      { name:'user_pseudo_id',   type:'string',    sample:'1929381.18...',        sug:'user_id',        sugType:'ref',       conf:82 },
+      { name:'platform',         type:'string',    sample:'WEB',                  sug:'platform',       sugType:'enum',      conf:84 },
+      { name:'geo.country',      type:'string',    sample:'United States',        sug:'country',        sugType:'string',    conf:78 },
+      { name:'_PARTITIONTIME',   type:'timestamp', sample:'2024-11-09T00:00:00Z', sug:null,             sugType:null,        conf:0  }
+    ]
+  },
+  'csv-upload': {
+    object:'imported_row', pullMs:520, rows:20,
+    fields:[
+      { name:'lead_id',     type:'int',     sample:'48201',           sug:'id',           sugType:'int',       conf:88 },
+      { name:'first_name',  type:'string',  sample:'Sarah',           sug:'first_name',   sugType:'string',    conf:96 },
+      { name:'last_name',   type:'string',  sample:'Chen',            sug:'last_name',    sugType:'string',    conf:96 },
+      { name:'email',       type:'string',  sample:'sarah@a.co',      sug:'email',        sugType:'string',    conf:97 },
+      { name:'phone',       type:'string',  sample:'+1 415 555 ...',  sug:'phone',        sugType:'string',    conf:90 },
+      { name:'company',     type:'string',  sample:'Acme Co',         sug:'account_name', sugType:'string',    conf:80 },
+      { name:'created_date',type:'date',    sample:'2024-10-12',      sug:'created_at',   sugType:'date',      conf:92 },
+      { name:'lead_source', type:'string',  sample:'webinar_q4',      sug:'lead_source',  sugType:'enum',      conf:78 },
+      { name:'vin_number',  type:'string',  sample:'1HGCM82633A...',  sug:'vehicle.vin',  sugType:'string',    conf:64 }
+    ]
+  }
+};
+
+function obSampleFor(slug) {
+  if (OB_SAMPLE_FIELDS_BY_SLUG[slug]) return OB_SAMPLE_FIELDS_BY_SLUG[slug];
+  // Generic fallback — used for connectors without dedicated samples
+  return {
+    object:'record', pullMs:1100, rows:20,
+    fields:[
+      { name:'id',         type:'string',    sample:'rec_a82...',           sug:'id',          sugType:'string',    conf:96 },
+      { name:'name',       type:'string',    sample:'Sample record',        sug:'name',        sugType:'string',    conf:92 },
+      { name:'status',     type:'string',    sample:'active',               sug:'status',      sugType:'enum',      conf:88 },
+      { name:'amount',     type:'decimal',   sample:'1240.50',              sug:'amount',      sugType:'decimal',   conf:84 },
+      { name:'created_at', type:'timestamp', sample:'2024-11-01T10:00:00Z', sug:'created_at',  sugType:'timestamp', conf:95 },
+      { name:'updated_at', type:'timestamp', sample:'2024-11-09T12:30:00Z', sug:'updated_at',  sugType:'timestamp', conf:94 },
+      { name:'metadata.tags[]', type:'array', sample:'["a","b"]',           sug:'tags',        sugType:'array',     conf:72 }
+    ]
+  };
+}
+
+const OB_TYPE_OPTIONS = ['string','text','int','decimal','bool','date','timestamp','enum','array','ref'];
+
+/* ============ MAPPING STATE INIT ============ */
+function obEnsureMappingFor(slug) {
+  if (!obState.mapping || obState.mapping.slug !== slug) {
+    const sample = obSampleFor(slug);
+    obState.mapping = {
+      slug: slug,
+      rows: sample.fields.map(f => ({
+        src: f.name,
+        srcType: f.type,
+        sample: f.sample,
+        include: f.conf > 0,           // default include if AI suggested
+        studio: f.sug || f.name.replace(/[^a-z0-9]+/gi,'_').replace(/^_+|_+$/g,'').toLowerCase(),
+        type: f.sugType || f.type,
+        nullable: true,
+        confidence: f.conf,
+        decision: null                  // null | 'accept' | 'dismiss'
+      }))
+    };
+    persistOb();
+  }
+}
+
+function obMappingCounts() {
+  const rows = (obState.mapping && obState.mapping.rows) || [];
+  return {
+    total: rows.length,
+    included: rows.filter(r => r.include && r.decision !== 'dismiss').length,
+    aiHighConf: rows.filter(r => r.confidence >= 75 && r.decision !== 'accept' && r.decision !== 'dismiss').length,
+    accepted: rows.filter(r => r.decision === 'accept').length,
+    dismissed: rows.filter(r => r.decision === 'dismiss').length
+  };
+}
+
+function obMapToggleInclude(idx) {
+  const r = obState.mapping.rows[idx]; if (!r) return;
+  r.include = !r.include;
+  if (!r.include) r.decision = 'dismiss';
+  else if (r.decision === 'dismiss') r.decision = null;
+  persistOb(); paintWizard();
+}
+function obMapEditField(idx, field, value) {
+  const r = obState.mapping.rows[idx]; if (!r) return;
+  r[field] = value;
+  persistOb();
+}
+function obMapDecision(idx, decision) {
+  const r = obState.mapping.rows[idx]; if (!r) return;
+  if (decision === 'accept') {
+    r.decision = (r.decision === 'accept') ? null : 'accept';
+    if (r.decision === 'accept') r.include = true;
+  } else if (decision === 'dismiss') {
+    r.decision = (r.decision === 'dismiss') ? null : 'dismiss';
+    if (r.decision === 'dismiss') r.include = false;
+  }
+  persistOb(); paintWizard();
+}
+function obMapAcceptAllHighConf() {
+  const rows = (obState.mapping && obState.mapping.rows) || [];
+  let n = 0;
+  rows.forEach(r => { if (r.confidence >= 75 && r.decision !== 'dismiss') { r.decision='accept'; r.include=true; n++; } });
+  persistOb(); paintWizard();
+  toast('Accepted ' + n + ' high-confidence suggestions');
+}
+
+/* ============ STEP RENDERERS (Sprint 3) ============ */
+function renderStep_preview() {
+  const cn = obConnector(obState.connector);
+  if (!cn) return '<div class="ob-step-placeholder"><div class="ob-step-placeholder-t">No connector selected</div></div>';
+  const sample = obSampleFor(cn.slug);
+  const ms = sample.pullMs;
+  const seconds = (ms/1000).toFixed(1);
+  return `
+    <div class="ob-step-h">
+      <div class="ob-step-eyebrow"><span class="ob-step-eyebrow-dot"></span>Step 4 &middot; Preview</div>
+      <h2 class="ob-step-title">Here is what we found</h2>
+      <p class="ob-step-desc">A checkpoint: confirm the first pull looks right before we shape it. No edits on this screen — you'll map fields next.</p>
+    </div>
+
+    <div class="ob-preview-tiles">
+      <div class="ob-tile is-accent">
+        <div class="ob-tile-l">Source object</div>
+        <div class="ob-tile-v mono">${escapeHtml(sample.object)}</div>
+        <div class="ob-tile-s">Becomes a Table Definition</div>
+      </div>
+      <div class="ob-tile">
+        <div class="ob-tile-l">Fields detected</div>
+        <div class="ob-tile-v">${sample.fields.length}</div>
+        <div class="ob-tile-s">${sample.fields.filter(f => f.conf >= 75).length} with high confidence</div>
+      </div>
+      <div class="ob-tile">
+        <div class="ob-tile-l">Sample pulled</div>
+        <div class="ob-tile-v">${sample.rows}</div>
+        <div class="ob-tile-s">rows for schema inference</div>
+      </div>
+      <div class="ob-tile">
+        <div class="ob-tile-l">Pull duration</div>
+        <div class="ob-tile-v">${seconds}s</div>
+        <div class="ob-tile-s">first call latency</div>
+      </div>
+    </div>
+
+    <div class="ob-preview-table-wrap">
+      <div class="ob-preview-table-h">
+        <span>Detected fields</span>
+        <span class="ob-preview-table-h-r">${sample.fields.length} columns &middot; ${sample.rows} sample rows</span>
+      </div>
+      <table class="ob-preview-table">
+        <thead><tr><th style="width:38%">Source field</th><th style="width:18%">Type</th><th>Sample value</th></tr></thead>
+        <tbody>
+          ${sample.fields.map(f => `
+            <tr>
+              <td class="mono">${escapeHtml(f.name)}</td>
+              <td><span class="ob-type-pill t-${escapeHtml(f.type)}">${escapeHtml(f.type)}</span></td>
+              <td class="sample">${escapeHtml(f.sample || '(null)')}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function renderStep_mapping() {
+  const cn = obConnector(obState.connector);
+  if (!cn) return '<div class="ob-step-placeholder"><div class="ob-step-placeholder-t">No connector selected</div></div>';
+  obEnsureMappingFor(cn.slug);
+  const sample = obSampleFor(cn.slug);
+  const counts = obMappingCounts();
+
+  return `
+    <div class="ob-step-h">
+      <div class="ob-step-eyebrow"><span class="ob-step-eyebrow-dot"></span>Step 5 &middot; Field mapping</div>
+      <h2 class="ob-step-title">Shape your data</h2>
+      <p class="ob-step-desc">Confirm how each detected field becomes a column in your <span class="mono" style="color:var(--cyan);font-family:ui-monospace,monospace">${escapeHtml(sample.object)}</span> Table Definition. AI suggests, you decide.</p>
+    </div>
+
+    ${counts.aiHighConf > 0 ? `
+      <div class="ob-ai-banner">
+        <div class="ob-ai-banner-l">
+          <div class="ob-ai-banner-ic">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+          </div>
+          <div>
+            <div class="ob-ai-banner-t">AI mapped ${counts.aiHighConf} of ${counts.total} fields with high confidence</div>
+            <div class="ob-ai-banner-d">Accept the high-confidence ones in one click, then review the rest below.</div>
+          </div>
+        </div>
+        <button class="ob-ai-banner-cta" onclick="obMapAcceptAllHighConf()">
+          Accept all ${counts.aiHighConf} &rarr;
+        </button>
+      </div>
+    ` : ''}
+
+    <div class="ob-mapping-summary">
+      <span><b>${counts.included}</b> of <b>${counts.total}</b> fields included</span>
+      <span class="dot">&middot;</span>
+      <span><b>${counts.accepted}</b> confirmed</span>
+      <span class="dot">&middot;</span>
+      <span><b>${counts.dismissed}</b> dismissed</span>
+      <span class="dot">&middot;</span>
+      <span>Table: <b class="mono" style="color:var(--cyan);font-family:ui-monospace,monospace">${escapeHtml(sample.object)}</b></span>
+    </div>
+
+    <div class="ob-map-table-wrap">
+      <div class="ob-map-row is-header">
+        <span></span>
+        <span>Source field &middot; sample</span>
+        <span>Studio field name</span>
+        <span>Type</span>
+        <span>Nullable</span>
+        <span>Confidence</span>
+        <span style="text-align:right">Decision</span>
+      </div>
+      ${obState.mapping.rows.map((r, idx) => {
+        const conf = r.confidence;
+        const cClass = conf === 0 ? 'c-none' : (conf >= 90 ? 'c-high' : (conf >= 75 ? 'c-mid' : 'c-low'));
+        const statusClass = r.decision === 'accept' ? 'is-confirmed' : (r.decision === 'dismiss' ? 'is-dismissed' : '');
+        return `
+          <div class="ob-map-row ${statusClass}">
+            <div class="ob-map-incl">
+              <input type="checkbox" ${r.include ? 'checked' : ''} onchange="obMapToggleInclude(${idx})" aria-label="Include field"/>
+            </div>
+            <div class="ob-map-source">
+              <div class="ob-map-source-name">${escapeHtml(r.src)}</div>
+              <div class="ob-map-source-sample">${escapeHtml(r.sample || '(null)')}</div>
+            </div>
+            <div>
+              <input class="ob-map-input" value="${escapeHtml(r.studio)}" oninput="obMapEditField(${idx}, 'studio', this.value)"/>
+            </div>
+            <div>
+              <select class="ob-map-select" onchange="obMapEditField(${idx}, 'type', this.value)">
+                ${OB_TYPE_OPTIONS.map(t => `<option value="${t}" ${r.type === t ? 'selected' : ''}>${t}</option>`).join('')}
+              </select>
+            </div>
+            <div class="ob-map-null">
+              <input type="checkbox" ${r.nullable ? 'checked' : ''} onchange="obMapEditField(${idx}, 'nullable', this.checked)" aria-label="Nullable"/>
+            </div>
+            <div>
+              <span class="ob-map-conf ${cClass}">${conf === 0 ? 'no match' : conf + '%'}</span>
+            </div>
+            <div class="ob-map-actions">
+              <button class="ob-map-act is-accept ${r.decision === 'accept' ? 'is-active' : ''}" onclick="obMapDecision(${idx}, 'accept')" title="Accept the AI suggestion">Accept</button>
+              <button class="ob-map-act is-dismiss ${r.decision === 'dismiss' ? 'is-active' : ''}" onclick="obMapDecision(${idx}, 'dismiss')" title="Exclude this field">Dismiss</button>
+            </div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+}
+
+function renderStep_sync() {
+  const cn = obConnector(obState.connector);
+  if (!cn) return '<div class="ob-step-placeholder"><div class="ob-step-placeholder-t">No connector selected</div></div>';
+  obEnsureMappingFor(cn.slug);
+  if (!obState.sync || !obState.sync.cadence) {
+    // Set sensible defaults
+    const supportsRealtime = (cn.authType === 'oauth' && cn.slug !== 'gdrive');
+    obState.sync = { cadence: supportsRealtime ? 'realtime' : 'hourly', incremental:false, incrementalField:null };
+    persistOb();
+  }
+  const cadence = obState.sync.cadence;
+  const supportsRealtime = (cn.authType === 'oauth' && cn.slug !== 'gdrive');
+  const supportsHourly = cn.authType !== 'file_upload';
+  // Find timestamp fields in mapping for incremental sync
+  const tsFields = obState.mapping.rows.filter(r => r.include && (r.type === 'timestamp' || r.type === 'date'));
+  if (obState.sync.incremental && !obState.sync.incrementalField && tsFields.length > 0) {
+    obState.sync.incrementalField = tsFields[0].studio;
+  }
+  const counts = obMappingCounts();
+  const sample = obSampleFor(cn.slug);
+
+  const cadenceCards = [
+    { id:'realtime', name:'Real-time',  desc:'Webhook push, < 5s latency', tag:'Recommended',  disabled:!supportsRealtime, ic:'<path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/>' },
+    { id:'hourly',   name:'Hourly',     desc:'Pull on the hour',           tag:'Default',      disabled:!supportsHourly,   ic:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>' },
+    { id:'daily',    name:'Daily',      desc:'Pull at 2am UTC',            tag:null,           disabled:false,             ic:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>' },
+    { id:'manual',   name:'Manual',     desc:'Trigger from the UI or API', tag:null,           disabled:false,             ic:'<polygon points="5 3 19 12 5 21 5 3"/>' }
+  ];
+
+  const cadenceLabel = (cadenceCards.find(x => x.id === cadence) || {}).name || cadence;
+
+  return `
+    <div class="ob-step-h">
+      <div class="ob-step-eyebrow"><span class="ob-step-eyebrow-dot"></span>Step 6 &middot; Sync</div>
+      <h2 class="ob-step-title">Set how the data stays fresh</h2>
+      <p class="ob-step-desc">Pick a refresh cadence and optionally enable incremental sync. You can change these any time in the connection detail.</p>
+    </div>
+
+    <div style="font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--t3);margin-bottom:10px">Refresh cadence</div>
+    <div class="ob-sync-grid">
+      ${cadenceCards.map(card => `
+        <button class="ob-sync-card ${cadence === card.id ? 'is-selected' : ''}" ${card.disabled ? 'disabled' : ''} onclick="obSyncPickCadence('${card.id}')" title="${card.disabled ? 'Not supported by this connector' : ''}">
+          <span class="ob-sync-card-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${card.ic}</svg></span>
+          <span class="ob-sync-card-n">${escapeHtml(card.name)}</span>
+          <span class="ob-sync-card-d">${escapeHtml(card.desc)}</span>
+          ${card.tag ? `<span class="ob-sync-card-tag">${escapeHtml(card.tag)}</span>` : ''}
+          ${card.disabled ? `<span class="ob-sync-card-tag" style="color:var(--amber)">Not supported</span>` : ''}
+        </button>
+      `).join('')}
+    </div>
+
+    ${tsFields.length > 0 ? `
+      <div class="ob-incr-card">
+        <div class="ob-incr-head">
+          <div>
+            <div class="ob-incr-t">Incremental sync</div>
+            <div class="ob-incr-d">Only pull rows changed since the last sync. Uses a timestamp field as the change tracker.</div>
+          </div>
+          <div class="ob-toggle ${obState.sync.incremental ? 'is-on' : ''}" onclick="obSyncToggleIncremental()" role="switch" aria-checked="${obState.sync.incremental ? 'true' : 'false'}"></div>
+        </div>
+        ${obState.sync.incremental ? `
+          <div class="ob-auth-field" style="margin-top:8px">
+            <label class="ob-auth-field-l"><b>Change-tracking field</b></label>
+            <select class="ob-map-select" style="font-size:12.5px;padding:8px 10px" onchange="obSyncEditIncrField(this.value)">
+              ${tsFields.map(f => `<option value="${escapeHtml(f.studio)}" ${obState.sync.incrementalField === f.studio ? 'selected' : ''}>${escapeHtml(f.studio)} (was ${escapeHtml(f.src)})</option>`).join('')}
+            </select>
+          </div>
+        ` : ''}
+      </div>
+    ` : `
+      <div class="ob-incr-card" style="opacity:.7">
+        <div class="ob-incr-t">Incremental sync</div>
+        <div class="ob-incr-d" style="margin-top:4px">No timestamp fields included in the mapping. Re-include a timestamp field in step 5 to enable incremental sync.</div>
+      </div>
+    `}
+
+    <div class="ob-summary-card">
+      <div class="ob-summary-h"><span class="ob-summary-h-dot"></span>Configuration summary</div>
+      <div class="ob-summary-row">
+        ${obConnectorLogo(cn, 28)}
+        <span class="mono">${escapeHtml(cn.name)}</span>
+        <span class="ob-summary-arrow">&rarr;</span>
+        <span class="mono">${escapeHtml(sample.object)}</span>
+        <span style="color:var(--t3);font-size:11.5px">Table Definition</span>
+      </div>
+      <div class="ob-summary-row">
+        <span style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;color:var(--emerald)"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 8l4 4 6-8"/></svg></span>
+        <span><b>${counts.included}</b> of <b>${counts.total}</b> fields included</span>
+        <span style="color:var(--t3);font-size:11.5px">&middot; ${counts.accepted} confirmed by AI suggestion</span>
+      </div>
+      <div class="ob-summary-row">
+        <span style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;color:var(--cyan)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
+        <span>Refresh <b>${escapeHtml(cadenceLabel.toLowerCase())}</b></span>
+        ${obState.sync.incremental ? `<span style="color:var(--t3);font-size:11.5px">&middot; incremental by <span class="mono">${escapeHtml(obState.sync.incrementalField || '')}</span></span>` : ''}
+      </div>
+    </div>
+  `;
+}
+
+function obSyncPickCadence(id) {
+  obState.sync = Object.assign({}, obState.sync, { cadence: id });
+  persistOb(); paintWizard();
+}
+function obSyncToggleIncremental() {
+  const newVal = !(obState.sync && obState.sync.incremental);
+  obState.sync = Object.assign({}, obState.sync, { incremental: newVal });
+  if (!newVal) obState.sync.incrementalField = null;
+  persistOb(); paintWizard();
+}
+function obSyncEditIncrField(v) {
+  obState.sync = Object.assign({}, obState.sync, { incrementalField: v });
+  persistOb();
+}
+
 
 
 function renderOnboardingEmptyState() {
