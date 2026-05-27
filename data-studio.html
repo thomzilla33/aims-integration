@@ -1177,6 +1177,60 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
 .ob-summary-row .mono{font-family:ui-monospace, SFMono-Regular, Menlo, monospace;color:var(--cyan)}
 
 
+
+/* ============ QUARANTINE (Step 5 — fields with no AI match) ============ */
+.ob-q-banner{
+  display:flex;align-items:center;justify-content:space-between;gap:14px;
+  padding:12px 16px;margin-bottom:10px;
+  background:linear-gradient(135deg, rgba(245,158,11,0.10) 0%, rgba(245,158,11,0.04) 100%);
+  border:1px solid rgba(245,158,11,0.36);border-radius:11px;
+}
+.ob-q-banner-l{display:flex;align-items:center;gap:11px;flex:1;min-width:0}
+.ob-q-banner-ic{
+  width:32px;height:32px;border-radius:8px;
+  background:rgba(245,158,11,0.16);color:var(--amber);
+  border:1px solid rgba(245,158,11,0.36);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.ob-q-banner-t{font-size:12.5px;font-weight:700;color:var(--t1);line-height:1.3}
+.ob-q-banner-d{font-size:11px;color:var(--t2);margin-top:2px;line-height:1.4}
+.ob-q-banner-actions{display:flex;gap:7px;flex-shrink:0}
+.ob-q-banner-cta{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:6px 11px;
+  background:rgba(245,158,11,0.16);color:var(--amber);
+  border:1px solid rgba(245,158,11,0.42);border-radius:7px;
+  font-family:inherit;font-size:11px;font-weight:700;cursor:pointer;
+  transition:background .12s, border-color .12s;
+}
+.ob-q-banner-cta:hover{background:rgba(245,158,11,0.24);border-color:rgba(245,158,11,0.6)}
+.ob-q-banner-cta.is-secondary{background:transparent;border-color:var(--line-strong);color:var(--t3)}
+.ob-q-banner-cta.is-secondary:hover{border-color:var(--line-strong);color:var(--t1);background:var(--hover)}
+
+.ob-map-row.is-parked{position:relative;background:rgba(245,158,11,0.04)}
+.ob-map-row.is-parked::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:var(--amber);border-radius:3px 0 0 3px;
+}
+.ob-map-parked-chip{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:1px 7px;border-radius:99px;margin-top:3px;width:fit-content;
+  background:rgba(245,158,11,0.10);color:var(--amber);
+  border:1px solid rgba(245,158,11,0.32);
+  font-size:9.5px;font-weight:700;letter-spacing:.02em;text-transform:uppercase;
+}
+
+.ob-parked-foot{
+  display:flex;align-items:flex-start;gap:9px;
+  margin-top:12px;padding:10px 13px;
+  background:rgba(245,158,11,0.04);
+  border:1px dashed rgba(245,158,11,0.32);
+  border-radius:9px;
+  font-size:11px;color:var(--t2);line-height:1.5;
+}
+.ob-parked-foot b{color:var(--t1)}
+.ob-parked-foot-ic{color:var(--amber);flex-shrink:0;margin-top:1px}
+
 /* ============ STEP DONE (Sprint 4) ============ */
 .ob-done-hero{
   display:flex;align-items:center;gap:18px;
@@ -2404,7 +2458,13 @@ function paintWizard() {
   if (isLast) nextBtn.textContent = 'Create table →';
   else if (s.id === 'auth')    nextBtn.textContent = 'Preview detected data →';
   else if (s.id === 'preview') nextBtn.textContent = 'Continue to mapping →';
-  else if (s.id === 'mapping') nextBtn.textContent = 'Continue to sync →';
+  else if (s.id === 'mapping') {
+    // Surface parked fields in the Next label, per the doc's quarantine principle.
+    const mc = obMappingCounts();
+    nextBtn.textContent = mc.parked > 0
+      ? ('Continue with ' + mc.parked + ' parked →')
+      : 'Continue to sync →';
+  }
   else nextBtn.textContent = 'Next →';
   $('obBody').innerHTML = renderWizardStep(s.id);
   nextBtn.style.opacity = wizardCanAdvance() ? '1' : '.55';
@@ -3098,7 +3158,9 @@ function obMappingCounts() {
     included: rows.filter(r => r.include && r.decision !== 'dismiss').length,
     aiHighConf: rows.filter(r => r.confidence >= 75 && r.decision !== 'accept' && r.decision !== 'dismiss').length,
     accepted: rows.filter(r => r.decision === 'accept').length,
-    dismissed: rows.filter(r => r.decision === 'dismiss').length
+    dismissed: rows.filter(r => r.decision === 'dismiss').length,
+    // Parked: no AI match AND the user hasn't decided yet. Held aside, not flowing.
+    parked: rows.filter(r => r.confidence === 0 && r.decision !== 'accept' && r.decision !== 'dismiss').length
   };
 }
 
@@ -3132,6 +3194,22 @@ function obMapAcceptAllHighConf() {
   persistOb(); paintWizard();
   toast('Accepted ' + n + ' high-confidence suggestions');
 }
+
+function obMapAcceptAllParked() {
+  const rows = (obState.mapping && obState.mapping.rows) || [];
+  let n = 0;
+  rows.forEach(r => { if (r.confidence === 0 && r.decision !== 'accept' && r.decision !== 'dismiss') { r.decision = 'accept'; r.include = true; n++; } });
+  persistOb(); paintWizard();
+  toast('Accepted ' + n + ' parked field' + (n === 1 ? '' : 's') + ' with auto-generated names');
+}
+function obMapDismissAllParked() {
+  const rows = (obState.mapping && obState.mapping.rows) || [];
+  let n = 0;
+  rows.forEach(r => { if (r.confidence === 0 && r.decision !== 'accept' && r.decision !== 'dismiss') { r.decision = 'dismiss'; r.include = false; n++; } });
+  persistOb(); paintWizard();
+  toast('Dismissed ' + n + ' parked field' + (n === 1 ? '' : 's'));
+}
+
 
 /* ============ STEP RENDERERS (Sprint 3) ============ */
 function renderStep_preview() {
@@ -3222,12 +3300,31 @@ function renderStep_mapping() {
       </div>
     ` : ''}
 
+    ${counts.parked > 0 ? `
+      <div class="ob-q-banner">
+        <div class="ob-q-banner-l">
+          <div class="ob-q-banner-ic">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+          </div>
+          <div>
+            <div class="ob-q-banner-t">${counts.parked} field${counts.parked === 1 ? ' is' : 's are'} parked — no AI match found</div>
+            <div class="ob-q-banner-d">Held aside. They won&rsquo;t flow into your <span class="mono" style="font-family:ui-monospace,monospace;color:var(--t1)">${escapeHtml(sample.object)}</span> table until you decide. Accept to use the auto-generated name, or dismiss to confirm exclusion.</div>
+          </div>
+        </div>
+        <div class="ob-q-banner-actions">
+          <button class="ob-q-banner-cta is-secondary" onclick="obMapDismissAllParked()">Dismiss all</button>
+          <button class="ob-q-banner-cta" onclick="obMapAcceptAllParked()">Accept all ${counts.parked} &rarr;</button>
+        </div>
+      </div>
+    ` : ''}
+
     <div class="ob-mapping-summary">
       <span><b>${counts.included}</b> of <b>${counts.total}</b> fields included</span>
       <span class="dot">&middot;</span>
       <span><b>${counts.accepted}</b> confirmed</span>
       <span class="dot">&middot;</span>
       <span><b>${counts.dismissed}</b> dismissed</span>
+      ${counts.parked > 0 ? `<span class="dot">&middot;</span><span style="color:var(--amber)"><b>${counts.parked}</b> parked</span>` : ''}
       <span class="dot">&middot;</span>
       <span>Table: <b class="mono" style="color:var(--cyan);font-family:ui-monospace,monospace">${escapeHtml(sample.object)}</b></span>
     </div>
@@ -3245,7 +3342,8 @@ function renderStep_mapping() {
       ${obState.mapping.rows.map((r, idx) => {
         const conf = r.confidence;
         const cClass = conf === 0 ? 'c-none' : (conf >= 90 ? 'c-high' : (conf >= 75 ? 'c-mid' : 'c-low'));
-        const statusClass = r.decision === 'accept' ? 'is-confirmed' : (r.decision === 'dismiss' ? 'is-dismissed' : '');
+        const isParked = (conf === 0 && r.decision !== 'accept' && r.decision !== 'dismiss');
+        const statusClass = r.decision === 'accept' ? 'is-confirmed' : (r.decision === 'dismiss' ? 'is-dismissed' : (isParked ? 'is-parked' : ''));
         return `
           <div class="ob-map-row ${statusClass}">
             <div class="ob-map-incl">
@@ -3254,6 +3352,7 @@ function renderStep_mapping() {
             <div class="ob-map-source">
               <div class="ob-map-source-name">${escapeHtml(r.src)}</div>
               <div class="ob-map-source-sample">${escapeHtml(r.sample || '(null)')}</div>
+              ${isParked ? '<span class="ob-map-parked-chip"><svg width="9" height="9" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M8 5v3M8 11h.01"/><circle cx="8" cy="8" r="6.5"/></svg>no AI match</span>' : ''}
             </div>
             <div>
               <input class="ob-map-input" value="${escapeHtml(r.studio)}" oninput="obMapEditField(${idx}, 'studio', this.value)"/>
@@ -3277,6 +3376,17 @@ function renderStep_mapping() {
         `;
       }).join('')}
     </div>
+
+    ${counts.parked > 0 ? `
+      <div class="ob-parked-foot">
+        <span class="ob-parked-foot-ic">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="6.5"/><path d="M8 5v3M8 11h.01"/></svg>
+        </span>
+        <div>
+          You can continue with parked fields. <b>They will be saved with this connection</b> so you can resolve them from the connection&rsquo;s detail page later. They won&rsquo;t flow into your <span style="font-family:ui-monospace,monospace;color:var(--t1)">${escapeHtml(sample.object)}</span> table.
+        </div>
+      </div>
+    ` : ''}
   `;
 }
 
