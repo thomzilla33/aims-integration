@@ -2327,7 +2327,7 @@ function resetOnboarding() {
 }
 
 function startOver() {
-  if (!confirm('Discard your wizard progress and start over from step 1?')) return;
+  if (!confirm('Discard your progress and start over from step 1?')) return;
   obState = { phase:'pending', step:0, category:null, connector:null, auth:{}, mapping:[], sync:{} };
   persistOb();
   if (location.hash && location.hash !== '#/connections' && location.hash !== '#/') {
@@ -2340,7 +2340,7 @@ function startOver() {
 function skipOnboardingDemo() {
   obState.phase = 'complete';
   persistOb();
-  toast('Onboarding skipped — showing populated demo state');
+  toast('Skipped — showing the populated view');
   if (location.hash && location.hash !== '#/connections' && location.hash !== '#/') {
     location.hash = '/connections';
   } else {
@@ -2438,7 +2438,7 @@ function wizardNext() {
     const id = WIZARD_STEPS[obState.step].id;
     if (id === 'category')  toast('Pick a category to continue');
     else if (id === 'connector') toast('Pick a connector to continue');
-    else if (id === 'auth') toast('Connect to the source to continue');
+    else if (id === 'auth') toast('Sign in first to continue');
     return;
   }
   if (obState.step < WIZARD_STEPS.length - 1) {
@@ -2645,12 +2645,12 @@ function renderStep_auth() {
       <div class="ob-auth-card">
         <div class="ob-auth-section-t">
           <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 8l4 4 6-8"/></svg>
-          Permissions we'll request
+          What we'll do
         </div>
         <div class="ob-perms-list">
-          <div class="ob-perms-item"><span class="ob-perms-check"><svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 6l3 3 5-7"/></svg></span><span><b>Read</b> objects from your workspace (no write access)</span></div>
-          <div class="ob-perms-item"><span class="ob-perms-check"><svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 6l3 3 5-7"/></svg></span><span><b>Detect schema changes</b> via webhooks (optional, recommended)</span></div>
-          <div class="ob-perms-item"><span class="ob-perms-check"><svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 6l3 3 5-7"/></svg></span><span><b>List available objects</b> so we can show them in the picker</span></div>
+          <div class="ob-perms-item"><span class="ob-perms-check"><svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 6l3 3 5-7"/></svg></span><span><b>Read your data</b> — we never write or modify it</span></div>
+          <div class="ob-perms-item"><span class="ob-perms-check"><svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 6l3 3 5-7"/></svg></span><span><b>Notice when fields change</b> via webhooks (optional, recommended)</span></div>
+          <div class="ob-perms-item"><span class="ob-perms-check"><svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 6l3 3 5-7"/></svg></span><span><b>See what types of data exist</b> so we can offer them in the next step</span></div>
         </div>
       </div>
       <button class="ob-auth-cta" onclick="obAuthRun()" ${status === 'connecting' ? 'disabled' : ''}>
@@ -2663,19 +2663,19 @@ function renderStep_auth() {
     body = `
       <div class="ob-auth-card">
         <div class="ob-auth-field">
-          <label class="ob-auth-field-l"><b>API key</b> &middot; required</label>
+          <label class="ob-auth-field-l"><b>Your API key</b> <span style="color:var(--t3);font-weight:500">&middot; required</span></label>
           <input class="ob-auth-input is-mono" type="password" placeholder="e.g. sk_live_..." value="${(obState.auth && obState.auth.apiKey) || ''}" oninput="obAuthInput('apiKey', this.value)"/>
           <div class="ob-auth-hint">Find this in your ${escapeHtml(cn.name)} workspace settings. <a href="#" onclick="event.preventDefault();toast('Video tutorial would open here.')">Need help?</a></div>
         </div>
         ${(cn.slug === 'airtable' || cn.slug === 'mongodb') ? `
         <div class="ob-auth-field">
-          <label class="ob-auth-field-l"><b>Workspace URL</b> &middot; required</label>
+          <label class="ob-auth-field-l"><b>Your workspace URL</b> <span style="color:var(--t3);font-weight:500">&middot; required</span></label>
           <input class="ob-auth-input is-mono" type="text" placeholder="${cn.slug === 'airtable' ? 'https://airtable.com/app...' : 'mongodb+srv://cluster.mongodb.net'}" value="${(obState.auth && obState.auth.workspace) || ''}" oninput="obAuthInput('workspace', this.value)"/>
         </div>
         ` : ''}
       </div>
       <button class="ob-auth-cta" onclick="obAuthRun()" ${status === 'connecting' || !(obState.auth && obState.auth.apiKey) ? 'disabled' : ''}>
-        ${status === 'connected' ? '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 8l4 4 6-8"/></svg> Connected' : 'Test connection &amp; continue &rarr;'}
+        ${status === 'connected' ? '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 8l4 4 6-8"/></svg> Connected' : 'Connect &rarr;'}
       </button>
     `;
   } else if (cn.authType === 'service_account') {
@@ -2683,33 +2683,33 @@ function renderStep_auth() {
       <div class="ob-auth-card">
         <div class="ob-auth-section-t">
           <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="3" y="7" width="10" height="7" rx="1.4"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>
-          Service account credentials
+          Paste your service account JSON
         </div>
         <div class="ob-auth-field">
-          <label class="ob-auth-field-l"><b>JSON key file</b> &middot; paste contents</label>
+          <label class="ob-auth-field-l"><b>JSON content</b> <span style="color:var(--t3);font-weight:500">&middot; paste the file contents</span></label>
           <textarea class="ob-auth-input is-mono" rows="5" placeholder='{ "type":"service_account", "project_id":"...", ... }' oninput="obAuthInput('jsonKey', this.value)">${(obState.auth && obState.auth.jsonKey) || ''}</textarea>
-          <div class="ob-auth-hint">We never store the raw key. AIMS-OS encrypts it with your tenant's KMS key on save.</div>
+          <div class="ob-auth-hint">We never store this in plain text. It is encrypted on save with your workspace's key.</div>
         </div>
       </div>
       <button class="ob-auth-cta" onclick="obAuthRun()" ${status === 'connecting' || !(obState.auth && obState.auth.jsonKey) ? 'disabled' : ''}>
-        ${status === 'connected' ? '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 8l4 4 6-8"/></svg> Connected' : 'Validate service account &rarr;'}
+        ${status === 'connected' ? '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 8l4 4 6-8"/></svg> Connected' : 'Connect &rarr;'}
       </button>
     `;
   } else if (cn.authType === 'manual') {
     body = `
       <div class="ob-auth-card">
         <div class="ob-auth-field">
-          <label class="ob-auth-field-l"><b>Endpoint URL</b> &middot; required</label>
+          <label class="ob-auth-field-l"><b>API URL</b> <span style="color:var(--t3);font-weight:500">&middot; required</span></label>
           <input class="ob-auth-input is-mono" type="text" placeholder="https://api.your-service.com/v1" value="${(obState.auth && obState.auth.endpoint) || ''}" oninput="obAuthInput('endpoint', this.value)"/>
         </div>
         <div class="ob-auth-field">
-          <label class="ob-auth-field-l"><b>Authorization header</b> &middot; optional</label>
+          <label class="ob-auth-field-l"><b>Authorization header</b> <span style="color:var(--t3);font-weight:500">&middot; optional, e.g. <code>Bearer ...</code></span></label>
           <input class="ob-auth-input is-mono" type="text" placeholder="Bearer ..." value="${(obState.auth && obState.auth.header) || ''}" oninput="obAuthInput('header', this.value)"/>
-          <div class="ob-auth-hint">Will be sent with every request. Stored encrypted.</div>
+          <div class="ob-auth-hint">Sent with every request. Stored encrypted.</div>
         </div>
       </div>
       <button class="ob-auth-cta" onclick="obAuthRun()" ${status === 'connecting' || !(obState.auth && obState.auth.endpoint) ? 'disabled' : ''}>
-        ${status === 'connected' ? '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 8l4 4 6-8"/></svg> Connected' : 'Probe endpoint &rarr;'}
+        ${status === 'connected' ? '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 8l4 4 6-8"/></svg> Connected' : 'Test connection &rarr;'}
       </button>
     `;
   } else if (cn.authType === 'file_upload') {
@@ -2725,7 +2725,7 @@ function renderStep_auth() {
         <div class="ob-file-drop-d">${hasFile ? 'Click to replace &middot; ' + (obState.auth.fileSize || '4.2 MB') : 'or click to browse &middot; max 50 MB'}</div>
       </div>
       <button class="ob-auth-cta" onclick="obAuthRun()" ${status === 'connecting' || !hasFile ? 'disabled' : ''} style="margin-top:14px">
-        ${status === 'connected' ? '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 8l4 4 6-8"/></svg> File staged' : 'Parse file &rarr;'}
+        ${status === 'connected' ? '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 8l4 4 6-8"/></svg> File ready' : 'Continue &rarr;'}
       </button>
     `;
   } else if (cn.authType === 'email') {
@@ -2746,7 +2746,7 @@ function renderStep_auth() {
         <div class="ob-auth-hint" style="margin-top:10px">Forward any email with an attachment to this address. We will parse CSV/XLSX/JSON attachments automatically. The first email triggers schema detection.</div>
       </div>
       <button class="ob-auth-cta" onclick="obAuthRun()">
-        ${status === 'connected' ? '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 8l4 4 6-8"/></svg> Inbox active' : 'Activate inbox &rarr;'}
+        ${status === 'connected' ? '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 8l4 4 6-8"/></svg> Inbox ready' : 'Get inbox address &rarr;'}
       </button>
     `;
   } else {
@@ -2755,9 +2755,9 @@ function renderStep_auth() {
 
   return `
     <div class="ob-step-h">
-      <div class="ob-step-eyebrow"><span class="ob-step-eyebrow-dot"></span>Step 3 &middot; Auth</div>
-      <h2 class="ob-step-title">Authenticate</h2>
-      <p class="ob-step-desc">We use ${escapeHtml(obAuthLabel(cn.authType))} for ${escapeHtml(cn.name)}. Credentials stay encrypted in your tenant.</p>
+      <div class="ob-step-eyebrow"><span class="ob-step-eyebrow-dot"></span>Step 3 &middot; Sign in</div>
+      <h2 class="ob-step-title">Sign in to ${escapeHtml(cn.name)}</h2>
+      <p class="ob-step-desc">We use <b>${escapeHtml(obAuthLabel(cn.authType))}</b> to securely access your ${escapeHtml(cn.name)} data. Your login stays encrypted.</p>
     </div>
 
     <div class="ob-auth-hero">
@@ -2773,13 +2773,13 @@ function renderStep_auth() {
     ${status === 'connecting' ? `
       <div class="ob-auth-status">
         <span class="ob-auth-spinner"></span>
-        <span>Connecting to ${escapeHtml(cn.name)}&hellip; verifying credentials and listing objects.</span>
+        <span>Connecting to ${escapeHtml(cn.name)}&hellip;</span>
       </div>
     ` : ''}
     ${status === 'connected' ? `
       <div class="ob-auth-status is-success">
         <span class="ob-auth-success-ic"><svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6l3 3 5-7"/></svg></span>
-        <span>Connected to ${escapeHtml(cn.name)} &middot; detected ${(obState.auth.detected || 8)} objects &middot; preview ready in step 4.</span>
+        <span>Connected to ${escapeHtml(cn.name)} &middot; found ${(obState.auth.detected || 8)} types of data</span>
       </div>
     ` : ''}
   `;
@@ -3005,7 +3005,7 @@ function renderStep_preview() {
     <div class="ob-step-h">
       <div class="ob-step-eyebrow"><span class="ob-step-eyebrow-dot"></span>Step 4 &middot; Preview</div>
       <h2 class="ob-step-title">Here is what we found</h2>
-      <p class="ob-step-desc">A checkpoint: confirm the first pull looks right before we shape it. No edits on this screen — you'll map fields next.</p>
+      <p class="ob-step-desc">A quick check before we continue. No changes on this screen — you&rsquo;ll match up fields next.</p>
     </div>
 
     <div class="ob-preview-tiles">
@@ -3015,26 +3015,26 @@ function renderStep_preview() {
         <div class="ob-tile-s">Becomes a table in Data Studio</div>
       </div>
       <div class="ob-tile">
-        <div class="ob-tile-l">Fields detected</div>
+        <div class="ob-tile-l">Fields found</div>
         <div class="ob-tile-v">${sample.fields.length}</div>
         <div class="ob-tile-s">${sample.fields.filter(f => f.conf >= 75).length} with high confidence</div>
       </div>
       <div class="ob-tile">
-        <div class="ob-tile-l">Sample pulled</div>
+        <div class="ob-tile-l">Sample loaded</div>
         <div class="ob-tile-v">${sample.rows}</div>
-        <div class="ob-tile-s">rows for schema inference</div>
+        <div class="ob-tile-s">rows to detect the structure</div>
       </div>
       <div class="ob-tile">
-        <div class="ob-tile-l">Pull duration</div>
+        <div class="ob-tile-l">Time to load</div>
         <div class="ob-tile-v">${seconds}s</div>
-        <div class="ob-tile-s">first call latency</div>
+        <div class="ob-tile-s">first request</div>
       </div>
     </div>
 
     <div class="ob-preview-table-wrap">
       <div class="ob-preview-table-h">
-        <span>Detected fields</span>
-        <span class="ob-preview-table-h-r">${sample.fields.length} columns &middot; ${sample.rows} sample rows</span>
+        <span>Fields found</span>
+        <span class="ob-preview-table-h-r">${sample.fields.length} columns &middot; ${sample.rows} rows</span>
       </div>
       <table class="ob-preview-table">
         <thead><tr><th style="width:38%">Source field</th><th style="width:18%">Type</th><th>Sample value</th></tr></thead>
@@ -3061,9 +3061,9 @@ function renderStep_mapping() {
 
   return `
     <div class="ob-step-h">
-      <div class="ob-step-eyebrow"><span class="ob-step-eyebrow-dot"></span>Step 5 &middot; Field mapping</div>
-      <h2 class="ob-step-title">Shape your data</h2>
-      <p class="ob-step-desc">Confirm how each detected field becomes a column in your <span class="mono" style="color:var(--cyan);font-family:ui-monospace,monospace">${escapeHtml(sample.object)}</span> table. AI suggests, you decide.</p>
+      <div class="ob-step-eyebrow"><span class="ob-step-eyebrow-dot"></span>Step 5 &middot; Field matching</div>
+      <h2 class="ob-step-title">Match up your fields</h2>
+      <p class="ob-step-desc">Each source field becomes a column in your <span class="mono" style="color:var(--cyan);font-family:ui-monospace,monospace">${escapeHtml(sample.object)}</span> table. AI suggested matches — accept what looks right, change what doesn&rsquo;t.</p>
     </div>
 
     ${counts.aiHighConf > 0 ? `
@@ -3073,8 +3073,8 @@ function renderStep_mapping() {
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
           </div>
           <div>
-            <div class="ob-ai-banner-t">AI mapped ${counts.aiHighConf} of ${counts.total} fields with high confidence</div>
-            <div class="ob-ai-banner-d">Accept the high-confidence ones in one click, then review the rest below.</div>
+            <div class="ob-ai-banner-t">AI matched ${counts.aiHighConf} of ${counts.total} fields with high confidence</div>
+            <div class="ob-ai-banner-d">Accept the confident matches in one click, then review the rest below.</div>
           </div>
         </div>
         <button class="ob-ai-banner-cta" onclick="obMapAcceptAllHighConf()">
@@ -3096,12 +3096,12 @@ function renderStep_mapping() {
     <div class="ob-map-table-wrap">
       <div class="ob-map-row is-header">
         <span></span>
-        <span>Source field &middot; sample</span>
+        <span>From your source</span>
         <span>Column name</span>
         <span>Type</span>
-        <span>Nullable</span>
+        <span>Optional</span>
         <span>Confidence</span>
-        <span style="text-align:right">Decision</span>
+        <span style="text-align:right">AI suggestion</span>
       </div>
       ${obState.mapping.rows.map((r, idx) => {
         const conf = r.confidence;
@@ -3163,22 +3163,22 @@ function renderStep_sync() {
   const sample = obSampleFor(cn.slug);
 
   const cadenceCards = [
-    { id:'realtime', name:'Real-time',  desc:'Webhook push, < 5s latency', tag:'Recommended',  disabled:!supportsRealtime, ic:'<path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/>' },
-    { id:'hourly',   name:'Hourly',     desc:'Pull on the hour',           tag:'Default',      disabled:!supportsHourly,   ic:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>' },
-    { id:'daily',    name:'Daily',      desc:'Pull at 2am UTC',            tag:null,           disabled:false,             ic:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>' },
-    { id:'manual',   name:'Manual',     desc:'Trigger from the UI or API', tag:null,           disabled:false,             ic:'<polygon points="5 3 19 12 5 21 5 3"/>' }
+    { id:'realtime', name:'Real-time',  desc:'Updates as it changes, under 5s', tag:'Recommended',  disabled:!supportsRealtime, ic:'<path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/>' },
+    { id:'hourly',   name:'Hourly',     desc:'Every hour, on the hour',         tag:'Default',      disabled:!supportsHourly,   ic:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>' },
+    { id:'daily',    name:'Daily',      desc:'Overnight, 2 AM UTC',             tag:null,           disabled:false,             ic:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>' },
+    { id:'manual',   name:'Manual',     desc:'Only when you click refresh',     tag:null,           disabled:false,             ic:'<polygon points="5 3 19 12 5 21 5 3"/>' }
   ];
 
   const cadenceLabel = (cadenceCards.find(x => x.id === cadence) || {}).name || cadence;
 
   return `
     <div class="ob-step-h">
-      <div class="ob-step-eyebrow"><span class="ob-step-eyebrow-dot"></span>Step 6 &middot; Sync</div>
-      <h2 class="ob-step-title">Set how the data stays fresh</h2>
-      <p class="ob-step-desc">Pick a refresh cadence and optionally enable incremental sync. You can change these any time in the connection detail.</p>
+      <div class="ob-step-eyebrow"><span class="ob-step-eyebrow-dot"></span>Step 6 &middot; Refresh</div>
+      <h2 class="ob-step-title">How often should we refresh?</h2>
+      <p class="ob-step-desc">Pick a refresh schedule. You can change this any time from the connection&rsquo;s detail page.</p>
     </div>
 
-    <div style="font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--t3);margin-bottom:10px">Refresh cadence</div>
+    <div style="font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--t3);margin-bottom:10px">Refresh schedule</div>
     <div class="ob-sync-grid">
       ${cadenceCards.map(card => `
         <button class="ob-sync-card ${cadence === card.id ? 'is-selected' : ''}" ${card.disabled ? 'disabled' : ''} onclick="obSyncPickCadence('${card.id}')" title="${card.disabled ? 'Not supported by this connector' : ''}">
@@ -3186,7 +3186,7 @@ function renderStep_sync() {
           <span class="ob-sync-card-n">${escapeHtml(card.name)}</span>
           <span class="ob-sync-card-d">${escapeHtml(card.desc)}</span>
           ${card.tag ? `<span class="ob-sync-card-tag">${escapeHtml(card.tag)}</span>` : ''}
-          ${card.disabled ? `<span class="ob-sync-card-tag" style="color:var(--amber)">Not supported</span>` : ''}
+          ${card.disabled ? `<span class="ob-sync-card-tag" style="color:var(--amber)">Not available for this tool</span>` : ''}
         </button>
       `).join('')}
     </div>
@@ -3195,14 +3195,14 @@ function renderStep_sync() {
       <div class="ob-incr-card">
         <div class="ob-incr-head">
           <div>
-            <div class="ob-incr-t">Incremental sync</div>
-            <div class="ob-incr-d">Only pull rows changed since the last sync. Uses a timestamp field as the change tracker.</div>
+            <div class="ob-incr-t">Only fetch what changed</div>
+            <div class="ob-incr-d">Only pull rows that changed since the last refresh — saves time and API calls. Uses a date or timestamp field to track changes (incremental sync).</div>
           </div>
           <div class="ob-toggle ${obState.sync.incremental ? 'is-on' : ''}" onclick="obSyncToggleIncremental()" role="switch" aria-checked="${obState.sync.incremental ? 'true' : 'false'}"></div>
         </div>
         ${obState.sync.incremental ? `
           <div class="ob-auth-field" style="margin-top:8px">
-            <label class="ob-auth-field-l"><b>Change-tracking field</b></label>
+            <label class="ob-auth-field-l"><b>Field to track changes</b></label>
             <select class="ob-map-select" style="font-size:12.5px;padding:8px 10px" onchange="obSyncEditIncrField(this.value)">
               ${tsFields.map(f => `<option value="${escapeHtml(f.studio)}" ${obState.sync.incrementalField === f.studio ? 'selected' : ''}>${escapeHtml(f.studio)} (was ${escapeHtml(f.src)})</option>`).join('')}
             </select>
@@ -3211,13 +3211,13 @@ function renderStep_sync() {
       </div>
     ` : `
       <div class="ob-incr-card" style="opacity:.7">
-        <div class="ob-incr-t">Incremental sync</div>
-        <div class="ob-incr-d" style="margin-top:4px">No timestamp fields included in the mapping. Re-include a timestamp field in step 5 to enable incremental sync.</div>
+        <div class="ob-incr-t">Only fetch what changed</div>
+        <div class="ob-incr-d" style="margin-top:4px">No date or timestamp fields are included yet. Add one back in step 5 to turn this on.</div>
       </div>
     `}
 
     <div class="ob-summary-card">
-      <div class="ob-summary-h"><span class="ob-summary-h-dot"></span>Configuration summary</div>
+      <div class="ob-summary-h"><span class="ob-summary-h-dot"></span>Quick recap</div>
       <div class="ob-summary-row">
         ${obConnectorLogo(cn, 28)}
         <span class="mono">${escapeHtml(cn.name)}</span>
@@ -3228,12 +3228,12 @@ function renderStep_sync() {
       <div class="ob-summary-row">
         <span style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;color:var(--emerald)"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 8l4 4 6-8"/></svg></span>
         <span><b>${counts.included}</b> of <b>${counts.total}</b> fields included</span>
-        <span style="color:var(--t3);font-size:11.5px">&middot; ${counts.accepted} confirmed by AI suggestion</span>
+        <span style="color:var(--t3);font-size:11.5px">&middot; ${counts.accepted} accepted from AI</span>
       </div>
       <div class="ob-summary-row">
         <span style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;color:var(--cyan)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
         <span>Refresh <b>${escapeHtml(cadenceLabel.toLowerCase())}</b></span>
-        ${obState.sync.incremental ? `<span style="color:var(--t3);font-size:11.5px">&middot; incremental by <span class="mono">${escapeHtml(obState.sync.incrementalField || '')}</span></span>` : ''}
+        ${obState.sync.incremental ? `<span style="color:var(--t3);font-size:11.5px">&middot; only what changed (by <span class="mono">${escapeHtml(obState.sync.incrementalField || '')}</span>)</span>` : ''}
       </div>
     </div>
   `;
@@ -3274,12 +3274,12 @@ function renderStep_done() {
       <div class="ob-done-hero-body">
         <div class="ob-done-hero-eyebrow">Setup complete &middot; ${(obState.completedAt ? new Date(obState.completedAt).toLocaleString() : 'just now')}</div>
         <div class="ob-done-hero-title">${escapeHtml(cn.name)} is live</div>
-        <div class="ob-done-hero-desc">Your <span class="mono">${escapeHtml(sample.object)}</span> data is flowing into Data Studio. Below is a recap, then three ways to keep going.</div>
+        <div class="ob-done-hero-desc">Your <span class="mono">${escapeHtml(sample.object)}</span> data is now syncing. Here&rsquo;s a recap and what you can do next.</div>
       </div>
     </div>
 
     <div class="ob-done-recap">
-      <div class="ob-done-recap-h">Configuration recap</div>
+      <div class="ob-done-recap-h">Quick recap</div>
       <div class="ob-done-recap-row">
         <div class="ob-done-recap-l">Connector</div>
         <div class="ob-done-recap-v">
@@ -3289,10 +3289,10 @@ function renderStep_done() {
         </div>
       </div>
       <div class="ob-done-recap-row">
-        <div class="ob-done-recap-l">Auth method</div>
+        <div class="ob-done-recap-l">Sign-in method</div>
         <div class="ob-done-recap-v">
           <span class="pill">${escapeHtml(obAuthLabel(cn.authType))}</span>
-          <span style="color:var(--t3)">credentials stored encrypted</span>
+          <span style="color:var(--t3)">stored encrypted</span>
         </div>
       </div>
       <div class="ob-done-recap-row">
@@ -3303,17 +3303,17 @@ function renderStep_done() {
         </div>
       </div>
       <div class="ob-done-recap-row">
-        <div class="ob-done-recap-l">AI confirmed</div>
+        <div class="ob-done-recap-l">AI suggestions</div>
         <div class="ob-done-recap-v">
-          <b>${counts.accepted}</b> mappings accepted from AI
+          <b>${counts.accepted}</b> accepted from AI
           <span style="color:var(--t3)">&middot; ${counts.dismissed} dismissed</span>
         </div>
       </div>
       <div class="ob-done-recap-row">
-        <div class="ob-done-recap-l">Sync cadence</div>
+        <div class="ob-done-recap-l">Refresh schedule</div>
         <div class="ob-done-recap-v">
           <b>${escapeHtml(cadenceLabel)}</b>
-          ${obState.sync && obState.sync.incremental ? '<span style="color:var(--t3)">&middot; incremental by <span class="mono">' + escapeHtml(obState.sync.incrementalField || '') + '</span></span>' : ''}
+          ${obState.sync && obState.sync.incremental ? '<span style="color:var(--t3)">&middot; only what changed (by <span class="mono">' + escapeHtml(obState.sync.incrementalField || '') + '</span>)</span>' : ''}
         </div>
       </div>
     </div>
@@ -3343,7 +3343,7 @@ function renderStep_done() {
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
         </div>
         <div class="ob-done-card-t">Add another source</div>
-        <div class="ob-done-card-d">Run the wizard again for a second integration.</div>
+        <div class="ob-done-card-d">Connect another tool the same way.</div>
         <div class="ob-done-card-cta">Start over &rarr;</div>
       </button>
     </div>
@@ -3409,16 +3409,16 @@ function renderOnboardingEmptyState() {
             ${resumeLabel}
           </div>
           <h1 class="ob-empty-title">${resuming ? 'Pick up where you left off' : 'Welcome to Data Studio'}</h1>
-          <p class="ob-empty-desc">${resuming ? 'Your wizard progress is saved locally. Continue from where you stopped, or start over if you want a fresh setup.' : 'Connect your first source and start shaping data for your agents and teams. Six quick steps, about five minutes.'}</p>
+          <p class="ob-empty-desc">${resuming ? 'Your progress is saved. Continue from where you stopped, or start over.' : 'Connect a source and start sending data to your agents and team. Six quick steps, about five minutes.'}</p>
 
           ${resuming ? '' : `
           <div class="ob-empty-steps">
-            <div class="ob-empty-step"><span class="ob-empty-step-n">1</span><span>Pick a <b>category</b> — CRM, ERP, Project mgmt, Marketing, Support, Custom or File</span></div>
+            <div class="ob-empty-step"><span class="ob-empty-step-n">1</span><span>Pick a <b>category</b> — CRM, project tools, data, marketing, support, your own API, or files</span></div>
             <div class="ob-empty-step"><span class="ob-empty-step-n">2</span><span>Choose a <b>connector</b> from that category</span></div>
-            <div class="ob-empty-step"><span class="ob-empty-step-n">3</span><span><b>Authenticate</b> with the vendor</span></div>
-            <div class="ob-empty-step"><span class="ob-empty-step-n">4</span><span><b>Preview</b> what we detected in your data</span></div>
-            <div class="ob-empty-step"><span class="ob-empty-step-n">5</span><span>Confirm AI-suggested <b>field mapping</b></span></div>
-            <div class="ob-empty-step"><span class="ob-empty-step-n">6</span><span>Set sync <b>cadence</b> and finish</span></div>
+            <div class="ob-empty-step"><span class="ob-empty-step-n">3</span><span><b>Sign in</b> with your account</span></div>
+            <div class="ob-empty-step"><span class="ob-empty-step-n">4</span><span><b>Preview</b> what we found in your data</span></div>
+            <div class="ob-empty-step"><span class="ob-empty-step-n">5</span><span>Review the <b>AI-matched fields</b></span></div>
+            <div class="ob-empty-step"><span class="ob-empty-step-n">6</span><span>Choose how often to <b>refresh</b> and finish</span></div>
           </div>
           `}
 
@@ -3429,11 +3429,11 @@ function renderOnboardingEmptyState() {
             </button>
             ${resuming
               ? `<button class="ob-empty-btn-secondary" onclick="startOver()">Start over</button>`
-              : `<button class="ob-empty-btn-secondary" onclick="skipOnboardingDemo()">Skip for demo</button>`}
+              : `<button class="ob-empty-btn-secondary" onclick="skipOnboardingDemo()">Skip for now</button>`}
           </div>
 
           <div class="ob-empty-foot">
-            Don&rsquo;t have credentials handy? <a href="#" onclick="event.preventDefault();toast('We would email setup instructions to your IT contact.')">Email setup instructions</a> &middot; <a href="agent-tools.html">Explore Agent Studio first</a>
+            Don&rsquo;t have your login info handy? <a href="#" onclick="event.preventDefault();toast('We would email setup instructions to your IT contact.')">Email setup instructions</a> &middot; <a href="agent-tools.html">Explore Agent Studio first</a>
           </div>
         </div>
 
