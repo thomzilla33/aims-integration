@@ -1179,6 +1179,66 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
 
 
 
+
+/* ============ AUTH ERROR STATES ============ */
+.ob-auth-error{
+  display:flex;align-items:flex-start;gap:11px;
+  padding:12px 14px;margin-bottom:14px;
+  background:rgba(239,68,68,0.07);
+  border:1px solid rgba(239,68,68,0.36);
+  border-radius:10px;
+}
+.ob-auth-error-ic{
+  width:28px;height:28px;border-radius:7px;
+  background:rgba(239,68,68,0.16);color:#ef4444;
+  border:1px solid rgba(239,68,68,0.32);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.ob-auth-error-body{flex:1;min-width:0}
+.ob-auth-error-t{font-size:12.5px;font-weight:700;color:#fca5a5;line-height:1.3}
+.ob-auth-error-d{font-size:11.5px;color:var(--t2);margin-top:3px;line-height:1.5}
+.ob-auth-error-d code{
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:10.5px;
+  background:rgba(255,255,255,0.04);padding:1px 5px;border-radius:4px;color:var(--t1);
+}
+.ob-auth-error-retry{
+  background:transparent;border:1px solid rgba(239,68,68,0.4);
+  color:#fca5a5;font-family:inherit;font-size:11px;font-weight:700;
+  padding:5px 11px;border-radius:7px;cursor:pointer;flex-shrink:0;
+  transition:background .12s, border-color .12s;
+}
+.ob-auth-error-retry:hover{background:rgba(239,68,68,0.10);border-color:rgba(239,68,68,0.6)}
+
+.ob-auth-input.is-invalid{border-color:rgba(239,68,68,0.55);background:rgba(239,68,68,0.04)}
+.ob-auth-input.is-invalid:focus{border-color:#ef4444}
+.ob-auth-field-err{
+  font-size:11px;color:#fca5a5;margin-top:5px;display:flex;align-items:center;gap:6px;
+}
+.ob-auth-field-err svg{flex-shrink:0;color:#ef4444}
+
+/* Sidebar demo toggle (errors on/off) */
+.ssb-demo-toggle{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-top:8px;padding:8px 10px;
+  background:transparent;border:1px dashed var(--line-strong);border-radius:7px;
+  font-family:inherit;font-size:11.5px;font-weight:600;color:var(--t2);
+  cursor:pointer;width:100%;
+  transition:border-color .12s, color .12s, background .12s;
+}
+.ssb-demo-toggle:hover{border-color:rgba(239,68,68,0.5);color:#fca5a5}
+.ssb-demo-toggle.is-on{
+  background:rgba(239,68,68,0.07);
+  border-color:rgba(239,68,68,0.5);border-style:solid;
+  color:#fca5a5;
+}
+.ssb-demo-toggle-l{display:flex;align-items:center;gap:7px}
+.ssb-demo-toggle-state{
+  font-size:9.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+  padding:2px 6px;border-radius:4px;
+  background:rgba(255,255,255,0.04);color:var(--t3);
+}
+.ssb-demo-toggle.is-on .ssb-demo-toggle-state{background:#ef4444;color:#fff}
+
 /* ============ FRESH CONNECTION BANNER (after wizard completes) ============ */
 .cn-fresh-banner{
   display:flex;align-items:center;gap:14px;
@@ -1550,6 +1610,13 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
       <button class="ssb-demo-btn" onclick="resetOnboarding()" title="Show first time setup">
         <svg class="ssb-demo-btn-ic" width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8a6 6 0 0 1 10.5-4M14 8a6 6 0 0 1-10.5 4"/><path d="M12 2v3h-3M4 14v-3h3"/></svg>
         Reset to first time setup
+      </button>
+      <button class="ssb-demo-toggle" id="dsErrToggle" onclick="toggleDemoErrors()" title="Force errors during sign-in to see the error UX">
+        <span class="ssb-demo-toggle-l">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 5v4M8 12h.01"/><circle cx="8" cy="8" r="6.5"/></svg>
+          Show errors
+        </span>
+        <span class="ssb-demo-toggle-state" id="dsErrState">Off</span>
       </button>
     </div>
   </aside>
@@ -2787,7 +2854,8 @@ function renderStep_auth() {
       <div class="ob-auth-card">
         <div class="ob-auth-field">
           <label class="ob-auth-field-l"><b>Your API key</b> <span style="color:var(--t3);font-weight:500">&middot; required</span></label>
-          <input class="ob-auth-input is-mono" type="password" placeholder="e.g. sk_live_..." value="${(obState.auth && obState.auth.apiKey) || ''}" oninput="obAuthInput('apiKey', this.value)"/>
+          <input class="ob-auth-input is-mono ${(obState.auth && obState.auth.errorField === 'apiKey') ? 'is-invalid' : ''}" type="password" placeholder="e.g. sk_live_..." value="${(obState.auth && obState.auth.apiKey) || ''}" oninput="obAuthInput('apiKey', this.value)"/>
+          ${(obState.auth && obState.auth.errorField === 'apiKey') ? '<div class="ob-auth-field-err"><svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="8" cy="8" r="6.5"/><path d="M8 5v3M8 11h.01"/></svg>' + obState.auth.errorMsg + '</div>' : ''}
           <div class="ob-auth-hint">Find this in your ${escapeHtml(cn.name)} workspace settings. <a href="#" onclick="event.preventDefault();toast('Video tutorial would open here.')">Need help?</a></div>
         </div>
         ${(cn.slug === 'airtable' || cn.slug === 'mongodb') ? `
@@ -2810,7 +2878,8 @@ function renderStep_auth() {
         </div>
         <div class="ob-auth-field">
           <label class="ob-auth-field-l"><b>JSON content</b> <span style="color:var(--t3);font-weight:500">&middot; paste the file contents</span></label>
-          <textarea class="ob-auth-input is-mono" rows="5" placeholder='{ "type":"service_account", "project_id":"...", ... }' oninput="obAuthInput('jsonKey', this.value)">${(obState.auth && obState.auth.jsonKey) || ''}</textarea>
+          <textarea class="ob-auth-input is-mono ${(obState.auth && obState.auth.errorField === 'jsonKey') ? 'is-invalid' : ''}" rows="5" placeholder='{ "type":"service_account", "project_id":"...", ... }' oninput="obAuthInput('jsonKey', this.value)">${(obState.auth && obState.auth.jsonKey) || ''}</textarea>
+          ${(obState.auth && obState.auth.errorField === 'jsonKey') ? '<div class="ob-auth-field-err"><svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="8" cy="8" r="6.5"/><path d="M8 5v3M8 11h.01"/></svg>' + obState.auth.errorMsg + '</div>' : ''}
           <div class="ob-auth-hint">We never store this in plain text. It is encrypted on save with your workspace's key.</div>
         </div>
       </div>
@@ -2823,7 +2892,8 @@ function renderStep_auth() {
       <div class="ob-auth-card">
         <div class="ob-auth-field">
           <label class="ob-auth-field-l"><b>API URL</b> <span style="color:var(--t3);font-weight:500">&middot; required</span></label>
-          <input class="ob-auth-input is-mono" type="text" placeholder="https://api.your-service.com/v1" value="${(obState.auth && obState.auth.endpoint) || ''}" oninput="obAuthInput('endpoint', this.value)"/>
+          <input class="ob-auth-input is-mono ${(obState.auth && obState.auth.errorField === 'endpoint') ? 'is-invalid' : ''}" type="text" placeholder="https://api.your-service.com/v1" value="${(obState.auth && obState.auth.endpoint) || ''}" oninput="obAuthInput('endpoint', this.value)"/>
+          ${(obState.auth && obState.auth.errorField === 'endpoint') ? '<div class="ob-auth-field-err"><svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="8" cy="8" r="6.5"/><path d="M8 5v3M8 11h.01"/></svg>' + obState.auth.errorMsg + '</div>' : ''}
         </div>
         <div class="ob-auth-field">
           <label class="ob-auth-field-l"><b>Authorization header</b> <span style="color:var(--t3);font-weight:500">&middot; optional, e.g. <code>Bearer ...</code></span></label>
@@ -2891,6 +2961,19 @@ function renderStep_auth() {
       </div>
     </div>
 
+    ${status === 'error' && obState.auth.errorMsg ? `
+      <div class="ob-auth-error">
+        <div class="ob-auth-error-ic">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="6.5"/><path d="M8 5v3M8 11h.01"/></svg>
+        </div>
+        <div class="ob-auth-error-body">
+          <div class="ob-auth-error-t">Couldn&rsquo;t connect to ${escapeHtml(cn.name)}</div>
+          <div class="ob-auth-error-d">${obState.auth.errorMsg}</div>
+        </div>
+        <button class="ob-auth-error-retry" onclick="obAuthDismissError()">Dismiss</button>
+      </div>
+    ` : ''}
+
     ${body}
 
     ${status === 'connecting' ? `
@@ -2910,6 +2993,13 @@ function renderStep_auth() {
 
 function obAuthInput(field, value) {
   obState.auth = Object.assign({}, obState.auth, { [field]: value });
+  // Clear inline error if the user is editing the offending field
+  if (obState.auth.errorField === field) {
+    delete obState.auth.errorField;
+    delete obState.auth.errorMsg;
+    delete obState.auth.errorCode;
+    if (obState.auth.status === 'error') obState.auth.status = 'idle';
+  }
   persistOb();
   // re-paint to update the Connect button disabled state
   paintWizard();
@@ -2921,14 +3011,142 @@ function obFakeFileUpload() {
   paintWizard();
 }
 
+
+
+/* ============ DEMO ERROR MODE TOGGLE ============ */
+function obDemoErrorsOn() {
+  try { return localStorage.getItem('aims_ds_demo_errors') === '1'; } catch(e) { return false; }
+}
+function toggleDemoErrors() {
+  const next = !obDemoErrorsOn();
+  try { localStorage.setItem('aims_ds_demo_errors', next ? '1' : '0'); } catch(e){}
+  paintDemoErrorsPill();
+  toast(next ? 'Show errors: ON — next Connect attempt will fail' : 'Show errors: OFF — Connect attempts will succeed');
+}
+function paintDemoErrorsPill() {
+  const on = obDemoErrorsOn();
+  const btn = document.getElementById('dsErrToggle');
+  const state = document.getElementById('dsErrState');
+  if (!btn || !state) return;
+  btn.classList.toggle('is-on', on);
+  state.textContent = on ? 'On' : 'Off';
+}
+
+/* ============ AUTH VALIDATION + ERROR PATH ============ */
+function obAuthValidate(cn) {
+  const a = obState.auth || {};
+  if (cn.authType === 'api_key') {
+    const key = (a.apiKey || '').trim();
+    if (key.length < 8) {
+      return { field:'apiKey', msg: 'API key looks too short. Most ' + cn.name + ' keys are 30+ characters.', code: 'too_short' };
+    }
+  }
+  if (cn.authType === 'service_account') {
+    const json = (a.jsonKey || '').trim();
+    if (!json) return { field:'jsonKey', msg: 'Paste the service account JSON to continue.', code: 'empty' };
+    try {
+      const parsed = JSON.parse(json);
+      if (!parsed.type || !parsed.project_id) {
+        return { field:'jsonKey', msg: "Missing required fields. The JSON needs at least 'type' and 'project_id'.", code: 'missing_keys' };
+      }
+    } catch (e) {
+      return { field:'jsonKey', msg: 'Could not parse JSON. Check for missing brackets, quotes or commas.', code: 'json_parse' };
+    }
+  }
+  if (cn.authType === 'manual') {
+    const url = (a.endpoint || '').trim();
+    if (!/^https?:\/\//.test(url)) {
+      return { field:'endpoint', msg: 'URL must start with http:// or https://', code: 'bad_url' };
+    }
+  }
+  return null;
+}
+
+function obAuthErrorFor(authType, name) {
+  const errors = {
+    oauth: [
+      { msg: "Couldn't reach " + name + " — connection timed out after 30s. Check your network and try again.", code: 'timeout' },
+      { msg: "Authorization denied — looks like the consent screen was closed before approval.", code: 'denied' },
+      { msg: name + " rate-limited the request. Wait a couple of minutes before trying again.", code: 'rate_limit' }
+    ],
+    per_user: [
+      { msg: "Authorization denied — the consent screen was closed before approval.", code: 'denied' }
+    ],
+    api_key: [
+      { msg: "The API key was rejected by " + name + ". Verify it in the workspace settings — it may be expired or scoped wrong.", code: 'invalid_key' }
+    ],
+    service_account: [
+      { msg: "Service account validation failed — the account is missing IAM permissions for this project.", code: 'iam_missing' }
+    ],
+    manual: [
+      { msg: "Endpoint returned <code>404 Not Found</code>. Double-check the URL.", code: 'not_found' },
+      { msg: "Endpoint returned <code>401 Unauthorized</code>. The authorization header is missing or invalid.", code: 'unauthorized' }
+    ],
+    file_upload: [
+      { msg: "Parse failed at row 4 — column <code>amount</code> expected a number but got <code>N/A</code>. Clean the file and re-upload.", code: 'malformed_data' }
+    ],
+    email: [
+      { msg: "Inbox provisioning failed. Try again in a moment.", code: 'provision_failed' }
+    ]
+  };
+  const list = errors[authType] || errors.api_key;
+  return list[Math.floor(Math.random() * list.length)];
+}
+
+function obAuthDismissError() {
+  if (!obState.auth) return;
+  delete obState.auth.errorMsg;
+  delete obState.auth.errorCode;
+  delete obState.auth.errorField;
+  obState.auth.status = 'idle';
+  persistOb(); paintWizard();
+}
+
 function obAuthRun() {
-  obState.auth = Object.assign({}, obState.auth, { status:'connecting' });
-  persistOb();
-  paintWizard();
-  setTimeout(() => {
-    obState.auth = Object.assign({}, obState.auth, { status:'connected', detected: 6 + Math.floor(Math.random()*8) });
+  const cn = obConnector(obState.connector);
+  if (!cn) return;
+
+  // Step 1: client-side validation (no network needed)
+  const inlineErr = obAuthValidate(cn);
+  if (inlineErr) {
+    obState.auth = Object.assign({}, obState.auth, {
+      status: 'error',
+      errorMsg: inlineErr.msg,
+      errorCode: inlineErr.code,
+      errorField: inlineErr.field
+    });
     persistOb();
     paintWizard();
+    return;
+  }
+
+  // Step 2: simulate the network call
+  obState.auth = Object.assign({}, obState.auth, {
+    status: 'connecting',
+    errorMsg: null, errorCode: null, errorField: null
+  });
+  persistOb();
+  paintWizard();
+
+  setTimeout(() => {
+    if (obDemoErrorsOn()) {
+      const err = obAuthErrorFor(cn.authType, cn.name);
+      obState.auth = Object.assign({}, obState.auth, {
+        status: 'error',
+        errorMsg: err.msg,
+        errorCode: err.code,
+        errorField: null   // not inline — banner only
+      });
+      persistOb();
+      paintWizard();
+    } else {
+      obState.auth = Object.assign({}, obState.auth, {
+        status: 'connected',
+        detected: 6 + Math.floor(Math.random()*8)
+      });
+      persistOb();
+      paintWizard();
+    }
   }, 1100);
 }
 
@@ -3848,6 +4066,7 @@ function renderOnboardingEmptyState() {
 /* ====================== BOOT ====================== */
 window.addEventListener('hashchange', render);
 paintPersonaPill();
+paintDemoErrorsPill();
 render();
 </script>
 
