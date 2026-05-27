@@ -2908,6 +2908,145 @@ const OB_SAMPLE_FIELDS_BY_SLUG = {
       { name:'lead_source', type:'string',  sample:'webinar_q4',      sug:'lead_source',  sugType:'enum',      conf:78 },
       { name:'vin_number',  type:'string',  sample:'1HGCM82633A...',  sug:'vehicle.vin',  sugType:'string',    conf:64 }
     ]
+  },
+  gdrive: {
+    object:'file', pullMs:1340, rows:20,
+    fields:[
+      { name:'id',                        type:'string',    sample:'1xY8z...mNq',                  sug:'id',            sugType:'string',    conf:97 },
+      { name:'name',                      type:'string',    sample:'Q4 forecast.xlsx',             sug:'name',          sugType:'string',    conf:95 },
+      { name:'mimeType',                  type:'string',    sample:'application/vnd.ms-excel',     sug:'mime_type',     sugType:'enum',      conf:92 },
+      { name:'size',                      type:'int',       sample:'42180',                        sug:'size_bytes',    sugType:'int',       conf:90 },
+      { name:'createdTime',               type:'timestamp', sample:'2024-09-12T10:14:00Z',         sug:'created_at',    sugType:'timestamp', conf:96 },
+      { name:'modifiedTime',              type:'timestamp', sample:'2024-11-04T16:08:14Z',         sug:'updated_at',    sugType:'timestamp', conf:95 },
+      { name:'owners[0].emailAddress',    type:'string',    sample:'alice@example.com',            sug:'owner_email',   sugType:'string',    conf:84 },
+      { name:'parents[0]',                type:'string',    sample:'0ABc1...XYZ',                  sug:'parent_id',     sugType:'ref',       conf:78 },
+      { name:'webViewLink',               type:'string',    sample:'https://drive.google.com/...', sug:'view_url',      sugType:'string',    conf:80 },
+      { name:'trashed',                   type:'bool',      sample:'false',                        sug:'is_deleted',    sugType:'bool',      conf:82 },
+      { name:'capabilities.canEdit',      type:'bool',      sample:'true',                         sug:null,            sugType:null,        conf:0  }
+    ]
+  },
+  asana: {
+    object:'task', pullMs:1180, rows:20,
+    fields:[
+      { name:'gid',                  type:'string',    sample:'1207839824012',           sug:'id',            sugType:'string',    conf:97 },
+      { name:'name',                 type:'string',    sample:'Ship onboarding v2',      sug:'name',          sugType:'string',    conf:94 },
+      { name:'completed',            type:'bool',      sample:'false',                   sug:'is_done',       sugType:'bool',      conf:90 },
+      { name:'completed_at',         type:'timestamp', sample:'null',                    sug:'completed_at',  sugType:'timestamp', conf:94 },
+      { name:'assignee.gid',         type:'string',    sample:'1198822...',              sug:'assignee_id',   sugType:'ref',       conf:84 },
+      { name:'assignee.name',        type:'string',    sample:'Carlos Tovar',            sug:'assignee_name', sugType:'string',    conf:88 },
+      { name:'due_on',               type:'date',      sample:'2024-11-22',              sug:'due_date',      sugType:'date',      conf:93 },
+      { name:'projects[0].name',     type:'string',    sample:'Q4 launches',             sug:'project',       sugType:'string',    conf:78 },
+      { name:'notes',                type:'text',      sample:'Includes copy review...', sug:'description',   sugType:'text',      conf:80 },
+      { name:'created_at',           type:'timestamp', sample:'2024-10-08T11:00:00Z',    sug:'created_at',    sugType:'timestamp', conf:96 },
+      { name:'modified_at',          type:'timestamp', sample:'2024-11-05T15:42:00Z',    sug:'updated_at',    sugType:'timestamp', conf:95 },
+      { name:'custom_fields[0].text_value', type:'string', sample:'P0',                  sug:null,            sugType:null,        conf:0  }
+    ]
+  },
+  segment: {
+    object:'track_event', pullMs:1490, rows:20,
+    fields:[
+      { name:'messageId',              type:'string',    sample:'msg_4n8...',                       sug:'id',           sugType:'string',    conf:96 },
+      { name:'userId',                 type:'string',    sample:'usr_88231',                        sug:'user_id',      sugType:'ref',       conf:94 },
+      { name:'anonymousId',            type:'string',    sample:'a-9f4c8...',                       sug:'anonymous_id', sugType:'string',    conf:88 },
+      { name:'event',                  type:'string',    sample:'Checkout Completed',               sug:'event_name',   sugType:'enum',      conf:92 },
+      { name:'timestamp',              type:'timestamp', sample:'2024-11-09T14:22:00Z',             sug:'occurred_at',  sugType:'timestamp', conf:95 },
+      { name:'type',                   type:'string',    sample:'track',                            sug:'event_type',   sugType:'enum',      conf:90 },
+      { name:'properties.revenue',     type:'decimal',   sample:'129.50',                           sug:'revenue',      sugType:'decimal',   conf:86 },
+      { name:'properties.currency',    type:'string',    sample:'USD',                              sug:'currency',     sugType:'enum',      conf:84 },
+      { name:'context.userAgent',      type:'string',    sample:'Mozilla/5.0 ...',                  sug:'user_agent',   sugType:'string',    conf:76 },
+      { name:'context.ip',             type:'string',    sample:'192.168.1.1',                      sug:'ip_address',   sugType:'string',    conf:74 },
+      { name:'integrations._merged',   type:'bool',      sample:'true',                             sug:null,           sugType:null,        conf:0  }
+    ]
+  },
+  mixpanel: {
+    object:'event', pullMs:1280, rows:20,
+    fields:[
+      { name:'event',               type:'string',    sample:'Page Viewed',                  sug:'event_name',   sugType:'enum',      conf:94 },
+      { name:'distinct_id',         type:'string',    sample:'user-8214',                    sug:'user_id',      sugType:'ref',       conf:90 },
+      { name:'time',                type:'int',       sample:'1731161520',                   sug:'occurred_at',  sugType:'timestamp', conf:86 },
+      { name:'properties.$current_url',type:'string', sample:'https://app.example.com/...', sug:'page_url',     sugType:'string',    conf:88 },
+      { name:'properties.$referrer', type:'string',   sample:'https://google.com',           sug:'referrer',     sugType:'string',    conf:82 },
+      { name:'properties.$browser',  type:'string',   sample:'Chrome',                       sug:'browser',      sugType:'enum',      conf:80 },
+      { name:'properties.$os',       type:'string',   sample:'Mac OS X',                     sug:'os',           sugType:'enum',      conf:80 },
+      { name:'properties.$city',     type:'string',   sample:'San Francisco',                sug:'city',         sugType:'string',    conf:78 },
+      { name:'properties.experiment_variant', type:'string', sample:'control',               sug:'experiment',   sugType:'string',    conf:68 },
+      { name:'mp_lib',               type:'string',   sample:'web 2.45.0',                   sug:null,           sugType:null,        conf:0  }
+    ]
+  },
+  mongodb: {
+    object:'document', pullMs:880, rows:20,
+    fields:[
+      { name:'_id',                       type:'string',    sample:'ObjectId("65...")',          sug:'id',          sugType:'string',    conf:97 },
+      { name:'name',                      type:'string',    sample:'Acme Workspace',             sug:'name',        sugType:'string',    conf:92 },
+      { name:'email',                     type:'string',    sample:'team@acme.co',               sug:'email',       sugType:'string',    conf:95 },
+      { name:'status',                    type:'string',    sample:'active',                     sug:'status',      sugType:'enum',      conf:90 },
+      { name:'profile.country',           type:'string',    sample:'CO',                         sug:'country',     sugType:'string',    conf:80 },
+      { name:'profile.tier',              type:'string',    sample:'enterprise',                 sug:'plan_tier',   sugType:'enum',      conf:78 },
+      { name:'tags',                      type:'array',     sample:'["finance","beta"]',         sug:'tags',        sugType:'array',     conf:84 },
+      { name:'metadata.source',           type:'string',    sample:'inbound_form',               sug:'lead_source', sugType:'string',    conf:72 },
+      { name:'createdAt',                 type:'timestamp', sample:'2024-10-22T08:14:00Z',       sug:'created_at',  sugType:'timestamp', conf:96 },
+      { name:'updatedAt',                 type:'timestamp', sample:'2024-11-08T19:02:00Z',       sug:'updated_at',  sugType:'timestamp', conf:95 },
+      { name:'__v',                       type:'int',       sample:'3',                          sug:null,          sugType:null,        conf:0  }
+    ]
+  },
+  airtable: {
+    object:'record', pullMs:1020, rows:20,
+    fields:[
+      { name:'id',                              type:'string',    sample:'recA8xZ1...',         sug:'id',           sugType:'string',    conf:97 },
+      { name:'createdTime',                     type:'timestamp', sample:'2024-09-30T08:00:00Z',sug:'created_at',   sugType:'timestamp', conf:95 },
+      { name:'fields.Name',                     type:'string',    sample:'Q4 launch plan',       sug:'name',         sugType:'string',    conf:94 },
+      { name:'fields.Status',                   type:'string',    sample:'In progress',          sug:'status',       sugType:'enum',      conf:92 },
+      { name:'fields.Owner',                    type:'string',    sample:'Marina León',          sug:'owner',        sugType:'string',    conf:86 },
+      { name:'fields.Priority',                 type:'string',    sample:'High',                 sug:'priority',     sugType:'enum',      conf:90 },
+      { name:'fields.Due Date',                 type:'date',      sample:'2024-11-30',           sug:'due_date',     sugType:'date',      conf:93 },
+      { name:'fields.Notes',                    type:'text',      sample:'Coordinate with...',   sug:'notes',        sugType:'text',      conf:80 },
+      { name:'fields.Tags',                     type:'array',     sample:'["launch","q4"]',      sug:'tags',         sugType:'array',     conf:78 },
+      { name:'fields.Linked Records',           type:'array',     sample:'["recXyz...","recAbc..."]', sug:'links',  sugType:'array',     conf:62 }
+    ]
+  },
+  'rest-api': {
+    object:'item', pullMs:1620, rows:20,
+    fields:[
+      { name:'id',           type:'string',    sample:'item_001',             sug:'id',          sugType:'string',    conf:90 },
+      { name:'name',         type:'string',    sample:'Sample item',          sug:'name',        sugType:'string',    conf:88 },
+      { name:'description',  type:'text',      sample:'A demo entry',         sug:'description', sugType:'text',      conf:82 },
+      { name:'status',       type:'string',    sample:'active',               sug:'status',      sugType:'enum',      conf:84 },
+      { name:'type',         type:'string',    sample:'product',              sug:'type',        sugType:'enum',      conf:78 },
+      { name:'owner_id',     type:'string',    sample:'usr_412',              sug:'owner_id',    sugType:'ref',       conf:80 },
+      { name:'tags',         type:'array',     sample:'["a","b"]',            sug:'tags',        sugType:'array',     conf:74 },
+      { name:'metadata',     type:'string',    sample:'{"k":"v"}',            sug:'metadata',    sugType:'string',    conf:55 },
+      { name:'created_at',   type:'timestamp', sample:'2024-11-01T10:00:00Z', sug:'created_at',  sugType:'timestamp', conf:92 },
+      { name:'updated_at',   type:'timestamp', sample:'2024-11-09T15:00:00Z', sug:'updated_at',  sugType:'timestamp', conf:90 }
+    ]
+  },
+  'graphql-api': {
+    object:'node', pullMs:1410, rows:20,
+    fields:[
+      { name:'id',           type:'string',    sample:'gid://app/Node/482',    sug:'id',           sugType:'string',    conf:92 },
+      { name:'__typename',   type:'string',    sample:'Product',               sug:'type',         sugType:'enum',      conf:88 },
+      { name:'name',         type:'string',    sample:'Premium plan',          sug:'name',         sugType:'string',    conf:88 },
+      { name:'status',       type:'string',    sample:'ACTIVE',                sug:'status',       sugType:'enum',      conf:86 },
+      { name:'createdAt',    type:'timestamp', sample:'2024-09-01T12:00:00Z',  sug:'created_at',   sugType:'timestamp', conf:94 },
+      { name:'updatedAt',    type:'timestamp', sample:'2024-11-09T08:30:00Z',  sug:'updated_at',   sugType:'timestamp', conf:93 },
+      { name:'connections.totalCount', type:'int', sample:'24',                sug:'connection_count', sugType:'int', conf:70 },
+      { name:'metadata',     type:'string',    sample:'{"tier":"gold"}',       sug:'metadata',     sugType:'string',    conf:58 },
+      { name:'_internal_cursor', type:'string',sample:'eyJpZCI...',            sug:null,           sugType:null,        conf:0  }
+    ]
+  },
+  'email-inbox': {
+    object:'attachment_row', pullMs:680, rows:20,
+    fields:[
+      { name:'email_message_id', type:'string',    sample:'<82a4...@mail.example.com>', sug:'message_id',     sugType:'string',    conf:88 },
+      { name:'sender_email',     type:'string',    sample:'partner@vendor.com',         sug:'from_email',     sugType:'string',    conf:96 },
+      { name:'subject',          type:'string',    sample:'Q4 leads export',            sug:'subject',        sugType:'string',    conf:90 },
+      { name:'received_at',      type:'timestamp', sample:'2024-11-08T09:14:00Z',       sug:'received_at',    sugType:'timestamp', conf:95 },
+      { name:'attachment_filename', type:'string', sample:'leads_q4.csv',               sug:'source_file',    sugType:'string',    conf:84 },
+      { name:'parsed_row_number',type:'int',       sample:'47',                         sug:'row_number',     sugType:'int',       conf:88 },
+      { name:'raw_row.email',    type:'string',    sample:'lead@example.com',           sug:'email',          sugType:'string',    conf:96 },
+      { name:'raw_row.name',     type:'string',    sample:'Lead Acme',                  sug:'name',           sugType:'string',    conf:94 },
+      { name:'raw_row.amount',   type:'decimal',   sample:'2400.00',                    sug:'amount',         sugType:'decimal',   conf:80 },
+      { name:'parsed_at',        type:'timestamp', sample:'2024-11-08T09:15:42Z',       sug:null,             sugType:null,        conf:0  }
+    ]
   }
 };
 
