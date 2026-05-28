@@ -3878,6 +3878,138 @@ html.theme-light .theme-icon-moon{display:block}
 .owner-picker-check{color:var(--blue);flex-shrink:0}
 .owner-picker-divider{height:1px;background:rgba(255,255,255,0.06);margin:6px 0}
 
+
+/* ============ USAGE TAB + IMPACT ANALYSIS ============ */
+.usage-impact{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;
+}
+@media (max-width:840px){.usage-impact{grid-template-columns:repeat(2,1fr)}}
+.usage-impact-tile{
+  padding:12px 14px;
+  background:rgba(255,255,255,0.025);
+  border:1px solid var(--line);border-radius:11px;
+}
+.usage-impact-tile.is-empty{opacity:.55}
+.usage-impact-l{display:flex;align-items:center;gap:7px;margin-bottom:6px}
+.usage-impact-ic{
+  width:24px;height:24px;border-radius:7px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.usage-impact-ic.t-wf      { background:rgba(43,127,255,0.12); color:var(--blue);    border:1px solid rgba(43,127,255,0.32) }
+.usage-impact-ic.t-agent   { background:rgba(167,139,250,0.12);color:var(--purple);  border:1px solid rgba(167,139,250,0.32) }
+.usage-impact-ic.t-network { background:rgba(245,158,11,0.12); color:var(--amber);   border:1px solid rgba(245,158,11,0.32) }
+.usage-impact-ic.t-widget  { background:rgba(16,185,129,0.12); color:var(--green);   border:1px solid rgba(16,185,129,0.32) }
+.usage-impact-l-t{font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--t3)}
+.usage-impact-v{font-size:22px;font-weight:800;color:var(--t1);letter-spacing:-.01em;line-height:1}
+.usage-impact-s{font-size:11px;color:var(--t3);margin-top:4px}
+
+.usage-list{display:flex;flex-direction:column;gap:8px}
+.usage-row{
+  display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;
+  padding:11px 14px;
+  background:rgba(255,255,255,0.02);
+  border:1px solid var(--line);border-radius:10px;
+  transition:background .12s, border-color .12s;
+}
+.usage-row:hover{background:rgba(255,255,255,0.035);border-color:var(--line-strong)}
+.usage-row-ic{
+  width:36px;height:36px;border-radius:9px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.usage-row-ic.t-workflow{background:rgba(43,127,255,0.10); color:var(--blue);    border:1px solid rgba(43,127,255,0.32)}
+.usage-row-ic.t-agent   {background:rgba(167,139,250,0.10);color:var(--purple);  border:1px solid rgba(167,139,250,0.32)}
+.usage-row-ic.t-network {background:rgba(245,158,11,0.10); color:var(--amber);   border:1px solid rgba(245,158,11,0.32)}
+.usage-row-ic.t-widget  {background:rgba(16,185,129,0.10); color:var(--green);   border:1px solid rgba(16,185,129,0.32)}
+.usage-row-body{min-width:0}
+.usage-row-name{font-size:13px;font-weight:700;color:var(--t1);line-height:1.2}
+.usage-row-meta{
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+  font-size:11px;color:var(--t3);margin-top:3px;
+}
+.usage-row-meta .usage-row-tag{
+  font-size:9.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
+  padding:1.5px 7px;border-radius:99px;
+}
+.usage-row-meta .usage-row-tag.t-workflow{background:rgba(43,127,255,0.12); color:var(--blue);    border:1px solid rgba(43,127,255,0.30)}
+.usage-row-meta .usage-row-tag.t-agent   {background:rgba(167,139,250,0.12);color:var(--purple);  border:1px solid rgba(167,139,250,0.30)}
+.usage-row-meta .usage-row-tag.t-network {background:rgba(245,158,11,0.12); color:var(--amber);   border:1px solid rgba(245,158,11,0.30)}
+.usage-row-meta .usage-row-tag.t-widget  {background:rgba(16,185,129,0.12); color:var(--green);   border:1px solid rgba(16,185,129,0.30)}
+.usage-row-action{
+  background:transparent;border:1px solid var(--line);
+  color:var(--t3);font-family:inherit;font-size:11px;font-weight:600;
+  padding:5px 10px;border-radius:6px;cursor:pointer;
+  transition:border-color .12s, color .12s;
+}
+.usage-row-action:hover{border-color:var(--line-strong);color:var(--t1)}
+
+.usage-empty{
+  padding:40px 24px;text-align:center;color:var(--t3);
+  border:1px dashed var(--line-strong);border-radius:10px;
+  background:rgba(255,255,255,0.015);
+}
+.usage-empty-t{font-size:14px;font-weight:700;color:var(--t2);margin-bottom:5px}
+.usage-empty-d{font-size:12px;line-height:1.5;max-width:420px;margin:0 auto}
+
+/* Impact modal (disconnect confirmation) */
+.impact-modal-overlay{
+  position:fixed;inset:0;z-index:280;
+  background:rgba(4,8,18,0.72);backdrop-filter:blur(5px);
+  display:none;align-items:center;justify-content:center;
+  padding:24px;animation:obFade .18s ease-out;
+}
+.impact-modal-overlay.is-open{display:flex}
+.impact-modal{
+  width:100%;max-width:560px;max-height:90vh;
+  background:#0c1428;
+  border:1px solid rgba(239,68,68,0.32);
+  border-radius:14px;
+  box-shadow:0 32px 80px -20px rgba(0,0,0,0.7), 0 0 0 1px rgba(239,68,68,0.10);
+  display:flex;flex-direction:column;overflow:hidden;
+  animation:obSlide .22s cubic-bezier(.2,.8,.2,1);
+}
+.impact-modal-h{
+  padding:18px 22px;
+  border-bottom:1px solid var(--line);
+  display:flex;align-items:center;gap:12px;
+}
+.impact-modal-h-ic{
+  width:36px;height:36px;border-radius:10px;
+  background:rgba(239,68,68,0.14);color:#fca5a5;
+  border:1px solid rgba(239,68,68,0.32);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.impact-modal-h-text{flex:1;min-width:0}
+.impact-modal-h-t{font-size:15px;font-weight:800;color:var(--t1);letter-spacing:-.01em;line-height:1.3}
+.impact-modal-h-d{font-size:11.5px;color:var(--t2);margin-top:3px;line-height:1.45}
+.impact-modal-body{
+  flex:1;overflow-y:auto;padding:20px 22px;
+}
+.impact-summary{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:16px;
+}
+.impact-summary-tile{
+  padding:9px 11px;
+  background:rgba(239,68,68,0.05);
+  border:1px solid rgba(239,68,68,0.22);
+  border-radius:8px;text-align:center;
+}
+.impact-summary-v{font-size:18px;font-weight:800;color:#fca5a5;line-height:1}
+.impact-summary-l{font-size:9.5px;font-weight:700;color:var(--t3);margin-top:4px;letter-spacing:.04em;text-transform:uppercase}
+.impact-list-h{
+  font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--t3);margin-bottom:8px;
+}
+.impact-list{display:flex;flex-direction:column;gap:6px;max-height:280px;overflow-y:auto}
+.impact-list .usage-row{padding:9px 12px}
+.impact-modal-f{
+  display:flex;align-items:center;justify-content:flex-end;gap:8px;
+  padding:14px 22px;
+  border-top:1px solid var(--line);
+  background:rgba(255,255,255,0.015);
+}
+.impact-modal-f .btn-danger{background:#ef4444;color:#fff;border:none}
+.impact-modal-f .btn-danger:hover{background:#dc2626}
+
 </style>
 </head>
 <body>
@@ -4236,6 +4368,24 @@ html.theme-light .theme-icon-moon{display:block}
 <div class="tour-popover" id="tourPopover"></div>
 
 <!-- Toasts -->
+
+
+<!-- Impact analysis modal (disconnect confirmation) -->
+<div class="impact-modal-overlay" id="impactModalOverlay" onclick="if(event.target===this)closeImpactModal()">
+  <div class="impact-modal" role="dialog" aria-labelledby="impactModalTitle">
+    <header class="impact-modal-h">
+      <div class="impact-modal-h-ic">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+      </div>
+      <div class="impact-modal-h-text">
+        <div class="impact-modal-h-t" id="impactModalTitle">Confirm disconnect</div>
+        <div class="impact-modal-h-d" id="impactModalSub">Impact analysis</div>
+      </div>
+    </header>
+    <div class="impact-modal-body" id="impactModalBody"></div>
+    <footer class="impact-modal-f" id="impactModalFooter"></footer>
+  </div>
+</div>
 
 <!-- Owner reassign popover (shared, positioned dynamically) -->
 <div class="owner-picker-backdrop" id="ownerPickerBackdrop" onclick="closeOwnerPicker()"></div>
@@ -6642,6 +6792,217 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
+
+
+/* ============ CONSUMERS (workflows / agents / networks / widgets) ============ */
+const MOCK_CONSUMERS = [
+  // Workflows
+  { id:'wf-1', type:'workflow', name:'New lead → Salesforce + Slack alert', owner:'María González',
+    integrations:['salesforce','slack'], lastActivity:'4 min ago', metricLabel:'runs / 7d', metricValue:142 },
+  { id:'wf-2', type:'workflow', name:'Failed payment escalation', owner:'Alex Park',
+    integrations:['stripe','slack','gmail'], lastActivity:'2 hours ago', metricLabel:'runs / 7d', metricValue:18 },
+  { id:'wf-3', type:'workflow', name:'GitHub PR review notification', owner:'Carlos Tovar',
+    integrations:['github','slack'], lastActivity:'12 min ago', metricLabel:'runs / 7d', metricValue:87 },
+  { id:'wf-4', type:'workflow', name:'CS ticket auto-routing', owner:'Sarah Chen',
+    integrations:['zendesk','slack'], lastActivity:'9 min ago', metricLabel:'runs / 7d', metricValue:64 },
+  { id:'wf-5', type:'workflow', name:'Daily revenue report', owner:'Alex Park',
+    integrations:['stripe','gsheets'], lastActivity:'18 hours ago', metricLabel:'runs / 7d', metricValue:7 },
+  { id:'wf-6', type:'workflow', name:'Inbound demo request → Calendar invite', owner:'María González',
+    integrations:['hubspot','gcal','gmail'], lastActivity:'1 hour ago', metricLabel:'runs / 7d', metricValue:32 },
+
+  // Agents
+  { id:'ag-1', type:'agent', name:'Sales Triage Agent', owner:'María González',
+    integrations:['salesforce','hubspot','slack'], lastActivity:'continuous', metricLabel:'active users', metricValue:24 },
+  { id:'ag-2', type:'agent', name:'Support Resolution Agent', owner:'Sarah Chen',
+    integrations:['zendesk','slack','notion'], lastActivity:'continuous', metricLabel:'active users', metricValue:11 },
+  { id:'ag-3', type:'agent', name:'Eng Standup Agent', owner:'Carlos Tovar',
+    integrations:['github','slack','notion'], lastActivity:'continuous', metricLabel:'active users', metricValue:18 },
+  { id:'ag-4', type:'agent', name:'Renewals Agent', owner:'Alex Park',
+    integrations:['salesforce','hubspot','stripe'], lastActivity:'continuous', metricLabel:'active users', metricValue:6 },
+
+  // Networks
+  { id:'net-1', type:'network', name:'Customer Onboarding Network', owner:'Sarah Chen',
+    integrations:['hubspot','salesforce','slack','zendesk'], lastActivity:'continuous', metricLabel:'agents in net', metricValue:4 },
+  { id:'net-2', type:'network', name:'Incident Response Network', owner:'Carlos Tovar',
+    integrations:['github','slack','snowflake'], lastActivity:'continuous', metricLabel:'agents in net', metricValue:3 },
+
+  // Widgets / Dashboards
+  { id:'wg-1', type:'widget', name:'Pipeline Health Dashboard', owner:'María González',
+    integrations:['salesforce','hubspot'], lastActivity:'5 min ago', metricLabel:'views / 7d', metricValue:412 },
+  { id:'wg-2', type:'widget', name:'CS SLA Tracker', owner:'Sarah Chen',
+    integrations:['zendesk','salesforce'], lastActivity:'8 min ago', metricLabel:'views / 7d', metricValue:89 },
+  { id:'wg-3', type:'widget', name:'Eng Velocity Dashboard', owner:'Carlos Tovar',
+    integrations:['github','linear'], lastActivity:'18 min ago', metricLabel:'views / 7d', metricValue:127 }
+];
+
+function getConsumersForIntegration(slug) {
+  return MOCK_CONSUMERS.filter(con => con.integrations.indexOf(slug) !== -1);
+}
+
+function getImpactSummary(slug) {
+  const cons = getConsumersForIntegration(slug);
+  return {
+    total: cons.length,
+    workflows: cons.filter(c => c.type === 'workflow').length,
+    agents: cons.filter(c => c.type === 'agent').length,
+    networks: cons.filter(c => c.type === 'network').length,
+    widgets: cons.filter(c => c.type === 'widget').length,
+    consumers: cons
+  };
+}
+
+function consumerTypeLabel(type) {
+  return ({ workflow:'Workflow', agent:'Agent', network:'Agentic Network', widget:'Widget' })[type] || type;
+}
+
+function consumerIconSvg(type) {
+  if (type === 'workflow') {
+    return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.5 6h7M6 8.5v7M18 8.5v7M8.5 18h7"/></svg>';
+  }
+  if (type === 'agent') {
+    return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="6" width="16" height="12" rx="2"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><path d="M12 3v3M5 18l-2 3M19 18l2 3"/></svg>';
+  }
+  if (type === 'network') {
+    return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2"/><circle cx="5" cy="14" r="2"/><circle cx="19" cy="14" r="2"/><circle cx="12" cy="20" r="2"/><path d="M12 7v11M10.5 6l-4 6.5M13.5 6l4 6.5M7 14.5l4 4.5M17 14.5l-4 4.5"/></svg>';
+  }
+  if (type === 'widget') {
+    return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/></svg>';
+  }
+  return '';
+}
+
+function usageRowHtml(con) {
+  return `
+    <div class="usage-row">
+      <span class="usage-row-ic t-${con.type}">${consumerIconSvg(con.type)}</span>
+      <div class="usage-row-body">
+        <div class="usage-row-name">${escapeHtml(con.name)}</div>
+        <div class="usage-row-meta">
+          <span class="usage-row-tag t-${con.type}">${escapeHtml(consumerTypeLabel(con.type))}</span>
+          <span>Owner: <b style="color:var(--t1);font-weight:600">${escapeHtml(con.owner)}</b></span>
+          <span class="dot">·</span>
+          <span>${escapeHtml(String(con.metricValue))} ${escapeHtml(con.metricLabel)}</span>
+          <span class="dot">·</span>
+          <span>Last activity ${escapeHtml(con.lastActivity)}</span>
+        </div>
+      </div>
+      <button class="usage-row-action" onclick="toast('Open ' + decodeURIComponent('${encodeURIComponent(con.name)}') + ' — out of scope for this prototype')">Open ↗</button>
+    </div>
+  `;
+}
+
+function detailUsage(integ) {
+  if (!integ) return '';
+  const imp = getImpactSummary(integ.slug);
+  return `
+    <section class="ov-widget">
+      <header class="ov-widget-h">
+        <h3 class="ov-widget-title">Where this integration is used</h3>
+        <span class="ov-widget-meta">${imp.total === 0 ? 'No consumers' : imp.total + ' consumer' + (imp.total === 1 ? '' : 's') + ' depend on ' + escapeHtml(integ.name)}</span>
+      </header>
+      <div class="ov-widget-body">
+
+        <div class="usage-impact">
+          <div class="usage-impact-tile ${imp.workflows === 0 ? 'is-empty' : ''}">
+            <div class="usage-impact-l"><span class="usage-impact-ic t-wf">${consumerIconSvg('workflow')}</span><span class="usage-impact-l-t">Workflows</span></div>
+            <div class="usage-impact-v">${imp.workflows}</div>
+            <div class="usage-impact-s">automation triggers</div>
+          </div>
+          <div class="usage-impact-tile ${imp.agents === 0 ? 'is-empty' : ''}">
+            <div class="usage-impact-l"><span class="usage-impact-ic t-agent">${consumerIconSvg('agent')}</span><span class="usage-impact-l-t">Agents</span></div>
+            <div class="usage-impact-v">${imp.agents}</div>
+            <div class="usage-impact-s">callable as tools</div>
+          </div>
+          <div class="usage-impact-tile ${imp.networks === 0 ? 'is-empty' : ''}">
+            <div class="usage-impact-l"><span class="usage-impact-ic t-network">${consumerIconSvg('network')}</span><span class="usage-impact-l-t">Networks</span></div>
+            <div class="usage-impact-v">${imp.networks}</div>
+            <div class="usage-impact-s">multi-agent flows</div>
+          </div>
+          <div class="usage-impact-tile ${imp.widgets === 0 ? 'is-empty' : ''}">
+            <div class="usage-impact-l"><span class="usage-impact-ic t-widget">${consumerIconSvg('widget')}</span><span class="usage-impact-l-t">Widgets</span></div>
+            <div class="usage-impact-v">${imp.widgets}</div>
+            <div class="usage-impact-s">dashboards & cards</div>
+          </div>
+        </div>
+
+        ${imp.total === 0 ? `
+          <div class="usage-empty">
+            <div class="usage-empty-t">Not used by anything yet</div>
+            <div class="usage-empty-d">No workflows, agents, networks, or widgets depend on <b style="color:var(--t1)">${escapeHtml(integ.name)}</b>. If this is intentional, consider archiving the integration to keep the catalog clean.</div>
+          </div>
+        ` : `
+          <div class="usage-list">
+            ${imp.consumers.map(usageRowHtml).join('')}
+          </div>
+        `}
+
+      </div>
+    </section>
+  `;
+}
+
+/* ============ DISCONNECT IMPACT MODAL ============ */
+let _impactModalCallback = null;
+
+function openImpactModal(slug, onConfirm) {
+  const integ = INTEGRATIONS.find(i => i.slug === slug);
+  if (!integ) return;
+  const imp = getImpactSummary(slug);
+  _impactModalCallback = onConfirm || null;
+
+  $('impactModalTitle').textContent = 'Disconnect ' + integ.name + '?';
+  $('impactModalSub').textContent = imp.total === 0
+    ? 'No active consumers — safe to disconnect.'
+    : 'Impact analysis · ' + imp.total + ' consumer' + (imp.total === 1 ? '' : 's') + ' affected';
+
+  const body = `
+    <div style="font-size:12.5px;color:var(--t2);line-height:1.6;margin-bottom:14px">
+      ${imp.total === 0
+        ? `<b style="color:var(--t1)">${escapeHtml(integ.name)}</b> isn't used by any workflow, agent, network or widget. Disconnecting is safe — credentials will be revoked and the integration will move to the Not connected state.`
+        : `Disconnecting <b style="color:var(--t1)">${escapeHtml(integ.name)}</b> will revoke credentials and stop all data flow. The following consumers will be affected immediately:`}
+    </div>
+    ${imp.total > 0 ? `
+      <div class="impact-summary">
+        <div class="impact-summary-tile"><div class="impact-summary-v">${imp.workflows}</div><div class="impact-summary-l">Workflows</div></div>
+        <div class="impact-summary-tile"><div class="impact-summary-v">${imp.agents}</div><div class="impact-summary-l">Agents</div></div>
+        <div class="impact-summary-tile"><div class="impact-summary-v">${imp.networks}</div><div class="impact-summary-l">Networks</div></div>
+        <div class="impact-summary-tile"><div class="impact-summary-v">${imp.widgets}</div><div class="impact-summary-l">Widgets</div></div>
+      </div>
+      <div class="impact-list-h">Affected consumers</div>
+      <div class="impact-list">
+        ${imp.consumers.map(usageRowHtml).join('')}
+      </div>
+    ` : ''}
+  `;
+  $('impactModalBody').innerHTML = body;
+
+  $('impactModalFooter').innerHTML = `
+    <button class="btn btn-ghost btn-sm" onclick="closeImpactModal()">Cancel</button>
+    <button class="btn btn-danger btn-sm" onclick="confirmImpactModal()">${imp.total === 0 ? 'Disconnect' : 'Disconnect anyway'}</button>
+  `;
+
+  $('impactModalOverlay').classList.add('is-open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeImpactModal() {
+  $('impactModalOverlay').classList.remove('is-open');
+  document.body.style.overflow = '';
+  _impactModalCallback = null;
+}
+
+function confirmImpactModal() {
+  const cb = _impactModalCallback;
+  closeImpactModal();
+  if (typeof cb === 'function') cb();
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && document.getElementById('impactModalOverlay') && document.getElementById('impactModalOverlay').classList.contains('is-open')) {
+    closeImpactModal();
+  }
+});
+
 function renderDetail(slug) {
   const i = findIntegration(slug);
   if (!i) { renderNotFound(slug); return; }
@@ -6834,7 +7195,7 @@ function paintDetail(i) {
     <div class="tabs">
       ${(state.persona === 'user'
           ? ['overview','capabilities']
-          : ['overview','capabilities','permissions','workspaces','activity']
+          : ['overview','capabilities','permissions','workspaces','usage','activity']
         ).map(t => `<button class="tab ${state.detailTab===t?'active':''}" onclick="setDetailTab('${i.slug}','${t}')">${t.charAt(0).toUpperCase()+t.slice(1)}</button>`).join('')}
     </div>
 
@@ -6843,6 +7204,7 @@ function paintDetail(i) {
       ${state.detailTab==='capabilities' ? detailCapabilities(i) : ''}
       ${state.detailTab==='permissions' ? detailPermissions(i) : ''}
       ${state.detailTab==='workspaces' ? detailWorkspaces(i) : ''}
+      ${state.detailTab==='usage' ? detailUsage(i) : ''}
       ${state.detailTab==='activity' ? detailProviderActivity(i) : ''}
     </div>
   `;
@@ -7907,10 +8269,18 @@ function togglePersonalAllow(slug) {
   const i = findIntegration(slug); i.allowPersonal = !i.allowPersonal; paintDetail(i);
 }
 function disconnect(slug) {
-  if(!confirm('Disconnect this integration? This will revoke credentials.')) return;
   const i = findIntegration(slug);
-  i.connected = false; i.health = null;
-  toast(`${i.name} disconnected`, 'success'); paintDetail(i);
+  if (!i) return;
+  openImpactModal(slug, function() {
+    i.connected = false; i.health = null;
+    const imp = getImpactSummary(slug);
+    if (imp.total > 0) {
+      toast(`${i.name} disconnected — ${imp.total} consumer${imp.total === 1 ? '' : 's'} now blocked`, 'success');
+    } else {
+      toast(`${i.name} disconnected`, 'success');
+    }
+    paintDetail(i);
+  });
 }
 
 /* ====================== CONNECT DRAWER ====================== */
