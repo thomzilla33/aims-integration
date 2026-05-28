@@ -3372,7 +3372,8 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
 .tpl-tree-ico.is-rule{background:rgba(255,255,255,0.06);color:var(--t2);}
 
 /* Group emoji */
-.tpl-tree-emoji{flex-shrink:0;font-size:13px;line-height:1;}
+.tpl-tree-emoji{flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;color:var(--t2);}
+.tpl-tree-emoji svg{display:block;}
 
 /* Name */
 .tpl-tree-name{
@@ -3680,9 +3681,10 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
 .tonb-welcome-emoji{
   width:48px;height:48px;border-radius:14px;
   background:linear-gradient(135deg, rgba(56,189,248,0.22), rgba(168,85,247,0.18));
-  display:flex;align-items:center;justify-content:center;font-size:24px;
-  margin-bottom:6px;
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:6px;color:var(--t1);
 }
+.tonb-welcome-emoji svg{display:block;}
 .tonb-welcome-list{display:flex;flex-direction:column;gap:6px;padding-top:6px;}
 .tonb-welcome-row{
   display:flex;align-items:center;gap:10px;
@@ -3769,7 +3771,7 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
 
 /* Done step */
 .tonb-done-hero{text-align:center;padding:24px 16px 14px;}
-.tonb-done-emoji{font-size:46px;margin-bottom:8px;line-height:1;}
+.tonb-done-emoji{margin-bottom:10px;display:flex;justify-content:center;}.tonb-done-emoji svg{display:block;filter:drop-shadow(0 6px 18px rgba(16,185,129,0.32));}
 .tonb-done-title{font-size:26px;font-weight:700;color:var(--t1);letter-spacing:-0.02em;margin-bottom:6px;}
 .tonb-done-sub{font-size:14px;color:var(--t2);max-width:520px;margin:0 auto;line-height:1.55;}
 .tonb-done-stats{
@@ -4113,8 +4115,9 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
   cursor:pointer;font-size:14px;
   display:flex;align-items:center;justify-content:center;
   transition:all .12s;
-  font-family:inherit;color:inherit;line-height:1;
+  font-family:inherit;color:var(--t2);line-height:1;
 }
+.tpl-insp-icon svg{display:block;}
 .tpl-insp-icon:hover{background:rgba(255,255,255,0.07);border-color:rgba(255,255,255,0.18);}
 .tpl-insp-icon.is-selected{
   background:rgba(56,189,248,0.18);
@@ -5359,7 +5362,9 @@ function renderTblSyncTab(t) {
     <div class="tbl-sync-history">
       ${s.history.slice(0, 10).map(ev => `
         <div class="tbl-sync-history-row ${ev.status === 'error' ? 'is-error' : ''}">
-          <span class="tbl-sync-history-ic is-${ev.status === 'error' ? 'error' : 'success'}">${ev.status === 'error' ? '✕' : '✓'}</span>
+          <span class="tbl-sync-history-ic is-${ev.status === 'error' ? 'error' : 'success'}" aria-hidden="true">${ev.status === 'error'
+              ? '<svg width="9" height="9" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 4l8 8M12 4L4 12"/></svg>'
+              : '<svg width="9" height="9" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5l3 3 6-7"/></svg>'}</span>
           <div class="tbl-sync-history-body">
             <div class="tbl-sync-history-line">
               <span class="trigger">${escapeHtml(ev.trigger)}</span>
@@ -7040,10 +7045,24 @@ const TPL_GROUP_COLOR_HEX = {
   red:'#ef4444', purple:'#a855f7', gray:'#64748b',
 };
 const TPL_GROUP_ICONS = ['none','money','chart','people','building','box','wrench','lightbulb','shield','rocket','star'];
-const TPL_GROUP_ICON_EMOJI = {
-  none:'', money:'💰', chart:'📊', people:'👥', building:'🏢', box:'📦',
-  wrench:'🔧', lightbulb:'💡', shield:'🛡️', rocket:'🚀', star:'⭐',
+/* Group icons as inline SVGs (16×16 stroke style, currentColor).
+   Replaces the emoji map per the design-critique audit. */
+const TPL_GROUP_ICON_SVG = {
+  none:    '',
+  money:   '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4.5" width="12" height="8" rx="1.2"/><circle cx="8" cy="8.5" r="2"/><path d="M4.5 7h.01M11.5 10h.01"/></svg>',
+  chart:   '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 13V8M7 13V5M11 13V10M2.5 13.5h11"/></svg>',
+  people:  '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="6" r="2.4"/><path d="M2 13c0-2.2 1.8-4 4-4s4 1.8 4 4"/><circle cx="11" cy="6.5" r="1.9"/><path d="M10 13c0-1.4 1-2.6 2.4-3"/></svg>',
+  building:'<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><rect x="3" y="2.5" width="10" height="11" rx="0.6"/><path d="M3 6.5h10M3 9.5h10M6 13.5V11h4v2.5"/></svg>',
+  box:     '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M2.5 5L8 2l5.5 3v6L8 14l-5.5-3V5z"/><path d="M2.5 5L8 8l5.5-3M8 8v6"/></svg>',
+  wrench:  '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 6a3 3 0 1 1-3-3.5l1.4 1.4L8 5.4 9.4 6.8l1.4-1.4z"/><path d="M7.5 7.5L3 12l1.5 1.5L9 9"/></svg>',
+  lightbulb:'<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5.5 11c0-1-2-2.3-2-4.6a4.5 4.5 0 0 1 9 0c0 2.3-2 3.6-2 4.6M6 12.5h4M7 14h2"/></svg>',
+  shield:  '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M8 1.5L2.5 3.5v4c0 4 2.5 6.5 5.5 7.5 3-1 5.5-3.5 5.5-7.5v-4L8 1.5z"/><path d="M5.8 8l1.5 1.7L10.5 6.5"/></svg>',
+  rocket:  '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M8 1.5c2 1 3 3 3 5.5v3l1.5 1.5h-3l-1.5 1.5L6.5 11h-3L5 9.5v-3C5 4 6 2 8 1.5z"/><circle cx="8" cy="6" r="1"/></svg>',
+  star:    '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M8 2l1.8 3.7 4.2.6-3 2.9.7 4.1L8 11.4l-3.7 1.9.7-4.1-3-2.9 4.2-.6L8 2z"/></svg>',
 };
+/* Back-compat: existing code reads TPL_GROUP_ICON_EMOJI as a lookup table.
+   Keep the name but point it at the SVG map. */
+const TPL_GROUP_ICON_EMOJI = TPL_GROUP_ICON_SVG;
 const TPL_CFD_TYPES = [
   { id:'text',    label:'Text' },
   { id:'number',  label:'Number' },
@@ -8108,9 +8127,9 @@ function renderTreeNode(node, depth, tpl, editable) {
 
     const actions = editable ? `
       <div class="tpl-tree-actions">
-        <button class="tpl-tree-action" onclick="event.stopPropagation();addTplGroup('${escapeHtml(tpl.id)}','${escapeHtml(node.id)}')" title="Add nested group">+G</button>
-        <button class="tpl-tree-action" onclick="event.stopPropagation();addTplRule('${escapeHtml(tpl.id)}','${escapeHtml(node.id)}')" title="Add rule">+R</button>
-        <button class="tpl-tree-action is-danger" onclick="removeTplNode('${escapeHtml(tpl.id)}','${escapeHtml(node.id)}', event)" title="Delete group">×</button>
+        <button class="tpl-tree-action" aria-label="Add nested group" onclick="event.stopPropagation();addTplGroup('${escapeHtml(tpl.id)}','${escapeHtml(node.id)}')" title="Add nested group">+G</button>
+        <button class="tpl-tree-action" aria-label="Add rule" onclick="event.stopPropagation();addTplRule('${escapeHtml(tpl.id)}','${escapeHtml(node.id)}')" title="Add rule">+R</button>
+        <button class="tpl-tree-action is-danger" aria-label="Delete group" onclick="removeTplNode('${escapeHtml(tpl.id)}','${escapeHtml(node.id)}', event)" title="Delete group">×</button>
       </div>` : '';
 
     let html = `
@@ -8136,7 +8155,7 @@ function renderTreeNode(node, depth, tpl, editable) {
     const applies = node.appliesToFieldType && node.appliesToFieldType !== 'any' ? node.appliesToFieldType : null;
     const actions = editable ? `
       <div class="tpl-tree-actions">
-        <button class="tpl-tree-action is-danger" onclick="removeTplNode('${escapeHtml(tpl.id)}','${escapeHtml(node.id)}', event)" title="Delete rule">×</button>
+        <button class="tpl-tree-action is-danger" aria-label="Delete rule" onclick="removeTplNode('${escapeHtml(tpl.id)}','${escapeHtml(node.id)}', event)" title="Delete rule">×</button>
       </div>` : '';
     return `
       <div class="${rowCls.join(' ')}" style="--tpl-tree-indent:${indent}px" onclick="selectTplNode('${escapeHtml(tpl.id)}','${escapeHtml(node.id)}')">
@@ -9349,7 +9368,7 @@ function renderTonbLanding() {
 
       <div class="tonb-card">
         <div class="tonb-welcome-h">
-          <div class="tonb-welcome-emoji">✨</div>
+          <div class="tonb-welcome-emoji" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.5 5.5L19 10l-5.5 1.5L12 17l-1.5-5.5L5 10l5.5-1.5L12 3z"/><path d="M19 16l.7 2.3L22 19l-2.3.7L19 22l-.7-2.3L16 19l2.3-.7L19 16zM6 4l.7 2.3L9 7l-2.3.7L6 10l-.7-2.3L3 7l2.3-.7L6 4z"/></svg></div>
           <div style="font-size:14px;color:var(--t1);font-weight:600;">You’re about to set up an AIMS-OS tenant.</div>
           <div style="font-size:13px;color:var(--t2);line-height:1.55;">First-time setup has 8 steps in 3 phases. The add-a-workspace flow later is just 4 steps. We persist progress — you can leave and come back anytime.</div>
         </div>
@@ -9647,7 +9666,7 @@ function _renderConnectStep() {
       We’ll skip the actual connection and pretend you connected Salesforce + Stripe + GitHub. The next step (Apply templates) uses that mock data so you can see the full flow.
       <div style="margin-top:8px;display:flex;gap:8px;align-items:center;">
         <button class="tonb-btn ${mocked ? 'is-primary' : ''}" onclick="setTonbConnectMode('mocked')">
-          ${mocked ? '✓ Using mock data' : 'Continue with mock data'}
+          ${mocked ? '<svg style="vertical-align:-1px;margin-right:5px" width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7"/></svg>Using mock data' : 'Continue with mock data'}
         </button>
         ${mocked ? '<span style="font-size:11px;color:var(--t3)">3 mock Tables · 6 fields ready for Apply templates</span>' : ''}
       </div>
@@ -9663,7 +9682,7 @@ function _renderApplyStep() {
     const confCls = conf >= 90 ? 'is-high' : conf >= 75 ? 'is-medium' : 'is-low';
     let actions;
     if (decision === 'accept') {
-      actions = `<button class="tonb-suggest-act is-status" disabled>✓ Accepted</button>
+      actions = `<button class="tonb-suggest-act is-status" disabled><svg style="vertical-align:-1px;margin-right:4px" width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7"/></svg>Accepted</button>
                  <button class="tonb-suggest-act" onclick="toggleTonbApply('${escapeHtml(key)}','accept')">Undo</button>`;
     } else if (decision === 'skip') {
       actions = `<button class="tonb-suggest-act is-status is-skipped" disabled>Skipped</button>
@@ -9730,7 +9749,7 @@ function _renderDoneStep() {
 
   return `
     <div class="tonb-done-hero">
-      <div class="tonb-done-emoji">🎉</div>
+      <div class="tonb-done-emoji" aria-hidden="true"><svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" stroke="rgba(16,185,129,0.45)" stroke-width="1.4"/><path d="M7.5 12.5l3 3 6-6.5" stroke="#34d39c" stroke-width="2"/></svg></div>
       <div class="tonb-done-title">${tonbState.flow === 'add_workspace' ? 'Workspace ready' : 'Tenant ready'}</div>
       <div class="tonb-done-sub">${tonbState.flow === 'add_workspace'
         ? '<b style="color:var(--t1)">' + escapeHtml(w.name || 'Your workspace') + '</b> is set up. Add another, or jump into Data Studio.'
