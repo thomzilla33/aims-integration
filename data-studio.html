@@ -3854,6 +3854,286 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
 }
 .tonb-mockdata b{color:var(--t2);font-weight:600;display:block;margin-bottom:3px;}
 
+
+/* ============================================================
+   TEMPLATES — Phase 3 (Rule + Group inspectors)
+   ============================================================ */
+
+/* Sub-tabs inside the Inspect body (for rules) */
+.tpl-sub-tabs{
+  display:flex;gap:2px;
+  padding:6px 6px 0 6px;
+  background:rgba(255,255,255,0.022);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:9px;margin-bottom:14px;
+}
+.tpl-sub-tab{
+  flex:1;
+  padding:7px 8px;
+  background:transparent;border:0;border-bottom:2px solid transparent;
+  color:var(--t3);font-size:11.5px;font-weight:600;font-family:inherit;
+  cursor:pointer;transition:all .12s;text-align:center;
+  margin-bottom:-1px;letter-spacing:.01em;
+}
+.tpl-sub-tab:hover{color:var(--t1);}
+.tpl-sub-tab.is-active{color:var(--t1);border-bottom-color:var(--cyan);}
+
+/* Inspector form fields */
+.tpl-insp-name-wrap{margin-bottom:12px;}
+.tpl-insp-name{
+  font-size:15px;font-weight:600;color:var(--t1);line-height:1.3;
+  cursor:text;padding:3px 6px;border-radius:6px;margin:-3px -6px;
+  transition:background .12s;
+}
+.tpl-insp-name:hover{background:rgba(255,255,255,0.04);}
+.tpl-insp-name input{
+  width:100%;font:inherit;color:var(--t1);
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(56,189,248,0.45);border-radius:6px;
+  padding:4px 8px;outline:none;font-size:15px;font-weight:600;
+}
+.tpl-insp-id{font-size:10.5px;color:var(--t3);font-family:'SF Mono', ui-monospace, monospace;margin-top:2px;}
+
+.tpl-insp-field{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;}
+.tpl-insp-field-label{
+  font-size:10px;font-weight:700;letter-spacing:.1em;
+  color:var(--t3);text-transform:uppercase;
+}
+.tpl-insp-field-hint{font-size:11px;color:var(--t3);font-style:italic;line-height:1.4;}
+
+.tpl-insp-input,
+.tpl-insp-select,
+.tpl-insp-textarea{
+  width:100%;padding:8px 10px;border-radius:7px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.1);
+  color:var(--t1);font-size:12.5px;font-family:inherit;outline:none;
+  transition:border-color .15s,background .15s;
+}
+.tpl-insp-input:focus,
+.tpl-insp-select:focus,
+.tpl-insp-textarea:focus{border-color:var(--cyan);background:rgba(255,255,255,0.06);}
+.tpl-insp-textarea{resize:vertical;min-height:60px;line-height:1.5;font-family:inherit;}
+.tpl-insp-textarea.is-mono{font-family:'SF Mono', ui-monospace, monospace;font-size:12px;}
+
+.tpl-insp-segmented{
+  display:grid;grid-template-columns:repeat(3, 1fr);gap:3px;
+  padding:3px;border-radius:8px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.06);
+}
+.tpl-insp-seg{
+  padding:6px 8px;border-radius:6px;
+  background:transparent;border:0;
+  color:var(--t3);font-size:11px;font-weight:600;font-family:inherit;
+  cursor:pointer;transition:all .12s;text-align:center;
+}
+.tpl-insp-seg:hover{color:var(--t1);}
+.tpl-insp-seg.is-active{
+  background:rgba(56,189,248,0.2);
+  color:var(--t1);
+  box-shadow:inset 0 0 0 1px rgba(56,189,248,0.36);
+}
+.tpl-insp-seg.is-active.is-error{background:rgba(244,63,94,0.22);box-shadow:inset 0 0 0 1px rgba(244,63,94,0.4);color:#ff7d7d;}
+.tpl-insp-seg.is-active.is-warning{background:rgba(245,158,11,0.22);box-shadow:inset 0 0 0 1px rgba(245,158,11,0.4);color:#fbbf24;}
+.tpl-insp-seg.is-active.is-info{background:rgba(56,189,248,0.22);box-shadow:inset 0 0 0 1px rgba(56,189,248,0.4);color:#7ed3f7;}
+
+/* iOS-style switch for enabled toggle */
+.tpl-insp-switch-row{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:10px 12px;
+  background:rgba(255,255,255,0.022);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:8px;
+}
+.tpl-insp-switch-l{flex:1;}
+.tpl-insp-switch-title{font-size:12.5px;font-weight:600;color:var(--t1);}
+.tpl-insp-switch-sub{font-size:11px;color:var(--t3);margin-top:1px;}
+.tpl-insp-switch{
+  position:relative;display:inline-block;width:36px;height:20px;flex-shrink:0;
+  cursor:pointer;
+}
+.tpl-insp-switch input{opacity:0;width:0;height:0;}
+.tpl-insp-switch-slider{
+  position:absolute;inset:0;border-radius:10px;
+  background:rgba(255,255,255,0.1);
+  transition:background .15s;
+}
+.tpl-insp-switch-slider::before{
+  content:'';position:absolute;left:2px;top:2px;
+  width:16px;height:16px;border-radius:50%;
+  background:#fff;transition:transform .15s;
+  box-shadow:0 1px 2px rgba(0,0,0,0.3);
+}
+.tpl-insp-switch input:checked + .tpl-insp-switch-slider{background:var(--cyan);}
+.tpl-insp-switch input:checked + .tpl-insp-switch-slider::before{transform:translateX(16px);}
+
+/* Tags editor */
+.tpl-insp-tags{
+  display:flex;flex-wrap:wrap;gap:4px;
+  padding:5px;border-radius:7px;
+  background:rgba(255,255,255,0.022);
+  border:1px solid rgba(255,255,255,0.07);
+  min-height:32px;align-items:center;
+}
+.tpl-insp-tag{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:2px 7px;border-radius:9px;
+  background:rgba(56,189,248,0.16);color:#7ed3f7;
+  font-size:11px;font-weight:500;
+}
+.tpl-insp-tag-rm{
+  background:transparent;border:0;color:#7ed3f7;cursor:pointer;
+  padding:0;font:inherit;display:inline-flex;
+}
+.tpl-insp-tag-rm:hover{color:#ff7d7d;}
+.tpl-insp-tag-input{
+  flex:1;min-width:100px;
+  background:transparent;border:0;color:var(--t1);font:inherit;font-size:11.5px;
+  outline:none;padding:2px 4px;
+}
+
+/* Expression tab — validator banner */
+.tpl-insp-expr-status{
+  margin-top:8px;padding:8px 11px;border-radius:7px;
+  font-size:11.5px;line-height:1.45;
+  display:flex;align-items:flex-start;gap:7px;
+}
+.tpl-insp-expr-status.is-ok{
+  background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.28);color:#34d39c;
+}
+.tpl-insp-expr-status.is-err{
+  background:rgba(244,63,94,0.08);border:1px solid rgba(244,63,94,0.28);color:#ff7d7d;
+}
+.tpl-insp-expr-status-ic{flex-shrink:0;margin-top:1px;}
+.tpl-insp-expr-status-l{flex:1;}
+.tpl-insp-expr-status-l b{font-weight:600;}
+.tpl-insp-expr-status-l ul{margin:3px 0 0 16px;padding:0;}
+.tpl-insp-expr-status-l li{margin-bottom:2px;}
+
+/* Functions reference toggle */
+.tpl-insp-funcref{
+  margin-top:10px;
+  background:rgba(255,255,255,0.02);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:8px;
+  overflow:hidden;
+}
+.tpl-insp-funcref-h{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 11px;cursor:pointer;
+  font-size:11px;font-weight:600;color:var(--t2);letter-spacing:.04em;
+}
+.tpl-insp-funcref-h:hover{background:rgba(255,255,255,0.025);}
+.tpl-insp-funcref-body{
+  padding:10px 12px;border-top:1px solid rgba(255,255,255,0.05);
+  display:flex;flex-direction:column;gap:8px;
+}
+.tpl-insp-funcref-row{display:flex;flex-direction:column;gap:2px;font-size:11px;}
+.tpl-insp-funcref-name{font-family:'SF Mono', ui-monospace, monospace;color:#7ed3f7;font-weight:600;}
+.tpl-insp-funcref-desc{color:var(--t3);}
+
+/* Examples tab */
+.tpl-insp-ex-h{
+  font-size:11px;color:var(--t2);line-height:1.5;margin-bottom:10px;
+}
+.tpl-insp-ex-list{display:flex;flex-direction:column;gap:6px;margin-bottom:10px;}
+.tpl-insp-ex-row{
+  display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;
+  padding:7px 10px;
+  background:rgba(255,255,255,0.022);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:7px;
+}
+.tpl-insp-ex-input{
+  background:transparent;border:0;
+  color:var(--t1);font:inherit;font-size:12px;
+  font-family:'SF Mono', ui-monospace, monospace;
+  outline:none;min-width:80px;
+}
+.tpl-insp-ex-input:focus{background:rgba(255,255,255,0.04);border-radius:4px;padding:1px 4px;margin:-1px -4px;}
+.tpl-insp-ex-result{
+  font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+  padding:2px 7px;border-radius:5px;
+}
+.tpl-insp-ex-result.is-pass{background:rgba(16,185,129,0.18);color:#34d39c;}
+.tpl-insp-ex-result.is-fail{background:rgba(244,63,94,0.18);color:#ff7d7d;}
+.tpl-insp-ex-result.is-err{background:rgba(245,158,11,0.18);color:#fbbf24;}
+.tpl-insp-ex-result.is-out{background:rgba(56,189,248,0.18);color:#7ed3f7;font-family:'SF Mono', ui-monospace, monospace;text-transform:none;letter-spacing:0;}
+.tpl-insp-ex-rm{
+  background:transparent;border:0;color:var(--t3);cursor:pointer;font:inherit;
+  width:20px;height:20px;border-radius:5px;display:inline-flex;align-items:center;justify-content:center;
+}
+.tpl-insp-ex-rm:hover{background:rgba(244,63,94,0.12);color:#ff7d7d;}
+.tpl-insp-ex-add{
+  display:flex;gap:6px;
+}
+.tpl-insp-ex-add input{
+  flex:1;padding:7px 10px;border-radius:7px;
+  background:rgba(255,255,255,0.04);
+  border:1px dashed rgba(255,255,255,0.15);
+  color:var(--t1);font:inherit;font-size:12px;
+  font-family:'SF Mono', ui-monospace, monospace;
+  outline:none;
+}
+.tpl-insp-ex-add input:focus{border-style:solid;border-color:var(--cyan);background:rgba(255,255,255,0.06);}
+.tpl-insp-ex-add-btn{
+  padding:7px 12px;border-radius:7px;
+  background:rgba(56,189,248,0.16);border:1px solid rgba(56,189,248,0.3);
+  color:#7ed3f7;font:inherit;font-size:11.5px;font-weight:600;
+  cursor:pointer;transition:all .12s;
+}
+.tpl-insp-ex-add-btn:hover{background:rgba(56,189,248,0.24);border-color:rgba(56,189,248,0.5);}
+
+/* Group inspector — color/icon pickers */
+.tpl-insp-color-grid,
+.tpl-insp-icon-grid{
+  display:flex;flex-wrap:wrap;gap:5px;
+}
+.tpl-insp-color{
+  width:26px;height:26px;border-radius:7px;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  border:2px solid transparent;
+  transition:transform .12s;
+}
+.tpl-insp-color:hover{transform:scale(1.1);}
+.tpl-insp-color.is-selected{border-color:var(--t1);box-shadow:0 0 0 1px rgba(0,0,0,0.4);}
+.tpl-insp-color svg{width:13px;height:13px;color:#fff;opacity:0;transition:opacity .12s;}
+.tpl-insp-color.is-selected svg{opacity:1;}
+.tpl-insp-color.is-none{
+  background:repeating-linear-gradient(45deg, rgba(255,255,255,0.04) 0 3px, rgba(255,255,255,0.08) 3px 6px);
+  border:1px solid rgba(255,255,255,0.12);
+}
+.tpl-insp-color.is-none.is-selected{border:2px solid var(--t1);}
+
+.tpl-insp-icon{
+  width:30px;height:30px;border-radius:7px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.08);
+  cursor:pointer;font-size:14px;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .12s;
+  font-family:inherit;color:inherit;line-height:1;
+}
+.tpl-insp-icon:hover{background:rgba(255,255,255,0.07);border-color:rgba(255,255,255,0.18);}
+.tpl-insp-icon.is-selected{
+  background:rgba(56,189,248,0.18);
+  border-color:var(--cyan);
+}
+.tpl-insp-icon.is-none{color:var(--t3);font-size:10px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;}
+
+/* Group contents summary */
+.tpl-insp-summary-row{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  font-size:12px;color:var(--t2);
+  padding:7px 11px;
+  background:rgba(255,255,255,0.022);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:7px;
+  margin-bottom:5px;
+}
+.tpl-insp-summary-row b{color:var(--t1);font-weight:600;}
+
 </style>
 </head>
 <body>
@@ -7979,249 +8259,690 @@ function renderInspectTab(tpl) {
   return renderInspectRuleSummary(tpl, node);
 }
 
+/* =========================
+   Phase 3 — Rule + Group editors
+   ========================= */
+
+/* State for Phase 3 inspectors */
+tplDetailState.ruleSubTab = tplDetailState.ruleSubTab || 'basics';
+/* In-session test values per rule (not persisted). Falls back to defaults
+   keyed by the rule's appliesToFieldType. */
+tplDetailState.testValues = tplDetailState.testValues || {};
+
+const _RULE_FUNC_REF = [
+  { name:'value',           desc:'The field value being checked. Required in every expression.' },
+  { name:'isEmpty(value)',  desc:'True when value is null or empty string.' },
+  { name:'matches(value, /regex/)', desc:'True when value matches the regex.' },
+  { name:'length(value)',   desc:'Length of the string form of value.' },
+  { name:"in(value, ['a','b'])", desc:'True when value is in the array.' },
+  { name:'contains(value, sub)', desc:'True when value contains the substring.' },
+  { name:'startsWith(value, sub)', desc:'True when value starts with the substring.' },
+  { name:'endsWith(value, sub)', desc:'True when value ends with the substring.' },
+  { name:'lower(value) / upper(value)', desc:'Transform to lower/upper case.' },
+  { name:'trim(value)',     desc:'Remove leading/trailing whitespace.' },
+  { name:"replace(value, /re/, 'x')", desc:'Replace pattern with string.' },
+  { name:'coalesce(value, fallback)', desc:'Return fallback when value is empty.' },
+  { name:'round(value, n)', desc:'Round to n decimal places.' },
+  { name:'abs / floor / ceil / min / max', desc:'Math helpers.' },
+];
+
+const _DEFAULT_TEST_VALUES = {
+  email:    ['user@example.com', 'INVALID', 'Foo@Bar.COM', ''],
+  text:     ['hello', '  spaces  ', '', 'A long string that exceeds normal limits'],
+  number:   ['42', '-1', '0', '999999'],
+  currency: ['99.50', '-50', '0', '2000000'],
+  date:     ['2026-01-15', 'not-a-date', '', '2099-12-31'],
+  boolean:  ['true', 'false', '', 'yes'],
+  url:      ['https://example.com', 'not-a-url', 'http://foo', ''],
+  phone:    ['+1-555-1234', '555-1234', '', 'abc'],
+  any:      ['hello', '42', '', 'true'],
+};
+
+function _testValuesForRule(rule) {
+  if (tplDetailState.testValues[rule.id]) return tplDetailState.testValues[rule.id];
+  const t = rule.appliesToFieldType || 'any';
+  return (_DEFAULT_TEST_VALUES[t] || _DEFAULT_TEST_VALUES.any).slice(0);
+}
+
+/* Expression evaluator (validation → bool; transformation → string).
+   Builds a sandbox of helpers and evaluates with `value` bound.
+   Returns { ok, result, error } where result is bool for validations
+   and string for transformations. */
+function evalRuleExpression(expr, value, ruleType) {
+  if (!expr || !expr.trim()) return { ok:false, error:'No expression' };
+  const helpers = {
+    isEmpty: (v) => v == null || v === '',
+    matches: (v, re) => re instanceof RegExp ? re.test(String(v)) : false,
+    length: (v) => String(v).length,
+    in: (v, arr) => Array.isArray(arr) && arr.indexOf(v) !== -1,
+    contains: (v, s) => String(v).indexOf(s) !== -1,
+    startsWith: (v, s) => String(v).startsWith(s),
+    endsWith: (v, s) => String(v).endsWith(s),
+    lower: (v) => String(v).toLowerCase(),
+    upper: (v) => String(v).toUpperCase(),
+    trim: (v) => String(v).trim(),
+    replace: (v, a, b) => String(v).replace(a, b),
+    coalesce: (v, fb) => (v == null || v === '') ? fb : v,
+    abs: Math.abs, round: (n, d) => { const f = Math.pow(10, d || 0); return Math.round(n * f) / f; },
+    floor: Math.floor, ceil: Math.ceil, min: Math.min, max: Math.max,
+  };
+  try {
+    // For numeric comparisons we coerce string-valued samples that look numeric.
+    let v = value;
+    if (ruleType === 'transformation' && (typeof v === 'string') && /^-?\d+(\.\d+)?$/.test(v)) v = parseFloat(v);
+    if (ruleType === 'validation' && (typeof v === 'string') && /^-?\d+(\.\d+)?$/.test(v) && /[<>=]/.test(expr)) v = parseFloat(v);
+    const argNames = Object.keys(helpers);
+    const argVals = Object.values(helpers);
+    const fn = new Function(...argNames, 'value', 'return (' + expr + ');');
+    const result = fn(...argVals, v);
+    return { ok:true, result };
+  } catch (e) {
+    return { ok:false, error: e.message };
+  }
+}
+
+/* ---------- Mutation: patch a node immutably ---------- */
+function _patchNode(templateId, nodeId, patch, versionLabel) {
+  const tpl = findTemplate(templateId);
+  if (!_guardEditable(tpl)) return;
+  tpl.tree = updateNode(tpl.tree, nodeId, patch);
+  upsertTemplate(tpl);
+  _autoVersionTpl(templateId, versionLabel || 'Edited node');
+}
+
+/* Inline rename of a rule/group node */
+function startEditNodeName(nodeId) {
+  tplDetailState.editingHeader = 'node:' + nodeId;
+  const node = findNode(findTemplate(tplDetailState.templateId).tree, nodeId);
+  tplDetailState.draftName = node ? node.name : '';
+  renderTemplateDetail(encodeURIComponent(tplDetailState.templateId));
+  setTimeout(() => {
+    const el = document.getElementById('tplNodeNameInput');
+    if (el) { el.focus(); el.select(); }
+  }, 0);
+}
+function commitNodeName(nodeId) {
+  const tpl = findTemplate(tplDetailState.templateId);
+  if (!tpl) return;
+  const node = findNode(tpl.tree, nodeId);
+  const v = (tplDetailState.draftName || '').trim();
+  if (v && node && v !== node.name) {
+    _patchNode(tpl.id, nodeId, { name: v }, 'Renamed ' + node.kind + ' to "' + v + '"');
+    trackTpl('node_renamed', { templateId: tpl.id, nodeId, kind: node.kind });
+  }
+  tplDetailState.editingHeader = null;
+  renderTemplateDetail(encodeURIComponent(tpl.id));
+}
+function cancelNodeNameEdit() {
+  tplDetailState.editingHeader = null;
+  renderTemplateDetail(encodeURIComponent(tplDetailState.templateId));
+}
+
+/* Description draft + commit (autosave on blur) */
+tplDetailState.draftNodeDesc = tplDetailState.draftNodeDesc || '';
+function updateDraftNodeDesc(v) { tplDetailState.draftNodeDesc = v; }
+function commitNodeDesc(nodeId) {
+  const tpl = findTemplate(tplDetailState.templateId);
+  if (!tpl) return;
+  const node = findNode(tpl.tree, nodeId);
+  if (!node) return;
+  const v = tplDetailState.draftNodeDesc || '';
+  if (v !== (node.description || '')) {
+    _patchNode(tpl.id, nodeId, { description: v }, 'Edited description of ' + (node.name || node.id));
+  }
+  tplDetailState.draftNodeDesc = '';
+  renderTemplateDetail(encodeURIComponent(tpl.id));
+}
+
+/* ---------- Rule basics mutations ---------- */
+function setRuleType(nodeId, ruleType) {
+  const tpl = findTemplate(tplDetailState.templateId);
+  if (!tpl) return;
+  const node = findNode(tpl.tree, nodeId);
+  if (!node) return;
+  _patchNode(tpl.id, nodeId, { ruleType }, 'Changed rule type of ' + node.name + ' to ' + ruleType);
+  trackTpl('rule_type_changed', { templateId: tpl.id, nodeId, ruleType });
+  renderTemplateDetail(encodeURIComponent(tpl.id));
+}
+function setRuleSeverity(nodeId, severity) {
+  const tpl = findTemplate(tplDetailState.templateId);
+  if (!tpl) return;
+  const node = findNode(tpl.tree, nodeId);
+  if (!node) return;
+  _patchNode(tpl.id, nodeId, { severity }, 'Set severity of ' + node.name + ' to ' + severity);
+  renderTemplateDetail(encodeURIComponent(tpl.id));
+}
+function setRuleAppliesTo(nodeId, appliesToFieldType) {
+  const tpl = findTemplate(tplDetailState.templateId);
+  if (!tpl) return;
+  const node = findNode(tpl.tree, nodeId);
+  if (!node) return;
+  _patchNode(tpl.id, nodeId, { appliesToFieldType }, 'Restricted ' + node.name + ' to ' + appliesToFieldType);
+  // Reset cached test values since they were keyed on previous type
+  delete tplDetailState.testValues[nodeId];
+  renderTemplateDetail(encodeURIComponent(tpl.id));
+}
+function toggleRuleEnabled(nodeId) {
+  const tpl = findTemplate(tplDetailState.templateId);
+  if (!tpl) return;
+  const node = findNode(tpl.tree, nodeId);
+  if (!node) return;
+  const next = !(node.isEnabled !== false);  // node.isEnabled !== false → true; we flip it
+  _patchNode(tpl.id, nodeId, { isEnabled: next }, (next ? 'Enabled ' : 'Disabled ') + node.name);
+  trackTpl('rule_toggled', { templateId: tpl.id, nodeId, enabled: next });
+  renderTemplateDetail(encodeURIComponent(tpl.id));
+}
+function addRuleTag(nodeId, value) {
+  const v = (value || '').trim();
+  if (!v) return;
+  const tpl = findTemplate(tplDetailState.templateId);
+  if (!tpl) return;
+  const node = findNode(tpl.tree, nodeId);
+  if (!node) return;
+  const tags = (node.tags || []).slice();
+  if (tags.indexOf(v) !== -1) return;
+  tags.push(v);
+  _patchNode(tpl.id, nodeId, { tags }, 'Tagged ' + node.name + ' with "' + v + '"');
+  renderTemplateDetail(encodeURIComponent(tpl.id));
+}
+function removeRuleTag(nodeId, value) {
+  const tpl = findTemplate(tplDetailState.templateId);
+  if (!tpl) return;
+  const node = findNode(tpl.tree, nodeId);
+  if (!node) return;
+  const tags = (node.tags || []).filter(t => t !== value);
+  _patchNode(tpl.id, nodeId, { tags }, 'Removed tag "' + value + '" from ' + node.name);
+  renderTemplateDetail(encodeURIComponent(tpl.id));
+}
+function _onRuleTagKey(ev, nodeId) {
+  if (ev.key === 'Enter') {
+    ev.preventDefault();
+    addRuleTag(nodeId, ev.target.value);
+    ev.target.value = '';
+  }
+}
+
+/* Expression edit — autosave on blur */
+tplDetailState.draftExpression = '';
+function updateDraftExpression(v) { tplDetailState.draftExpression = v; }
+function commitExpression(nodeId) {
+  const tpl = findTemplate(tplDetailState.templateId);
+  if (!tpl) return;
+  const node = findNode(tpl.tree, nodeId);
+  if (!node) return;
+  const v = tplDetailState.draftExpression || '';
+  if (v !== (node.expression || '')) {
+    _patchNode(tpl.id, nodeId, { expression: v }, 'Edited expression of ' + node.name);
+    trackTpl('rule_expression_edited', { templateId: tpl.id, nodeId });
+  }
+  tplDetailState.draftExpression = '';
+  renderTemplateDetail(encodeURIComponent(tpl.id));
+}
+
+/* Examples tab — test value cache */
+function addTestValue(ruleId, raw) {
+  if (raw == null) return;
+  if (!tplDetailState.testValues[ruleId]) {
+    const rule = findNode(findTemplate(tplDetailState.templateId).tree, ruleId);
+    tplDetailState.testValues[ruleId] = _testValuesForRule(rule);
+  }
+  tplDetailState.testValues[ruleId].push(raw);
+  renderTemplateDetail(encodeURIComponent(tplDetailState.templateId));
+}
+function removeTestValue(ruleId, idx) {
+  if (!tplDetailState.testValues[ruleId]) {
+    const rule = findNode(findTemplate(tplDetailState.templateId).tree, ruleId);
+    tplDetailState.testValues[ruleId] = _testValuesForRule(rule);
+  }
+  tplDetailState.testValues[ruleId].splice(idx, 1);
+  renderTemplateDetail(encodeURIComponent(tplDetailState.templateId));
+}
+function updateTestValue(ruleId, idx, raw) {
+  if (!tplDetailState.testValues[ruleId]) {
+    const rule = findNode(findTemplate(tplDetailState.templateId).tree, ruleId);
+    tplDetailState.testValues[ruleId] = _testValuesForRule(rule);
+  }
+  tplDetailState.testValues[ruleId][idx] = raw;
+  // Light re-render: only the results column needs updating but full re-render
+  // is cheap enough for the prototype.
+  renderTemplateDetail(encodeURIComponent(tplDetailState.templateId));
+}
+function _onAddTestKey(ev, ruleId) {
+  if (ev.key === 'Enter') {
+    ev.preventDefault();
+    if (ev.target.value !== '') {
+      addTestValue(ruleId, ev.target.value);
+      ev.target.value = '';
+    }
+  }
+}
+
+/* Functions reference toggle */
+tplDetailState.funcRefOpen = false;
+function toggleFuncRef() {
+  tplDetailState.funcRefOpen = !tplDetailState.funcRefOpen;
+  renderTemplateDetail(encodeURIComponent(tplDetailState.templateId));
+}
+
+/* Sub-tab selection */
+function setRuleSubTab(tab) {
+  tplDetailState.ruleSubTab = tab;
+  trackTpl('rule_subtab', { tab });
+  renderTemplateDetail(encodeURIComponent(tplDetailState.templateId));
+}
+
+/* ---------- Group mutations ---------- */
+function setGroupColor(nodeId, color) {
+  const tpl = findTemplate(tplDetailState.templateId);
+  if (!tpl) return;
+  const node = findNode(tpl.tree, nodeId);
+  if (!node) return;
+  _patchNode(tpl.id, nodeId, { color }, 'Changed color of ' + node.name + ' to ' + color);
+  renderTemplateDetail(encodeURIComponent(tpl.id));
+}
+function setGroupIcon(nodeId, icon) {
+  const tpl = findTemplate(tplDetailState.templateId);
+  if (!tpl) return;
+  const node = findNode(tpl.tree, nodeId);
+  if (!node) return;
+  _patchNode(tpl.id, nodeId, { icon }, 'Changed icon of ' + node.name + ' to ' + icon);
+  renderTemplateDetail(encodeURIComponent(tpl.id));
+}
+function toggleGroupCollapsedDefault(nodeId) {
+  const tpl = findTemplate(tplDetailState.templateId);
+  if (!tpl) return;
+  const node = findNode(tpl.tree, nodeId);
+  if (!node) return;
+  const next = !node.collapsedByDefault;
+  _patchNode(tpl.id, nodeId, { collapsedByDefault: next },
+    (next ? 'Set ' : 'Unset ') + node.name + ' as collapsed-by-default');
+  renderTemplateDetail(encodeURIComponent(tpl.id));
+}
+
+/* ---------- Custom prop mutation ---------- */
+function updateNodeCustomProp(nodeId, defId, value) {
+  const tpl = findTemplate(tplDetailState.templateId);
+  if (!tpl) return;
+  const node = findNode(tpl.tree, nodeId);
+  if (!node) return;
+  const customProps = Object.assign({}, node.customProps || {});
+  if (value == null || value === '') delete customProps[defId];
+  else customProps[defId] = value;
+  _patchNode(tpl.id, nodeId, { customProps },
+    'Updated custom property on ' + node.name);
+  renderTemplateDetail(encodeURIComponent(tpl.id));
+}
+
+/* ---------- Renderers ---------- */
 function renderInspectGroupSummary(tpl, node) {
-  const groupColor = node.color && node.color !== 'none' ? node.color : null;
-  const emoji = TPL_GROUP_ICON_EMOJI[node.icon || 'none'] || '';
-  let groups = 0, rules = 0;
-  walkTree(node.children || [], n => { if (n.kind === 'group') groups++; else if (n.kind === 'rule') rules++; });
+  // Phase 3 makes the group "summary" fully editable. Kept the same function
+  // name so the call site in renderInspectTab still resolves.
+  return renderInspectGroupEditor(tpl, node);
+}
+function renderInspectRuleSummary(tpl, node) {
+  return renderInspectRuleEditor(tpl, node);
+}
+
+function _renderNodeNameField(node) {
+  const editing = tplDetailState.editingHeader === 'node:' + node.id;
+  if (editing) {
+    return `<div class="tpl-insp-name"><input id="tplNodeNameInput" type="text"
+        value="${escapeHtml(tplDetailState.draftName)}"
+        oninput="updateTplDraftName(this.value)"
+        onkeydown="if(event.key==='Enter')commitNodeName('${escapeHtml(node.id)}'); if(event.key==='Escape')cancelNodeNameEdit()"
+        onblur="commitNodeName('${escapeHtml(node.id)}')" /></div>`;
+  }
+  return `<div class="tpl-insp-name" onclick="startEditNodeName('${escapeHtml(node.id)}')" title="Click to rename">${escapeHtml(node.name)}</div>`;
+}
+
+function _renderDescField(node) {
+  const ed = tplDetailState.editingHeader === 'desc:' + node.id;
+  if (ed) {
+    return `<textarea class="tpl-insp-textarea"
+        autofocus
+        oninput="updateDraftNodeDesc(this.value)"
+        onblur="commitNodeDesc('${escapeHtml(node.id)}')">${escapeHtml(tplDetailState.draftNodeDesc)}</textarea>`;
+  }
+  if (node.description) {
+    return `<div class="tpl-rail-prop-v" style="cursor:text" onclick="tplDetailState.editingHeader='desc:${escapeHtml(node.id)}';tplDetailState.draftNodeDesc=${JSON.stringify(node.description || '')};renderTemplateDetail(encodeURIComponent(tplDetailState.templateId))">${escapeHtml(node.description)}</div>`;
+  }
+  return `<div class="tpl-rail-prop-v is-empty" style="cursor:text" onclick="tplDetailState.editingHeader='desc:${escapeHtml(node.id)}';tplDetailState.draftNodeDesc='';renderTemplateDetail(encodeURIComponent(tplDetailState.templateId))">Click to add a description…</div>`;
+}
+
+/* ---------- Group editor ---------- */
+function renderInspectGroupEditor(tpl, node) {
+  const editable = tpl.source !== 'system';
+  const colors = TPL_GROUP_COLORS.map(col => `
+    <div class="tpl-insp-color ${col === 'none' ? 'is-none' : ''} ${(node.color || 'none') === col ? 'is-selected' : ''}"
+      ${editable ? `onclick="setGroupColor('${escapeHtml(node.id)}','${col}')"` : ''}
+      style="${col !== 'none' ? `background:${TPL_GROUP_COLOR_HEX[col]}` : ''}"
+      title="${col === 'none' ? 'No color' : col}">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5l3 3 6-7"/></svg>
+    </div>
+  `).join('');
+
+  const icons = TPL_GROUP_ICONS.map(ic => {
+    const emoji = TPL_GROUP_ICON_EMOJI[ic] || '';
+    return `<button class="tpl-insp-icon ${ic === 'none' ? 'is-none' : ''} ${(node.icon || 'none') === ic ? 'is-selected' : ''}"
+      ${editable ? `onclick="setGroupIcon('${escapeHtml(node.id)}','${ic}')"` : ''}
+      title="${ic}">${ic === 'none' ? 'None' : emoji}</button>`;
+  }).join('');
+
+  let g = 0, r = 0;
+  walkTree(node.children || [], n => { if (n.kind === 'group') g++; else if (n.kind === 'rule') r++; });
+
+  const cfdDefs = (tpl.customFieldDefs || []).filter(d => d.appliesTo === 'group' || d.appliesTo === 'both');
+
   return `
-    <div class="tpl-rail-node-h">
-      <div class="tpl-rail-node-h-l">
-        <div class="tpl-rail-node-name">${emoji ? emoji + ' ' : ''}${escapeHtml(node.name)}</div>
-        <div class="tpl-rail-node-id">${escapeHtml(node.id)}</div>
-      </div>
-      <div class="tpl-rail-node-pills">
-        <span class="tpl-tree-ico is-group${groupColor ? ' is-c-' + groupColor : ''}" style="width:24px;height:24px;font-size:10px;">G</span>
-      </div>
+    <div class="tpl-insp-name-wrap">
+      ${_renderNodeNameField(node)}
+      <div class="tpl-insp-id">${escapeHtml(node.id)} · group</div>
     </div>
 
-    <div class="tpl-rail-prop">
-      <div class="tpl-rail-prop-k">Description</div>
-      <div class="tpl-rail-prop-v ${node.description ? '' : 'is-empty'}">${node.description ? escapeHtml(node.description) : 'No description yet'}</div>
-    </div>
-    <div class="tpl-rail-prop">
-      <div class="tpl-rail-prop-k">Color · Icon · Default</div>
-      <div class="tpl-rail-prop-v">${groupColor || 'none'} · ${escapeHtml(node.icon || 'none')} · ${node.collapsedByDefault ? 'collapsed by default' : 'expanded by default'}</div>
-    </div>
-    <div class="tpl-rail-prop">
-      <div class="tpl-rail-prop-k">Contains</div>
-      <div class="tpl-rail-prop-v">${groups} nested group${groups === 1 ? '' : 's'} · ${rules} rule${rules === 1 ? '' : 's'}</div>
+    <div class="tpl-insp-field">
+      <label class="tpl-insp-field-label">Description</label>
+      ${_renderDescField(node)}
     </div>
 
-    <div class="tpl-rail-phase-note"><b>Phase 3 next:</b> these properties become editable in the inspector (color/icon pickers, collapse toggle, custom field defs).</div>
+    <div class="tpl-insp-field">
+      <label class="tpl-insp-field-label">Color</label>
+      <div class="tpl-insp-color-grid">${colors}</div>
+    </div>
+
+    <div class="tpl-insp-field">
+      <label class="tpl-insp-field-label">Icon</label>
+      <div class="tpl-insp-icon-grid">${icons}</div>
+    </div>
+
+    <div class="tpl-insp-switch-row">
+      <div class="tpl-insp-switch-l">
+        <div class="tpl-insp-switch-title">Collapsed by default</div>
+        <div class="tpl-insp-switch-sub">When opening this template, this group starts collapsed.</div>
+      </div>
+      <label class="tpl-insp-switch">
+        <input type="checkbox" ${node.collapsedByDefault ? 'checked' : ''}
+          ${editable ? `onchange="toggleGroupCollapsedDefault('${escapeHtml(node.id)}')"` : 'disabled'} />
+        <span class="tpl-insp-switch-slider"></span>
+      </label>
+    </div>
+
+    <div class="tpl-insp-field" style="margin-top:6px">
+      <label class="tpl-insp-field-label">Contents</label>
+      <div class="tpl-insp-summary-row"><span>Nested groups</span><b>${g}</b></div>
+      <div class="tpl-insp-summary-row"><span>Rules</span><b>${r}</b></div>
+    </div>
+
+    ${cfdDefs.length > 0 ? `
+    <div class="tpl-insp-field">
+      <label class="tpl-insp-field-label">Custom fields</label>
+      ${cfdDefs.map(d => _renderCustomPropField(node, d, editable)).join('')}
+    </div>` : ''}
   `;
 }
 
-function renderInspectRuleSummary(tpl, node) {
-  const sev = node.severity || 'info';
+/* ---------- Rule editor with 4 sub-tabs ---------- */
+function renderInspectRuleEditor(tpl, node) {
+  const editable = tpl.source !== 'system';
+  const sub = tplDetailState.ruleSubTab || 'basics';
   const rt = node.ruleType || 'validation';
-  const applies = node.appliesToFieldType || 'any';
-  const tags = node.tags || [];
-  const expr = node.expression || '';
-  const cfdDefs = (tpl.customFieldDefs || []).filter(d => d.appliesTo === 'rule' || d.appliesTo === 'both');
+
   return `
-    <div class="tpl-rail-node-h">
-      <div class="tpl-rail-node-h-l">
-        <div class="tpl-rail-node-name">${escapeHtml(node.name)}</div>
-        <div class="tpl-rail-node-id">${escapeHtml(node.id)}</div>
-      </div>
-      <div class="tpl-rail-node-pills">
-        ${node.isEnabled === false ? '<span class="tpl-tree-pill is-disabled">Off</span>' : ''}
-        <span class="tpl-tree-pill is-${rt}">${_ruleTypeShort(rt)}</span>
-        ${rt === 'validation' ? `<span class="tpl-tree-pill is-${sev}">${_severityShort(sev)}</span>` : ''}
-      </div>
+    <div class="tpl-insp-name-wrap">
+      ${_renderNodeNameField(node)}
+      <div class="tpl-insp-id">${escapeHtml(node.id)} · ${rt}${rt === 'validation' && node.severity ? ' · ' + node.severity : ''}</div>
     </div>
 
-    <div class="tpl-rail-prop">
-      <div class="tpl-rail-prop-k">Description</div>
-      <div class="tpl-rail-prop-v ${node.description ? '' : 'is-empty'}">${node.description ? escapeHtml(node.description) : 'No description yet'}</div>
+    <div class="tpl-sub-tabs">
+      <button class="tpl-sub-tab ${sub === 'basics' ? 'is-active' : ''}" onclick="setRuleSubTab('basics')">Basics</button>
+      <button class="tpl-sub-tab ${sub === 'expression' ? 'is-active' : ''}" onclick="setRuleSubTab('expression')">Expression</button>
+      <button class="tpl-sub-tab ${sub === 'examples' ? 'is-active' : ''}" onclick="setRuleSubTab('examples')">Examples</button>
+      <button class="tpl-sub-tab ${sub === 'custom' ? 'is-active' : ''}" onclick="setRuleSubTab('custom')">Custom</button>
     </div>
-    <div class="tpl-rail-prop">
-      <div class="tpl-rail-prop-k">Type · Severity · Applies to</div>
-      <div class="tpl-rail-prop-v">${escapeHtml(rt)} · ${rt === 'validation' ? escapeHtml(sev) : '—'} · ${escapeHtml(applies)}</div>
+
+    ${sub === 'basics' ? _renderRuleBasicsTab(tpl, node, editable)
+    : sub === 'expression' ? _renderRuleExpressionTab(tpl, node, editable)
+    : sub === 'examples' ? _renderRuleExamplesTab(tpl, node, editable)
+    : _renderRuleCustomTab(tpl, node, editable)}
+  `;
+}
+
+function _renderRuleBasicsTab(tpl, node, editable) {
+  const rt = node.ruleType || 'validation';
+  const sev = node.severity || 'error';
+  const applies = node.appliesToFieldType || 'any';
+
+  const typeSegs = RULE_TYPES.map(t => `
+    <button class="tpl-insp-seg ${rt === t.id ? 'is-active' : ''}"
+      ${editable ? `onclick="setRuleType('${escapeHtml(node.id)}','${t.id}')"` : 'disabled'}
+      title="${escapeHtml(t.hint)}">${escapeHtml(t.label)}</button>
+  `).join('');
+
+  const sevSegs = SEVERITY_LEVELS.map(s => `
+    <button class="tpl-insp-seg ${sev === s.id ? 'is-active is-' + s.id : ''}"
+      ${editable ? `onclick="setRuleSeverity('${escapeHtml(node.id)}','${s.id}')"` : 'disabled'}
+      title="${escapeHtml(s.hint)}">${escapeHtml(s.label)}</button>
+  `).join('');
+
+  const applyOptions = APPLIES_TO_TYPES.map(a =>
+    `<option value="${a.id}" ${applies === a.id ? 'selected' : ''}>${escapeHtml(a.label)}</option>`
+  ).join('');
+
+  const tagsHtml = (node.tags || []).map(t => `
+    <span class="tpl-insp-tag">${escapeHtml(t)}
+      ${editable ? `<button class="tpl-insp-tag-rm" onclick="removeRuleTag('${escapeHtml(node.id)}','${escapeHtml(t)}')" aria-label="Remove ${escapeHtml(t)}">
+        <svg width="9" height="9" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 3l10 10M13 3L3 13"/></svg>
+      </button>` : ''}
+    </span>
+  `).join('');
+
+  const isEnabled = node.isEnabled !== false;
+
+  return `
+    <div class="tpl-insp-field">
+      <label class="tpl-insp-field-label">Description</label>
+      ${_renderDescField(node)}
     </div>
-    <div class="tpl-rail-prop">
-      <div class="tpl-rail-prop-k">Expression</div>
-      <div class="tpl-rail-prop-v ${expr ? 'is-mono' : 'is-empty'}">${expr ? escapeHtml(expr) : 'No expression — rule does nothing until you add one'}</div>
+
+    <div class="tpl-insp-field">
+      <label class="tpl-insp-field-label">Rule type</label>
+      <div class="tpl-insp-segmented">${typeSegs}</div>
     </div>
-    <div class="tpl-rail-prop">
-      <div class="tpl-rail-prop-k">Enabled · Tags</div>
-      <div class="tpl-rail-prop-v">
-        ${node.isEnabled === false ? 'Disabled' : 'Enabled'}
-        ${tags.length > 0 ? ' · <span class="tpl-rail-prop-tags">' + tags.map(t => `<span class="tpl-rail-prop-tag">${escapeHtml(t)}</span>`).join('') + '</span>' : ' · no tags'}
-      </div>
-    </div>
-    ${cfdDefs.length > 0 ? `<div class="tpl-rail-prop">
-      <div class="tpl-rail-prop-k">Custom fields</div>
-      <div class="tpl-rail-prop-v">${cfdDefs.map(d => {
-        const v = (node.customProps || {})[d.id];
-        return `<div style="margin-bottom:3px"><span style="color:var(--t3)">${escapeHtml(d.name)}:</span> ${v == null || v === '' ? '<span style="color:var(--t3);font-style:italic">—</span>' : (d.type === 'boolean' ? (v ? 'Yes' : 'No') : escapeHtml(String(v)))}</div>`;
-      }).join('')}</div>
+
+    ${rt === 'validation' ? `
+    <div class="tpl-insp-field">
+      <label class="tpl-insp-field-label">Severity</label>
+      <div class="tpl-insp-segmented">${sevSegs}</div>
+      <div class="tpl-insp-field-hint">${escapeHtml((SEVERITY_LEVELS.find(s => s.id === sev) || {}).hint || '')}</div>
     </div>` : ''}
 
-    <div class="tpl-rail-phase-note"><b>Phase 3 next:</b> this read-only summary becomes a 4-tab editor (Basics / Expression / Examples / Custom) with live validator and pass/fail fixtures.</div>
-  `;
-}
+    <div class="tpl-insp-field">
+      <label class="tpl-insp-field-label">Applies to field type</label>
+      <select class="tpl-insp-select"
+        ${editable ? `onchange="setRuleAppliesTo('${escapeHtml(node.id)}', this.value)"` : 'disabled'}>
+        ${applyOptions}
+      </select>
+      <div class="tpl-insp-field-hint">Restricts which Table×Field combinations this rule can be applied to.</div>
+    </div>
 
-function renderVersionsTabStub(tpl) {
-  const v = tpl.versions || [];
-  return `
-    <div class="tpl-rail-stub">
-      <b>Version history (Phase 4)</b>
-      ${v.length} version${v.length === 1 ? '' : 's'} captured so far. The full restore-with-backup panel lands in Phase 4.
-      <div class="tpl-rail-stub-meta">
-        Latest: <code style="color:var(--t2)">${escapeHtml((v[0] && v[0].label) || '—')}</code><br/>
-        ${v[0] ? 'by ' + escapeHtml(v[0].author) + ' · ' + escapeHtml(formatTplRelative(v[0].createdAt)) : ''}
+    <div class="tpl-insp-switch-row">
+      <div class="tpl-insp-switch-l">
+        <div class="tpl-insp-switch-title">${isEnabled ? 'Rule is enabled' : 'Rule is disabled'}</div>
+        <div class="tpl-insp-switch-sub">${isEnabled ? 'Applied to ingest for every field this pack covers.' : 'Skipped at ingest — appears off in the tree.'}</div>
       </div>
+      <label class="tpl-insp-switch">
+        <input type="checkbox" ${isEnabled ? 'checked' : ''}
+          ${editable ? `onchange="toggleRuleEnabled('${escapeHtml(node.id)}')"` : 'disabled'} />
+        <span class="tpl-insp-switch-slider"></span>
+      </label>
+    </div>
+
+    <div class="tpl-insp-field">
+      <label class="tpl-insp-field-label">Tags</label>
+      <div class="tpl-insp-tags">
+        ${tagsHtml}
+        ${editable ? `<input class="tpl-insp-tag-input" type="text" placeholder="Add tag…"
+          onkeydown="_onRuleTagKey(event,'${escapeHtml(node.id)}')" />` : ''}
+      </div>
+      <div class="tpl-insp-field-hint">Free-form labels for filtering and reporting.</div>
     </div>
   `;
 }
 
-function renderUsageTabStub(tpl) {
-  const applied = tpl.appliedTo || [];
-  if (applied.length === 0) {
+function _renderRuleExpressionTab(tpl, node, editable) {
+  const expr = tplDetailState.editingHeader === 'expr:' + node.id ? tplDetailState.draftExpression : (node.expression || '');
+  const v = validateExpression(expr);
+  const refOpen = tplDetailState.funcRefOpen;
+  const placeholder = node.ruleType === 'transformation'
+    ? "lower(trim(value))"
+    : node.ruleType === 'enrichment'
+      ? "// expression returns the enrichment value"
+      : "not isEmpty(value)";
+
+  const funcRef = refOpen ? `
+    <div class="tpl-insp-funcref-body">
+      ${_RULE_FUNC_REF.map(r => `
+        <div class="tpl-insp-funcref-row">
+          <div class="tpl-insp-funcref-name">${escapeHtml(r.name)}</div>
+          <div class="tpl-insp-funcref-desc">${escapeHtml(r.desc)}</div>
+        </div>
+      `).join('')}
+    </div>
+  ` : '';
+
+  return `
+    <div class="tpl-insp-field">
+      <label class="tpl-insp-field-label">Expression${editable ? '' : ' (read-only)'}</label>
+      <textarea class="tpl-insp-textarea is-mono" rows="3"
+        placeholder="${escapeHtml(placeholder)}"
+        ${editable ? `oninput="updateDraftExpression(this.value)"
+          onfocus="tplDetailState.editingHeader='expr:${escapeHtml(node.id)}';tplDetailState.draftExpression=this.value;"
+          onblur="commitExpression('${escapeHtml(node.id)}')"` : 'disabled'}>${escapeHtml(expr)}</textarea>
+      ${v.valid && expr.trim()
+        ? `<div class="tpl-insp-expr-status is-ok">
+            <span class="tpl-insp-expr-status-ic"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3.5 8.5l3 3 6-7"/></svg></span>
+            <div class="tpl-insp-expr-status-l"><b>Expression is valid.</b> Test it against sample values in the Examples tab.</div>
+          </div>`
+        : (expr.trim() ? `<div class="tpl-insp-expr-status is-err">
+            <span class="tpl-insp-expr-status-ic"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="8" cy="8" r="6.5"/><path d="M8 5v3.5M8 11h.01"/></svg></span>
+            <div class="tpl-insp-expr-status-l"><b>${v.errors.length} issue${v.errors.length === 1 ? '' : 's'}:</b><ul>${v.errors.map(e => '<li>' + escapeHtml(e) + '</li>').join('')}</ul></div>
+          </div>` : '')}
+    </div>
+
+    <div class="tpl-insp-funcref">
+      <div class="tpl-insp-funcref-h" onclick="toggleFuncRef()">
+        <span>Functions reference</span>
+        <span>${refOpen ? '▾' : '▸'}</span>
+      </div>
+      ${funcRef}
+    </div>
+  `;
+}
+
+function _renderRuleExamplesTab(tpl, node, editable) {
+  const samples = _testValuesForRule(node);
+  const expr = node.expression || '';
+  const rt = node.ruleType || 'validation';
+
+  const rows = samples.map((raw, i) => {
+    const res = evalRuleExpression(expr, raw, rt);
+    let resHtml;
+    if (!expr.trim()) {
+      resHtml = `<span class="tpl-insp-ex-result is-err">no expr</span>`;
+    } else if (!res.ok) {
+      resHtml = `<span class="tpl-insp-ex-result is-err" title="${escapeHtml(res.error || '')}">err</span>`;
+    } else if (rt === 'transformation') {
+      resHtml = `<span class="tpl-insp-ex-result is-out">→ ${escapeHtml(String(res.result))}</span>`;
+    } else {
+      // Validation: truthy = pass, falsy = fail
+      resHtml = res.result
+        ? `<span class="tpl-insp-ex-result is-pass">pass</span>`
+        : `<span class="tpl-insp-ex-result is-fail">fail</span>`;
+    }
     return `
-      <div class="tpl-rail-stub">
-        <b>Not applied yet</b>
-        This template hasn't been wired to any Table fields. Phase 4 adds an "Apply to a field" picker that reads from Tables.
+      <div class="tpl-insp-ex-row">
+        <input class="tpl-insp-ex-input" type="text"
+          value="${escapeHtml(String(raw))}"
+          ${editable ? `onchange="updateTestValue('${escapeHtml(node.id)}', ${i}, this.value)"` : 'disabled'} />
+        ${resHtml}
+        ${editable ? `<button class="tpl-insp-ex-rm" onclick="removeTestValue('${escapeHtml(node.id)}', ${i})" aria-label="Remove">
+          <svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 3l10 10M13 3L3 13"/></svg>
+        </button>` : '<span></span>'}
+      </div>
+    `;
+  }).join('');
+
+  return `
+    <div class="tpl-insp-ex-h">Test the expression against sample values. ${rt === 'validation' ? 'Pass = the rule lets the value through; fail = the rule rejects it.' : rt === 'transformation' ? 'The arrow shows the transformed value.' : 'Output shows the enrichment result.'}</div>
+    <div class="tpl-insp-ex-list">${rows || '<div class="tpl-rail-stub" style="text-align:left;padding:12px;"><b>No samples yet</b>Add one below to see the expression in action.</div>'}</div>
+    ${editable ? `
+    <div class="tpl-insp-ex-add">
+      <input type="text" placeholder="Add another sample value…"
+        onkeydown="_onAddTestKey(event,'${escapeHtml(node.id)}')" />
+      <button class="tpl-insp-ex-add-btn" onclick="
+        const inp = this.previousElementSibling;
+        if (inp.value !== '') { addTestValue('${escapeHtml(node.id)}', inp.value); inp.value=''; }
+      ">Add</button>
+    </div>` : ''}
+  `;
+}
+
+function _renderRuleCustomTab(tpl, node, editable) {
+  const cfdDefs = (tpl.customFieldDefs || []).filter(d => d.appliesTo === 'rule' || d.appliesTo === 'both');
+  if (cfdDefs.length === 0) {
+    return `<div class="tpl-rail-stub" style="text-align:left;"><b>No custom fields defined</b>This template doesn't define any custom fields that apply to rules. Add them from the Settings tab (Phase 4).</div>`;
+  }
+  return cfdDefs.map(d => `
+    <div class="tpl-insp-field">
+      <label class="tpl-insp-field-label">${escapeHtml(d.name)}</label>
+      ${_renderCustomPropInputInner(node, d, editable)}
+    </div>
+  `).join('');
+}
+
+function _renderCustomPropField(node, def, editable) {
+  return `
+    <div class="tpl-insp-field" style="margin-top:6px">
+      <label class="tpl-insp-field-label">${escapeHtml(def.name)}</label>
+      ${_renderCustomPropInputInner(node, def, editable)}
+    </div>
+  `;
+}
+function _renderCustomPropInputInner(node, def, editable) {
+  const v = (node.customProps || {})[def.id];
+  if (def.type === 'boolean') {
+    return `
+      <div class="tpl-insp-switch-row" style="padding:7px 11px">
+        <div class="tpl-insp-switch-l">
+          <div class="tpl-insp-switch-title">${v ? 'Yes' : 'No'}</div>
+        </div>
+        <label class="tpl-insp-switch">
+          <input type="checkbox" ${v ? 'checked' : ''}
+            ${editable ? `onchange="updateNodeCustomProp('${escapeHtml(node.id)}','${escapeHtml(def.id)}', this.checked)"` : 'disabled'} />
+          <span class="tpl-insp-switch-slider"></span>
+        </label>
       </div>
     `;
   }
-  return `
-    <div class="tpl-rail-stub" style="text-align:left;">
-      <b>Applied to ${applied.length} field${applied.length === 1 ? '' : 's'} (Phase 4)</b>
-      ${applied.map(a => `<div style="padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04)"><span style="color:var(--t1)">${escapeHtml(a.tableName)}</span><span style="color:var(--t3)"> · ${escapeHtml(a.fieldName)}</span></div>`).join('')}
-      <div class="tpl-rail-stub-meta">Phase 4 wires this to the real Tables surface (add/remove application).</div>
-    </div>
-  `;
-}
-
-function renderSettingsTabStub(tpl) {
-  const cf = tpl.customFieldDefs || [];
-  return `
-    <div class="tpl-rail-stub" style="text-align:left;">
-      <b>Custom field definitions (Phase 4)</b>
-      ${cf.length === 0
-        ? '<div style="color:var(--t3);font-style:italic">No custom fields defined.</div>'
-        : cf.map(d => `<div style="padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04)"><span style="color:var(--t1)">${escapeHtml(d.name)}</span><span style="color:var(--t3)"> · ${escapeHtml(d.type)} · applies to ${escapeHtml(d.appliesTo)}</span></div>`).join('')}
-      <div class="tpl-rail-stub-meta">Phase 4 makes these editable (add / edit / delete custom field defs).</div>
-    </div>
-  `;
-}
-
-/* ---------- Header renderer ---------- */
-function renderTemplateHeader(tpl, editable) {
-  const domainMeta = RULE_DOMAINS[tpl.domain] || RULE_DOMAINS.general;
-  const stats = countNodes(tpl.tree || []);
-  const appliedCount = (tpl.appliedTo || []).length;
-  const vCount = (tpl.versions || []).length;
-  const cfdCount = (tpl.customFieldDefs || []).length;
-  const editingName = editable && tplDetailState.editingHeader === 'name';
-  const editingDesc = editable && tplDetailState.editingHeader === 'desc';
-
-  return `
-    <div class="tpl-detail-h">
-      <div class="tpl-detail-h-row">
-        <div class="tpl-detail-h-l">
-          ${editingName
-            ? `<div class="tpl-detail-h-name"><input id="tplDetailNameInput" type="text" value="${escapeHtml(tplDetailState.draftName)}"
-                oninput="updateTplDraftName(this.value)"
-                onkeydown="if(event.key==='Enter')commitTplName('${escapeHtml(tpl.id)}'); if(event.key==='Escape')cancelTplHeaderEdit('${escapeHtml(tpl.id)}')"
-                onblur="commitTplName('${escapeHtml(tpl.id)}')" /></div>`
-            : `<div class="tpl-detail-h-name ${editable ? '' : 'is-readonly'}" ${editable ? `onclick="startEditTplName('${escapeHtml(tpl.id)}')"` : ''} title="${editable ? 'Click to rename' : ''}">${escapeHtml(tpl.name)}</div>`}
-          ${editingDesc
-            ? `<div class="tpl-detail-h-desc"><textarea id="tplDetailDescInput"
-                oninput="updateTplDraftDesc(this.value)"
-                onblur="commitTplDesc('${escapeHtml(tpl.id)}')">${escapeHtml(tplDetailState.draftDesc)}</textarea></div>`
-            : `<div class="tpl-detail-h-desc ${editable ? '' : 'is-readonly'} ${tpl.description ? '' : 'is-empty'}" ${editable ? `onclick="startEditTplDesc('${escapeHtml(tpl.id)}')"` : ''} title="${editable ? 'Click to edit' : ''}">${tpl.description ? escapeHtml(tpl.description) : (editable ? 'Add a description…' : 'No description.')}</div>`}
-          <div class="tpl-detail-h-meta">
-            <span class="tpl-card-source-pill is-${tpl.source}">${tpl.source}</span>
-            <span>${escapeHtml(domainMeta.label)}</span>
-            <code>${escapeHtml(tpl.id)}</code>
-          </div>
-        </div>
-        <div class="tpl-detail-h-r">
-          ${tpl.source === 'system'
-            ? `<button class="tpl-detail-h-btn is-primary" onclick="cloneTplFromDetail('${escapeHtml(tpl.id)}')">Clone &amp; edit →</button>`
-            : ((tpl.appliedTo || []).length === 0
-                ? `<button class="tpl-detail-h-btn is-danger" onclick="confirmDeleteTemplate('${escapeHtml(tpl.id)}')">Delete</button>`
-                : `<button class="tpl-detail-h-btn" disabled title="Remove the pack from all applied fields before deleting" style="opacity:0.5;cursor:not-allowed">Delete</button>`)}
-        </div>
-      </div>
-
-      ${tpl.source === 'system' ? `
-        <div class="tpl-readonly-banner">
-          <span class="tpl-readonly-banner-ic">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="8" cy="8" r="6.5"/><path d="M8 5v3.5M8 11h.01"/></svg>
-          </span>
-          <div class="tpl-readonly-banner-l"><b>System pack — read-only.</b> Clone it to make a custom version you can edit. The clone keeps all groups, rules, expressions and custom field defs.</div>
-        </div>` : ''}
-
-      <div class="tpl-detail-h-stats">
-        <div class="tpl-detail-h-stat"><span class="tpl-detail-h-stat-k">Groups</span><span class="tpl-detail-h-stat-v">${stats.groups}</span></div>
-        <div class="tpl-detail-h-stat"><span class="tpl-detail-h-stat-k">Rules</span><span class="tpl-detail-h-stat-v">${stats.rules}</span></div>
-        <div class="tpl-detail-h-stat"><span class="tpl-detail-h-stat-k">Enabled</span><span class="tpl-detail-h-stat-v ${stats.enabledRules === stats.rules && stats.rules > 0 ? 'is-kpi' : (stats.enabledRules < stats.rules ? 'is-warn' : '')}">${stats.enabledRules} / ${stats.rules}</span></div>
-        <div class="tpl-detail-h-stat"><span class="tpl-detail-h-stat-k">Applied to</span><span class="tpl-detail-h-stat-v">${appliedCount}</span></div>
-        <div class="tpl-detail-h-stat"><span class="tpl-detail-h-stat-k">Versions</span><span class="tpl-detail-h-stat-v">${vCount}</span></div>
-        <div class="tpl-detail-h-stat"><span class="tpl-detail-h-stat-k">Custom fields</span><span class="tpl-detail-h-stat-v">${cfdCount}</span></div>
-      </div>
-    </div>
-  `;
-}
-
-/* ---------- Main detail renderer ---------- */
-function renderTemplateDetail(rawId) {
-  const id = decodeURIComponent(rawId || '');
-  const tpl = findTemplate(id);
-  if (!tpl) {
-    $('content').innerHTML = `
-      <section class="surface">
-        <div class="breadcrumb">
-          <a href="#/templates">Templates</a><span class="crumb-sep">›</span>
-          <span class="crumb-current">Not found</span>
-        </div>
-        <div class="tpl-detail-stub">
-          <div class="tpl-detail-stub-title">Template not found</div>
-          <div class="tpl-detail-stub-sub">No template with ID <code>${escapeHtml(id)}</code>. <a href="#/templates" style="color:var(--cyan)">Back to library</a>.</div>
-        </div>
-      </section>
-    `;
-    return;
+  if (def.type === 'select') {
+    const opts = (def.options || []).map(o =>
+      `<option value="${escapeHtml(o)}" ${v === o ? 'selected' : ''}>${escapeHtml(o)}</option>`
+    ).join('');
+    return `<select class="tpl-insp-select"
+      ${editable ? `onchange="updateNodeCustomProp('${escapeHtml(node.id)}','${escapeHtml(def.id)}', this.value)"` : 'disabled'}>
+      <option value="" ${v ? '' : 'selected'}>—</option>
+      ${opts}
+    </select>`;
   }
-
-  // Reset state if we just switched templates.
-  if (tplDetailState.templateId !== tpl.id) {
-    tplDetailState = {
-      templateId: tpl.id,
-      selectedNodeId: null,
-      activeTab: 'inspect',
-      expandedGroups: null,
-      editingHeader: null,
-      draftName: '', draftDesc: '',
-    };
+  if (def.type === 'number') {
+    return `<input class="tpl-insp-input" type="number" value="${v == null ? '' : escapeHtml(String(v))}"
+      ${editable ? `onchange="updateNodeCustomProp('${escapeHtml(node.id)}','${escapeHtml(def.id)}', this.value === '' ? null : parseFloat(this.value))"` : 'disabled'} />`;
   }
-  _initExpandedFor(tpl);
-
-  const editable = tpl.source !== 'system';
-
-  $('content').innerHTML = `
-    <section class="surface">
-      <div class="breadcrumb">
-        <a href="#/templates">Templates</a><span class="crumb-sep">›</span>
-        <span class="crumb-current">${escapeHtml(tpl.name)}</span>
-      </div>
-
-      ${renderTemplateHeader(tpl, editable)}
-
-      <div class="tpl-split">
-        ${renderTreeEditor(tpl, editable)}
-        ${renderRightRail(tpl)}
-      </div>
-    </section>
-  `;
+  // text
+  return `<input class="tpl-insp-input" type="text" value="${v == null ? '' : escapeHtml(String(v))}"
+    ${editable ? `onchange="updateNodeCustomProp('${escapeHtml(node.id)}','${escapeHtml(def.id)}', this.value)"` : 'disabled'} />`;
 }
 
-/* End Templates Phase 2 */
+/* End Templates Phase 3 */
 
 
 
