@@ -4353,6 +4353,142 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
   padding:14px;text-align:center;font-size:11.5px;color:var(--t3);font-style:italic;
 }
 
+
+/* ============================================================
+   TEMPLATES — Phase 5 (Modals + cascade preview + polish)
+   ============================================================ */
+
+/* Overlay */
+.tpl-modal-overlay{
+  position:fixed;inset:0;z-index:200;
+  background:rgba(2,8,21,0.72);
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+  display:none;align-items:flex-start;justify-content:center;
+  padding:80px 24px 24px;
+  animation:tplOverlayFade .15s ease-out;
+}
+.tpl-modal-overlay.is-open{display:flex;}
+@keyframes tplOverlayFade{from{opacity:0;} to{opacity:1;}}
+
+.tpl-modal{
+  width:100%;max-width:480px;
+  background:linear-gradient(180deg, #131c33, #0e1628);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:14px;
+  box-shadow:0 24px 60px -16px rgba(0,0,0,0.6), 0 0 0 1px rgba(0,0,0,0.4);
+  overflow:hidden;
+  animation:tplModalIn .2s cubic-bezier(.18,.84,.34,1.1);
+}
+@keyframes tplModalIn{
+  from{opacity:0;transform:translateY(-12px) scale(.97);}
+  to{opacity:1;transform:translateY(0) scale(1);}
+}
+
+.tpl-modal-h{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:10px;
+  padding:18px 20px 12px;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+}
+.tpl-modal-h-l{display:flex;flex-direction:column;gap:3px;}
+.tpl-modal-icon{
+  width:32px;height:32px;border-radius:9px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.tpl-modal-icon.is-danger{background:rgba(244,63,94,0.16);color:#ff7d7d;}
+.tpl-modal-icon.is-warning{background:rgba(245,158,11,0.16);color:#fbbf24;}
+.tpl-modal-icon.is-info{background:rgba(56,189,248,0.16);color:#7ed3f7;}
+.tpl-modal-h-row{display:flex;align-items:center;gap:10px;}
+.tpl-modal-title{font-size:15px;font-weight:600;color:var(--t1);letter-spacing:-0.01em;line-height:1.3;}
+.tpl-modal-close{
+  background:transparent;border:0;color:var(--t3);cursor:pointer;
+  width:26px;height:26px;border-radius:6px;
+  display:inline-flex;align-items:center;justify-content:center;
+  transition:all .12s;flex-shrink:0;
+}
+.tpl-modal-close:hover{background:rgba(255,255,255,0.06);color:var(--t1);}
+
+.tpl-modal-body{
+  padding:14px 20px 18px;
+  font-size:13px;color:var(--t2);line-height:1.55;
+}
+.tpl-modal-body p{margin:0 0 10px;}
+.tpl-modal-body p:last-child{margin-bottom:0;}
+.tpl-modal-body b{color:var(--t1);font-weight:600;}
+.tpl-modal-body code{
+  font-family:'SF Mono', ui-monospace, monospace;
+  font-size:11.5px;background:rgba(255,255,255,0.05);
+  padding:1px 5px;border-radius:4px;color:var(--t1);
+}
+
+/* Cascade preview tree */
+.tpl-modal-cascade{
+  margin-top:12px;
+  padding:10px 12px;
+  background:rgba(244,63,94,0.05);
+  border:1px solid rgba(244,63,94,0.22);
+  border-radius:8px;
+  max-height:200px;overflow-y:auto;
+}
+.tpl-modal-cascade-h{
+  font-size:10.5px;font-weight:700;letter-spacing:.08em;
+  color:#ff7d7d;text-transform:uppercase;
+  margin-bottom:6px;
+}
+.tpl-modal-cascade-row{
+  display:flex;align-items:center;gap:6px;
+  font-size:11.5px;line-height:1.5;color:var(--t2);
+  padding:2px 0;
+}
+.tpl-modal-cascade-row span.kind{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:16px;height:16px;border-radius:4px;
+  background:rgba(255,255,255,0.05);
+  font-size:8px;font-weight:700;letter-spacing:.04em;color:var(--t3);
+  flex-shrink:0;
+}
+.tpl-modal-cascade-row span.kind.is-group{background:rgba(56,189,248,0.16);color:#7ed3f7;}
+.tpl-modal-cascade-row .name{color:var(--t1);font-weight:500;}
+.tpl-modal-cascade-row .id{
+  font-family:'SF Mono', ui-monospace, monospace;font-size:10px;color:var(--t3);
+}
+
+.tpl-modal-foot{
+  display:flex;align-items:center;justify-content:flex-end;gap:8px;
+  padding:12px 20px 18px;
+}
+.tpl-modal-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:8px 14px;border-radius:8px;
+  background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);
+  color:var(--t1);font-size:12.5px;font-weight:500;font-family:inherit;
+  cursor:pointer;transition:all .15s;
+}
+.tpl-modal-btn:hover{background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.16);}
+.tpl-modal-btn.is-primary{
+  background:linear-gradient(135deg, rgba(56,189,248,0.26), rgba(56,189,248,0.14));
+  border-color:rgba(56,189,248,0.52);font-weight:600;
+}
+.tpl-modal-btn.is-primary:hover{
+  background:linear-gradient(135deg, rgba(56,189,248,0.36), rgba(56,189,248,0.2));
+  border-color:rgba(56,189,248,0.7);
+}
+.tpl-modal-btn.is-danger{
+  background:rgba(244,63,94,0.18);
+  border-color:rgba(244,63,94,0.42);
+  color:#ff7d7d;font-weight:600;
+}
+.tpl-modal-btn.is-danger:hover{
+  background:rgba(244,63,94,0.28);
+  border-color:rgba(244,63,94,0.6);
+  color:#ff9b9b;
+}
+
+/* Rail body fade-in on tab change */
+.tpl-rail-body{animation:tplRailFade .14s ease-out;}
+@keyframes tplRailFade{from{opacity:0;transform:translateY(2px);} to{opacity:1;transform:translateY(0);}}
+
 </style>
 </head>
 <body>
@@ -9616,7 +9752,368 @@ function renderVersionsTabStub(tpl) { return renderVersionsTab(tpl); }
 function renderSettingsTabStub(tpl) { return renderSettingsTab(tpl); }
 function renderUsageTabStub(tpl)    { return renderUsageTab(tpl); }
 
-/* End Templates Phase 4 */
+
+
+/* =========================
+   Phase 5 — Modal system + cascade preview
+   ========================= */
+
+let tplModalState = { open:false, type:null, payload:null };
+
+function _renderTplModalBody() {
+  const { type, payload } = tplModalState;
+  if (type === 'delete-template') return _modalDeleteTemplate(payload);
+  if (type === 'delete-node')     return _modalDeleteNode(payload);
+  if (type === 'restore-version') return _modalRestoreVersion(payload);
+  if (type === 'delete-cfd')      return _modalDeleteCfd(payload);
+  if (type === 'remove-applied')  return _modalRemoveApplied(payload);
+  return '';
+}
+
+function openTplModal(type, payload) {
+  tplModalState = { open: true, type, payload };
+  const el = document.getElementById('tplModalOverlay');
+  const inner = document.getElementById('tplModal');
+  if (!el || !inner) return;
+  inner.innerHTML = _renderTplModalBody();
+  el.classList.add('is-open');
+  el.setAttribute('aria-hidden', 'false');
+  // Focus the primary action button when present.
+  setTimeout(() => {
+    const btn = inner.querySelector('.tpl-modal-btn.is-primary, .tpl-modal-btn.is-danger');
+    if (btn) btn.focus();
+  }, 60);
+  trackTpl('modal_opened', { type });
+}
+function closeTplModal() {
+  const el = document.getElementById('tplModalOverlay');
+  if (el) {
+    el.classList.remove('is-open');
+    el.setAttribute('aria-hidden', 'true');
+  }
+  tplModalState = { open:false, type:null, payload:null };
+}
+
+/* Global Esc-to-close. */
+(function _wireTplModalKeys() {
+  if (typeof document === 'undefined') return;
+  document.addEventListener('keydown', function(ev) {
+    if (ev.key === 'Escape' && tplModalState.open) {
+      closeTplModal();
+    }
+  });
+})();
+
+/* ---------- Modal body templates ---------- */
+function _iconWarn() {
+  return '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2.5L14 13H2L8 2.5z"/><path d="M8 7v3M8 11.5v.01"/></svg>';
+}
+function _iconTrash() {
+  return '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4.5h10M6 4.5v-1.5h4v1.5M5 4.5l.5 8.5h5l.5-8.5M7 7v4M9 7v4"/></svg>';
+}
+function _iconHistory() {
+  return '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8" r="6.5"/><path d="M8 4.5v4l2.5 1.5"/><path d="M2 8a6 6 0 0 1 6-6"/></svg>';
+}
+function _iconClose() {
+  return '<svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M3 3l10 10M13 3L3 13"/></svg>';
+}
+
+function _modalShell(opts) {
+  const { iconClass, iconSvg, title, bodyHtml, footHtml } = opts;
+  return `
+    <div class="tpl-modal-h">
+      <div class="tpl-modal-h-row">
+        <div class="tpl-modal-icon ${iconClass}">${iconSvg}</div>
+        <div class="tpl-modal-h-l">
+          <div class="tpl-modal-title">${escapeHtml(title)}</div>
+        </div>
+      </div>
+      <button class="tpl-modal-close" onclick="closeTplModal()" aria-label="Close">${_iconClose()}</button>
+    </div>
+    <div class="tpl-modal-body">${bodyHtml}</div>
+    <div class="tpl-modal-foot">${footHtml}</div>
+  `;
+}
+
+function _modalDeleteTemplate(payload) {
+  const tpl = findTemplate(payload.templateId);
+  if (!tpl) return _modalShell({ iconClass:'is-danger', iconSvg:_iconWarn(), title:'Template not found', bodyHtml:'<p>This template no longer exists.</p>', footHtml:`<button class="tpl-modal-btn" onclick="closeTplModal()">Close</button>` });
+  const stats = countNodes(tpl.tree || []);
+  return _modalShell({
+    iconClass:'is-danger', iconSvg:_iconTrash(),
+    title:'Delete this template?',
+    bodyHtml:`
+      <p>You're about to delete <b>${escapeHtml(tpl.name)}</b>. This removes ${stats.groups} group${stats.groups === 1 ? '' : 's'}, ${stats.rules} rule${stats.rules === 1 ? '' : 's'}, and ${(tpl.versions || []).length} version snapshot${(tpl.versions || []).length === 1 ? '' : 's'}.</p>
+      <p>This <b>cannot be undone</b>.</p>
+    `,
+    footHtml:`
+      <button class="tpl-modal-btn" onclick="closeTplModal()">Cancel</button>
+      <button class="tpl-modal-btn is-danger" onclick="_confirmDeleteTemplate('${escapeHtml(tpl.id)}')">Delete template</button>
+    `,
+  });
+}
+
+function _modalDeleteNode(payload) {
+  const tpl = findTemplate(payload.templateId);
+  if (!tpl) return '';
+  const node = findNode(tpl.tree, payload.nodeId);
+  if (!node) return '';
+
+  let cascadeHtml = '';
+  let summaryLine = '';
+  if (node.kind === 'group') {
+    const children = [];
+    walkTree(node.children || [], n => children.push(n));
+    if (children.length > 0) {
+      cascadeHtml = `
+        <div class="tpl-modal-cascade">
+          <div class="tpl-modal-cascade-h">Also removed (${children.length})</div>
+          ${children.slice(0, 30).map(n => `
+            <div class="tpl-modal-cascade-row">
+              <span class="kind ${n.kind === 'group' ? 'is-group' : ''}">${n.kind === 'group' ? 'G' : 'R'}</span>
+              <span class="name">${escapeHtml(n.name)}</span>
+              <span class="id">${escapeHtml(n.id)}</span>
+            </div>
+          `).join('')}
+          ${children.length > 30 ? `<div class="tpl-modal-cascade-row" style="color:var(--t3);font-style:italic;padding-top:4px">… +${children.length - 30} more</div>` : ''}
+        </div>
+      `;
+      summaryLine = `Deleting this group also removes <b>${children.filter(n => n.kind === 'group').length}</b> nested group${children.filter(n => n.kind === 'group').length === 1 ? '' : 's'} and <b>${children.filter(n => n.kind === 'rule').length}</b> rule${children.filter(n => n.kind === 'rule').length === 1 ? '' : 's'}.`;
+    } else {
+      summaryLine = 'This group has no children — it will just be removed.';
+    }
+  } else {
+    summaryLine = `Deleting this rule stops it from being applied at ingest. It does <b>not</b> affect rules in other templates.`;
+  }
+
+  return _modalShell({
+    iconClass:'is-danger', iconSvg:_iconTrash(),
+    title: 'Delete ' + (node.kind === 'group' ? 'group' : 'rule') + '?',
+    bodyHtml:`
+      <p>Remove <b>${escapeHtml(node.name)}</b> (<code>${escapeHtml(node.id)}</code>)?</p>
+      <p>${summaryLine}</p>
+      ${cascadeHtml}
+      <p style="color:var(--t3);font-size:11.5px;margin-top:10px;">You can restore from <b>Versions</b> if you change your mind — every edit is snapshotted.</p>
+    `,
+    footHtml:`
+      <button class="tpl-modal-btn" onclick="closeTplModal()">Cancel</button>
+      <button class="tpl-modal-btn is-danger" onclick="_confirmDeleteNode('${escapeHtml(tpl.id)}','${escapeHtml(node.id)}')">Delete ${node.kind}</button>
+    `,
+  });
+}
+
+function _modalRestoreVersion(payload) {
+  const tpl = findTemplate(payload.templateId);
+  if (!tpl) return '';
+  const target = (tpl.versions || []).find(v => v.id === payload.versionId);
+  if (!target) return '';
+  return _modalShell({
+    iconClass:'is-info', iconSvg:_iconHistory(),
+    title:'Restore this version?',
+    bodyHtml:`
+      <p>Restoring <b>${escapeHtml(target.label || payload.versionId)}</b> replaces the current tree with the snapshot from this version.</p>
+      <p>Your current state is <b>saved as a backup</b> first, so this is always reversible — you can restore the backup if you change your mind.</p>
+      <p style="color:var(--t3);font-size:11.5px;">Version <code>${escapeHtml(target.id)}</code> · ${escapeHtml(target.author)} · ${escapeHtml(formatTplRelative(target.createdAt))}</p>
+    `,
+    footHtml:`
+      <button class="tpl-modal-btn" onclick="closeTplModal()">Cancel</button>
+      <button class="tpl-modal-btn is-primary" onclick="_confirmRestoreVersion('${escapeHtml(tpl.id)}','${escapeHtml(target.id)}')">Restore version</button>
+    `,
+  });
+}
+
+function _modalDeleteCfd(payload) {
+  const tpl = findTemplate(payload.templateId);
+  if (!tpl) return '';
+  const def = (tpl.customFieldDefs || []).find(d => d.id === payload.cfdId);
+  if (!def) return '';
+  // Count nodes that actually have a value for this def — useful context.
+  let nodesWithValue = 0;
+  walkTree(tpl.tree || [], n => {
+    if (n.customProps && Object.prototype.hasOwnProperty.call(n.customProps, def.id)) nodesWithValue++;
+  });
+  return _modalShell({
+    iconClass:'is-warning', iconSvg:_iconWarn(),
+    title:'Delete this custom field?',
+    bodyHtml:`
+      <p>Delete the custom field <b>${escapeHtml(def.name)}</b> (<code>${escapeHtml(def.id)}</code>)?</p>
+      ${nodesWithValue > 0
+        ? `<p>It has values on <b>${nodesWithValue}</b> node${nodesWithValue === 1 ? '' : 's'} right now. Those values are <b>orphaned</b>, not deleted — they stay attached to each node, just no longer rendered anywhere.</p>
+           <p style="color:var(--t3);font-size:11.5px;">Re-adding a custom field with the same id (<code>${escapeHtml(def.id)}</code>) recovers all the values.</p>`
+        : `<p>No nodes currently have a value for this field.</p>`}
+    `,
+    footHtml:`
+      <button class="tpl-modal-btn" onclick="closeTplModal()">Cancel</button>
+      <button class="tpl-modal-btn is-danger" onclick="_confirmDeleteCfd('${escapeHtml(tpl.id)}','${escapeHtml(def.id)}')">Delete custom field</button>
+    `,
+  });
+}
+
+function _modalRemoveApplied(payload) {
+  const tpl = findTemplate(payload.templateId);
+  if (!tpl) return '';
+  return _modalShell({
+    iconClass:'is-warning', iconSvg:_iconWarn(),
+    title:'Stop applying to this field?',
+    bodyHtml:`
+      <p>The pack will no longer run on <b>${escapeHtml(payload.tableName)}</b> <code>${escapeHtml(payload.fieldName)}</code> at ingest.</p>
+      <p>You can re-apply later from the Usage panel. No data on the field is affected — only future ingest behavior.</p>
+    `,
+    footHtml:`
+      <button class="tpl-modal-btn" onclick="closeTplModal()">Cancel</button>
+      <button class="tpl-modal-btn is-danger" onclick="_confirmRemoveApplied('${escapeHtml(tpl.id)}','${escapeHtml(payload.tableName)}','${escapeHtml(payload.fieldName)}')">Remove</button>
+    `,
+  });
+}
+
+/* ---------- Internal commit handlers (called from modal buttons) ---------- */
+function _confirmDeleteTemplate(templateId) {
+  const tpl = findTemplate(templateId);
+  if (!tpl) { closeTplModal(); return; }
+  deleteTemplate(templateId);
+  trackTpl('deleted', { templateId, source: tpl.source });
+  closeTplModal();
+  // If we were on the detail view of this template, bounce to the library.
+  if (location.hash.startsWith('#/templates/') && decodeURIComponent(location.hash.split('/')[2] || '') === templateId) {
+    location.hash = '/templates';
+  } else {
+    renderTemplatesLibrary();
+  }
+}
+function _confirmDeleteNode(templateId, nodeId) {
+  const tpl = findTemplate(templateId);
+  if (!tpl) { closeTplModal(); return; }
+  const target = findNode(tpl.tree, nodeId);
+  if (!target) { closeTplModal(); return; }
+  tpl.tree = removeNode(tpl.tree, nodeId);
+  upsertTemplate(tpl);
+  _autoVersionTpl(templateId, 'Removed ' + target.kind + ' "' + target.name + '"');
+  if (tplDetailState.selectedNodeId === nodeId) tplDetailState.selectedNodeId = null;
+  trackTpl('node_removed', { templateId, nodeId, kind: target.kind });
+  closeTplModal();
+  renderTemplateDetail(encodeURIComponent(templateId));
+}
+function _confirmRestoreVersion(templateId, versionId) {
+  // Inline the original logic from restoreTplVersion (sans confirm).
+  const tpl = findTemplate(templateId);
+  if (!_guardEditable(tpl)) { closeTplModal(); return; }
+  const versions = tpl.versions || [];
+  const target = versions.find(v => v.id === versionId);
+  if (!target) { closeTplModal(); return; }
+  const now = Date.now();
+  const backupId = 'v' + (versions.length + 1);
+  const backup = {
+    id: backupId,
+    label: 'Auto-saved before restoring "' + (target.label || versionId) + '"',
+    createdAt: now,
+    author: 'You',
+    snapshot: cloneTree(tpl.tree),
+    customFieldDefs: JSON.parse(JSON.stringify(tpl.customFieldDefs || [])),
+  };
+  tpl.tree = cloneTree(target.snapshot);
+  if (Array.isArray(target.customFieldDefs)) {
+    tpl.customFieldDefs = JSON.parse(JSON.stringify(target.customFieldDefs));
+  }
+  const restoreId = 'v' + (versions.length + 2);
+  const restoreEntry = {
+    id: restoreId,
+    label: 'Restored "' + (target.label || versionId) + '"',
+    createdAt: now + 1,
+    author: 'You',
+    snapshot: cloneTree(tpl.tree),
+    customFieldDefs: JSON.parse(JSON.stringify(tpl.customFieldDefs || [])),
+  };
+  tpl.versions = [restoreEntry, backup].concat(versions);
+  upsertTemplate(tpl);
+  trackTpl('version_restored', { templateId, fromVersionId: versionId });
+  if (tplDetailState.selectedNodeId) {
+    if (!findNode(tpl.tree, tplDetailState.selectedNodeId)) tplDetailState.selectedNodeId = null;
+  }
+  closeTplModal();
+  renderTemplateDetail(encodeURIComponent(templateId));
+}
+function _confirmDeleteCfd(templateId, cfdId) {
+  const tpl = findTemplate(templateId);
+  if (!_guardEditable(tpl)) { closeTplModal(); return; }
+  const def = (tpl.customFieldDefs || []).find(d => d.id === cfdId);
+  if (!def) { closeTplModal(); return; }
+  tpl.customFieldDefs = (tpl.customFieldDefs || []).filter(d => d.id !== cfdId);
+  upsertTemplate(tpl);
+  _autoVersionTpl(templateId, 'Deleted custom field "' + def.name + '"');
+  trackTpl('cfd_deleted', { templateId, cfdId });
+  closeTplModal();
+  renderTemplateDetail(encodeURIComponent(templateId));
+}
+function _confirmRemoveApplied(templateId, tableName, fieldName) {
+  const tpl = findTemplate(templateId);
+  if (!_guardEditable(tpl)) { closeTplModal(); return; }
+  tpl.appliedTo = (tpl.appliedTo || []).filter(a => !(a.tableName === tableName && a.fieldName === fieldName));
+  upsertTemplate(tpl);
+  _autoVersionTpl(templateId, 'Removed application from ' + tableName + '.' + fieldName);
+  trackTpl('removed_from_field', { templateId, tableName, fieldName });
+  closeTplModal();
+  renderTemplateDetail(encodeURIComponent(templateId));
+}
+
+/* ---------- Override existing confirm()-using handlers ---------- */
+/* Each rebinding replaces the body so the public API stays identical. */
+
+confirmDeleteTemplate = function(id) {
+  const tpl = findTemplate(id);
+  if (!tpl) return;
+  if ((tpl.appliedTo || []).length > 0) {
+    // Keep the same "applied to N fields" guard — but show it via the modal,
+    // not alert(). Simple info modal.
+    tplModalState = { open: true, type: 'info', payload: null };
+    const el = document.getElementById('tplModalOverlay');
+    const inner = document.getElementById('tplModal');
+    if (el && inner) {
+      inner.innerHTML = _modalShell({
+        iconClass:'is-warning', iconSvg:_iconWarn(),
+        title:'Template is in use',
+        bodyHtml:`<p><b>${escapeHtml(tpl.name)}</b> is applied to ${(tpl.appliedTo || []).length} field${(tpl.appliedTo || []).length === 1 ? '' : 's'}. Remove the applications from the Usage panel before deleting the template.</p>`,
+        footHtml:`<button class="tpl-modal-btn is-primary" onclick="closeTplModal()">OK</button>`,
+      });
+      el.classList.add('is-open');
+      el.setAttribute('aria-hidden', 'false');
+    }
+    return;
+  }
+  openTplModal('delete-template', { templateId: id });
+};
+
+removeTplNode = function(templateId, nodeId, ev) {
+  if (ev && typeof ev.stopPropagation === 'function') ev.stopPropagation();
+  const tpl = findTemplate(templateId);
+  if (!_guardEditable(tpl)) return;
+  const target = findNode(tpl.tree, nodeId);
+  if (!target) return;
+  openTplModal('delete-node', { templateId, nodeId });
+};
+
+restoreTplVersion = function(templateId, versionId) {
+  const tpl = findTemplate(templateId);
+  if (!_guardEditable(tpl)) return;
+  const target = (tpl.versions || []).find(v => v.id === versionId);
+  if (!target) return;
+  openTplModal('restore-version', { templateId, versionId });
+};
+
+deleteCfd = function(templateId, cfdId) {
+  const tpl = findTemplate(templateId);
+  if (!_guardEditable(tpl)) return;
+  const def = (tpl.customFieldDefs || []).find(d => d.id === cfdId);
+  if (!def) return;
+  openTplModal('delete-cfd', { templateId, cfdId });
+};
+
+removeTplFromField = function(templateId, tableName, fieldName) {
+  const tpl = findTemplate(templateId);
+  if (!_guardEditable(tpl)) return;
+  openTplModal('remove-applied', { templateId, tableName, fieldName });
+};
+
+/* End Templates Phase 5 */
 
 
 
@@ -13151,6 +13648,14 @@ paintPersonaPill();
 paintDemoErrorsPill();
 render();
 </script>
+
+
+<!-- Templates Phase 5 — global modal overlay -->
+<div id="tplModalOverlay" class="tpl-modal-overlay" onclick="if(event.target===this)closeTplModal()" role="dialog" aria-modal="true" aria-hidden="true">
+  <div class="tpl-modal" id="tplModal">
+    <!-- Body injected by openTplModal() -->
+  </div>
+</div>
 
 </body>
 </html>
