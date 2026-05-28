@@ -10467,6 +10467,131 @@ removeTplFromField = function(templateId, tableName, fieldName) {
   openTplModal('remove-applied', { templateId, tableName, fieldName });
 };
 
+
+
+/* ============================================================
+   HOTFIX — restore renderTemplateHeader + renderTemplateDetail
+   (deleted by Phase 3's over-eager block replacement)
+   ============================================================ */
+
+function renderTemplateHeader(tpl, editable) {
+  const domainMeta = RULE_DOMAINS[tpl.domain] || RULE_DOMAINS.general;
+  const stats = countNodes(tpl.tree || []);
+  const appliedCount = (tpl.appliedTo || []).length;
+  const vCount = (tpl.versions || []).length;
+  const cfdCount = (tpl.customFieldDefs || []).length;
+  const editingName = editable && tplDetailState.editingHeader === 'name';
+  const editingDesc = editable && tplDetailState.editingHeader === 'desc';
+
+  return `
+    <div class="tpl-detail-h">
+      <div class="tpl-detail-h-row">
+        <div class="tpl-detail-h-l">
+          ${editingName
+            ? `<div class="tpl-detail-h-name"><input id="tplDetailNameInput" type="text" value="${escapeHtml(tplDetailState.draftName)}"
+                oninput="updateTplDraftName(this.value)"
+                onkeydown="if(event.key==='Enter')commitTplName('${escapeHtml(tpl.id)}'); if(event.key==='Escape')cancelTplHeaderEdit('${escapeHtml(tpl.id)}')"
+                onblur="commitTplName('${escapeHtml(tpl.id)}')" /></div>`
+            : `<div class="tpl-detail-h-name ${editable ? '' : 'is-readonly'}" ${editable ? `onclick="startEditTplName('${escapeHtml(tpl.id)}')"` : ''} title="${editable ? 'Click to rename' : ''}">${escapeHtml(tpl.name)}</div>`}
+          ${editingDesc
+            ? `<div class="tpl-detail-h-desc"><textarea id="tplDetailDescInput"
+                oninput="updateTplDraftDesc(this.value)"
+                onblur="commitTplDesc('${escapeHtml(tpl.id)}')">${escapeHtml(tplDetailState.draftDesc)}</textarea></div>`
+            : `<div class="tpl-detail-h-desc ${editable ? '' : 'is-readonly'} ${tpl.description ? '' : 'is-empty'}" ${editable ? `onclick="startEditTplDesc('${escapeHtml(tpl.id)}')"` : ''} title="${editable ? 'Click to edit' : ''}">${tpl.description ? escapeHtml(tpl.description) : (editable ? 'Add a description…' : 'No description.')}</div>`}
+          <div class="tpl-detail-h-meta">
+            <span class="tpl-card-source-pill is-${tpl.source}">${tpl.source}</span>
+            <span>${escapeHtml(domainMeta.label)}</span>
+            <code>${escapeHtml(tpl.id)}</code>
+          </div>
+        </div>
+        <div class="tpl-detail-h-r">
+          ${tpl.source === 'system'
+            ? `<button class="tpl-detail-h-btn is-primary" onclick="cloneTplFromDetail('${escapeHtml(tpl.id)}')">Clone &amp; edit →</button>`
+            : ((tpl.appliedTo || []).length === 0
+                ? `<button class="tpl-detail-h-btn is-danger" onclick="confirmDeleteTemplate('${escapeHtml(tpl.id)}')">Delete</button>`
+                : `<button class="tpl-detail-h-btn" disabled title="Remove the pack from all applied fields before deleting" style="opacity:0.5;cursor:not-allowed">Delete</button>`)}
+        </div>
+      </div>
+
+      ${tpl.source === 'system' ? `
+        <div class="tpl-readonly-banner">
+          <span class="tpl-readonly-banner-ic">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="8" cy="8" r="6.5"/><path d="M8 5v3.5M8 11h.01"/></svg>
+          </span>
+          <div class="tpl-readonly-banner-l"><b>System pack — read-only.</b> Clone it to make a custom version you can edit. The clone keeps all groups, rules, expressions and custom field defs.</div>
+        </div>` : ''}
+
+      <div class="tpl-detail-h-stats">
+        <div class="tpl-detail-h-stat"><span class="tpl-detail-h-stat-k">Groups</span><span class="tpl-detail-h-stat-v">${stats.groups}</span></div>
+        <div class="tpl-detail-h-stat"><span class="tpl-detail-h-stat-k">Rules</span><span class="tpl-detail-h-stat-v">${stats.rules}</span></div>
+        <div class="tpl-detail-h-stat"><span class="tpl-detail-h-stat-k">Enabled</span><span class="tpl-detail-h-stat-v ${stats.enabledRules === stats.rules && stats.rules > 0 ? 'is-kpi' : (stats.enabledRules < stats.rules ? 'is-warn' : '')}">${stats.enabledRules} / ${stats.rules}</span></div>
+        <div class="tpl-detail-h-stat"><span class="tpl-detail-h-stat-k">Applied to</span><span class="tpl-detail-h-stat-v">${appliedCount}</span></div>
+        <div class="tpl-detail-h-stat"><span class="tpl-detail-h-stat-k">Versions</span><span class="tpl-detail-h-stat-v">${vCount}</span></div>
+        <div class="tpl-detail-h-stat"><span class="tpl-detail-h-stat-k">Custom fields</span><span class="tpl-detail-h-stat-v">${cfdCount}</span></div>
+      </div>
+    </div>
+  `;
+}
+
+function renderTemplateDetail(rawId) {
+  const id = decodeURIComponent(rawId || '');
+  const tpl = findTemplate(id);
+  if (!tpl) {
+    $('content').innerHTML = `
+      <section class="surface">
+        <div class="breadcrumb">
+          <a href="#/templates">Templates</a><span class="crumb-sep">›</span>
+          <span class="crumb-current">Not found</span>
+        </div>
+        <div class="tpl-detail-stub">
+          <div class="tpl-detail-stub-title">Template not found</div>
+          <div class="tpl-detail-stub-sub">No template with ID <code>${escapeHtml(id)}</code>. <a href="#/templates" style="color:var(--cyan)">Back to library</a>.</div>
+        </div>
+      </section>
+    `;
+    return;
+  }
+
+  // Reset state if we just switched templates.
+  if (tplDetailState.templateId !== tpl.id) {
+    tplDetailState = {
+      templateId: tpl.id,
+      selectedNodeId: null,
+      activeTab: 'inspect',
+      expandedGroups: null,
+      editingHeader: null,
+      draftName: '', draftDesc: '',
+      ruleSubTab: 'basics',
+      testValues: {},
+      funcRefOpen: false,
+      cfdEditingId: null,
+      cfdDraft: null,
+      applyPickerOpen: false,
+      applyPickerStep: 'table',
+      applyPickerTable: null,
+    };
+  }
+  _initExpandedFor(tpl);
+
+  const editable = tpl.source !== 'system';
+
+  $('content').innerHTML = `
+    <section class="surface">
+      <div class="breadcrumb">
+        <a href="#/templates">Templates</a><span class="crumb-sep">›</span>
+        <span class="crumb-current">${escapeHtml(tpl.name)}</span>
+      </div>
+
+      ${renderTemplateHeader(tpl, editable)}
+
+      <div class="tpl-split">
+        ${renderTreeEditor(tpl, editable)}
+        ${renderRightRail(tpl)}
+      </div>
+    </section>
+  `;
+}
+
 /* End Templates Phase 5 */
 
 
