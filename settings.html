@@ -3705,6 +3705,94 @@ html.theme-light .theme-icon-moon{display:block}
   font-size:12.5px;line-height:1.55;
 }
 
+
+/* ============ WORKSPACE AVAILABILITY (integration detail tab) ============ */
+.ws-hero{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:14px;padding:14px 16px;margin-bottom:14px;flex-wrap:wrap;
+  background:linear-gradient(135deg, rgba(43,127,255,0.06) 0%, rgba(167,139,250,0.05) 100%);
+  border:1px solid rgba(43,127,255,0.30);
+  border-radius:11px;
+}
+.ws-hero-l{display:flex;align-items:center;gap:12px;min-width:0;flex:1}
+.ws-hero-ic{
+  width:36px;height:36px;border-radius:10px;
+  background:rgba(43,127,255,0.16);color:var(--blue);
+  border:1px solid rgba(43,127,255,0.32);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.ws-hero-t{font-size:13.5px;font-weight:700;color:var(--t1);letter-spacing:-.01em}
+.ws-hero-d{font-size:11.5px;color:var(--t2);margin-top:3px;line-height:1.4}
+.ws-hero-d b{color:var(--t1)}
+.ws-hero-actions{display:flex;gap:7px;flex-shrink:0;flex-wrap:wrap}
+.ws-hero-cta{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:6px 11px;border-radius:7px;
+  background:transparent;border:1px solid var(--line-strong);
+  color:var(--t2);font-family:inherit;font-size:11.5px;font-weight:700;cursor:pointer;
+  transition:border-color .12s, color .12s, background .12s;
+}
+.ws-hero-cta:hover{border-color:rgba(43,127,255,0.55);color:var(--blue);background:rgba(43,127,255,0.06)}
+.ws-hero-cta.is-danger:hover{border-color:rgba(239,68,68,0.55);color:#fca5a5;background:rgba(239,68,68,0.06)}
+
+.ws-list{display:flex;flex-direction:column;gap:8px}
+.ws-row{
+  display:grid;grid-template-columns:auto 1fr auto auto;gap:14px;align-items:center;
+  padding:12px 14px;
+  background:rgba(255,255,255,0.02);
+  border:1px solid var(--line);border-radius:10px;
+  transition:background .12s, border-color .12s, opacity .14s;
+}
+.ws-row.is-disabled{opacity:.55}
+.ws-row-ic{
+  width:36px;height:36px;border-radius:8px;
+  color:#fff;font-weight:800;font-size:13px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.ws-row-body{min-width:0}
+.ws-row-name{font-size:13px;font-weight:700;color:var(--t1);line-height:1.2}
+.ws-row-meta{
+  display:flex;gap:8px;align-items:center;flex-wrap:wrap;
+  font-size:11px;color:var(--t3);margin-top:3px;
+}
+.ws-row-meta .dot{color:var(--t3)}
+.ws-row-status{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:3px 9px;border-radius:99px;
+  font-size:10.5px;font-weight:700;
+}
+.ws-row-status.is-on { background:rgba(16,185,129,0.10); color:var(--green); border:1px solid rgba(16,185,129,0.32) }
+.ws-row-status.is-on .ws-status-dot{background:var(--green)}
+.ws-row-status.is-off{ background:rgba(255,255,255,0.03);color:var(--t3); border:1px solid var(--line) }
+.ws-row-status.is-off .ws-status-dot{background:var(--t3)}
+.ws-status-dot{width:6px;height:6px;border-radius:50%}
+
+.ws-switch{
+  position:relative;width:38px;height:22px;border-radius:99px;
+  background:var(--line-strong);cursor:pointer;flex-shrink:0;
+  border:none;outline:none;padding:0;
+  transition:background .15s;
+}
+.ws-switch::after{
+  content:'';position:absolute;
+  width:16px;height:16px;border-radius:50%;
+  background:#fff;top:3px;left:3px;
+  transition:transform .14s cubic-bezier(.2,.8,.2,1);
+  box-shadow:0 2px 5px rgba(0,0,0,0.3);
+}
+.ws-switch.is-on{background:var(--green)}
+.ws-switch.is-on::after{transform:translateX(16px)}
+.ws-switch:focus-visible{box-shadow:0 0 0 3px rgba(43,127,255,0.35)}
+
+.ws-foot{
+  margin-top:14px;padding:10px 12px;
+  background:rgba(255,255,255,0.02);
+  border:1px dashed var(--line);
+  border-radius:9px;
+  font-size:11px;color:var(--t3);line-height:1.5;
+}
+.ws-foot b{color:var(--t2)}
+
 </style>
 </head>
 <body>
@@ -6148,6 +6236,153 @@ function activeChipsHTML() {
 
 /* ====================== DETAIL ====================== */
 
+
+
+/* ============ WORKSPACES (multi-workspace per tenant) ============ */
+const MOCK_WORKSPACES = [
+  { id:'sales', name:'Sales Team',       color:'#06B6D4', members:124, owner:'María González',  desc:'Pipeline + outbound' },
+  { id:'eng',   name:'Engineering',      color:'#A78BFA', members:87,  owner:'Carlos Tovar',     desc:'Product + platform' },
+  { id:'cs',    name:'Customer Success', color:'#FDC700', members:56,  owner:'Sarah Chen',       desc:'Support + onboarding' },
+  { id:'fin',   name:'Finance',          color:'#10B981', members:18,  owner:'Alex Park',        desc:'Billing + reporting' },
+  { id:'mkt',   name:'Marketing',        color:'#EF4444', members:32,  owner:'Thomas González',  desc:'Campaigns + lifecycle' }
+];
+
+// Per-integration default workspace availability. Falls back to "all workspaces"
+// when an integration isn't listed.
+const WORKSPACE_DEFAULTS = {
+  'slack':       ['sales','eng','cs','fin','mkt'],
+  'teams':       ['eng','fin'],
+  'gmail':       ['sales','cs','mkt'],
+  'gsheets':     ['sales','eng','cs','fin','mkt'],
+  'gcal':        ['sales','eng','cs','fin','mkt'],
+  'salesforce':  ['sales','cs'],
+  'hubspot':     ['sales','mkt'],
+  'snowflake':   ['eng','fin'],
+  'github':      ['eng'],
+  'stripe':      ['fin'],
+  'zendesk':     ['cs'],
+  'mongodb':     ['eng'],
+  'notion':      ['sales','eng','cs','fin','mkt'],
+  'airtable':    ['mkt','sales'],
+  'bigquery':    ['eng','fin'],
+  'segment':     ['mkt','eng'],
+  'mixpanel':    ['mkt','eng'],
+  's3':          ['eng','fin']
+};
+
+let WORKSPACE_OVERRIDES = (function(){
+  try {
+    const raw = localStorage.getItem('aims_workspace_overrides');
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  return {};
+})();
+
+function persistWorkspaceOverrides() {
+  try { localStorage.setItem('aims_workspace_overrides', JSON.stringify(WORKSPACE_OVERRIDES)); } catch(e){}
+}
+
+function getWorkspacesForIntegration(slug) {
+  if (slug in WORKSPACE_OVERRIDES) return WORKSPACE_OVERRIDES[slug];
+  if (slug in WORKSPACE_DEFAULTS) return WORKSPACE_DEFAULTS[slug].slice();
+  return MOCK_WORKSPACES.map(w => w.id);
+}
+
+function isWorkspaceEnabled(slug, wsId) {
+  return getWorkspacesForIntegration(slug).indexOf(wsId) !== -1;
+}
+
+function toggleWorkspaceForIntegration(slug, wsId) {
+  const current = getWorkspacesForIntegration(slug);
+  const idx = current.indexOf(wsId);
+  const next = current.slice();
+  if (idx === -1) next.push(wsId);
+  else next.splice(idx, 1);
+  WORKSPACE_OVERRIDES[slug] = next;
+  persistWorkspaceOverrides();
+  const ws = MOCK_WORKSPACES.find(w => w.id === wsId);
+  const integ = INTEGRATIONS.find(i => i.slug === slug);
+  if (ws && integ && typeof toast === 'function') {
+    toast(integ.name + ' ' + (idx === -1 ? 'enabled' : 'disabled') + ' for ' + ws.name);
+  }
+  paintDetail(integ);
+}
+
+function workspaceBulkEnable(slug, enable) {
+  const ids = enable ? MOCK_WORKSPACES.map(w => w.id) : [];
+  WORKSPACE_OVERRIDES[slug] = ids;
+  persistWorkspaceOverrides();
+  const integ = INTEGRATIONS.find(i => i.slug === slug);
+  if (integ && typeof toast === 'function') {
+    toast(integ.name + ' ' + (enable ? 'enabled' : 'disabled') + ' for all workspaces');
+  }
+  paintDetail(integ);
+}
+
+function detailWorkspaces(integ) {
+  if (!integ) return '';
+  const enabled = getWorkspacesForIntegration(integ.slug);
+  const total = MOCK_WORKSPACES.length;
+  const enabledCount = enabled.length;
+  return `
+    <section class="ov-widget">
+      <header class="ov-widget-h">
+        <h3 class="ov-widget-title">Workspace availability</h3>
+        <span class="ov-widget-meta">Tenant-wide control · who can see this integration</span>
+      </header>
+      <div class="ov-widget-body">
+
+        <div class="ws-hero">
+          <div class="ws-hero-l">
+            <span class="ws-hero-ic">
+              <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1.5" y="2.5" width="5" height="5" rx="1"/><rect x="9.5" y="2.5" width="5" height="5" rx="1"/><rect x="1.5" y="8.5" width="5" height="5" rx="1"/><rect x="9.5" y="8.5" width="5" height="5" rx="1"/></svg>
+            </span>
+            <div>
+              <div class="ws-hero-t">${escapeHtml(integ.name)} is available in <b>${enabledCount}</b> of <b>${total}</b> workspaces</div>
+              <div class="ws-hero-d">Toggling a workspace off removes <b>${escapeHtml(integ.name)}</b> from its catalog, its agents, and its workflows. Users with active sessions are not interrupted but won't be able to start new ones until re-enabled.</div>
+            </div>
+          </div>
+          <div class="ws-hero-actions">
+            <button class="ws-hero-cta is-danger" onclick="workspaceBulkEnable('${integ.slug}', false)">Disable all</button>
+            <button class="ws-hero-cta" onclick="workspaceBulkEnable('${integ.slug}', true)">Enable all</button>
+          </div>
+        </div>
+
+        <div class="ws-list">
+          ${MOCK_WORKSPACES.map(w => {
+            const on = isWorkspaceEnabled(integ.slug, w.id);
+            const initials = w.name.split(/\s+/).map(s => s[0]).slice(0,2).join('').toUpperCase();
+            return `
+              <div class="ws-row ${on ? '' : 'is-disabled'}">
+                <span class="ws-row-ic" style="background:${w.color}">${initials}</span>
+                <div class="ws-row-body">
+                  <div class="ws-row-name">${escapeHtml(w.name)}</div>
+                  <div class="ws-row-meta">
+                    <span>${w.members} members</span>
+                    <span class="dot">·</span>
+                    <span>${escapeHtml(w.desc)}</span>
+                    <span class="dot">·</span>
+                    <span>Owner: ${escapeHtml(w.owner)}</span>
+                  </div>
+                </div>
+                <span class="ws-row-status ${on ? 'is-on' : 'is-off'}">
+                  <span class="ws-status-dot"></span>${on ? 'Available' : 'Disabled'}
+                </span>
+                <button class="ws-switch ${on ? 'is-on' : ''}" onclick="toggleWorkspaceForIntegration('${integ.slug}','${w.id}')" aria-label="${on ? 'Disable' : 'Enable'} ${escapeHtml(integ.name)} for ${escapeHtml(w.name)}" role="switch" aria-checked="${on}"></button>
+              </div>
+            `;
+          }).join('')}
+        </div>
+
+        <div class="ws-foot">
+          <b>Note:</b> Workspace availability is independent from <a href="#/integrations/${integ.slug}" onclick="setDetailTab('${integ.slug}','permissions');return false" style="color:var(--cyan);text-decoration:none">role permissions</a>. Even in enabled workspaces, individual users still need the right role to access ${escapeHtml(integ.name)}. To control downstream surfaces (Data Studio, Agent Studio, etc.), see <a href="#/distribution" style="color:var(--cyan);text-decoration:none">Distribution</a>.
+        </div>
+
+      </div>
+    </section>
+  `;
+}
+
 function renderDetail(slug) {
   const i = findIntegration(slug);
   if (!i) { renderNotFound(slug); return; }
@@ -6339,7 +6574,7 @@ function paintDetail(i) {
     <div class="tabs">
       ${(state.persona === 'user'
           ? ['overview','capabilities']
-          : ['overview','capabilities','permissions','activity']
+          : ['overview','capabilities','permissions','workspaces','activity']
         ).map(t => `<button class="tab ${state.detailTab===t?'active':''}" onclick="setDetailTab('${i.slug}','${t}')">${t.charAt(0).toUpperCase()+t.slice(1)}</button>`).join('')}
     </div>
 
@@ -6347,6 +6582,7 @@ function paintDetail(i) {
       ${state.detailTab==='overview' ? detailOverview(i) : ''}
       ${state.detailTab==='capabilities' ? detailCapabilities(i) : ''}
       ${state.detailTab==='permissions' ? detailPermissions(i) : ''}
+      ${state.detailTab==='workspaces' ? detailWorkspaces(i) : ''}
       ${state.detailTab==='activity' ? detailProviderActivity(i) : ''}
     </div>
   `;
