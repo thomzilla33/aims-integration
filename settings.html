@@ -725,22 +725,54 @@ html.theme-light .btn-primary.btn-outline{color:var(--cyan); border-color:rgba(6
 .ov-main h3:first-child, .ov-side h3:first-child{margin-top:0}
 .ov-main p{color:var(--t2); font-size:13px; margin-bottom:10px}
 .ov-cap-cards{display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:10px; margin:8px 0 14px}
-.ov-cap-card{background:var(--bg3); border:1px solid var(--line); border-radius:var(--r8); padding:12px}
-.ov-cap-card-h{font-size:12px; font-weight:700; color:var(--t1); margin-bottom:4px; display:flex; align-items:center; gap:6px}
-.ov-cap-card-d{font-size:11px; color:var(--t2); line-height:1.5}
-.ov-uses{list-style:none; padding:0}
-.ov-uses li{font-size:13px; color:var(--t2); padding:5px 0 5px 18px; position:relative}
-.ov-uses li:before{content:''; position:absolute; left:0; top:11px; width:5px; height:5px; border-radius:50%; background:var(--accent)}
-.scope-chips{display:flex; flex-wrap:wrap; gap:5px}
-.scope-chip{font-size:11px; padding:3px 8px; border-radius:var(--r4); background:var(--hover); color:var(--t2); border:1px solid var(--line); font-family:'SF Mono','Menlo',monospace}
+.ov-cap-card{
+  background:rgba(255,255,255,0.022);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:10px; padding:12px;
+  transition:border-color .15s, background .15s;
+}
+.ov-cap-card:hover{
+  border-color:rgba(56,189,248,0.34);
+  background:rgba(56,189,248,0.04);
+}
+.ov-cap-card-h{font-size:12px; font-weight:700; color:var(--t1); margin-bottom:5px; display:flex; align-items:center; gap:6px; letter-spacing:-0.005em}
+.ov-cap-card-d{font-size:11.5px; color:var(--t2); line-height:1.55}
 
-.ov-side{background:var(--bg3); border:1px solid var(--line); border-radius:var(--r10); padding:16px; height:fit-content}
-.ov-side-row{padding:8px 0; font-size:12px; border-bottom:1px solid var(--line); display:flex; flex-direction:column; gap:2px}
+.ov-uses{list-style:none; padding:0; margin:0;}
+.ov-uses li{font-size:13px; color:var(--t2); padding:5px 0 5px 18px; position:relative; line-height:1.55}
+.ov-uses li:before{
+  content:''; position:absolute; left:0; top:11px;
+  width:5px; height:5px; border-radius:50%; background:#7ed3f7;
+  box-shadow:0 0 0 2px rgba(56,189,248,0.18);
+}
+
+.scope-chips{display:flex; flex-wrap:wrap; gap:5px}
+.scope-chip{
+  font-size:11px; padding:3px 8px; border-radius:6px;
+  background:rgba(255,255,255,0.04);
+  color:var(--t2);
+  border:1px solid rgba(255,255,255,0.08);
+  font-family:'SF Mono','Menlo',monospace;
+  transition:border-color .12s, background .12s;
+}
+.scope-chip:hover{
+  background:rgba(56,189,248,0.06);
+  border-color:rgba(56,189,248,0.28);
+  color:#7ed3f7;
+}
+
+.ov-side{
+  background:rgba(255,255,255,0.022);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:12px; padding:16px;
+  height:fit-content;
+}
+.ov-side-row{padding:8px 0; font-size:12px; border-bottom:1px solid rgba(255,255,255,0.04); display:flex; flex-direction:column; gap:2px}
 .ov-side-row:last-child{border-bottom:none}
-.ov-side-k{color:var(--t3); font-size:10px; text-transform:uppercase; letter-spacing:.05em; font-weight:600}
+.ov-side-k{color:var(--t3); font-size:10px; text-transform:uppercase; letter-spacing:.06em; font-weight:600}
 .ov-side-v{color:var(--t1); font-size:12px}
-.ov-side-v a{color:var(--accent); text-decoration:none}
-.ov-side-v a:hover{text-decoration:underline}
+.ov-side-v a{color:#7ed3f7; text-decoration:none; transition:color .12s}
+.ov-side-v a:hover{text-decoration:underline; color:#a5e0fb}
 .ov-comp{display:flex; flex-wrap:wrap; gap:5px; margin-top:4px}
 .ov-comp .src-badge{background:var(--hover); color:var(--t2); border-color:var(--line)}
 
