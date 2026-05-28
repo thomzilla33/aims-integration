@@ -3537,6 +3537,323 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
   margin-top:14px;font-size:11px;color:var(--t3);
 }
 
+
+/* ============================================================
+   TENANT ONBOARDING — Phase 1 (8-step wizard at #/onboarding)
+   ============================================================ */
+
+.tonb-wrap{
+  max-width:1100px;margin:0 auto;padding:24px 20px 48px;
+  display:flex;flex-direction:column;gap:18px;
+}
+
+/* Top header with phase + step indicator */
+.tonb-h{
+  display:flex;flex-direction:column;gap:10px;
+  padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,0.06);
+}
+.tonb-h-eyebrow-row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+.tonb-h-eyebrow{
+  font-size:10px;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--cyan);
+  display:flex;align-items:center;gap:6px;
+}
+.tonb-h-eyebrow-dot{width:6px;height:6px;border-radius:50%;background:var(--cyan);
+  box-shadow:0 0 0 2px rgba(56,189,248,0.18);}
+.tonb-h-step-pill{
+  font-size:10.5px;font-weight:600;letter-spacing:.04em;color:var(--t2);
+  background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);
+  padding:3px 10px;border-radius:999px;
+}
+
+/* Progress bar */
+.tonb-progress{
+  display:flex;gap:4px;width:100%;
+}
+.tonb-progress-seg{
+  flex:1;height:5px;border-radius:3px;
+  background:rgba(255,255,255,0.05);
+  transition:background .25s ease;
+}
+.tonb-progress-seg.is-done{background:linear-gradient(90deg, rgba(16,185,129,0.55), rgba(16,185,129,0.4));}
+.tonb-progress-seg.is-current{background:linear-gradient(90deg, var(--cyan), rgba(56,189,248,0.55));
+  box-shadow:0 0 0 1px rgba(56,189,248,0.4), 0 0 12px rgba(56,189,248,0.34);}
+.tonb-progress-seg.is-phase-break{flex:0 0 18px;background:transparent;}
+
+/* Phase chip — sits above the step title */
+.tonb-phase-chip{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--t2);
+  padding:4px 10px;border-radius:999px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.08);
+  width:fit-content;
+}
+.tonb-phase-chip.is-1{color:#60c8f4;border-color:rgba(56,189,248,0.32);background:rgba(56,189,248,0.08);}
+.tonb-phase-chip.is-2{color:#cda5ff;border-color:rgba(168,85,247,0.32);background:rgba(168,85,247,0.08);}
+.tonb-phase-chip.is-3{color:#34d39c;border-color:rgba(16,185,129,0.32);background:rgba(16,185,129,0.08);}
+
+/* Step title */
+.tonb-step-title{font-size:24px;font-weight:700;color:var(--t1);letter-spacing:-0.02em;line-height:1.2;}
+.tonb-step-sub{font-size:14px;color:var(--t2);line-height:1.55;max-width:680px;}
+
+/* Step body card */
+.tonb-card{
+  background:linear-gradient(180deg, rgba(255,255,255,0.036), rgba(255,255,255,0.014));
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:14px;padding:22px 24px;
+  display:flex;flex-direction:column;gap:18px;
+}
+
+/* Form fields */
+.tonb-fields{display:grid;grid-template-columns:1fr 1fr;gap:14px 16px;}
+.tonb-fields.is-stack{grid-template-columns:1fr;}
+.tonb-field{display:flex;flex-direction:column;gap:6px;}
+.tonb-field.is-wide{grid-column:1 / -1;}
+.tonb-field-label{
+  font-size:11px;font-weight:600;letter-spacing:.05em;
+  color:var(--t2);text-transform:uppercase;
+}
+.tonb-field-req{color:#ff7d7d;margin-left:3px;}
+.tonb-field-opt{color:var(--t3);font-weight:400;text-transform:none;letter-spacing:0;margin-left:4px;}
+.tonb-field input,
+.tonb-field select,
+.tonb-field textarea{
+  width:100%;padding:10px 12px;border-radius:9px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.1);
+  color:var(--t1);font-size:13px;font-family:inherit;outline:none;
+  transition:border-color .15s,background .15s;
+}
+.tonb-field input::placeholder{color:var(--t3);}
+.tonb-field input:focus,
+.tonb-field select:focus,
+.tonb-field textarea:focus{border-color:var(--cyan);background:rgba(255,255,255,0.06);}
+.tonb-field textarea{resize:vertical;min-height:80px;line-height:1.5;}
+.tonb-field-hint{font-size:11px;color:var(--t3);line-height:1.4;}
+.tonb-field-err{font-size:11px;color:#ff7d7d;line-height:1.4;}
+
+/* Card-style picker for Step 3 (starter) + Step 4 (grouping) */
+.tonb-picker-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;}
+.tonb-tile{
+  position:relative;
+  background:linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.016));
+  border:1.5px solid rgba(255,255,255,0.08);
+  border-radius:12px;padding:14px;
+  display:flex;flex-direction:column;gap:8px;
+  cursor:pointer;text-align:left;
+  font-family:inherit;color:inherit;
+  transition:all .15s ease;
+}
+.tonb-tile:hover{border-color:rgba(56,189,248,0.4);background:linear-gradient(180deg, rgba(56,189,248,0.05), rgba(255,255,255,0.02));}
+.tonb-tile.is-selected{
+  border-color:var(--cyan);
+  background:linear-gradient(180deg, rgba(56,189,248,0.14), rgba(56,189,248,0.04));
+  box-shadow:0 0 0 1px rgba(56,189,248,0.36), 0 12px 28px -14px rgba(56,189,248,0.3);
+}
+.tonb-tile-h{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
+.tonb-tile-name{font-size:14px;font-weight:600;color:var(--t1);letter-spacing:-0.01em;line-height:1.3;}
+.tonb-tile-ic{
+  width:32px;height:32px;border-radius:9px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;color:#7ed3f7;background:rgba(56,189,248,0.16);
+}
+.tonb-tile-ic.is-cyan{color:#7ed3f7;background:rgba(56,189,248,0.16);}
+.tonb-tile-ic.is-purple{color:#cda5ff;background:rgba(168,85,247,0.18);}
+.tonb-tile-ic.is-green{color:#5fe5b2;background:rgba(16,185,129,0.18);}
+.tonb-tile-ic.is-amber{color:#facc7e;background:rgba(245,158,11,0.18);}
+.tonb-tile-ic.is-gray{color:var(--t2);background:rgba(255,255,255,0.06);}
+.tonb-tile-desc{font-size:12.5px;color:var(--t2);line-height:1.5;}
+.tonb-tile-meta{font-size:11px;color:var(--t3);padding-top:5px;border-top:1px solid rgba(255,255,255,0.05);}
+.tonb-tile-meta b{color:var(--t2);font-weight:600;}
+.tonb-tile-badge{
+  display:inline-flex;align-items:center;
+  padding:2px 8px;border-radius:999px;
+  font-size:9.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+}
+.tonb-tile-badge.is-pop{background:rgba(16,185,129,0.16);color:#34d39c;}
+.tonb-tile-badge.is-power{background:rgba(245,158,11,0.14);color:#fbbf24;}
+
+/* Welcome step — special layout */
+.tonb-welcome-h{display:flex;flex-direction:column;gap:8px;align-items:flex-start;}
+.tonb-welcome-emoji{
+  width:48px;height:48px;border-radius:14px;
+  background:linear-gradient(135deg, rgba(56,189,248,0.22), rgba(168,85,247,0.18));
+  display:flex;align-items:center;justify-content:center;font-size:24px;
+  margin-bottom:6px;
+}
+.tonb-welcome-list{display:flex;flex-direction:column;gap:6px;padding-top:6px;}
+.tonb-welcome-row{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 12px;border-radius:9px;
+  background:rgba(255,255,255,0.022);
+  font-size:13px;color:var(--t1);
+}
+.tonb-welcome-row b{color:var(--t1);font-weight:600;}
+.tonb-welcome-row-num{
+  width:22px;height:22px;border-radius:50%;
+  display:inline-flex;align-items:center;justify-content:center;
+  background:rgba(56,189,248,0.18);color:#7ed3f7;
+  font-size:10px;font-weight:700;flex-shrink:0;
+}
+.tonb-welcome-row-meta{font-size:11.5px;color:var(--t3);margin-left:auto;flex-shrink:0;}
+
+.tonb-checklist{display:flex;flex-direction:column;gap:6px;}
+.tonb-check-row{
+  display:flex;align-items:flex-start;gap:9px;
+  font-size:12.5px;color:var(--t2);line-height:1.5;
+}
+.tonb-check-row-ic{
+  width:16px;height:16px;border-radius:4px;
+  display:inline-flex;align-items:center;justify-content:center;
+  background:rgba(56,189,248,0.16);color:#7ed3f7;flex-shrink:0;margin-top:1px;
+}
+.tonb-check-row b{color:var(--t1);font-weight:600;}
+
+/* Workspace grouping — tag input row */
+.tonb-tags{display:flex;flex-wrap:wrap;gap:5px;
+  padding:6px;border-radius:9px;background:rgba(255,255,255,0.022);
+  border:1px solid rgba(255,255,255,0.07);min-height:40px;align-items:center;}
+.tonb-tag{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:3px 8px;border-radius:999px;
+  background:rgba(56,189,248,0.18);color:#7ed3f7;
+  font-size:11.5px;font-weight:500;
+}
+.tonb-tag-rm{
+  background:transparent;border:0;color:#7ed3f7;cursor:pointer;
+  padding:0;font-family:inherit;display:inline-flex;align-items:center;
+}
+.tonb-tag-rm:hover{color:#ff7d7d;}
+.tonb-tags-input{
+  flex:1;min-width:120px;
+  background:transparent;border:0;color:var(--t1);font:inherit;font-size:12.5px;
+  outline:none;padding:3px 5px;
+}
+
+/* Apply templates step — table-template suggestion list */
+.tonb-suggest-list{display:flex;flex-direction:column;gap:10px;}
+.tonb-suggest-row{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 14px;
+  background:rgba(255,255,255,0.022);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:10px;
+}
+.tonb-suggest-l{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;}
+.tonb-suggest-table{font-size:13px;font-weight:600;color:var(--t1);}
+.tonb-suggest-field{font-size:11.5px;color:var(--t3);font-family:'SF Mono', ui-monospace, monospace;}
+.tonb-suggest-r{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.tonb-suggest-tpl-name{font-size:12.5px;color:var(--t2);}
+.tonb-suggest-tpl-name b{color:var(--t1);font-weight:600;}
+.tonb-suggest-conf{
+  font-size:10.5px;font-weight:700;letter-spacing:.03em;
+  padding:3px 8px;border-radius:6px;
+}
+.tonb-suggest-conf.is-high{background:rgba(16,185,129,0.18);color:#34d39c;}
+.tonb-suggest-conf.is-medium{background:rgba(245,158,11,0.18);color:#fbbf24;}
+.tonb-suggest-conf.is-low{background:rgba(244,63,94,0.18);color:#ff7d7d;}
+.tonb-suggest-actions{display:flex;gap:5px;}
+.tonb-suggest-act{
+  padding:5px 10px;border-radius:7px;font-size:11.5px;font-weight:500;
+  background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);
+  color:var(--t1);font-family:inherit;cursor:pointer;transition:all .12s;
+}
+.tonb-suggest-act:hover{background:rgba(255,255,255,0.08);}
+.tonb-suggest-act.is-accept{background:rgba(16,185,129,0.16);border-color:rgba(16,185,129,0.34);color:#34d39c;}
+.tonb-suggest-act.is-accept:hover{background:rgba(16,185,129,0.24);}
+.tonb-suggest-act.is-skip{background:transparent;color:var(--t3);}
+.tonb-suggest-act.is-status{cursor:default;background:rgba(16,185,129,0.18);border-color:rgba(16,185,129,0.34);color:#34d39c;}
+.tonb-suggest-act.is-status.is-skipped{background:rgba(100,116,139,0.2);color:var(--t3);border-color:rgba(100,116,139,0.34);}
+
+/* Done step */
+.tonb-done-hero{text-align:center;padding:24px 16px 14px;}
+.tonb-done-emoji{font-size:46px;margin-bottom:8px;line-height:1;}
+.tonb-done-title{font-size:26px;font-weight:700;color:var(--t1);letter-spacing:-0.02em;margin-bottom:6px;}
+.tonb-done-sub{font-size:14px;color:var(--t2);max-width:520px;margin:0 auto;line-height:1.55;}
+.tonb-done-stats{
+  display:flex;justify-content:center;gap:24px;flex-wrap:wrap;
+  padding:18px 0;border-top:1px solid rgba(255,255,255,0.06);
+  border-bottom:1px solid rgba(255,255,255,0.06);
+  margin:18px 0;
+}
+.tonb-done-stat{display:flex;flex-direction:column;align-items:center;gap:2px;}
+.tonb-done-stat-v{font-size:22px;font-weight:700;color:var(--t1);font-variant-numeric:tabular-nums;}
+.tonb-done-stat-k{font-size:10.5px;font-weight:600;letter-spacing:.08em;color:var(--t3);text-transform:uppercase;}
+.tonb-next-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;}
+.tonb-next-card{
+  display:flex;flex-direction:column;gap:8px;
+  padding:14px 16px;border-radius:11px;
+  background:linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.014));
+  border:1px solid rgba(255,255,255,0.08);
+  cursor:pointer;text-align:left;
+  font-family:inherit;color:inherit;
+  transition:all .15s;
+}
+.tonb-next-card:hover:not(:disabled){
+  border-color:rgba(56,189,248,0.4);
+  background:linear-gradient(180deg, rgba(56,189,248,0.06), rgba(255,255,255,0.02));
+  transform:translateY(-1px);
+}
+.tonb-next-card:disabled{opacity:.4;cursor:not-allowed;}
+.tonb-next-card-h{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.tonb-next-card-name{font-size:13.5px;font-weight:600;color:var(--t1);}
+.tonb-next-card-desc{font-size:12px;color:var(--t2);line-height:1.45;}
+.tonb-next-card-arrow{color:var(--t3);font-size:14px;}
+
+/* Footer / nav */
+.tonb-foot{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:12px;padding-top:6px;
+}
+.tonb-foot-l{display:flex;gap:8px;}
+.tonb-foot-r{display:flex;gap:8px;}
+.tonb-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:10px 16px;border-radius:9px;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.1);
+  color:var(--t1);font-size:13px;font-weight:500;font-family:inherit;
+  cursor:pointer;transition:all .15s;
+}
+.tonb-btn:hover{background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.16);}
+.tonb-btn:disabled{opacity:.4;cursor:not-allowed;}
+.tonb-btn.is-ghost{background:transparent;border-color:transparent;color:var(--t3);}
+.tonb-btn.is-ghost:hover{color:var(--t1);background:rgba(255,255,255,0.05);}
+.tonb-btn.is-primary{
+  background:linear-gradient(135deg, rgba(56,189,248,0.24), rgba(56,189,248,0.12));
+  border-color:rgba(56,189,248,0.5);font-weight:600;
+}
+.tonb-btn.is-primary:hover{
+  background:linear-gradient(135deg, rgba(56,189,248,0.34), rgba(56,189,248,0.18));
+  border-color:rgba(56,189,248,0.7);
+}
+
+/* Step 6 (Connect data) placeholder — Phase 2 will wire to real wizard */
+.tonb-launch-row{
+  display:flex;align-items:center;gap:16px;
+  padding:18px;border-radius:12px;
+  background:rgba(56,189,248,0.06);
+  border:1px solid rgba(56,189,248,0.22);
+}
+.tonb-launch-ic{
+  width:46px;height:46px;border-radius:12px;
+  background:linear-gradient(135deg, rgba(56,189,248,0.3), rgba(56,189,248,0.16));
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  color:#7ed3f7;
+}
+.tonb-launch-l{flex:1;display:flex;flex-direction:column;gap:3px;}
+.tonb-launch-title{font-size:14px;font-weight:600;color:var(--t1);}
+.tonb-launch-sub{font-size:12.5px;color:var(--t2);line-height:1.5;}
+.tonb-mockdata{
+  margin-top:14px;padding:12px 14px;border-radius:10px;
+  background:rgba(255,255,255,0.022);
+  border:1px dashed rgba(255,255,255,0.12);
+  font-size:12px;color:var(--t3);line-height:1.5;
+}
+.tonb-mockdata b{color:var(--t2);font-weight:600;display:block;margin-bottom:3px;}
+
 </style>
 </head>
 <body>
@@ -3668,7 +3985,6 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
         <button class="ssb-item" data-route="onboarding" onclick="navigate('onboarding')">
           <span class="ssb-item-ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13l3-3 3 3 4-4"/><circle cx="13" cy="6" r="1.4"/></svg></span>
           <span class="ssb-item-label">Onboarding flow</span>
-          <span class="ssb-item-badge">Soon</span>
         </button>
       </div>
 
@@ -7908,6 +8224,848 @@ function renderTemplateDetail(rawId) {
 /* End Templates Phase 2 */
 
 
+
+
+/* ============================================================
+   TENANT ONBOARDING — Phase 1 (re-anchored to AIMS-OS)
+   ============================================================ */
+
+const TONB_STORAGE_KEY = 'aims_ds_tenant_onboarding_v1';
+
+/* Step metadata. id matches phase numbering from the spec. */
+const TONB_STEPS = [
+  { id:'welcome',    phase:1, title:'Welcome to AIMS-OS',          eyebrow:'Tenant setup' },
+  { id:'org',        phase:1, title:'Your organization',           eyebrow:'Tenant setup' },
+  { id:'starter',    phase:1, title:'Starter setup',               eyebrow:'Tenant setup' },
+  { id:'grouping',   phase:1, title:'Workspace grouping',          eyebrow:'Tenant setup' },
+  { id:'workspace',  phase:2, title:'Workspace profile',           eyebrow:'Per workspace' },
+  { id:'connect',    phase:2, title:'Connect data',                eyebrow:'Per workspace' },
+  { id:'apply',      phase:2, title:'Apply templates',             eyebrow:'Per workspace' },
+  { id:'done',       phase:3, title:'You’re all set',         eyebrow:'Done' },
+];
+
+const TONB_STARTERS = [
+  { id:'data_quality', name:'Data-quality first', accent:'cyan',
+    icon:'shield',
+    desc:'Pre-applies our standard validation rule packs (Email, Currency, PII) to every connected Table. Best when you’re bringing in customer or financial data and want guardrails from day one.',
+    meta:'Pre-applies: 3 system rule packs · 2 workspaces' },
+  { id:'governance',   name:'Governance first', accent:'purple',
+    icon:'gavel',
+    desc:'Pre-configures Admin Studio with default approval workflows, ownership policies, and a publish gate. Best for regulated industries or compliance-heavy teams.',
+    meta:'Pre-configures: Distribution · Ownership · Publish flow' },
+  { id:'agentic',      name:'Agentic first', accent:'green',
+    icon:'rocket',
+    desc:'Spins up Agent Studio with a sample agent network and the GitHub + Jira tool wrappers already wired. Best when you’re here to build agents fast.',
+    meta:'Spins up: 1 agent network · 4 tool wrappers' },
+  { id:'minimal',      name:'Minimal · I’ll set it up myself', accent:'gray',
+    icon:'minimal',
+    desc:'Empty setup. You’ll configure each Studio as you go. Pick this if you want to explore before committing to a setup.',
+    meta:'Pre-applies: nothing — you start fresh', power:true },
+];
+
+const TONB_GROUPING = [
+  { id:'department', name:'By department',
+    desc:'Workspaces tagged by team (Sales, Marketing, Eng, Finance, etc.). Best when most data is team-owned.',
+    suggested:['Sales','Marketing','Engineering','Finance','HR','Customer Success'] },
+  { id:'region',     name:'By region',
+    desc:'Workspaces tagged by geography (US, EU, APAC, etc.). Best for global orgs with regional data sovereignty.',
+    suggested:['North America','EMEA','APAC','LATAM'] },
+  { id:'function',   name:'By function',
+    desc:'Workspaces tagged by business function (Customer-facing, Internal tooling, Analytics, etc.). Best for cross-functional teams.',
+    suggested:['Customer-facing','Internal tooling','Analytics','Platform'] },
+  { id:'flat',       name:'Flat — no grouping',
+    desc:'All workspaces sit side by side without tags. Best for small teams or simple setups.',
+    suggested:[] },
+];
+
+const TONB_INDUSTRIES = [
+  'Technology · SaaS',
+  'Financial services',
+  'Healthcare',
+  'Retail · E-commerce',
+  'Manufacturing',
+  'Logistics · Supply chain',
+  'Energy · Utilities',
+  'Education',
+  'Media · Entertainment',
+  'Public sector',
+  'Other',
+];
+const TONB_SIZES = [
+  '1–10 people',
+  '11–50 people',
+  '51–200 people',
+  '201–1,000 people',
+  '1,001–5,000 people',
+  '5,000+ people',
+];
+const TONB_ROLES = [
+  'CTO · VP Engineering',
+  'Head of Data · Data Platform Lead',
+  'IT Director · CIO',
+  'Head of AI · ML Lead',
+  'CISO · Security Lead',
+  'Other',
+];
+
+/* Mock "tables discovered in Connect Data step" — for the Apply Templates
+   demo when the user hasn’t actually run the wizard yet. */
+const TONB_MOCK_TABLES = [
+  { tableName:'Salesforce Contact', fieldName:'Email',          suggested:'Email & contact data quality', confidence:96 },
+  { tableName:'Salesforce Contact', fieldName:'Phone',          suggested:'Identifiers',                   confidence:82 },
+  { tableName:'Stripe Charge',      fieldName:'amount',         suggested:'Currency & financial values',   confidence:94 },
+  { tableName:'Stripe Charge',      fieldName:'card_last4',     suggested:'PII & data privacy',            confidence:78 },
+  { tableName:'Stripe Charge',      fieldName:'created',        suggested:null,                            confidence:0  },
+  { tableName:'GitHub Issue',       fieldName:'reporter_email', suggested:'Email & contact data quality', confidence:88 },
+];
+
+/* ---------- State ---------- */
+function _defaultTonbState() {
+  return {
+    started: false,
+    flow: 'first_run',  // 'first_run' | 'add_workspace'
+    stepIdx: 0,
+    completedAt: null,
+    org: {
+      name: '', industry: '', size: '',
+      contactName: '', contactRole: '', contactEmail: '',
+    },
+    starter: null,                       // 'data_quality' | 'governance' | 'agentic' | 'minimal'
+    grouping: { mode: null, tags: [] },  // mode: 'department' | 'region' | 'function' | 'flat'
+    workspace: {
+      name: '', tag: '', region: '',
+      ownerName: '', ownerEmail: '',
+    },
+    connect: { launched: false, mocked: false },
+    apply: {},                           // keyed by `tableName::fieldName` → 'accept' | 'skip'
+    workspaces: [],                      // populated on each completed workspace flow
+    errors: {},
+  };
+}
+let tonbState = _defaultTonbState();
+
+function loadTonbState() {
+  try {
+    const raw = localStorage.getItem(TONB_STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      tonbState = Object.assign(_defaultTonbState(), parsed);
+    }
+  } catch(e) { tonbState = _defaultTonbState(); }
+}
+function persistTonbState() {
+  try { localStorage.setItem(TONB_STORAGE_KEY, JSON.stringify(tonbState)); } catch(e) {}
+}
+function resetTonbState() {
+  tonbState = _defaultTonbState();
+  persistTonbState();
+  if (typeof trackTonb === 'function') trackTonb('reset');
+}
+loadTonbState();
+
+/* ---------- Telemetry ---------- */
+function trackTonb(event, payload) {
+  if (typeof track === 'function') {
+    try { track('tonb_' + event, payload || {}); } catch(e){}
+  }
+}
+
+/* ---------- Navigation ---------- */
+function _stepIdsForFlow() {
+  if (tonbState.flow === 'add_workspace') {
+    // workspace → connect → apply → done
+    return ['workspace','connect','apply','done'];
+  }
+  return TONB_STEPS.map(s => s.id);
+}
+function _currentStep() {
+  const ids = _stepIdsForFlow();
+  const id = ids[tonbState.stepIdx] || ids[ids.length - 1];
+  return TONB_STEPS.find(s => s.id === id);
+}
+function _stepIndex(id) { return _stepIdsForFlow().indexOf(id); }
+function tonbStart(flow) {
+  tonbState = _defaultTonbState();
+  tonbState.started = true;
+  tonbState.flow = flow || 'first_run';
+  tonbState.stepIdx = 0;
+  persistTonbState();
+  trackTonb('start', { flow: tonbState.flow });
+  renderTenantOnboarding();
+}
+function tonbNext() {
+  // Validate current step
+  const err = _validateStep(_currentStep().id);
+  tonbState.errors = err || {};
+  if (err && Object.keys(err).length > 0) {
+    persistTonbState();
+    renderTenantOnboarding();
+    return;
+  }
+  const ids = _stepIdsForFlow();
+  if (tonbState.stepIdx < ids.length - 1) {
+    tonbState.stepIdx++;
+    persistTonbState();
+    trackTonb('step_advanced', { to: _currentStep().id, idx: tonbState.stepIdx });
+    renderTenantOnboarding();
+  }
+}
+function tonbBack() {
+  if (tonbState.stepIdx > 0) {
+    tonbState.stepIdx--;
+    tonbState.errors = {};
+    persistTonbState();
+    renderTenantOnboarding();
+  }
+}
+function tonbSkip() {
+  trackTonb('skipped', { at: _currentStep().id });
+  // Best effort skip — advance without validation
+  const ids = _stepIdsForFlow();
+  if (tonbState.stepIdx < ids.length - 1) {
+    tonbState.stepIdx++;
+    tonbState.errors = {};
+    persistTonbState();
+    renderTenantOnboarding();
+  }
+}
+
+/* ---------- Validation ---------- */
+function _validateStep(stepId) {
+  const e = {};
+  if (stepId === 'org') {
+    const o = tonbState.org;
+    if (!o.name || o.name.trim().length < 2) e.orgName = 'Required.';
+    if (!o.industry) e.orgIndustry = 'Pick one.';
+    if (!o.size) e.orgSize = 'Pick one.';
+    if (!o.contactName || o.contactName.trim().length < 2) e.contactName = 'Required.';
+    if (!o.contactRole) e.contactRole = 'Pick one.';
+    if (!o.contactEmail || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(o.contactEmail)) e.contactEmail = 'Use a valid email format.';
+  } else if (stepId === 'starter') {
+    if (!tonbState.starter) e.starter = 'Pick a setup style.';
+  } else if (stepId === 'grouping') {
+    if (!tonbState.grouping.mode) e.grouping = 'Pick a grouping mode.';
+    // Tags are optional for 'flat'
+    if (tonbState.grouping.mode && tonbState.grouping.mode !== 'flat'
+        && (!tonbState.grouping.tags || tonbState.grouping.tags.length === 0)) {
+      e.groupingTags = 'Add at least one group label.';
+    }
+  } else if (stepId === 'workspace') {
+    const w = tonbState.workspace;
+    if (!w.name || w.name.trim().length < 2) e.wsName = 'Required.';
+    if (tonbState.grouping.mode && tonbState.grouping.mode !== 'flat' && !w.tag) e.wsTag = 'Pick a group.';
+    if (!w.ownerName || w.ownerName.trim().length < 2) e.wsOwnerName = 'Required.';
+    if (!w.ownerEmail || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(w.ownerEmail)) e.wsOwnerEmail = 'Use a valid email format.';
+  }
+  return e;
+}
+
+/* ---------- Field updates ---------- */
+function updateTonbOrg(field, value) {
+  tonbState.org[field] = value;
+  if (tonbState.errors && tonbState.errors['org' + field.charAt(0).toUpperCase() + field.slice(1)]) {
+    delete tonbState.errors['org' + field.charAt(0).toUpperCase() + field.slice(1)];
+  }
+  persistTonbState();
+  // Light-touch: don’t full re-render on every keystroke — only update the submit-button state.
+  _updatePrimaryBtnEnabled();
+}
+function selectTonbStarter(id) {
+  tonbState.starter = id;
+  tonbState.errors = {};
+  persistTonbState();
+  trackTonb('starter_selected', { starter: id });
+  renderTenantOnboarding();
+}
+function selectTonbGrouping(mode) {
+  tonbState.grouping.mode = mode;
+  // Seed suggested tags on first pick of a non-flat mode (don’t overwrite existing)
+  const grp = TONB_GROUPING.find(g => g.id === mode);
+  if (grp && mode !== 'flat' && (!tonbState.grouping.tags || tonbState.grouping.tags.length === 0)) {
+    tonbState.grouping.tags = grp.suggested.slice(0);
+  }
+  if (mode === 'flat') tonbState.grouping.tags = [];
+  tonbState.errors = {};
+  persistTonbState();
+  trackTonb('grouping_selected', { mode });
+  renderTenantOnboarding();
+}
+function addTonbGroupingTag(value) {
+  const v = (value || '').trim();
+  if (!v) return;
+  if (!tonbState.grouping.tags) tonbState.grouping.tags = [];
+  if (tonbState.grouping.tags.indexOf(v) !== -1) return;
+  tonbState.grouping.tags.push(v);
+  persistTonbState();
+  renderTenantOnboarding();
+}
+function removeTonbGroupingTag(value) {
+  tonbState.grouping.tags = (tonbState.grouping.tags || []).filter(t => t !== value);
+  persistTonbState();
+  renderTenantOnboarding();
+}
+function _onTonbTagKey(ev) {
+  if (ev.key === 'Enter') {
+    ev.preventDefault();
+    addTonbGroupingTag(ev.target.value);
+    ev.target.value = '';
+  }
+}
+function updateTonbWorkspace(field, value) {
+  tonbState.workspace[field] = value;
+  if (tonbState.errors) {
+    const keys = { name:'wsName', tag:'wsTag', ownerName:'wsOwnerName', ownerEmail:'wsOwnerEmail' };
+    if (keys[field] && tonbState.errors[keys[field]]) delete tonbState.errors[keys[field]];
+  }
+  persistTonbState();
+  _updatePrimaryBtnEnabled();
+}
+function setTonbConnectMode(mode) {
+  if (mode === 'mocked') tonbState.connect.mocked = true;
+  if (mode === 'launched') tonbState.connect.launched = true;
+  persistTonbState();
+  trackTonb('connect_mode', { mode });
+  renderTenantOnboarding();
+}
+function toggleTonbApply(key, decision) {
+  tonbState.apply[key] = tonbState.apply[key] === decision ? null : decision;
+  persistTonbState();
+  renderTenantOnboarding();
+}
+
+/* ---------- Renderers ---------- */
+function _updatePrimaryBtnEnabled() {
+  const btn = document.getElementById('tonbPrimaryBtn');
+  if (!btn) return;
+  // For form-heavy steps, recompute validation lightly.
+  const step = _currentStep();
+  if (!step) return;
+  const err = _validateStep(step.id);
+  if (err && Object.keys(err).length > 0) btn.setAttribute('disabled','');
+  else btn.removeAttribute('disabled');
+}
+
+function renderTenantOnboarding() {
+  if (!tonbState.started) {
+    // Landing — explain + offer Start/Resume
+    return renderTonbLanding();
+  }
+  const step = _currentStep();
+  if (!step) return renderTonbLanding();
+  const ids = _stepIdsForFlow();
+  const total = ids.length;
+  const idx = tonbState.stepIdx;
+  const phase = step.phase;
+  const phaseLabel = phase === 1 ? 'Phase 1 · Tenant setup'
+                    : phase === 2 ? 'Phase 2 · Per workspace'
+                    : 'Phase 3 · Done';
+
+  // Build progress segments — one per step in the active flow.
+  const progress = ids.map((id, i) => {
+    let cls = 'tonb-progress-seg';
+    if (i < idx) cls += ' is-done';
+    else if (i === idx) cls += ' is-current';
+    return `<div class="${cls}"></div>`;
+  }).join('');
+
+  $('content').innerHTML = `
+    <section class="surface tonb-wrap">
+      <div class="tonb-h">
+        <div class="tonb-h-eyebrow-row">
+          <div class="tonb-h-eyebrow"><span class="tonb-h-eyebrow-dot"></span>AIMS-OS · Onboarding</div>
+          <div class="tonb-h-step-pill">Step ${idx + 1} of ${total} · ${escapeHtml(step.title)}</div>
+        </div>
+        <div class="tonb-progress">${progress}</div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <span class="tonb-phase-chip is-${phase}">${escapeHtml(phaseLabel)}</span>
+        <h1 class="tonb-step-title">${escapeHtml(step.title)}</h1>
+        ${_stepSubtitle(step.id)}
+      </div>
+
+      <div class="tonb-card">
+        ${_renderStepBody(step.id)}
+      </div>
+
+      ${step.id === 'done' ? '' : `
+      <div class="tonb-foot">
+        <div class="tonb-foot-l">
+          ${idx > 0 ? `<button class="tonb-btn is-ghost" onclick="tonbBack()">← Back</button>` : ''}
+        </div>
+        <div class="tonb-foot-r">
+          ${_canSkip(step.id) ? `<button class="tonb-btn is-ghost" onclick="tonbSkip()">Skip for now</button>` : ''}
+          ${_renderPrimaryBtn(step.id)}
+        </div>
+      </div>`}
+    </section>
+  `;
+
+  trackTonb('step_viewed', { step: step.id, idx });
+}
+
+function renderTonbLanding() {
+  const hasResume = (function(){
+    try {
+      const raw = localStorage.getItem(TONB_STORAGE_KEY);
+      if (!raw) return false;
+      const s = JSON.parse(raw);
+      return s.started && !s.completedAt;
+    } catch(e) { return false; }
+  })();
+  $('content').innerHTML = `
+    <section class="surface tonb-wrap">
+      <div class="tonb-h">
+        <div class="tonb-h-eyebrow-row">
+          <div class="tonb-h-eyebrow"><span class="tonb-h-eyebrow-dot"></span>AIMS-OS · Onboarding</div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <h1 class="tonb-step-title">First-time setup</h1>
+        <p class="tonb-step-sub">An 8-step guided flow to bring your tenant from empty to running. About 12 minutes if you have your data-source credentials ready.</p>
+      </div>
+
+      <div class="tonb-card">
+        <div class="tonb-welcome-h">
+          <div class="tonb-welcome-emoji">✨</div>
+          <div style="font-size:14px;color:var(--t1);font-weight:600;">You’re about to set up an AIMS-OS tenant.</div>
+          <div style="font-size:13px;color:var(--t2);line-height:1.55;">First-time setup has 8 steps in 3 phases. The add-a-workspace flow later is just 4 steps. We persist progress — you can leave and come back anytime.</div>
+        </div>
+
+        <div class="tonb-foot">
+          <div class="tonb-foot-l"></div>
+          <div class="tonb-foot-r">
+            ${hasResume ? `<button class="tonb-btn" onclick="tonbStart('first_run')">Restart</button><button class="tonb-btn is-primary" onclick="tonbState.started=true;persistTonbState();renderTenantOnboarding()">Resume →</button>` : `
+            <button class="tonb-btn" onclick="tonbStart('add_workspace')">I’m just adding a workspace</button>
+            <button class="tonb-btn is-primary" onclick="tonbStart('first_run')">Start first-time setup →</button>`}
+          </div>
+        </div>
+      </div>
+    </section>
+  `;
+}
+
+function _stepSubtitle(id) {
+  const subs = {
+    welcome:   'Here’s what we’ll do together. Have your IT contact handy in case we hit credentials.',
+    org:       'Tells AIMS-OS who you are. This identity is shown on every Studio header.',
+    starter:   'Pick a setup style. We pre-configure parts of AIMS-OS so you skip the most common setup steps. You can change everything later.',
+    grouping:  'How will your workspaces be organized? This shapes filtering and rule-pack sharing across the tenant.',
+    workspace: 'Tell us about your first workspace — the team or unit that owns this data.',
+    connect:   'Connect a data source for this workspace. We’ll use the existing Connect Data wizard — 6 sub-screens from auth to sync schedule.',
+    apply:     'For each Table you connected, we suggest a validation rule pack with a confidence score. Accept, swap, or skip per row.',
+    done:      '',
+  };
+  const s = subs[id] || '';
+  return s ? `<p class="tonb-step-sub">${escapeHtml(s)}</p>` : '';
+}
+
+function _canSkip(id) {
+  // Skippable: welcome (just info), connect (placeholder), apply (defer decisions)
+  return id === 'welcome' || id === 'connect' || id === 'apply';
+}
+
+function _renderPrimaryBtn(id) {
+  const ids = _stepIdsForFlow();
+  const isLast = tonbState.stepIdx === ids.length - 1;
+  const err = _validateStep(id);
+  const disabled = err && Object.keys(err).length > 0 ? 'disabled' : '';
+  const label = id === 'welcome' ? 'Get started →'
+              : id === 'apply' ? 'Finish setup →'
+              : 'Continue →';
+  return `<button id="tonbPrimaryBtn" class="tonb-btn is-primary" ${disabled} onclick="tonbNext()">${label}</button>`;
+}
+
+/* ---------- Step bodies ---------- */
+function _renderStepBody(id) {
+  switch (id) {
+    case 'welcome':   return _renderWelcomeStep();
+    case 'org':       return _renderOrgStep();
+    case 'starter':   return _renderStarterStep();
+    case 'grouping':  return _renderGroupingStep();
+    case 'workspace': return _renderWorkspaceStep();
+    case 'connect':   return _renderConnectStep();
+    case 'apply':     return _renderApplyStep();
+    case 'done':      return _renderDoneStep();
+    default:          return '<div>Unknown step.</div>';
+  }
+}
+
+function _renderWelcomeStep() {
+  const ids = _stepIdsForFlow();
+  const items = ids.map((id, i) => {
+    const step = TONB_STEPS.find(s => s.id === id);
+    const labelMap = {
+      welcome:'Welcome',
+      org:'Organization — name, industry, size, primary contact',
+      starter:'Starter setup — pick how AIMS-OS pre-configures itself',
+      grouping:'Workspace grouping — how teams are categorized',
+      workspace:'Workspace profile — your first workspace',
+      connect:'Connect data — we walk you through one data source',
+      apply:'Apply templates — AI-suggested validation packs per Table field',
+      done:'Done — summary and next steps',
+    };
+    const meta = id === 'connect' ? '~6 min'
+              : id === 'apply' ? '~2 min'
+              : id === 'org' ? '~2 min'
+              : id === 'starter' || id === 'grouping' || id === 'workspace' ? '~1 min'
+              : ' ';
+    return `<div class="tonb-welcome-row">
+        <span class="tonb-welcome-row-num">${i + 1}</span>
+        <div>${escapeHtml(labelMap[id] || step.title)}</div>
+        <span class="tonb-welcome-row-meta">${meta}</span>
+      </div>`;
+  }).join('');
+
+  return `
+    <div class="tonb-welcome-list">${items}</div>
+
+    <div style="display:flex;flex-direction:column;gap:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.05);">
+      <div style="font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--t3);text-transform:uppercase;">Have ready</div>
+      <div class="tonb-checklist">
+        <div class="tonb-check-row"><span class="tonb-check-row-ic"><svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3.5 8.5l3 3 6-7"/></svg></span><span><b>Credentials for one data source</b> — OAuth login, API key, or a CSV export. (You can skip if you just want to explore.)</span></div>
+        <div class="tonb-check-row"><span class="tonb-check-row-ic"><svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3.5 8.5l3 3 6-7"/></svg></span><span><b>The name of your first workspace</b> — the team or unit that owns the data you’ll connect.</span></div>
+        <div class="tonb-check-row"><span class="tonb-check-row-ic"><svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3.5 8.5l3 3 6-7"/></svg></span><span><b>~12 minutes uninterrupted</b> — you can leave and resume; we save progress automatically.</span></div>
+      </div>
+    </div>
+  `;
+}
+
+function _renderOrgStep() {
+  const o = tonbState.org;
+  const errs = tonbState.errors || {};
+  const indOptions = TONB_INDUSTRIES.map(i => `<option value="${escapeHtml(i)}" ${o.industry === i ? 'selected' : ''}>${escapeHtml(i)}</option>`).join('');
+  const sizeOptions = TONB_SIZES.map(s => `<option value="${escapeHtml(s)}" ${o.size === s ? 'selected' : ''}>${escapeHtml(s)}</option>`).join('');
+  const roleOptions = TONB_ROLES.map(r => `<option value="${escapeHtml(r)}" ${o.contactRole === r ? 'selected' : ''}>${escapeHtml(r)}</option>`).join('');
+  return `
+    <div class="tonb-fields">
+      <div class="tonb-field is-wide">
+        <label class="tonb-field-label">Organization name<span class="tonb-field-req">*</span></label>
+        <input type="text" placeholder="e.g. Contoso, Inc." value="${escapeHtml(o.name)}" oninput="updateTonbOrg('name', this.value)" />
+        ${errs.orgName ? `<div class="tonb-field-err">${escapeHtml(errs.orgName)}</div>` : ''}
+      </div>
+
+      <div class="tonb-field">
+        <label class="tonb-field-label">Primary industry<span class="tonb-field-req">*</span></label>
+        <select onchange="updateTonbOrg('industry', this.value);renderTenantOnboarding()">
+          <option value="" ${o.industry ? '' : 'selected'}>Choose an industry…</option>
+          ${indOptions}
+        </select>
+        ${errs.orgIndustry ? `<div class="tonb-field-err">${escapeHtml(errs.orgIndustry)}</div>` : ''}
+      </div>
+
+      <div class="tonb-field">
+        <label class="tonb-field-label">Organization size<span class="tonb-field-req">*</span></label>
+        <select onchange="updateTonbOrg('size', this.value);renderTenantOnboarding()">
+          <option value="" ${o.size ? '' : 'selected'}>Pick a size band…</option>
+          ${sizeOptions}
+        </select>
+        ${errs.orgSize ? `<div class="tonb-field-err">${escapeHtml(errs.orgSize)}</div>` : ''}
+      </div>
+
+      <div class="tonb-field">
+        <label class="tonb-field-label">Primary contact name<span class="tonb-field-req">*</span></label>
+        <input type="text" placeholder="Thomas González" value="${escapeHtml(o.contactName)}" oninput="updateTonbOrg('contactName', this.value)" />
+        ${errs.contactName ? `<div class="tonb-field-err">${escapeHtml(errs.contactName)}</div>` : ''}
+      </div>
+
+      <div class="tonb-field">
+        <label class="tonb-field-label">Contact role<span class="tonb-field-req">*</span></label>
+        <select onchange="updateTonbOrg('contactRole', this.value);renderTenantOnboarding()">
+          <option value="" ${o.contactRole ? '' : 'selected'}>Pick a role…</option>
+          ${roleOptions}
+        </select>
+        ${errs.contactRole ? `<div class="tonb-field-err">${escapeHtml(errs.contactRole)}</div>` : ''}
+      </div>
+
+      <div class="tonb-field is-wide">
+        <label class="tonb-field-label">Contact email<span class="tonb-field-req">*</span></label>
+        <input type="email" placeholder="thomas.gonzalez@example.com" value="${escapeHtml(o.contactEmail)}" oninput="updateTonbOrg('contactEmail', this.value)" />
+        <div class="tonb-field-hint">We send setup follow-ups and recovery codes to this address.</div>
+        ${errs.contactEmail ? `<div class="tonb-field-err">${escapeHtml(errs.contactEmail)}</div>` : ''}
+      </div>
+    </div>
+  `;
+}
+
+function _renderStarterStep() {
+  const cur = tonbState.starter;
+  const tiles = TONB_STARTERS.map((s, i) => {
+    const icon = s.icon === 'shield' ? '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 1.5L2.5 3.5v4c0 4 2.5 6.5 5.5 7.5 3-1 5.5-3.5 5.5-7.5v-4L8 1.5z" stroke-linejoin="round"/><path d="M5.5 8l2 2 3-3.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+              : s.icon === 'gavel' ? '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 14h10M5 11l5-5M9 4l3 3-2 2-3-3 2-2zM4 9l3 3"/></svg>'
+              : s.icon === 'rocket' ? '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"><path d="M8 1.5c2 1 3 3 3 5.5v3l1.5 1.5h-3l-1.5 1.5L6.5 11h-3L5 9.5v-3C5 4 6 2 8 1.5z"/><circle cx="8" cy="6" r="1"/></svg>'
+              : '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 8h10"/></svg>';
+    return `
+      <button class="tonb-tile ${cur === s.id ? 'is-selected' : ''}" onclick="selectTonbStarter('${s.id}')">
+        <div class="tonb-tile-h">
+          <div class="tonb-tile-ic is-${s.accent}">${icon}</div>
+          ${i === 0 ? '<span class="tonb-tile-badge is-pop">Most common</span>' : (s.power ? '<span class="tonb-tile-badge is-power">Power user</span>' : '')}
+        </div>
+        <div class="tonb-tile-name">${escapeHtml(s.name)}</div>
+        <div class="tonb-tile-desc">${escapeHtml(s.desc)}</div>
+        <div class="tonb-tile-meta"><b>What we set up:</b> ${escapeHtml(s.meta)}</div>
+      </button>
+    `;
+  }).join('');
+  const errs = tonbState.errors || {};
+  return `
+    <div class="tonb-picker-grid">${tiles}</div>
+    ${errs.starter ? `<div class="tonb-field-err">${escapeHtml(errs.starter)}</div>` : ''}
+  `;
+}
+
+function _renderGroupingStep() {
+  const cur = tonbState.grouping.mode;
+  const tiles = TONB_GROUPING.map(g => `
+    <button class="tonb-tile ${cur === g.id ? 'is-selected' : ''}" onclick="selectTonbGrouping('${g.id}')">
+      <div class="tonb-tile-name">${escapeHtml(g.name)}</div>
+      <div class="tonb-tile-desc">${escapeHtml(g.desc)}</div>
+    </button>
+  `).join('');
+
+  const showTags = cur && cur !== 'flat';
+  const tags = (tonbState.grouping.tags || []).map(t => `
+    <span class="tonb-tag">${escapeHtml(t)}<button class="tonb-tag-rm" onclick="removeTonbGroupingTag('${escapeHtml(t)}')" aria-label="Remove ${escapeHtml(t)}">
+      <svg width="9" height="9" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 3l10 10M13 3L3 13"/></svg>
+    </button></span>
+  `).join('');
+
+  const errs = tonbState.errors || {};
+
+  return `
+    <div class="tonb-picker-grid">${tiles}</div>
+    ${errs.grouping ? `<div class="tonb-field-err">${escapeHtml(errs.grouping)}</div>` : ''}
+
+    ${showTags ? `
+    <div class="tonb-field is-wide">
+      <label class="tonb-field-label">Group labels<span class="tonb-field-opt">(edit, remove, or add your own)</span></label>
+      <div class="tonb-tags">
+        ${tags}
+        <input class="tonb-tags-input" type="text" placeholder="Type and press Enter…" onkeydown="_onTonbTagKey(event)" />
+      </div>
+      <div class="tonb-field-hint">These become workspace tags. Workspaces in the same group can share rule packs and dashboards.</div>
+      ${errs.groupingTags ? `<div class="tonb-field-err">${escapeHtml(errs.groupingTags)}</div>` : ''}
+    </div>` : ''}
+  `;
+}
+
+function _renderWorkspaceStep() {
+  const w = tonbState.workspace;
+  const errs = tonbState.errors || {};
+  const mode = tonbState.grouping.mode;
+  const tags = tonbState.grouping.tags || [];
+  const showTagPicker = mode && mode !== 'flat';
+  const tagOptions = tags.map(t => `<option value="${escapeHtml(t)}" ${w.tag === t ? 'selected' : ''}>${escapeHtml(t)}</option>`).join('');
+  return `
+    <div class="tonb-fields">
+      <div class="tonb-field is-wide">
+        <label class="tonb-field-label">Workspace name<span class="tonb-field-req">*</span></label>
+        <input type="text" placeholder="e.g. Sales Operations" value="${escapeHtml(w.name)}" oninput="updateTonbWorkspace('name', this.value)" />
+        <div class="tonb-field-hint">A short, recognisable name. You’ll see it in the topbar and in every Studio.</div>
+        ${errs.wsName ? `<div class="tonb-field-err">${escapeHtml(errs.wsName)}</div>` : ''}
+      </div>
+
+      ${showTagPicker ? `
+      <div class="tonb-field">
+        <label class="tonb-field-label">Group<span class="tonb-field-req">*</span></label>
+        <select onchange="updateTonbWorkspace('tag', this.value);renderTenantOnboarding()">
+          <option value="" ${w.tag ? '' : 'selected'}>Pick a group…</option>
+          ${tagOptions}
+        </select>
+        ${errs.wsTag ? `<div class="tonb-field-err">${escapeHtml(errs.wsTag)}</div>` : ''}
+      </div>
+
+      <div class="tonb-field">
+        <label class="tonb-field-label">Region<span class="tonb-field-opt">(optional)</span></label>
+        <input type="text" placeholder="e.g. EMEA, North America…" value="${escapeHtml(w.region)}" oninput="updateTonbWorkspace('region', this.value)" />
+      </div>
+      ` : `
+      <div class="tonb-field is-wide">
+        <label class="tonb-field-label">Region<span class="tonb-field-opt">(optional)</span></label>
+        <input type="text" placeholder="e.g. EMEA, North America…" value="${escapeHtml(w.region)}" oninput="updateTonbWorkspace('region', this.value)" />
+      </div>`}
+
+      <div class="tonb-field">
+        <label class="tonb-field-label">Workspace owner name<span class="tonb-field-req">*</span></label>
+        <input type="text" placeholder="María González" value="${escapeHtml(w.ownerName)}" oninput="updateTonbWorkspace('ownerName', this.value)" />
+        ${errs.wsOwnerName ? `<div class="tonb-field-err">${escapeHtml(errs.wsOwnerName)}</div>` : ''}
+      </div>
+
+      <div class="tonb-field">
+        <label class="tonb-field-label">Owner email<span class="tonb-field-req">*</span></label>
+        <input type="email" placeholder="maria@example.com" value="${escapeHtml(w.ownerEmail)}" oninput="updateTonbWorkspace('ownerEmail', this.value)" />
+        ${errs.wsOwnerEmail ? `<div class="tonb-field-err">${escapeHtml(errs.wsOwnerEmail)}</div>` : ''}
+      </div>
+    </div>
+  `;
+}
+
+function _renderConnectStep() {
+  const launched = tonbState.connect.launched;
+  const mocked = tonbState.connect.mocked;
+  return `
+    <div class="tonb-launch-row">
+      <div class="tonb-launch-ic">
+        <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="8" cy="8" r="2"/><circle cx="3" cy="3" r="1.3"/><circle cx="13" cy="3" r="1.3"/><circle cx="3" cy="13" r="1.3"/><circle cx="13" cy="13" r="1.3"/><path d="M4.1 4.1l2.5 2.5M11.9 4.1L9.4 6.6M4.1 11.9l2.5-2.5M11.9 11.9L9.4 9.4"/></svg>
+      </div>
+      <div class="tonb-launch-l">
+        <div class="tonb-launch-title">Connect Data wizard — 6 sub-screens</div>
+        <div class="tonb-launch-sub">Category &middot; Connector &middot; Auth &middot; Preview &middot; Field mapping &middot; Sync schedule. The wizard already exists in Data Studio. <b style="color:var(--t1)">Phase 2 of this onboarding rebuild</b> will launch it inline; for now you can run it standalone or continue with mock data.</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0;">
+        <button class="tonb-btn is-primary" onclick="setTonbConnectMode('launched');location.hash='/connections'" title="Opens Data Studio Connections with the wizard available">
+          Open wizard →
+        </button>
+        ${launched ? '<div style="font-size:10.5px;color:#34d39c;text-align:center">Marked as launched</div>' : ''}
+      </div>
+    </div>
+
+    <div class="tonb-mockdata">
+      <b>Or continue with mock data</b>
+      We’ll skip the actual connection and pretend you connected Salesforce + Stripe + GitHub. The next step (Apply templates) uses that mock data so you can see the full flow.
+      <div style="margin-top:8px;display:flex;gap:8px;align-items:center;">
+        <button class="tonb-btn ${mocked ? 'is-primary' : ''}" onclick="setTonbConnectMode('mocked')">
+          ${mocked ? '✓ Using mock data' : 'Continue with mock data'}
+        </button>
+        ${mocked ? '<span style="font-size:11px;color:var(--t3)">3 mock Tables · 6 fields ready for Apply templates</span>' : ''}
+      </div>
+    </div>
+  `;
+}
+
+function _renderApplyStep() {
+  const rows = TONB_MOCK_TABLES.map(t => {
+    const key = t.tableName + '::' + t.fieldName;
+    const decision = tonbState.apply[key];
+    const conf = t.confidence;
+    const confCls = conf >= 90 ? 'is-high' : conf >= 75 ? 'is-medium' : 'is-low';
+    let actions;
+    if (decision === 'accept') {
+      actions = `<button class="tonb-suggest-act is-status" disabled>✓ Accepted</button>
+                 <button class="tonb-suggest-act" onclick="toggleTonbApply('${escapeHtml(key)}','accept')">Undo</button>`;
+    } else if (decision === 'skip') {
+      actions = `<button class="tonb-suggest-act is-status is-skipped" disabled>Skipped</button>
+                 <button class="tonb-suggest-act" onclick="toggleTonbApply('${escapeHtml(key)}','skip')">Undo</button>`;
+    } else if (!t.suggested) {
+      actions = `<button class="tonb-suggest-act is-skip" disabled>No suggestion</button>`;
+    } else {
+      actions = `<button class="tonb-suggest-act is-accept" onclick="toggleTonbApply('${escapeHtml(key)}','accept')">Accept</button>
+                 <button class="tonb-suggest-act is-skip" onclick="toggleTonbApply('${escapeHtml(key)}','skip')">Skip</button>`;
+    }
+    return `
+      <div class="tonb-suggest-row">
+        <div class="tonb-suggest-l">
+          <div class="tonb-suggest-table">${escapeHtml(t.tableName)}</div>
+          <div class="tonb-suggest-field">${escapeHtml(t.fieldName)}</div>
+        </div>
+        <div class="tonb-suggest-r">
+          ${t.suggested
+            ? `<div class="tonb-suggest-tpl-name">Apply <b>${escapeHtml(t.suggested)}</b></div>
+               <span class="tonb-suggest-conf ${confCls}">${conf}% confident</span>`
+            : `<div class="tonb-suggest-tpl-name" style="color:var(--t3);font-style:italic">No suggestion — review in Templates later</div>`}
+          <div class="tonb-suggest-actions">${actions}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  const accepted = Object.values(tonbState.apply).filter(v => v === 'accept').length;
+  const skipped = Object.values(tonbState.apply).filter(v => v === 'skip').length;
+  const pending = TONB_MOCK_TABLES.filter(t => t.suggested).length - accepted - skipped;
+
+  return `
+    <div style="font-size:12.5px;color:var(--t2);line-height:1.5;">
+      AI scanned the Tables connected in the previous step and matched their fields against your system rule packs. <b style="color:var(--t1)">Accept</b> applies the pack; <b style="color:var(--t1)">Skip</b> leaves the field in review (you can apply later from Templates).
+    </div>
+    <div class="tonb-suggest-list">${rows}</div>
+    <div style="display:flex;gap:14px;font-size:12px;color:var(--t2);padding-top:6px;border-top:1px solid rgba(255,255,255,0.05);">
+      <span style="color:#34d39c">${accepted} accepted</span>
+      <span style="color:var(--t3)">${skipped} skipped</span>
+      <span>${pending} pending (no decision yet)</span>
+    </div>
+  `;
+}
+
+function _renderDoneStep() {
+  const o = tonbState.org;
+  const w = tonbState.workspace;
+  const accepted = Object.values(tonbState.apply).filter(v => v === 'accept').length;
+  const skipped = Object.values(tonbState.apply).filter(v => v === 'skip').length;
+  const starter = TONB_STARTERS.find(s => s.id === tonbState.starter);
+  const grouping = TONB_GROUPING.find(g => g.id === tonbState.grouping.mode);
+
+  // Mark completed once we land on Done.
+  if (!tonbState.completedAt) {
+    tonbState.completedAt = Date.now();
+    persistTonbState();
+    trackTonb('completed', {
+      flow: tonbState.flow,
+      industry: o.industry, size: o.size,
+      starter: tonbState.starter, grouping: tonbState.grouping.mode,
+      acceptedCount: accepted, skippedCount: skipped,
+    });
+  }
+
+  return `
+    <div class="tonb-done-hero">
+      <div class="tonb-done-emoji">🎉</div>
+      <div class="tonb-done-title">${tonbState.flow === 'add_workspace' ? 'Workspace ready' : 'Tenant ready'}</div>
+      <div class="tonb-done-sub">${tonbState.flow === 'add_workspace'
+        ? '<b style="color:var(--t1)">' + escapeHtml(w.name || 'Your workspace') + '</b> is set up. Add another, or jump into Data Studio.'
+        : '<b style="color:var(--t1)">' + escapeHtml(o.name || 'Your organization') + '</b> is configured. ' + (starter ? 'Pre-applied: <b>' + escapeHtml(starter.name) + '</b>. ' : '') + 'You can jump into any Studio now.'}</div>
+    </div>
+
+    <div class="tonb-done-stats">
+      <div class="tonb-done-stat"><span class="tonb-done-stat-v">1</span><span class="tonb-done-stat-k">workspace</span></div>
+      <div class="tonb-done-stat"><span class="tonb-done-stat-v">${tonbState.connect.mocked || tonbState.connect.launched ? (tonbState.connect.mocked ? 3 : 1) : 0}</span><span class="tonb-done-stat-k">tables</span></div>
+      <div class="tonb-done-stat"><span class="tonb-done-stat-v" style="color:#34d39c">${accepted}</span><span class="tonb-done-stat-k">templates applied</span></div>
+      <div class="tonb-done-stat"><span class="tonb-done-stat-v">${grouping && grouping.id !== 'flat' ? (tonbState.grouping.tags || []).length : 0}</span><span class="tonb-done-stat-k">groups defined</span></div>
+    </div>
+
+    <div class="tonb-next-grid">
+      <button class="tonb-next-card" onclick="tonbStart('add_workspace')">
+        <div class="tonb-next-card-h">
+          <span class="tonb-next-card-name">Add another workspace</span>
+          <span class="tonb-next-card-arrow">→</span>
+        </div>
+        <div class="tonb-next-card-desc">4-step flow per workspace. Reuses your tenant setup.</div>
+      </button>
+
+      <button class="tonb-next-card" onclick="location.hash='/connections'">
+        <div class="tonb-next-card-h">
+          <span class="tonb-next-card-name">Open Data Studio</span>
+          <span class="tonb-next-card-arrow">→</span>
+        </div>
+        <div class="tonb-next-card-desc">See your Connections, Tables, and rule pack Templates.</div>
+      </button>
+
+      <a class="tonb-next-card" href="settings.html" style="text-decoration:none;color:inherit">
+        <div class="tonb-next-card-h">
+          <span class="tonb-next-card-name">Open Admin Studio</span>
+          <span class="tonb-next-card-arrow">→</span>
+        </div>
+        <div class="tonb-next-card-desc">Distribution, Ownership, Publish workflow. Where governance lives.</div>
+      </a>
+
+      <button class="tonb-next-card" disabled title="Coming soon">
+        <div class="tonb-next-card-h">
+          <span class="tonb-next-card-name">Invite your team</span>
+          <span class="tonb-next-card-arrow">→</span>
+        </div>
+        <div class="tonb-next-card-desc">Send invites for the contacts and owners you named above.</div>
+      </button>
+    </div>
+
+    <div style="display:flex;justify-content:flex-end;gap:8px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.05);">
+      <button class="tonb-btn is-ghost" onclick="resetTonbState();renderTenantOnboarding()">Restart onboarding</button>
+    </div>
+  `;
+}
+
+/* End Tenant Onboarding Phase 1 */
+
+
 function render() {
   const parts = parseRoute();
   paintSsbActive();
@@ -7934,7 +9092,7 @@ function render() {
     if (parts[1]) return renderTemplateDetail(parts[1]);
     return renderTemplates();
   }
-  if (parts[0] === 'onboarding')  return renderPlaceholder('Onboarding flow', 'First-time Data Studio setup — connect a source, map fields, schedule a sync.');
+  if (parts[0] === 'onboarding') return renderTenantOnboarding();
 
   renderConnections();
 }
