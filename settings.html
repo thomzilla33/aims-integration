@@ -5383,10 +5383,17 @@ const AUDIT_EVENTS = [
 
 /* ====================== STATE ====================== */
 
+// Persona-aware mode default per Mike's founder thesis: admins default to
+// Operate (triage mindset), end-users default to Browse (discovery mindset).
+// Explicit user choice via localStorage is always respected — we only fall
+// through to the persona-based default when no preference is stored yet.
+const _savedPersona = localStorage.getItem('aims_persona') || 'admin';
+const _savedMode = localStorage.getItem('aims_mode');
+
 const state = {
   // ── Orchestration thesis: mode + persona ──
-  mode: (localStorage.getItem('aims_mode') || 'browse'),       // 'browse' | 'operate'
-  persona: (localStorage.getItem('aims_persona') || 'admin'),  // 'admin' | 'user'
+  mode: _savedMode || (_savedPersona === 'admin' ? 'operate' : 'browse'),  // 'browse' | 'operate'
+  persona: _savedPersona,                                                    // 'admin' | 'user'
   operateTab: 'needs_attention',                                // default landing tab inside Operate
   homeTab: (localStorage.getItem('aims_home_tab') || null),    // 'integrated' | 'marketplace' (null = compute default)
   // ── Catalog filter state ──
@@ -10798,6 +10805,13 @@ function paintPersonaPill() {
 
 // Paint mode + persona controls on initial load
 function paintShellControls() {
+  // Safety: end-users can't reach the Operate toggle (it's hidden in user
+  // persona). Snap their mode back to browse on init if a stale localStorage
+  // value left them stuck in operate.
+  if (state.persona === 'user' && state.mode === 'operate') {
+    state.mode = 'browse';
+    try { localStorage.setItem('aims_mode', 'browse'); } catch(e){}
+  }
   document.documentElement.classList.toggle('mode-operate', state.mode === 'operate');
   paintModeToggle();
   paintPersonaPill();
