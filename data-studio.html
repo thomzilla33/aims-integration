@@ -2845,7 +2845,11 @@ let obState = (function(){
     const raw = localStorage.getItem('aims_ds_onboarding');
     if (raw) return JSON.parse(raw);
   } catch(e) {}
-  return { phase:'complete', step:0, category:null, connector:null, auth:{}, mapping:[], sync:{} };
+  // Fresh visit (no localStorage): default to 'pending' so the empty state is
+  // the first thing the user sees. The 'Skip for now' button in the empty
+  // state flips this to 'complete' if the user just wants to see demo data.
+  try { if (typeof track === 'function') track('onboarding_first_visit', {}); } catch(e) {}
+  return { phase:'pending', step:0, category:null, connector:null, auth:{}, mapping:[], sync:{} };
 })();
 
 function persistOb() {
