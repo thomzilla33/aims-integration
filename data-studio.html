@@ -4685,29 +4685,57 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
 .fm-wrap{display:flex;flex-direction:column;gap:14px;}
 
 .fm-h-eyebrow{font-size:10px;font-weight:700;letter-spacing:.14em;
-  text-transform:uppercase;color:var(--cyan);display:flex;align-items:center;gap:6px;margin-bottom:4px;}
+  text-transform:uppercase;color:var(--cyan);display:inline-flex;align-items:center;gap:6px;}
 .fm-h-eyebrow-dot{width:6px;height:6px;border-radius:50%;background:var(--cyan);
   box-shadow:0 0 0 2px rgba(56,189,248,0.18);}
-.fm-h-title{font-size:22px;font-weight:700;color:var(--t1);letter-spacing:-0.015em;}
+.fm-h-eyebrow-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px;}
+.fm-h-time{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:11.5px;color:var(--t3);font-weight:500;
+}
+.fm-h-time::before{
+  content:'';width:5px;height:5px;border-radius:50%;
+  background:#10b981;box-shadow:0 0 0 2px rgba(16,185,129,0.18);
+}
+.fm-h-title{font-size:26px;font-weight:800;color:var(--t1);letter-spacing:-0.02em;line-height:1.18;}
 .fm-h-sub{font-size:13px;color:var(--t2);max-width:680px;line-height:1.55;margin-top:4px;}
+
+.fm-page-row{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+.fm-hero-cta{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:10px 16px;border-radius:10px;
+  background:linear-gradient(135deg,rgba(245,158,11,0.22),rgba(245,158,11,0.10));
+  border:1px solid rgba(245,158,11,0.45);
+  color:#fbbf24;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;
+  white-space:nowrap;transition:all .15s ease;
+}
+.fm-hero-cta:hover{
+  background:linear-gradient(135deg,rgba(245,158,11,0.32),rgba(245,158,11,0.16));
+  border-color:rgba(245,158,11,0.65);transform:translateY(-1px);
+}
 
 /* KPI strip */
 .fm-kpi-strip{
-  display:grid;grid-template-columns:repeat(auto-fit, minmax(160px, 1fr));gap:10px;
+  display:grid;grid-template-columns:repeat(auto-fit, minmax(140px, 1fr));gap:10px;
   margin-bottom:4px;
 }
 .fm-kpi{
-  background:linear-gradient(180deg, rgba(255,255,255,0.034), rgba(255,255,255,0.014));
-  border:1px solid rgba(255,255,255,0.08);
-  border-radius:12px;padding:12px 14px;
+  background:rgba(255,255,255,0.022);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:11px;padding:12px 14px;
   display:flex;flex-direction:column;gap:3px;
+  transition:transform .15s,border-color .15s,background .15s;
 }
-.fm-kpi-v{font-size:22px;font-weight:700;color:var(--t1);font-variant-numeric:tabular-nums;letter-spacing:-0.01em;}
-.fm-kpi-k{font-size:10.5px;font-weight:600;letter-spacing:.08em;color:var(--t3);text-transform:uppercase;}
-.fm-kpi.is-auto .fm-kpi-v{color:#34d39c;}
-.fm-kpi.is-review .fm-kpi-v{color:#fbbf24;}
-.fm-kpi.is-resolved .fm-kpi-v{color:#7ed3f7;}
-.fm-kpi.is-skipped .fm-kpi-v{color:var(--t3);}
+.fm-kpi-v{font-size:22px;font-weight:800;color:var(--t1);font-variant-numeric:tabular-nums;letter-spacing:-0.02em;}
+.fm-kpi-k{font-size:10px;font-weight:600;letter-spacing:.06em;color:var(--t3);text-transform:uppercase;}
+.fm-kpi.is-auto{background:rgba(16,185,129,0.08);border-color:rgba(16,185,129,0.28);}
+.fm-kpi.is-auto .fm-kpi-v,.fm-kpi.is-auto .fm-kpi-k{color:#34d39c;}
+.fm-kpi.is-review{background:rgba(245,158,11,0.08);border-color:rgba(245,158,11,0.34);}
+.fm-kpi.is-review .fm-kpi-v,.fm-kpi.is-review .fm-kpi-k{color:#fbbf24;}
+.fm-kpi.is-resolved{background:rgba(56,189,248,0.08);border-color:rgba(56,189,248,0.28);}
+.fm-kpi.is-resolved .fm-kpi-v,.fm-kpi.is-resolved .fm-kpi-k{color:#7ed3f7;}
+.fm-kpi.is-skipped{background:rgba(148,163,184,0.06);border-color:rgba(148,163,184,0.18);}
+.fm-kpi.is-skipped .fm-kpi-v,.fm-kpi.is-skipped .fm-kpi-k{color:var(--t3);}
 
 /* Toolbar */
 .fm-toolbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
@@ -4920,10 +4948,27 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
 .sv-wrap{display:flex;flex-direction:column;gap:14px;}
 
 .sv-h-eyebrow{font-size:10px;font-weight:700;letter-spacing:.14em;
-  text-transform:uppercase;color:var(--cyan);display:flex;align-items:center;gap:6px;margin-bottom:4px;}
+  text-transform:uppercase;color:var(--cyan);display:inline-flex;align-items:center;gap:6px;}
 .sv-h-eyebrow-dot{width:6px;height:6px;border-radius:50%;background:var(--cyan);
   box-shadow:0 0 0 2px rgba(56,189,248,0.18);}
-.sv-h-title{font-size:22px;font-weight:700;color:var(--t1);letter-spacing:-0.015em;}
+.sv-h-eyebrow-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px;}
+.sv-h-time{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:11.5px;color:var(--t3);font-weight:500;
+}
+.sv-h-time::before{
+  content:'';width:5px;height:5px;border-radius:50%;
+  background:#10b981;box-shadow:0 0 0 2px rgba(16,185,129,0.18);
+}
+.sv-h-title{font-size:26px;font-weight:800;color:var(--t1);letter-spacing:-0.02em;line-height:1.18;}
+
+/* KPI strip card tints */
+.sv-kpi.is-week{background:rgba(56,189,248,0.08);border-color:rgba(56,189,248,0.28);}
+.sv-kpi.is-week .sv-kpi-v,.sv-kpi.is-week .sv-kpi-k{color:#7ed3f7;}
+.sv-kpi.is-month{background:rgba(16,185,129,0.08);border-color:rgba(16,185,129,0.28);}
+.sv-kpi.is-month .sv-kpi-v,.sv-kpi.is-month .sv-kpi-k{color:#34d39c;}
+.sv-kpi.is-tables{background:rgba(168,85,247,0.08);border-color:rgba(168,85,247,0.28);}
+.sv-kpi.is-tables .sv-kpi-v,.sv-kpi.is-tables .sv-kpi-k{color:#cda5ff;}
 .sv-h-sub{font-size:13px;color:var(--t2);max-width:680px;line-height:1.55;margin-top:4px;}
 
 .sv-kpi-strip{
@@ -12078,10 +12123,19 @@ function renderFieldMappings() {
         <span class="crumb-current">Field mappings</span>
       </div>
 
-      <div>
-        <div class="fm-h-eyebrow"><span class="fm-h-eyebrow-dot"></span>Data Studio · Field mappings</div>
-        <h1 class="fm-h-title">Cross-connection field mappings</h1>
-        <p class="fm-h-sub">Every source field across every connection, with what it maps to in your Tables. AIMS auto-maps the standard fields it recognizes; custom fields wait here until you decide what to do with them.</p>
+      <div class="fm-page-row">
+        <div>
+          <div class="fm-h-eyebrow-row">
+            <div class="fm-h-eyebrow"><span class="fm-h-eyebrow-dot"></span>Data Studio · Field mappings</div>
+            <span class="fm-h-time">${counts.all} field${counts.all===1?'':'s'} · ${counts.review} need review</span>
+          </div>
+          <h1 class="fm-h-title">Cross-connection field mappings</h1>
+          <p class="fm-h-sub">Every source field across every connection — auto-mapped fields go through silently, custom ones wait here for a decision.</p>
+        </div>
+        ${counts.review > 0 ? `<button class="fm-hero-cta" onclick="setFmStatus('review')" aria-label="Filter to fields needing review">
+          Resolve ${counts.review} field${counts.review===1?'':'s'}
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 8h10M9.5 4.5L13 8l-3.5 3.5"/></svg>
+        </button>` : ''}
       </div>
 
       <div class="fm-kpi-strip">
@@ -12394,16 +12448,19 @@ function renderSchemaVersions() {
       </div>
 
       <div>
-        <div class="sv-h-eyebrow"><span class="sv-h-eyebrow-dot"></span>Data Studio · Schema versions</div>
+        <div class="sv-h-eyebrow-row">
+          <div class="sv-h-eyebrow"><span class="sv-h-eyebrow-dot"></span>Data Studio · Schema versions</div>
+          <span class="sv-h-time">${timeline.length} version${timeline.length===1?'':'s'} captured</span>
+        </div>
         <h1 class="sv-h-title">Schema change history</h1>
         <p class="sv-h-sub">Every edit to a Table — field rename, type change, validation toggle, custom property update — captures a version. Browse the unified timeline, jump to any Table to inspect or restore.</p>
       </div>
 
       <div class="sv-kpi-strip">
         <div class="sv-kpi"><span class="sv-kpi-v">${timeline.length}</span><span class="sv-kpi-k">Total versions</span></div>
-        <div class="sv-kpi"><span class="sv-kpi-v">${weekCount}</span><span class="sv-kpi-k">This week</span></div>
-        <div class="sv-kpi"><span class="sv-kpi-v">${monthCount}</span><span class="sv-kpi-k">This month</span></div>
-        <div class="sv-kpi"><span class="sv-kpi-v">${tableSet.size}</span><span class="sv-kpi-k">Tables touched</span></div>
+        <div class="sv-kpi is-week"><span class="sv-kpi-v">${weekCount}</span><span class="sv-kpi-k">This week</span></div>
+        <div class="sv-kpi is-month"><span class="sv-kpi-v">${monthCount}</span><span class="sv-kpi-k">This month</span></div>
+        <div class="sv-kpi is-tables"><span class="sv-kpi-v">${tableSet.size}</span><span class="sv-kpi-k">Tables touched</span></div>
       </div>
 
       <div class="sv-toolbar">
