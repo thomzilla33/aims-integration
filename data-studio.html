@@ -2965,16 +2965,76 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
    ============================================================ */
 
 /* Page header */
+.tpl-h-eyebrow-row{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  margin-bottom:6px;
+}
 .tpl-h-eyebrow{font-size:10px;font-weight:700;letter-spacing:.14em;
-  text-transform:uppercase;color:var(--cyan);display:flex;align-items:center;gap:6px;
-  margin-bottom:4px;}
+  text-transform:uppercase;color:var(--cyan);display:inline-flex;align-items:center;gap:6px;
+  margin:0;}
 .tpl-h-eyebrow-dot{display:inline-block;width:6px;height:6px;border-radius:50%;
   background:var(--cyan);box-shadow:0 0 0 2px rgba(56,189,248,0.18);}
-.tpl-h-title{font-size:22px;font-weight:700;color:var(--t1);letter-spacing:-0.015em;}
-.tpl-h-sub{font-size:13px;color:var(--t2);margin-top:4px;max-width:640px;line-height:1.55;}
+.tpl-h-time{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:11.5px;color:var(--t3);font-weight:500;
+}
+.tpl-h-time::before{
+  content:'';width:5px;height:5px;border-radius:50%;
+  background:#10b981;box-shadow:0 0 0 2px rgba(16,185,129,0.18);
+}
+.tpl-h-title{font-size:26px;font-weight:700;color:var(--t1);letter-spacing:-0.02em;line-height:1.18;}
+.tpl-h-sub{font-size:13px;color:var(--t2);margin-top:6px;max-width:640px;line-height:1.55;}
 
-.tpl-page-h-row{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
+.tpl-page-h-row{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;
   flex-wrap:wrap;margin-bottom:18px;}
+
+/* KPI cluster on the right of the hero */
+.tpl-h-stats{
+  display:flex;gap:10px;flex-shrink:0;align-items:stretch;flex-wrap:wrap;
+}
+.tpl-h-kpi{
+  display:flex;flex-direction:column;gap:3px;align-items:flex-start;
+  padding:10px 14px;
+  background:rgba(255,255,255,0.022);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:11px;
+  min-width:84px;
+  transition:transform .15s,border-color .15s,background .15s;
+}
+.tpl-h-kpi.is-primary{
+  background:rgba(56,189,248,0.08);
+  border-color:rgba(56,189,248,0.28);
+}
+.tpl-h-kpi.is-applied{
+  background:rgba(16,185,129,0.08);
+  border-color:rgba(16,185,129,0.28);
+}
+.tpl-h-kpi.is-custom{
+  background:rgba(168,85,247,0.08);
+  border-color:rgba(168,85,247,0.28);
+}
+.tpl-h-kpi.is-unapplied{
+  background:rgba(245,158,11,0.08);
+  border-color:rgba(245,158,11,0.34);
+}
+.tpl-h-kpi-n{font-size:22px;font-weight:800;line-height:1;letter-spacing:-.02em;color:var(--t1);}
+.tpl-h-kpi.is-primary  .tpl-h-kpi-n{color:#7ed3f7;}
+.tpl-h-kpi.is-applied  .tpl-h-kpi-n{color:#34d39c;}
+.tpl-h-kpi.is-custom   .tpl-h-kpi-n{color:#cda5ff;}
+.tpl-h-kpi.is-unapplied.tpl-h-kpi-n,
+.tpl-h-kpi.is-unapplied .tpl-h-kpi-n{color:#fbbf24;}
+.tpl-h-kpi-l{font-size:10px;font-weight:600;letter-spacing:.06em;color:var(--t3);text-transform:uppercase;}
+.tpl-h-kpi.is-primary  .tpl-h-kpi-l{color:#7ed3f7;}
+.tpl-h-kpi.is-applied  .tpl-h-kpi-l{color:#34d39c;}
+.tpl-h-kpi.is-custom   .tpl-h-kpi-l{color:#cda5ff;}
+.tpl-h-kpi.is-unapplied .tpl-h-kpi-l{color:#fbbf24;}
+
+@media (max-width:760px){
+  .tpl-h-stats{flex-wrap:wrap;gap:8px;}
+  .tpl-h-title{font-size:22px;}
+  .tpl-h-kpi{min-width:72px;padding:8px 12px;}
+  .tpl-h-kpi-n{font-size:18px;}
+}
 
 /* Toolbar */
 .tpl-lib-toolbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px;}
@@ -8277,14 +8337,46 @@ function renderTemplatesLibrary() {
 
       <div class="tpl-page-h-row">
         <div>
-          <div class="tpl-h-eyebrow"><span class="tpl-h-eyebrow-dot"></span>Data Studio · Templates</div>
+          <div class="tpl-h-eyebrow-row">
+            <span class="tpl-h-eyebrow"><span class="tpl-h-eyebrow-dot"></span>Data Studio · Templates</span>
+            ${(function(){
+              const latest = tplLibrary.reduce((a, t) => {
+                const v = (t.versions || [])[0];
+                if (!v) return a;
+                if (!a || (v.createdAt && v.createdAt > a)) return v.createdAt;
+                return a;
+              }, null);
+              return latest ? `<span class="tpl-h-time">Last edit ${escapeHtml(formatTplRelative(latest))}</span>` : '';
+            })()}
+          </div>
           <h1 class="tpl-h-title">Validation &amp; transformation templates</h1>
-          <p class="tpl-h-sub">Reusable rule packs you apply to Table fields. Define a pack once — every field it's applied to inherits the rules. Edit the pack, every applied field updates.</p>
+          <p class="tpl-h-sub">Reusable rule packs applied to Table fields — define once, every applied field inherits the rules.</p>
         </div>
-        <button class="tpl-btn-new" onclick="openTemplateCreate()">
-          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 3.5v9M3.5 8h9"/></svg>
-          New template
-        </button>
+        <div class="tpl-h-stats">
+          <div class="tpl-h-kpi is-primary">
+            <span class="tpl-h-kpi-n">${counts.all}</span>
+            <span class="tpl-h-kpi-l">Packs</span>
+          </div>
+          <div class="tpl-h-kpi is-applied">
+            <span class="tpl-h-kpi-n">${tplLibrary.reduce((sum, t) => sum + (t.appliedTo || []).length, 0)}</span>
+            <span class="tpl-h-kpi-l">Applied</span>
+          </div>
+          <div class="tpl-h-kpi is-custom">
+            <span class="tpl-h-kpi-n">${counts.cloned + counts.custom}</span>
+            <span class="tpl-h-kpi-l">Custom</span>
+          </div>
+          ${(function(){
+            const unapplied = tplLibrary.filter(t => (t.appliedTo || []).length === 0 && t.source !== 'system').length;
+            return unapplied > 0 ? `<div class="tpl-h-kpi is-unapplied">
+              <span class="tpl-h-kpi-n">${unapplied}</span>
+              <span class="tpl-h-kpi-l">Unapplied</span>
+            </div>` : '';
+          })()}
+          <button class="tpl-btn-new" onclick="openTemplateCreate()" style="align-self:stretch;">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9"/></svg>
+            New template
+          </button>
+        </div>
       </div>
 
       <div class="tpl-lib-toolbar">
