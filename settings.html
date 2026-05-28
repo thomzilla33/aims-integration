@@ -4123,6 +4123,128 @@ html.theme-light .theme-icon-moon{display:block}
 .publish-approver-status.is-approved{background:rgba(16,185,129,0.10);color:var(--green);border:1px solid rgba(16,185,129,0.32)}
 .publish-approver-status.is-pending{background:rgba(245,158,11,0.10);color:var(--amber);border:1px solid rgba(245,158,11,0.32)}
 
+
+/* ============ WIDGETS LIBRARY (Admin Studio surface) ============ */
+.wg-wrap{padding:24px 28px;max-width:1320px;margin:0 auto}
+.wg-h{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:20px;
+  margin-bottom:18px;flex-wrap:wrap;
+}
+.wg-h-l{flex:1;min-width:280px}
+.wg-h-eyebrow{
+  display:inline-flex;align-items:center;gap:7px;
+  font-size:10px;font-weight:800;letter-spacing:.10em;text-transform:uppercase;
+  color:var(--green);margin-bottom:8px;
+}
+.wg-h-eyebrow-dot{width:5px;height:5px;border-radius:50%;background:var(--green);box-shadow:0 0 0 3px rgba(16,185,129,0.18)}
+.wg-h-title{font-size:24px;font-weight:800;color:var(--t1);letter-spacing:-.02em;line-height:1.18;margin-bottom:6px}
+.wg-h-desc{font-size:13px;color:var(--t2);line-height:1.55;max-width:640px}
+.wg-counts{display:flex;gap:8px;flex-shrink:0;flex-wrap:wrap}
+.wg-count{
+  display:inline-flex;flex-direction:column;align-items:flex-start;
+  padding:10px 14px;background:rgba(255,255,255,0.025);
+  border:1px solid var(--line);border-radius:10px;min-width:96px;
+}
+.wg-count-v{font-size:20px;font-weight:800;color:var(--t1);line-height:1;letter-spacing:-.01em}
+.wg-count-v.is-amber{color:var(--amber)}
+.wg-count-v.is-green{color:var(--green)}
+.wg-count-l{font-size:10.5px;font-weight:600;color:var(--t3);margin-top:5px;letter-spacing:.02em}
+
+.wg-toolbar{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  margin-bottom:16px;padding:10px 14px;
+  background:rgba(255,255,255,0.02);
+  border:1px solid var(--line);border-radius:10px;
+}
+.wg-search{
+  flex:1;min-width:220px;display:flex;align-items:center;gap:8px;
+  padding:7px 11px;background:#070e1c;border:1px solid var(--line);border-radius:8px;
+}
+.wg-search svg{color:var(--t3);flex-shrink:0}
+.wg-search input{
+  flex:1;background:transparent;border:none;outline:none;
+  color:var(--t1);font-family:inherit;font-size:12.5px;
+}
+.wg-search input::placeholder{color:var(--t3)}
+.wg-filter{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:7px 11px;background:transparent;border:1px solid var(--line);border-radius:8px;
+  color:var(--t2);font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;
+  transition:border-color .12s, color .12s;
+}
+.wg-filter:hover{border-color:var(--line-strong);color:var(--t1)}
+.wg-filter.is-active{background:rgba(16,185,129,0.08);border-color:rgba(16,185,129,0.40);color:var(--green)}
+
+.wg-grid{
+  display:grid;grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));gap:12px;
+}
+.wg-card{
+  display:flex;flex-direction:column;gap:10px;
+  padding:16px 16px 14px;
+  background:rgba(255,255,255,0.025);
+  border:1px solid var(--line);border-radius:12px;
+  transition:border-color .14s, background .14s, transform .12s;
+}
+.wg-card:hover{border-color:var(--line-strong);background:rgba(255,255,255,0.04);transform:translateY(-2px)}
+.wg-card.is-blocked{opacity:.78}
+.wg-card-h{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.wg-card-type{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:3px 9px;border-radius:99px;
+  font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;
+}
+.wg-card-type.t-chart  { background:rgba(43,127,255,0.10);  color:var(--blue);   border:1px solid rgba(43,127,255,0.32) }
+.wg-card-type.t-table  { background:rgba(6,182,212,0.10);   color:var(--cyan);   border:1px solid rgba(6,182,212,0.32) }
+.wg-card-type.t-kpi    { background:rgba(167,139,250,0.10); color:var(--purple); border:1px solid rgba(167,139,250,0.32) }
+.wg-card-type.t-funnel { background:rgba(245,158,11,0.10);  color:var(--amber);  border:1px solid rgba(245,158,11,0.32) }
+.wg-card-status{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:2.5px 9px;border-radius:99px;
+  font-size:10.5px;font-weight:700;
+}
+.wg-card-status-dot{width:6px;height:6px;border-radius:50%}
+.wg-card-status.is-installed{background:rgba(16,185,129,0.10);color:var(--green);border:1px solid rgba(16,185,129,0.32)}
+.wg-card-status.is-installed .wg-card-status-dot{background:var(--green)}
+.wg-card-status.is-available{background:rgba(43,127,255,0.08);color:var(--blue);border:1px solid rgba(43,127,255,0.32)}
+.wg-card-status.is-available .wg-card-status-dot{background:var(--blue)}
+.wg-card-status.is-blocked{background:rgba(245,158,11,0.10);color:var(--amber);border:1px solid rgba(245,158,11,0.32)}
+.wg-card-status.is-blocked .wg-card-status-dot{background:var(--amber)}
+
+.wg-card-name{font-size:14px;font-weight:800;color:var(--t1);letter-spacing:-.01em;line-height:1.3}
+.wg-card-desc{font-size:12px;color:var(--t2);line-height:1.5}
+.wg-card-integ{display:flex;align-items:center;gap:7px;margin-top:6px}
+.wg-card-integ-l{font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--t3)}
+.wg-card-integ-logos{display:inline-flex;align-items:center;gap:4px}
+.wg-card-integ-logo{
+  width:22px;height:22px;border-radius:6px;background:#fff;padding:3px;
+  display:inline-flex;align-items:center;justify-content:center;
+  border:1px solid rgba(255,255,255,0.10);
+}
+.wg-card-integ-logo img{width:100%;height:100%;object-fit:contain}
+.wg-card-integ-logo.is-missing{background:rgba(245,158,11,0.12);border-color:rgba(245,158,11,0.32);color:var(--amber);font-size:9px;font-weight:800;padding:0}
+.wg-card-foot{
+  display:flex;align-items:center;justify-content:space-between;gap:9px;
+  margin-top:auto;padding-top:8px;border-top:1px solid rgba(255,255,255,0.05);
+}
+.wg-card-meta{font-size:10.5px;color:var(--t3)}
+.wg-card-cta{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:6px 12px;border-radius:7px;
+  font-family:inherit;font-size:11.5px;font-weight:700;cursor:pointer;
+  transition:transform .12s, background .12s;
+}
+.wg-card-cta.is-install{background:rgba(43,127,255,0.12);color:var(--blue);border:1px solid rgba(43,127,255,0.36)}
+.wg-card-cta.is-install:hover{background:rgba(43,127,255,0.20);transform:translateY(-1px)}
+.wg-card-cta.is-open{background:transparent;color:var(--t2);border:1px solid var(--line-strong)}
+.wg-card-cta.is-open:hover{border-color:var(--green);color:var(--green)}
+.wg-card-cta.is-blocked{background:transparent;color:var(--t3);border:1px dashed var(--line-strong);cursor:not-allowed}
+
+.wg-empty{
+  grid-column:1/-1;text-align:center;padding:40px 24px;color:var(--t3);
+  font-size:12.5px;line-height:1.55;
+  border:1px dashed var(--line-strong);border-radius:10px;background:rgba(255,255,255,0.015);
+}
+
 </style>
 </head>
 <body>
@@ -4341,6 +4463,11 @@ html.theme-light .theme-icon-moon{display:block}
           <button class="ssb-item" data-admin-only data-route="distribution" title="Control where integrations are exposed">
             <span class="ssb-item-ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg></span>
             <span class="ssb-item-label">Distribution</span>
+          </button>
+
+          <button class="ssb-item" data-admin-only data-route="widgets" title="Workspace widget templates">
+            <span class="ssb-item-ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="6" height="4" rx="1"/><rect x="9" y="2" width="5" height="6" rx="1"/><rect x="2" y="8" width="5" height="6" rx="1"/><rect x="8" y="10" width="6" height="4" rx="1"/></svg></span>
+            <span class="ssb-item-label">Widgets</span>
           </button>
         </div>
 
@@ -5927,6 +6054,195 @@ function renderDistribution() {
   }
 }
 
+
+
+/* ============ WIDGETS LIBRARY (downstream consumer surface) ============ */
+const MOCK_WIDGET_TEMPLATES = [
+  { id:'wt-pipeline',    name:'Pipeline Health',        desc:'Open deals by stage with revenue projections and at-risk flags.',           type:'chart',  category:'sales',       integrations:['salesforce','hubspot'],   installed:true,  views7d:412 },
+  { id:'wt-cs-sla',      name:'CS SLA Tracker',         desc:'Open tickets ranked by SLA breach risk. Auto-routes critical to on-call.', type:'table',  category:'support',     integrations:['zendesk','salesforce'],  installed:true,  views7d:89  },
+  { id:'wt-eng-velocity',name:'Engineering Velocity',   desc:'PR throughput, cycle time, and review latency across active repos.',        type:'chart',  category:'engineering', integrations:['github','linear'],        installed:true,  views7d:127 },
+  { id:'wt-mrr-monthly', name:'Monthly Recurring Rev.', desc:'MRR + churn rate + new-business waterfall for the current month.',          type:'kpi',    category:'finance',     integrations:['stripe','salesforce'],   installed:false, views7d:0   },
+  { id:'wt-payment-fail',name:'Payment Failures',       desc:'Daily failed payments grouped by reason. Critical-card flags surface up.',  type:'table',  category:'finance',     integrations:['stripe'],                installed:false, views7d:0   },
+  { id:'wt-lead-funnel', name:'Lead Source Funnel',     desc:'Conversion by acquisition channel with stage-by-stage drop-off.',            type:'funnel', category:'marketing',   integrations:['hubspot','segment'],     installed:false, views7d:0   },
+  { id:'wt-campaign-roi',name:'Campaign ROI',           desc:'Marketing spend vs attributed revenue. Per-campaign payback period.',       type:'chart',  category:'marketing',   integrations:['mixpanel','hubspot','stripe'], installed:false, views7d:0 },
+  { id:'wt-team-pulse',  name:'Team Pulse',             desc:'Slack activity volume + reaction sentiment per workspace channel.',         type:'kpi',    category:'team',        integrations:['slack'],                 installed:false, views7d:0   },
+  { id:'wt-error-radar', name:'Error Radar',            desc:'GitHub issues paired with Snowflake error events. Spot regressions fast.', type:'chart',  category:'engineering', integrations:['github','snowflake'],    installed:false, views7d:0   },
+  { id:'wt-onboard',     name:'Onboarding Funnel',      desc:'New users → activated. Cohort-by-week conversion with feature drop-offs.', type:'funnel', category:'product',     integrations:['mixpanel','hubspot'],    installed:false, views7d:0   }
+];
+
+const WG_CATEGORIES = [
+  { id:'all',         label:'All' },
+  { id:'sales',       label:'Sales' },
+  { id:'marketing',   label:'Marketing' },
+  { id:'finance',     label:'Finance' },
+  { id:'support',     label:'Support' },
+  { id:'engineering', label:'Engineering' },
+  { id:'product',     label:'Product' },
+  { id:'team',        label:'Team' }
+];
+
+let _wgFilters = { search:'', category:'all' };
+
+function wgSetFilter(key, value) {
+  _wgFilters[key] = value;
+  renderWidgetsLibrary();
+}
+function wgSearchInput(value) {
+  _wgFilters.search = (value || '').toLowerCase();
+  renderWidgetsLibrary();
+}
+
+// A widget's status is derived from Distribution availability:
+// - installed:true → 'installed'
+// - else if all required integrations are exposed to 'widgets' surface → 'available'
+// - else → 'blocked'
+function widgetStatus(w) {
+  if (w.installed) return 'installed';
+  const missing = w.integrations.filter(slug => {
+    const integ = INTEGRATIONS.find(i => i.slug === slug);
+    if (!integ || !integ.connected) return true;  // not even connected
+    if (typeof getDistribution === 'function') {
+      const dist = getDistribution(slug);
+      if (dist.widgets === false) return true;
+    }
+    return false;
+  });
+  if (missing.length > 0) return 'blocked';
+  return 'available';
+}
+
+function widgetMissingIntegrations(w) {
+  return w.integrations.filter(slug => {
+    const integ = INTEGRATIONS.find(i => i.slug === slug);
+    if (!integ || !integ.connected) return true;
+    if (typeof getDistribution === 'function') {
+      const dist = getDistribution(slug);
+      if (dist.widgets === false) return true;
+    }
+    return false;
+  });
+}
+
+function wgTypeIcon(type) {
+  if (type === 'chart')  return '<svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 13h12M3 11l3-3 3 2 5-5"/></svg>';
+  if (type === 'table')  return '<svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="3" width="12" height="10" rx="1"/><path d="M2 7h12M2 11h12M6 3v10M10 3v10"/></svg>';
+  if (type === 'kpi')    return '<svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="8" cy="8" r="5.5"/><path d="M8 5v3l2 2"/></svg>';
+  if (type === 'funnel') return '<svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h12l-4 5v4l-4 1V8L2 3z"/></svg>';
+  return '';
+}
+
+function widgetInstallToggle(widgetId) {
+  const w = MOCK_WIDGET_TEMPLATES.find(x => x.id === widgetId);
+  if (!w) return;
+  const missing = widgetMissingIntegrations(w);
+  if (!w.installed && missing.length > 0) {
+    const missingNames = missing.map(s => {
+      const i = INTEGRATIONS.find(x => x.slug === s);
+      return i ? i.name : s;
+    });
+    toast('Cannot install — missing ' + missingNames.join(', ') + '. Enable in Distribution.');
+    return;
+  }
+  w.installed = !w.installed;
+  w.views7d = w.installed ? Math.max(1, Math.floor(Math.random()*50)) : 0;
+  toast(w.name + ' ' + (w.installed ? 'installed' : 'uninstalled'));
+  renderWidgetsLibrary();
+}
+
+function renderWidgetsLibrary() {
+  const total = MOCK_WIDGET_TEMPLATES.length;
+  const installedCount = MOCK_WIDGET_TEMPLATES.filter(w => w.installed).length;
+  const blockedCount = MOCK_WIDGET_TEMPLATES.filter(w => widgetStatus(w) === 'blocked').length;
+
+  const q = _wgFilters.search;
+  const cat = _wgFilters.category;
+  const filtered = MOCK_WIDGET_TEMPLATES.filter(w => {
+    if (cat !== 'all' && w.category !== cat) return false;
+    if (!q) return true;
+    return (w.name.toLowerCase().indexOf(q) !== -1)
+        || (w.desc.toLowerCase().indexOf(q) !== -1)
+        || w.integrations.some(s => {
+             const i = INTEGRATIONS.find(x => x.slug === s);
+             return i && i.name.toLowerCase().indexOf(q) !== -1;
+           });
+  });
+
+  $('content').innerHTML = `
+    <div class="wg-wrap">
+      <div class="breadcrumb">
+        <a href="#/integrations">Admin Studio</a><span class="crumb-sep">›</span>
+        <span class="crumb-current">Widgets</span>
+      </div>
+
+      <header class="wg-h">
+        <div class="wg-h-l">
+          <div class="wg-h-eyebrow"><span class="wg-h-eyebrow-dot"></span>Admin Studio &middot; Widgets library</div>
+          <h1 class="wg-h-title">Widget templates for your workspace</h1>
+          <p class="wg-h-desc">Pre-built dashboards and cards that consume your authenticated integrations. Each template lists the integrations it requires — install the ones you have, request the rest. Visibility is tenant-wide; <a href="#/distribution" style="color:var(--cyan);text-decoration:none">Distribution</a> controls which integrations can power widgets at all.</p>
+        </div>
+        <div class="wg-counts">
+          <div class="wg-count"><div class="wg-count-v">${total}</div><div class="wg-count-l">Available</div></div>
+          <div class="wg-count"><div class="wg-count-v is-green">${installedCount}</div><div class="wg-count-l">Installed</div></div>
+          <div class="wg-count"><div class="wg-count-v is-amber">${blockedCount}</div><div class="wg-count-l">Blocked</div></div>
+        </div>
+      </header>
+
+      <div class="wg-toolbar">
+        <label class="wg-search">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="7" cy="7" r="5"/><path d="M14 14l-3-3"/></svg>
+          <input type="text" placeholder="Search widgets or integrations..." value="${escapeHtml(_wgFilters.search)}" oninput="wgSearchInput(this.value)"/>
+        </label>
+        ${WG_CATEGORIES.map(c => `<button class="wg-filter ${_wgFilters.category===c.id?'is-active':''}" onclick="wgSetFilter('category','${c.id}')">${escapeHtml(c.label)}</button>`).join('')}
+      </div>
+
+      <div class="wg-grid">
+        ${filtered.length === 0 ? `
+          <div class="wg-empty">No widgets match the current filters.</div>
+        ` : filtered.map(w => {
+          const st = widgetStatus(w);
+          const missing = widgetMissingIntegrations(w);
+          const statusLabel = st === 'installed' ? 'Installed' : (st === 'available' ? 'Available' : 'Missing integrations');
+          return `
+            <div class="wg-card ${st === 'blocked' ? 'is-blocked' : ''}">
+              <div class="wg-card-h">
+                <span class="wg-card-type t-${w.type}">${wgTypeIcon(w.type)} ${escapeHtml(w.type)}</span>
+                <span class="wg-card-status is-${st}"><span class="wg-card-status-dot"></span>${escapeHtml(statusLabel)}</span>
+              </div>
+              <div class="wg-card-name">${escapeHtml(w.name)}</div>
+              <div class="wg-card-desc">${escapeHtml(w.desc)}</div>
+              <div class="wg-card-integ">
+                <span class="wg-card-integ-l">Needs</span>
+                <span class="wg-card-integ-logos">
+                  ${w.integrations.map(slug => {
+                    const integ = INTEGRATIONS.find(i => i.slug === slug);
+                    const isMissing = missing.indexOf(slug) !== -1;
+                    const brand = LOGO_SLUGS[slug];
+                    if (isMissing) {
+                      return `<span class="wg-card-integ-logo is-missing" title="${escapeHtml((integ && integ.name) || slug)} — not exposed to widgets">!</span>`;
+                    }
+                    if (brand) {
+                      return `<span class="wg-card-integ-logo" title="${escapeHtml((integ && integ.name) || slug)}"><img src="https://api.iconify.design/logos:${brand}.svg" alt="${escapeHtml((integ && integ.name) || slug)}" loading="lazy"/></span>`;
+                    }
+                    return `<span class="wg-card-integ-logo" style="background:${(integ && integ.color) || '#1f2a44'};color:#fff;font-size:9px;font-weight:800" title="${escapeHtml((integ && integ.name) || slug)}">${escapeHtml(((integ && integ.name) || slug).slice(0,2).toUpperCase())}</span>`;
+                  }).join('')}
+                </span>
+              </div>
+              <div class="wg-card-foot">
+                <span class="wg-card-meta">${w.installed ? (w.views7d + ' views / 7d') : (w.category[0].toUpperCase() + w.category.slice(1))}</span>
+                ${st === 'installed'
+                  ? `<button class="wg-card-cta is-open" onclick="toast('Open ${escapeHtml(w.name)} — out of scope for this prototype')">Open &rarr;</button>`
+                  : st === 'available'
+                  ? `<button class="wg-card-cta is-install" onclick="widgetInstallToggle('${w.id}')">Install</button>`
+                  : `<button class="wg-card-cta is-blocked" disabled title="${escapeHtml(missing.map(s => { const i = INTEGRATIONS.find(x=>x.slug===s); return (i&&i.name)||s; }).join(', '))} not available to widgets — open Distribution to fix.">Blocked</button>`}
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    </div>
+  `;
+}
+
 function route() {
   const hash = window.location.hash.replace(/^#\/?/, '') || 'integrations';
   const parts = hash.split('/');
@@ -5936,6 +6252,7 @@ function route() {
   const ssbMap = {
     'integrations':'integrations', 'audit':'audit', 'build':'integrations', 'request':'integrations', 'requests':'requests',
     'distribution':'distribution',
+    'widgets':'widgets',
     'personal':'personal'
   };
   const baseRoute = parts[0];
@@ -5964,6 +6281,8 @@ function route() {
     renderRequestsInbox();
   } else if (parts[0]==='distribution') {
     renderDistribution();
+  } else if (parts[0]==='widgets') {
+    renderWidgetsLibrary();
   } else if (parts[0]==='personal' && parts[2]) {
     renderPersonalDetail(parts[2]);
   } else if (parts[0]==='personal') {
