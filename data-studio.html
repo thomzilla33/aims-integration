@@ -10697,6 +10697,7 @@ function _defaultTonbState() {
     flow: 'first_run',  // 'first_run' | 'add_workspace'
     stepIdx: 0,
     completedAt: null,
+    skipped: false,        // F1 — set to true via "Skip onboarding" CTA
     org: {
       name: '', industry: '', size: '',
       contactName: '', contactRole: '', contactEmail: '',
@@ -10742,6 +10743,17 @@ function trackTonb(event, payload) {
 }
 
 /* ---------- Navigation ---------- */
+
+/* F1 — Skip the onboarding without completing it.
+   Sets skipped=true so the gating in render() stops redirecting. */
+function skipTenantOnboarding() {
+  tonbState.skipped = true;
+  tonbState.started = false;
+  persistTonbState();
+  trackTonb('skipped_landing');
+  location.hash = '/connections';
+}
+
 function _stepIdsForFlow() {
   if (tonbState.flow === 'add_workspace') {
     // workspace → connect → apply → done
@@ -11008,7 +11020,8 @@ function renderTonbLanding() {
           <div class="tonb-foot-l"></div>
           <div class="tonb-foot-r">
             ${hasResume ? `<button class="tonb-btn" onclick="tonbStart('first_run')">Restart</button><button class="tonb-btn is-primary" onclick="tonbState.started=true;persistTonbState();renderTenantOnboarding()">Resume →</button>` : `
-            <button class="tonb-btn" onclick="tonbStart('add_workspace')">I’m just adding a workspace</button>
+            <button class="tonb-btn is-ghost" onclick="skipTenantOnboarding()" title="Skip the guided setup and explore Data Studio on your own. You can come back via the sidebar.">Skip — I'll explore on my own</button>
+            <button class="tonb-btn" onclick="tonbStart('add_workspace')">I'm just adding a workspace</button>
             <button class="tonb-btn is-primary" onclick="tonbStart('first_run')">Start first-time setup →</button>`}
           </div>
         </div>
@@ -12174,6 +12187,22 @@ function render() {
   const parts = parseRoute();
   paintSsbActive();
   $('content').scrollTop = 0;
+
+  /* F1 — Tenant-onboarding first-run gating.
+     Redirect fresh users to #/onboarding so they see the 8-step welcome
+     flow before landing anywhere else. Honors the "skipped" escape hatch. */
+  if (typeof tonbState !== 'undefined' && tonbState
+      && !tonbState.completedAt && !tonbState.skipped
+      && parts[0] !== 'onboarding') {
+    // Allow the Connect Data wizard to keep working (mid-flight) so the
+    // user can finish a connection that's already started.
+    const wizardActive = typeof obState !== 'undefined' && obState
+      && obState.phase === 'pending' && obState.step > 0;
+    if (!wizardActive) {
+      location.hash = '/onboarding';
+      return;  // hashchange will re-trigger render()
+    }
+  }
 
   // If onboarding is pending, always show the guided empty state on the connections home.
   // Other routes (tables, schema, etc.) still render their own placeholders.
