@@ -6014,7 +6014,7 @@ function renderDistribution() {
                     </td>
                     <td class="dist-row-status">
                       <span class="dist-status b-${bucket}">
-                        <span class="dist-status-dot"></span>${escapeHtml(label)}
+                        ${bucket === 'working' ? `<svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:1px"><path d="M2 6l3 3 5-7"/></svg>` : bucket === 'needs' ? `<svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="margin-right:1px"><circle cx="6" cy="6" r="4.5"/><path d="M6 4v2.5M6 8.2h.01"/></svg>` : `<svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:1px"><circle cx="6" cy="6" r="4"/></svg>`}${escapeHtml(label)}
                       </span>
                     </td>
                     <td class="dist-row-owner">${ownerObj
@@ -6206,7 +6206,7 @@ function renderWidgetsLibrary() {
             <div class="wg-card ${st === 'blocked' ? 'is-blocked' : ''}">
               <div class="wg-card-h">
                 <span class="wg-card-type t-${w.type}">${wgTypeIcon(w.type)} ${escapeHtml(w.type)}</span>
-                <span class="wg-card-status is-${st}"><span class="wg-card-status-dot"></span>${escapeHtml(statusLabel)}</span>
+                <span class="wg-card-status is-${st}">${st === 'installed' ? `<svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:1px"><path d="M2 6l3 3 5-7"/></svg>` : st === 'available' ? `<svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:1px"><path d="M6 1.5v6M3 4.5l3 3 3-3M2 10.5h8"/></svg>` : `<svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="margin-right:1px"><circle cx="6" cy="6" r="4.5"/><line x1="3" y1="9" x2="9" y2="3"/></svg>`}${escapeHtml(statusLabel)}</span>
               </div>
               <div class="wg-card-name">${escapeHtml(w.name)}</div>
               <div class="wg-card-desc">${escapeHtml(w.desc)}</div>
@@ -7047,7 +7047,7 @@ function detailWorkspaces(integ) {
                   </div>
                 </div>
                 <span class="ws-row-status ${on ? 'is-on' : 'is-off'}">
-                  <span class="ws-status-dot"></span>${on ? 'Available' : 'Disabled'}
+                  ${on ? `<svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:1px"><path d="M2 6l3 3 5-7"/></svg>` : `<svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:1px"><circle cx="6" cy="6" r="4"/></svg>`}${on ? 'Available' : 'Disabled'}
                 </span>
                 <button class="ws-switch ${on ? 'is-on' : ''}" onclick="toggleWorkspaceForIntegration('${integ.slug}','${w.id}')" aria-label="${on ? 'Disable' : 'Enable'} ${escapeHtml(integ.name)} for ${escapeHtml(w.name)}" role="switch" aria-checked="${on}"></button>
               </div>

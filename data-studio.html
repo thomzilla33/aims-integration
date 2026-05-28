@@ -4356,7 +4356,7 @@ function renderConnections() {
         ${list.map(c => `
           <div class="ds-card ${c.mapped ? '' : 'is-pending'}" onclick="navigate('connections/${c.slug}')">
             <span class="ds-card-status ${c.mapped ? 'is-mapped' : 'is-pending'}">
-              <span class="ds-card-status-dot"></span>${c.mapped ? 'Mapped' : 'Needs mapping'}
+              ${c.mapped ? `<svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:1px"><path d="M2 6l3 3 5-7"/></svg>` : `<svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="margin-right:1px"><circle cx="6" cy="6" r="4.5"/><path d="M6 4v2.5M6 8.2h.01"/></svg>`}${c.mapped ? 'Mapped' : 'Needs mapping'}
             </span>
             <div class="ds-card-row">
               ${dsLogo(c)}
@@ -4415,7 +4415,7 @@ function renderConnections() {
           return `
             <div class="ds-card is-inactive">
               <span class="ds-card-status ${isAdmin ? 'is-inactive' : 'is-request'}">
-                <span class="ds-card-status-dot"></span>${isAdmin ? 'Not activated' : 'Activation required'}
+                ${isAdmin ? `<svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:1px"><circle cx="6" cy="6" r="4"/></svg>` : `<svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:1px"><path d="M2 6h7M5.5 3l3 3-3 3"/></svg>`}${isAdmin ? 'Not activated' : 'Activation required'}
               </span>
               <div class="ds-card-row">
                 ${dsLogo(c)}
@@ -4499,7 +4499,7 @@ function renderConnectionDetail(slug) {
       <div class="cn-head-text">
         <div class="cn-head-name">
           ${escapeHtml(c.name)}
-          <span class="ds-card-status ${c.mapped ? 'is-mapped' : 'is-pending'}" style="position:static; font-size:11px"><span class="ds-card-status-dot"></span>${c.mapped ? 'Mapped' : 'Needs mapping'}</span>
+          <span class="ds-card-status ${c.mapped ? 'is-mapped' : 'is-pending'}" style="position:static; font-size:11px">${c.mapped ? `<svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:1px"><path d="M2 6l3 3 5-7"/></svg>` : `<svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="margin-right:1px"><circle cx="6" cy="6" r="4.5"/><path d="M6 4v2.5M6 8.2h.01"/></svg>`}${c.mapped ? 'Mapped' : 'Needs mapping'}</span>
         </div>
         <div class="cn-head-vendor">${escapeHtml(c.vendor)}</div>
         <div class="cn-head-meta">
@@ -6533,7 +6533,7 @@ function renderOnboardingEmptyState() {
       <div class="ds-grid">
         ${DS_CATALOG.slice(0, 6).map(c => `
           <div class="ds-card is-inactive">
-            <span class="ds-card-status is-inactive"><span class="ds-card-status-dot"></span>Not activated</span>
+            <span class="ds-card-status is-inactive"><svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:1px"><circle cx="6" cy="6" r="4"/></svg>Not activated</span>
             <div class="ds-card-row">
               ${dsLogo(c)}
               <div>
