@@ -2958,6 +2958,245 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
   background:rgba(255,255,255,0.015);
 }
 
+
+/* ============================================================
+   TEMPLATES — Phase 1 (Library + Create + Detail shell)
+   ============================================================ */
+
+/* Page header */
+.tpl-h-eyebrow{font-size:10px;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--cyan);display:flex;align-items:center;gap:6px;
+  margin-bottom:4px;}
+.tpl-h-eyebrow-dot{display:inline-block;width:6px;height:6px;border-radius:50%;
+  background:var(--cyan);box-shadow:0 0 0 2px rgba(56,189,248,0.18);}
+.tpl-h-title{font-size:22px;font-weight:700;color:var(--t1);letter-spacing:-0.015em;}
+.tpl-h-sub{font-size:13px;color:var(--t2);margin-top:4px;max-width:640px;line-height:1.55;}
+
+.tpl-page-h-row{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
+  flex-wrap:wrap;margin-bottom:18px;}
+
+/* Toolbar */
+.tpl-lib-toolbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px;}
+.tpl-lib-search{position:relative;flex:1 1 320px;max-width:420px;}
+.tpl-lib-search input{
+  width:100%;padding:9px 12px 9px 34px;border-radius:9px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.08);
+  color:var(--t1);font-size:13px;font-family:inherit;outline:none;
+  transition:border-color .15s ease,background .15s ease;
+}
+.tpl-lib-search input::placeholder{color:var(--t3);}
+.tpl-lib-search input:focus{border-color:var(--cyan);background:rgba(255,255,255,0.06);}
+.tpl-lib-search-ico{position:absolute;left:11px;top:50%;transform:translateY(-50%);
+  color:var(--t3);pointer-events:none;}
+.tpl-lib-search-clear{position:absolute;right:8px;top:50%;transform:translateY(-50%);
+  background:transparent;border:0;color:var(--t3);cursor:pointer;
+  width:22px;height:22px;border-radius:6px;display:flex;align-items:center;justify-content:center;
+  transition:background .15s,color .15s;}
+.tpl-lib-search-clear:hover{background:rgba(255,255,255,0.06);color:var(--t1);}
+
+.tpl-filter-pills{display:flex;gap:6px;flex-wrap:wrap;}
+.tpl-filter{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:6px 12px;border-radius:999px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.08);
+  color:var(--t2);font-size:12px;font-weight:500;
+  cursor:pointer;transition:all .15s ease;
+  font-family:inherit;
+}
+.tpl-filter:hover{background:rgba(255,255,255,0.07);color:var(--t1);}
+.tpl-filter.is-active{
+  background:rgba(56,189,248,0.14);
+  border-color:rgba(56,189,248,0.42);
+  color:var(--t1);
+}
+.tpl-filter-badge{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-width:18px;height:18px;padding:0 5px;border-radius:9px;
+  background:rgba(255,255,255,0.08);color:var(--t2);
+  font-size:10px;font-weight:600;
+}
+.tpl-filter.is-active .tpl-filter-badge{background:rgba(56,189,248,0.26);color:var(--t1);}
+
+/* + New button (uses tbl-btn-new vibe but cyan for Templates) */
+.tpl-btn-new{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:8px 14px;border-radius:9px;
+  background:linear-gradient(135deg, rgba(56,189,248,0.18), rgba(56,189,248,0.08));
+  border:1px solid rgba(56,189,248,0.4);
+  color:var(--t1);font-size:13px;font-weight:600;font-family:inherit;
+  cursor:pointer;transition:all .15s ease;
+}
+.tpl-btn-new:hover{
+  background:linear-gradient(135deg, rgba(56,189,248,0.26), rgba(56,189,248,0.12));
+  border-color:rgba(56,189,248,0.58);
+}
+
+/* Library grid */
+.tpl-lib-grid{display:grid;grid-template-columns:repeat(auto-fill, minmax(360px, 1fr));gap:14px;}
+.tpl-card{
+  position:relative;
+  background:linear-gradient(180deg, rgba(255,255,255,0.034), rgba(255,255,255,0.014));
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:14px;padding:16px 18px;
+  display:flex;flex-direction:column;gap:10px;
+  cursor:pointer;transition:all .18s ease;
+}
+.tpl-card:hover{
+  border-color:rgba(56,189,248,0.4);
+  background:linear-gradient(180deg, rgba(56,189,248,0.06), rgba(255,255,255,0.02));
+  transform:translateY(-1px);
+  box-shadow:0 12px 28px -14px rgba(0,0,0,0.4), 0 0 0 1px rgba(56,189,248,0.08);
+}
+.tpl-card-h{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;}
+.tpl-card-name{font-size:15px;font-weight:600;color:var(--t1);letter-spacing:-0.01em;line-height:1.3;}
+.tpl-card-source-label{font-size:11px;color:var(--t3);font-style:italic;margin-top:2px;}
+.tpl-card-source-pill{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:3px 8px;border-radius:999px;
+  font-size:10px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;
+  flex-shrink:0;
+}
+.tpl-card-source-pill.is-system{background:rgba(56,189,248,0.16);color:#60c8f4;border:1px solid rgba(56,189,248,0.3);}
+.tpl-card-source-pill.is-cloned{background:rgba(255,255,255,0.06);color:var(--t2);border:1px solid rgba(255,255,255,0.12);}
+.tpl-card-source-pill.is-custom{background:rgba(16,185,129,0.16);color:#34d39c;border:1px solid rgba(16,185,129,0.3);}
+
+.tpl-card-desc{font-size:12.5px;color:var(--t2);line-height:1.5;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+
+.tpl-card-stats{display:flex;gap:14px;flex-wrap:wrap;padding-top:8px;
+  border-top:1px solid rgba(255,255,255,0.04);}
+.tpl-card-stat{display:flex;flex-direction:column;gap:1px;}
+.tpl-card-stat-k{font-size:9.5px;font-weight:600;letter-spacing:.08em;color:var(--t3);text-transform:uppercase;}
+.tpl-card-stat-v{font-size:13px;font-weight:600;color:var(--t1);font-variant-numeric:tabular-nums;}
+.tpl-card-stat-v.is-kpi{color:#34d39c;}
+.tpl-card-stat-v.is-unused{color:var(--t3);font-style:italic;font-weight:500;}
+
+.tpl-card-footer{display:flex;align-items:center;justify-content:space-between;gap:8px;
+  padding-top:8px;border-top:1px solid rgba(255,255,255,0.04);
+  font-size:11px;color:var(--t3);}
+.tpl-card-footer-l{display:flex;align-items:center;gap:6px;}
+.tpl-card-footer-cfd{padding:2px 7px;border-radius:8px;background:rgba(255,255,255,0.05);
+  color:var(--t2);font-size:10px;font-weight:500;}
+.tpl-card-delete{
+  background:transparent;border:0;color:var(--t3);font-size:11px;
+  cursor:pointer;font-family:inherit;padding:3px 6px;border-radius:5px;
+  transition:color .12s,background .12s;
+}
+.tpl-card-delete:hover{color:#ff7d7d;background:rgba(244,63,94,0.08);}
+
+/* Empty state */
+.tpl-empty{
+  grid-column:1 / -1;
+  padding:48px 24px;
+  background:rgba(255,255,255,0.025);
+  border:1px dashed rgba(255,255,255,0.1);
+  border-radius:14px;
+  text-align:center;
+}
+.tpl-empty-title{font-size:15px;font-weight:600;color:var(--t1);margin-bottom:6px;}
+.tpl-empty-sub{font-size:13px;color:var(--t2);max-width:420px;margin:0 auto;line-height:1.5;}
+
+/* ===== CREATE VIEW ===== */
+.tpl-create-wrap{max-width:880px;display:flex;flex-direction:column;gap:28px;}
+.tpl-create-section{display:flex;flex-direction:column;gap:14px;}
+.tpl-create-section-h{display:flex;flex-direction:column;gap:4px;}
+.tpl-create-section-eyebrow{font-size:10px;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--cyan);}
+.tpl-create-section-title{font-size:17px;font-weight:600;color:var(--t1);letter-spacing:-0.01em;}
+.tpl-create-section-sub{font-size:13px;color:var(--t2);line-height:1.55;}
+
+.tpl-create-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:12px;}
+.tpl-create-tile{
+  position:relative;
+  background:linear-gradient(180deg, rgba(255,255,255,0.034), rgba(255,255,255,0.014));
+  border:1.5px solid rgba(255,255,255,0.08);
+  border-radius:12px;padding:16px;
+  cursor:pointer;transition:all .15s ease;
+  display:flex;flex-direction:column;gap:8px;text-align:left;
+  font-family:inherit;color:inherit;
+}
+.tpl-create-tile:hover{
+  border-color:rgba(56,189,248,0.36);
+  background:linear-gradient(180deg, rgba(56,189,248,0.045), rgba(255,255,255,0.02));
+}
+.tpl-create-tile.is-selected{
+  border-color:var(--cyan);
+  background:linear-gradient(180deg, rgba(56,189,248,0.12), rgba(56,189,248,0.04));
+  box-shadow:0 0 0 1px rgba(56,189,248,0.34), 0 12px 28px -14px rgba(56,189,248,0.28);
+}
+.tpl-create-tile-h{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
+.tpl-create-tile-name{font-size:14px;font-weight:600;color:var(--t1);letter-spacing:-0.01em;}
+.tpl-create-tile-badge{
+  display:inline-flex;align-items:center;
+  padding:2px 7px;border-radius:999px;font-size:9.5px;font-weight:700;
+  letter-spacing:.05em;text-transform:uppercase;flex-shrink:0;
+}
+.tpl-create-tile-badge.is-popular{background:rgba(16,185,129,0.16);color:#34d39c;}
+.tpl-create-tile-badge.is-power{background:rgba(217,119,6,0.14);color:#fbbf24;}
+.tpl-create-tile-badge.is-system{background:rgba(56,189,248,0.16);color:#60c8f4;}
+.tpl-create-tile-desc{font-size:12.5px;color:var(--t2);line-height:1.5;}
+.tpl-create-tile-stats{font-size:11px;color:var(--t3);margin-top:4px;
+  display:flex;gap:10px;flex-wrap:wrap;}
+
+.tpl-create-field{display:flex;flex-direction:column;gap:6px;}
+.tpl-create-field-label{font-size:11.5px;font-weight:600;letter-spacing:.04em;
+  color:var(--t2);text-transform:uppercase;}
+.tpl-create-field-req{color:#ff7d7d;margin-left:3px;}
+.tpl-create-field input,
+.tpl-create-field textarea{
+  width:100%;padding:9px 12px;border-radius:9px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.1);
+  color:var(--t1);font-size:13px;font-family:inherit;outline:none;
+  transition:border-color .15s,background .15s;
+}
+.tpl-create-field input:focus,
+.tpl-create-field textarea:focus{border-color:var(--cyan);background:rgba(255,255,255,0.06);}
+.tpl-create-field textarea{resize:vertical;min-height:80px;line-height:1.5;}
+.tpl-create-fields-row{display:flex;flex-direction:column;gap:14px;}
+
+.tpl-create-actions{display:flex;align-items:center;justify-content:space-between;
+  padding-top:18px;border-top:1px solid rgba(255,255,255,0.06);margin-top:6px;}
+.tpl-create-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:9px 16px;border-radius:9px;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.1);
+  color:var(--t1);font-size:13px;font-weight:500;font-family:inherit;
+  cursor:pointer;transition:all .15s;
+}
+.tpl-create-btn:hover{background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.16);}
+.tpl-create-btn.is-primary{
+  background:linear-gradient(135deg, rgba(56,189,248,0.24), rgba(56,189,248,0.12));
+  border-color:rgba(56,189,248,0.5);font-weight:600;
+}
+.tpl-create-btn.is-primary:hover{
+  background:linear-gradient(135deg, rgba(56,189,248,0.34), rgba(56,189,248,0.18));
+  border-color:rgba(56,189,248,0.7);
+}
+.tpl-create-btn.is-primary:disabled{
+  opacity:0.4;cursor:not-allowed;
+  background:rgba(255,255,255,0.04);
+  border-color:rgba(255,255,255,0.08);
+}
+
+/* ===== DETAIL VIEW (Phase 1 stub) ===== */
+.tpl-detail-h-row{display:flex;align-items:flex-start;justify-content:space-between;
+  gap:16px;flex-wrap:wrap;margin-bottom:18px;}
+.tpl-detail-h-l{display:flex;flex-direction:column;gap:6px;flex:1;min-width:260px;}
+.tpl-detail-name{font-size:22px;font-weight:700;color:var(--t1);letter-spacing:-0.015em;}
+.tpl-detail-desc{font-size:13px;color:var(--t2);line-height:1.55;max-width:680px;}
+.tpl-detail-h-meta{display:flex;align-items:center;gap:10px;font-size:11.5px;color:var(--t3);}
+.tpl-detail-stub{
+  padding:36px 28px;background:rgba(255,255,255,0.025);
+  border:1px dashed rgba(255,255,255,0.1);border-radius:14px;
+  text-align:center;
+}
+.tpl-detail-stub-title{font-size:15px;font-weight:600;color:var(--t1);margin-bottom:6px;}
+.tpl-detail-stub-sub{font-size:13px;color:var(--t2);max-width:520px;margin:0 auto;line-height:1.55;}
+
 </style>
 </head>
 <body>
@@ -3085,7 +3324,6 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
         <button class="ssb-item" data-route="templates" onclick="navigate('templates')">
           <span class="ssb-item-ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"><rect x="2" y="2" width="6" height="12" rx="1"/><rect x="9" y="2" width="5" height="5.5" rx="1"/><rect x="9" y="8.5" width="5" height="5.5" rx="1"/></svg></span>
           <span class="ssb-item-label">Templates</span>
-          <span class="ssb-item-badge">Soon</span>
         </button>
         <button class="ssb-item" data-route="onboarding" onclick="navigate('onboarding')">
           <span class="ssb-item-ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13l3-3 3 3 4-4"/><circle cx="13" cy="6" r="1.4"/></svg></span>
@@ -5817,6 +6055,855 @@ function inferTypeFromName(name) {
   return 'string';
 }
 
+
+
+/* ============================================================
+   TEMPLATES — Phase 1 (state, helpers, renderers)
+   ============================================================ */
+
+/* Industry presets (vocabulary swap — used in Phase 5; included now so seed
+   templates can reference them and so the create view header surfaces the
+   tenant's industry). */
+const INDUSTRY_PRESETS = {
+  generic:    { id:'generic',    label:'Generic',    groupNoun:'group',            lineNoun:'line' },
+  automotive: { id:'automotive', label:'Automotive', groupNoun:'department',       lineNoun:'line' },
+  retail:     { id:'retail',     label:'Retail',     groupNoun:'category',         lineNoun:'line item' },
+  restaurant: { id:'restaurant', label:'Restaurant', groupNoun:'category',         lineNoun:'line' },
+  finance:    { id:'finance',    label:'Finance',    groupNoun:'line of business', lineNoun:'metric' },
+};
+let tplIndustry = 'generic';
+
+/* Reference vocabularies (used in Phase 3 inspectors; seeded here so the
+   data model is consistent). */
+const TPL_UNITS = [
+  { id:'currency', label:'Currency', sample:'$1,234.56' },
+  { id:'percent',  label:'Percent',  sample:'28.4%' },
+  { id:'count',    label:'Count',    sample:'1,250' },
+  { id:'ratio',    label:'Ratio',    sample:'2.4×' },
+  { id:'hours',    label:'Hours',    sample:'18h' },
+  { id:'days',     label:'Days',     sample:'7d' },
+  { id:'raw',      label:'Raw',      sample:'1234.567' },
+];
+const TPL_DIRECTIONS = [
+  { id:'higher_better', label:'Higher is better', hint:'Revenue, conversions, satisfaction.' },
+  { id:'lower_better',  label:'Lower is better',  hint:'Costs, defect rate, time-to-resolve.' },
+  { id:'neutral',       label:'Neutral',          hint:'Pure context — no inherent good/bad direction.' },
+];
+const TPL_GROUP_COLORS = ['none','blue','green','amber','red','purple','gray'];
+const TPL_GROUP_COLOR_HEX = {
+  none:'rgba(255,255,255,0.06)',
+  blue:'#3b82f6', green:'#10b981', amber:'#f59e0b',
+  red:'#ef4444', purple:'#a855f7', gray:'#64748b',
+};
+const TPL_GROUP_ICONS = ['none','money','chart','people','building','box','wrench','lightbulb','shield','rocket','star'];
+const TPL_GROUP_ICON_EMOJI = {
+  none:'', money:'💰', chart:'📊', people:'👥', building:'🏢', box:'📦',
+  wrench:'🔧', lightbulb:'💡', shield:'🛡️', rocket:'🚀', star:'⭐',
+};
+const TPL_AGGREGATIONS = [
+  { id:'sum',           label:'Sum' },
+  { id:'avg',           label:'Average' },
+  { id:'count',         label:'Count' },
+  { id:'count_distinct',label:'Count distinct' },
+  { id:'min',           label:'Minimum' },
+  { id:'max',           label:'Maximum' },
+  { id:'first',         label:'First' },
+  { id:'last',          label:'Last' },
+];
+const TPL_CFD_TYPES = [
+  { id:'text',    label:'Text' },
+  { id:'number',  label:'Number' },
+  { id:'select',  label:'Dropdown' },
+  { id:'boolean', label:'Yes / no' },
+];
+
+/* Default node factories. */
+function defaultLineProps() {
+  return {
+    formula: '',
+    description: '',
+    unit: 'count',
+    direction: 'higher_better',
+    format: { decimals: 0, thousandsSeparator: true, abbreviate: false },
+    isKpi: false,
+    tags: [],
+    sourceMapping: null,
+    customProps: {},
+  };
+}
+function defaultGroupProps() {
+  return {
+    description: '',
+    color: 'none',
+    icon: 'none',
+    collapsedByDefault: false,
+    customProps: {},
+  };
+}
+
+/* =========================
+   Tree helpers (immutable)
+   ========================= */
+function cloneTree(tree) {
+  return JSON.parse(JSON.stringify(tree || []));
+}
+function walkTree(tree, cb, parent) {
+  (tree || []).forEach(node => {
+    cb(node, parent);
+    if (node.kind === 'group') walkTree(node.children || [], cb, node);
+  });
+}
+function findNode(tree, id) {
+  for (const n of (tree || [])) {
+    if (n.id === id) return n;
+    if (n.kind === 'group') {
+      const f = findNode(n.children || [], id);
+      if (f) return f;
+    }
+  }
+  return null;
+}
+function findNodePath(tree, id, path=[]) {
+  for (const n of (tree || [])) {
+    const here = path.concat([n.id]);
+    if (n.id === id) return here;
+    if (n.kind === 'group') {
+      const f = findNodePath(n.children || [], id, here);
+      if (f) return f;
+    }
+  }
+  return null;
+}
+function updateNode(tree, id, patch) {
+  return (tree || []).map(n => {
+    if (n.id === id) return Object.assign({}, n, patch);
+    if (n.kind === 'group') {
+      return Object.assign({}, n, { children: updateNode(n.children || [], id, patch) });
+    }
+    return n;
+  });
+}
+function removeNode(tree, id) {
+  return (tree || []).filter(n => n.id !== id).map(n => {
+    if (n.kind === 'group') {
+      return Object.assign({}, n, { children: removeNode(n.children || [], id) });
+    }
+    return n;
+  });
+}
+function addChild(tree, parentId, newNode) {
+  if (!parentId) return (tree || []).concat([newNode]);
+  return (tree || []).map(n => {
+    if (n.id === parentId && n.kind === 'group') {
+      return Object.assign({}, n, { children: (n.children || []).concat([newNode]) });
+    }
+    if (n.kind === 'group') {
+      return Object.assign({}, n, { children: addChild(n.children || [], parentId, newNode) });
+    }
+    return n;
+  });
+}
+function generateId(name, existingTree) {
+  const base = String(name || 'node').toLowerCase()
+    .replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '') || 'node';
+  const taken = new Set();
+  walkTree(existingTree || [], n => taken.add(n.id));
+  let candidate = base, n = 2;
+  while (taken.has(candidate)) { candidate = base + '_' + n; n++; }
+  return candidate;
+}
+function countNodes(tree) {
+  let groups = 0, lines = 0, kpis = 0;
+  walkTree(tree || [], n => {
+    if (n.kind === 'group') groups++;
+    else if (n.kind === 'line') {
+      lines++;
+      if (n.isKpi) kpis++;
+    }
+  });
+  return { groups, lines, kpis };
+}
+
+/* =========================
+   Formula helpers
+   ========================= */
+function extractReferences(formula) {
+  if (!formula) return [];
+  // Matches snake_case identifiers, excluding numbers and supported functions.
+  const FN_NAMES = new Set(['abs','min','max','sum','avg','if','and','or','not','round','floor','ceil']);
+  const matches = String(formula).match(/[a-z_][a-z0-9_]*/gi) || [];
+  const seen = new Set();
+  matches.forEach(m => {
+    const lower = m.toLowerCase();
+    if (FN_NAMES.has(lower)) return;
+    seen.add(lower);
+  });
+  return Array.from(seen);
+}
+function validateFormula(formula, currentLineId, tree) {
+  const errors = [];
+  if (!formula || !formula.trim()) {
+    return { valid:true, errors:[], references:[] };
+  }
+  // Balanced parens
+  let depth = 0;
+  for (const ch of formula) {
+    if (ch === '(') depth++;
+    else if (ch === ')') depth--;
+    if (depth < 0) { errors.push('Unbalanced parentheses (unexpected `)`).'); break; }
+  }
+  if (depth > 0) errors.push('Unbalanced parentheses (missing `)`).');
+  // References resolve to existing lines, no self-reference.
+  const refs = extractReferences(formula);
+  refs.forEach(r => {
+    if (r === currentLineId) {
+      errors.push('Self-reference: `' + r + '` cannot reference itself.');
+      return;
+    }
+    const target = findNode(tree, r);
+    if (!target) {
+      errors.push('Reference `' + r + '` does not match any line in this template.');
+    } else if (target.kind !== 'line') {
+      errors.push('Reference `' + r + '` is a group, not a line. Only lines can be referenced.');
+    }
+  });
+  return { valid: errors.length === 0, errors, references: refs };
+}
+function findDependents(tree, targetId) {
+  const dependents = [];
+  walkTree(tree, n => {
+    if (n.kind !== 'line' || !n.formula) return;
+    const refs = extractReferences(n.formula);
+    if (refs.indexOf(targetId) !== -1) dependents.push(n);
+  });
+  return dependents;
+}
+
+/* =========================
+   Seed templates
+   ========================= */
+function _seedIndustryStandard() {
+  return {
+    id: 'tpl_industry_standard',
+    name: 'Industry standard',
+    description: 'A neutral starting point with the structure most B2B teams use — revenue, cost, margin, and operating expense. Designed to slot into any business.',
+    industryId: 'generic',
+    source: 'system',
+    sourceLabel: 'System seed',
+    inUseBy: ['site_001', 'site_002', 'site_007'],
+    customFieldDefs: [
+      { id:'cfd_owner', name:'Owner', appliesTo:'line', type:'text', options:[] },
+      { id:'cfd_cadence', name:'Review cadence', appliesTo:'both', type:'select', options:['Weekly','Monthly','Quarterly'] },
+    ],
+    versions: [],
+    tree: [
+      { id:'revenue', name:'Revenue', kind:'group',
+        description:'All sources of incoming money.',
+        color:'green', icon:'money', collapsedByDefault:false, customProps:{cfd_cadence:'Monthly'},
+        children:[
+          { id:'product_revenue', name:'Product revenue', kind:'line',
+            formula:'', description:'Revenue from product sales.',
+            unit:'currency', direction:'higher_better',
+            format:{decimals:0,thousandsSeparator:true,abbreviate:true},
+            isKpi:true, tags:['topline','monthly'],
+            sourceMapping:{ tableDefinitionId:'opportunity', fieldId:'Amount', aggregation:'sum' },
+            customProps:{cfd_owner:'Jane Smith'},
+            children:[] },
+          { id:'service_revenue', name:'Service revenue', kind:'line',
+            formula:'', description:'Revenue from services and consulting.',
+            unit:'currency', direction:'higher_better',
+            format:{decimals:0,thousandsSeparator:true,abbreviate:true},
+            isKpi:false, tags:['monthly'], sourceMapping:null, customProps:{},
+            children:[] },
+          { id:'total_revenue', name:'Total revenue', kind:'line',
+            formula:'product_revenue + service_revenue', description:'Sum of all revenue lines.',
+            unit:'currency', direction:'higher_better',
+            format:{decimals:0,thousandsSeparator:true,abbreviate:true},
+            isKpi:true, tags:['topline'], sourceMapping:null, customProps:{},
+            children:[] },
+        ]},
+      { id:'cogs', name:'Cost of goods sold', kind:'line',
+        formula:'', description:'Direct costs of delivering the product.',
+        unit:'currency', direction:'lower_better',
+        format:{decimals:0,thousandsSeparator:true,abbreviate:true},
+        isKpi:false, tags:[], sourceMapping:null, customProps:{},
+        children:[] },
+      { id:'gross_profit', name:'Gross profit', kind:'line',
+        formula:'total_revenue - cogs', description:'Revenue minus direct costs.',
+        unit:'currency', direction:'higher_better',
+        format:{decimals:0,thousandsSeparator:true,abbreviate:true},
+        isKpi:true, tags:['topline'], sourceMapping:null, customProps:{},
+        children:[] },
+      { id:'gross_margin', name:'Gross margin %', kind:'line',
+        formula:'gross_profit / total_revenue', description:'Gross profit as a % of revenue.',
+        unit:'percent', direction:'higher_better',
+        format:{decimals:1,thousandsSeparator:false,abbreviate:false},
+        isKpi:true, tags:['topline'], sourceMapping:null, customProps:{},
+        children:[] },
+    ],
+  };
+}
+function _seedRetailVariant() {
+  return {
+    id: 'tpl_retail_variant',
+    name: 'Retail · Category breakdown',
+    description: 'Vertical-specific structure for retail: revenue and margin broken out by product category, with same-store comparison built in.',
+    industryId: 'retail',
+    source: 'system',
+    sourceLabel: 'Retail seed',
+    inUseBy: ['site_003'],
+    customFieldDefs: [
+      { id:'cfd_seasonal', name:'Seasonal', appliesTo:'line', type:'boolean', options:[] },
+    ],
+    versions: [],
+    tree: [
+      { id:'apparel', name:'Apparel', kind:'group',
+        description:'All clothing categories.',
+        color:'purple', icon:'box', collapsedByDefault:false, customProps:{},
+        children:[
+          { id:'apparel_revenue', name:'Apparel revenue', kind:'line',
+            formula:'', description:'', unit:'currency', direction:'higher_better',
+            format:{decimals:0,thousandsSeparator:true,abbreviate:true},
+            isKpi:true, tags:[], sourceMapping:null, customProps:{cfd_seasonal:true}, children:[] },
+          { id:'apparel_units', name:'Apparel units sold', kind:'line',
+            formula:'', description:'', unit:'count', direction:'higher_better',
+            format:{decimals:0,thousandsSeparator:true,abbreviate:false},
+            isKpi:false, tags:[], sourceMapping:null, customProps:{}, children:[] },
+        ]},
+      { id:'electronics', name:'Electronics', kind:'group',
+        description:'Consumer electronics + accessories.',
+        color:'blue', icon:'box', collapsedByDefault:false, customProps:{},
+        children:[
+          { id:'electronics_revenue', name:'Electronics revenue', kind:'line',
+            formula:'', description:'', unit:'currency', direction:'higher_better',
+            format:{decimals:0,thousandsSeparator:true,abbreviate:true},
+            isKpi:true, tags:[], sourceMapping:null, customProps:{cfd_seasonal:false}, children:[] },
+        ]},
+      { id:'total_revenue', name:'Total revenue', kind:'line',
+        formula:'apparel_revenue + electronics_revenue',
+        description:'Across all categories.',
+        unit:'currency', direction:'higher_better',
+        format:{decimals:0,thousandsSeparator:true,abbreviate:true},
+        isKpi:true, tags:['topline'], sourceMapping:null, customProps:{}, children:[] },
+    ],
+  };
+}
+function _seedNeutralStarter() {
+  return {
+    id: 'tpl_neutral_starter',
+    name: 'Neutral starter',
+    description: 'Minimal one-group skeleton you can flesh out from scratch. Comes with no industry assumptions.',
+    industryId: 'generic',
+    source: 'system',
+    sourceLabel: 'Minimal seed',
+    inUseBy: [],
+    customFieldDefs: [],
+    versions: [],
+    tree: [
+      { id:'top_line', name:'Top line metrics', kind:'group',
+        description:'Your most important numbers.',
+        color:'none', icon:'star', collapsedByDefault:false, customProps:{},
+        children:[
+          { id:'primary_kpi', name:'Primary KPI', kind:'line',
+            formula:'', description:'Replace with your most important metric.',
+            unit:'count', direction:'higher_better',
+            format:{decimals:0,thousandsSeparator:true,abbreviate:false},
+            isKpi:true, tags:[], sourceMapping:null, customProps:{}, children:[] },
+        ]},
+    ],
+  };
+}
+
+/* Hydrate a seed template's versions array with realistic-looking history.
+   In production these come from real edits; for the prototype we backfill
+   so the Restore button has something to demonstrate. The snapshot field
+   on each entry equals the current tree (intentional — see spec §8). */
+function _hydrateSeedVersions(tpl) {
+  if (tpl.versions && tpl.versions.length > 0) return tpl;
+  const baseSnapshot = cloneTree(tpl.tree);
+  const baseDefs = JSON.parse(JSON.stringify(tpl.customFieldDefs || []));
+  const now = Date.now();
+  const day = 1000 * 60 * 60 * 24;
+  const versions = [];
+  if (tpl.source === 'system') {
+    versions.push({ id:'v3', label:'Current state', createdAt: now - day,        author:'System', snapshot:baseSnapshot, customFieldDefs:baseDefs });
+    versions.push({ id:'v2', label:'Added KPI flags',  createdAt: now - day * 5,  author:'System', snapshot:baseSnapshot, customFieldDefs:baseDefs });
+    versions.push({ id:'v1', label:'Initial seed',     createdAt: now - day * 14, author:'System', snapshot:baseSnapshot, customFieldDefs:baseDefs });
+  } else {
+    versions.push({ id:'v1', label:'Created template', createdAt: now, author:'You', snapshot:baseSnapshot, customFieldDefs:baseDefs });
+  }
+  return Object.assign({}, tpl, { versions });
+}
+
+/* =========================
+   Library state + persistence
+   ========================= */
+const TPL_LIB_KEY = 'aims_ds_templates';
+let tplLibrary = [];
+
+function loadTemplates() {
+  try {
+    const raw = localStorage.getItem(TPL_LIB_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        tplLibrary = parsed.map(_hydrateSeedVersions);
+        return;
+      }
+    }
+  } catch(e) {}
+  // First run — seed with the three standard templates.
+  tplLibrary = [
+    _hydrateSeedVersions(_seedIndustryStandard()),
+    _hydrateSeedVersions(_seedRetailVariant()),
+    _hydrateSeedVersions(_seedNeutralStarter()),
+  ];
+  persistTemplates();
+}
+function persistTemplates() {
+  try { localStorage.setItem(TPL_LIB_KEY, JSON.stringify(tplLibrary)); } catch(e) {}
+}
+function findTemplate(id) {
+  return tplLibrary.find(t => t.id === id) || null;
+}
+function upsertTemplate(tpl) {
+  const idx = tplLibrary.findIndex(t => t.id === tpl.id);
+  if (idx === -1) tplLibrary.push(tpl);
+  else tplLibrary[idx] = tpl;
+  persistTemplates();
+}
+function deleteTemplate(id) {
+  tplLibrary = tplLibrary.filter(t => t.id !== id);
+  persistTemplates();
+}
+
+/* Initialise on script load — keep cheap. */
+loadTemplates();
+
+/* =========================
+   Library filter state
+   ========================= */
+let tplLibFilter = { search: '', filter: 'all' };
+function setTplLibSearch(v) {
+  tplLibFilter.search = (v || '').toLowerCase().trim();
+  renderTemplatesLibrary();
+}
+function clearTplLibSearch() {
+  tplLibFilter.search = '';
+  const input = document.getElementById('tplLibSearchInput');
+  if (input) input.value = '';
+  renderTemplatesLibrary();
+}
+function setTplLibFilter(v) {
+  tplLibFilter.filter = v;
+  renderTemplatesLibrary();
+}
+
+/* Telemetry stub — wraps the existing track() helper from onboarding. */
+function trackTpl(event, payload) {
+  if (typeof track === 'function') {
+    try { track('tpl_' + event, payload || {}); } catch(e){}
+  }
+}
+
+/* =========================
+   Library view
+   ========================= */
+function renderTemplates() {
+  // Delegated entry point — keeps render() compact.
+  renderTemplatesLibrary();
+}
+function renderTemplatesLibrary() {
+  const q = tplLibFilter.search;
+  const f = tplLibFilter.filter;
+
+  const counts = {
+    all: tplLibrary.length,
+    system: tplLibrary.filter(t => t.source === 'system').length,
+    cloned: tplLibrary.filter(t => t.source === 'cloned').length,
+    custom: tplLibrary.filter(t => t.source === 'custom').length,
+  };
+
+  const filtered = tplLibrary.filter(t => {
+    if (f !== 'all' && t.source !== f) return false;
+    if (q) {
+      const hay = (t.name + ' ' + (t.description || '')).toLowerCase();
+      if (hay.indexOf(q) === -1) return false;
+    }
+    return true;
+  });
+
+  $('content').innerHTML = `
+    <section class="surface">
+      <div class="breadcrumb">
+        <span class="crumb-current">Templates</span>
+      </div>
+
+      <div class="tpl-page-h-row">
+        <div>
+          <div class="tpl-h-eyebrow"><span class="tpl-h-eyebrow-dot"></span>Data Studio · Templates</div>
+          <h1 class="tpl-h-title">Composite templates</h1>
+          <p class="tpl-h-sub">Reusable hierarchies of groups and lines that every site rolls up into. Edit one template, and every site bound to it gets the change.</p>
+        </div>
+        <button class="tpl-btn-new" onclick="openTemplateCreate()">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 3.5v9M3.5 8h9"/></svg>
+          New template
+        </button>
+      </div>
+
+      <div class="tpl-lib-toolbar">
+        <div class="tpl-lib-search">
+          <svg class="tpl-lib-search-ico" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/></svg>
+          <input id="tplLibSearchInput" type="text" placeholder="Search templates by name or description"
+            value="${escapeHtml(tplLibFilter.search)}"
+            oninput="setTplLibSearch(this.value)" />
+          ${q ? `<button class="tpl-lib-search-clear" onclick="clearTplLibSearch()" aria-label="Clear search">
+            <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 3l10 10M13 3L3 13"/></svg>
+          </button>` : ''}
+        </div>
+        <div class="tpl-filter-pills">
+          <button class="tpl-filter ${f === 'all' ? 'is-active' : ''}" onclick="setTplLibFilter('all')">All<span class="tpl-filter-badge">${counts.all}</span></button>
+          <button class="tpl-filter ${f === 'system' ? 'is-active' : ''}" onclick="setTplLibFilter('system')">System<span class="tpl-filter-badge">${counts.system}</span></button>
+          <button class="tpl-filter ${f === 'cloned' ? 'is-active' : ''}" onclick="setTplLibFilter('cloned')">Cloned<span class="tpl-filter-badge">${counts.cloned}</span></button>
+          <button class="tpl-filter ${f === 'custom' ? 'is-active' : ''}" onclick="setTplLibFilter('custom')">Custom<span class="tpl-filter-badge">${counts.custom}</span></button>
+        </div>
+      </div>
+
+      <div class="tpl-lib-grid">
+        ${filtered.length === 0 ? `
+          <div class="tpl-empty">
+            <div class="tpl-empty-title">${q || f !== 'all' ? 'No templates match your filters' : 'No templates yet'}</div>
+            <div class="tpl-empty-sub">${q || f !== 'all'
+              ? 'Try a different search term or clear the filter.'
+              : 'Create your first template to define the reporting structure for your tenant.'}</div>
+          </div>
+        ` : filtered.map(renderTemplateCard).join('')}
+      </div>
+    </section>
+  `;
+  trackTpl('library_viewed', { count: filtered.length, filter: f, hasSearch: !!q });
+}
+
+function renderTemplateCard(tpl) {
+  const stats = countNodes(tpl.tree || []);
+  const inUseCount = (tpl.inUseBy || []).length;
+  const cfdCount = (tpl.customFieldDefs || []).length;
+  const canDelete = tpl.source !== 'system' && inUseCount === 0;
+  const versions = tpl.versions || [];
+  const latestVersion = versions[0];
+  const latestAuthor = latestVersion ? latestVersion.author : 'System';
+  const latestTime = latestVersion ? formatTplRelative(latestVersion.createdAt) : '—';
+
+  return `
+    <article class="tpl-card" onclick="openTemplateDetail('${escapeHtml(tpl.id)}')">
+      <div class="tpl-card-h">
+        <div>
+          <div class="tpl-card-name">${escapeHtml(tpl.name)}</div>
+          <div class="tpl-card-source-label">${escapeHtml(tpl.sourceLabel || tpl.source)}</div>
+        </div>
+        <span class="tpl-card-source-pill is-${tpl.source}">${tpl.source}</span>
+      </div>
+      <div class="tpl-card-desc">${escapeHtml(tpl.description || '')}</div>
+      <div class="tpl-card-stats">
+        <div class="tpl-card-stat"><span class="tpl-card-stat-k">Groups</span><span class="tpl-card-stat-v">${stats.groups}</span></div>
+        <div class="tpl-card-stat"><span class="tpl-card-stat-k">Lines</span><span class="tpl-card-stat-v">${stats.lines}</span></div>
+        <div class="tpl-card-stat"><span class="tpl-card-stat-k">KPIs</span><span class="tpl-card-stat-v ${stats.kpis > 0 ? 'is-kpi' : ''}">${stats.kpis}</span></div>
+        <div class="tpl-card-stat"><span class="tpl-card-stat-k">Used by</span><span class="tpl-card-stat-v ${inUseCount === 0 ? 'is-unused' : ''}">${inUseCount === 0 ? 'Unused' : inUseCount + ' site' + (inUseCount === 1 ? '' : 's')}</span></div>
+      </div>
+      <div class="tpl-card-footer">
+        <div class="tpl-card-footer-l">
+          <span>Last edit ${escapeHtml(latestTime)} · ${escapeHtml(latestAuthor)}</span>
+          ${cfdCount > 0 ? `<span class="tpl-card-footer-cfd">${cfdCount} custom field${cfdCount === 1 ? '' : 's'}</span>` : ''}
+        </div>
+        ${canDelete ? `<button class="tpl-card-delete" onclick="event.stopPropagation();confirmDeleteTemplate('${escapeHtml(tpl.id)}')">Delete</button>` : ''}
+      </div>
+    </article>
+  `;
+}
+
+function formatTplRelative(timestamp) {
+  if (!timestamp) return '—';
+  const ts = typeof timestamp === 'number' ? timestamp : Date.parse(timestamp);
+  if (isNaN(ts)) return '—';
+  const diff = Date.now() - ts;
+  const min = Math.floor(diff / 60000);
+  if (min < 1) return 'just now';
+  if (min < 60) return min + 'm ago';
+  const hr = Math.floor(min / 60);
+  if (hr < 24) return hr + 'h ago';
+  const day = Math.floor(hr / 24);
+  if (day < 7) return day + 'd ago';
+  const wk = Math.floor(day / 7);
+  if (wk < 4) return wk + 'w ago';
+  const mo = Math.floor(day / 30);
+  if (mo < 12) return mo + 'mo ago';
+  return Math.floor(day / 365) + 'y ago';
+}
+
+function openTemplateDetail(id) {
+  trackTpl('detail_opened', { templateId: id });
+  location.hash = '/templates/' + encodeURIComponent(id);
+}
+function backToTemplatesLibrary() {
+  location.hash = '/templates';
+}
+
+function confirmDeleteTemplate(id) {
+  const tpl = findTemplate(id);
+  if (!tpl) return;
+  if ((tpl.inUseBy || []).length > 0) {
+    alert(tpl.name + ' is currently used by ' + tpl.inUseBy.length + ' site(s). Unbind those sites before deleting.');
+    return;
+  }
+  // TODO Phase 5 — replace with proper modal.
+  if (!confirm('Delete "' + tpl.name + '"? This cannot be undone.')) return;
+  deleteTemplate(id);
+  trackTpl('deleted', { templateId: id, source: tpl.source });
+  renderTemplatesLibrary();
+}
+
+/* =========================
+   Create view
+   ========================= */
+let tplCreateState = { sourceId: null, name: '', description: '' };
+
+function openTemplateCreate() {
+  tplCreateState = { sourceId: null, name: '', description: '' };
+  trackTpl('create_opened');
+  location.hash = '/templates/new';
+}
+
+function renderTemplateCreate() {
+  const systemTemplates = tplLibrary.filter(t => t.source === 'system');
+  const scratchSelected = tplCreateState.sourceId === '__scratch__';
+  const nameTrim = (tplCreateState.name || '').trim();
+  const canSubmit = !!tplCreateState.sourceId && nameTrim.length > 0;
+
+  // Mark the first system template as "Most popular" (purely cosmetic for now).
+  const popularId = systemTemplates[0] ? systemTemplates[0].id : null;
+
+  const tileFor = (t, idx) => {
+    const selected = tplCreateState.sourceId === t.id;
+    const stats = countNodes(t.tree || []);
+    return `
+      <button class="tpl-create-tile ${selected ? 'is-selected' : ''}" onclick="selectCreateSource('${escapeHtml(t.id)}')">
+        <div class="tpl-create-tile-h">
+          <div class="tpl-create-tile-name">${escapeHtml(t.name)}</div>
+          ${t.id === popularId
+            ? `<span class="tpl-create-tile-badge is-popular">Most popular</span>`
+            : `<span class="tpl-create-tile-badge is-system">System</span>`}
+        </div>
+        <div class="tpl-create-tile-desc">${escapeHtml(t.description || '')}</div>
+        <div class="tpl-create-tile-stats">
+          <span>${stats.groups} group${stats.groups === 1 ? '' : 's'}</span>
+          <span>${stats.lines} line${stats.lines === 1 ? '' : 's'}</span>
+          ${stats.kpis > 0 ? `<span>${stats.kpis} KPI${stats.kpis === 1 ? '' : 's'}</span>` : ''}
+        </div>
+      </button>
+    `;
+  };
+
+  const scratchTile = `
+    <button class="tpl-create-tile ${scratchSelected ? 'is-selected' : ''}" onclick="selectCreateSource('__scratch__')">
+      <div class="tpl-create-tile-h">
+        <div class="tpl-create-tile-name">Build from scratch</div>
+        <span class="tpl-create-tile-badge is-power">Power user</span>
+      </div>
+      <div class="tpl-create-tile-desc">Start with an empty tree. Add every group and line yourself. Best when no seed matches your structure.</div>
+      <div class="tpl-create-tile-stats"><span>0 groups · 0 lines</span></div>
+    </button>
+  `;
+
+  $('content').innerHTML = `
+    <section class="surface">
+      <div class="breadcrumb">
+        <a href="#/templates">Templates</a><span class="crumb-sep">›</span>
+        <span class="crumb-current">New template</span>
+      </div>
+
+      <div class="tpl-page-h-row">
+        <div>
+          <div class="tpl-h-eyebrow"><span class="tpl-h-eyebrow-dot"></span>Data Studio · Templates</div>
+          <h1 class="tpl-h-title">Create a new template</h1>
+          <p class="tpl-h-sub">Pick a starting point, then give it a name. You'll land in the editor ready to customize.</p>
+        </div>
+      </div>
+
+      <div class="tpl-create-wrap">
+        <div class="tpl-create-section">
+          <div class="tpl-create-section-h">
+            <div class="tpl-create-section-eyebrow">Step 1</div>
+            <div class="tpl-create-section-title">Starting point</div>
+            <div class="tpl-create-section-sub">Cloning a system template copies its full structure (groups, lines, formulas, KPI flags, custom field defs) and marks the new template as <em>cloned</em>. From scratch starts with an empty tree.</div>
+          </div>
+          <div class="tpl-create-grid">
+            ${systemTemplates.map(tileFor).join('')}
+            ${scratchTile}
+          </div>
+        </div>
+
+        <div class="tpl-create-section">
+          <div class="tpl-create-section-h">
+            <div class="tpl-create-section-eyebrow">Step 2</div>
+            <div class="tpl-create-section-title">Details</div>
+          </div>
+          <div class="tpl-create-fields-row">
+            <div class="tpl-create-field">
+              <label class="tpl-create-field-label">Template name<span class="tpl-create-field-req">*</span></label>
+              <input type="text" placeholder="e.g. Q1 2026 reporting structure"
+                value="${escapeHtml(tplCreateState.name)}"
+                oninput="updateCreateName(this.value)" />
+            </div>
+            <div class="tpl-create-field">
+              <label class="tpl-create-field-label">Description <span style="color:var(--t3);font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></label>
+              <textarea placeholder="What does this template structure? Who uses it?"
+                oninput="updateCreateDescription(this.value)">${escapeHtml(tplCreateState.description)}</textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="tpl-create-actions">
+          <button class="tpl-create-btn" onclick="backToTemplatesLibrary()">← Cancel</button>
+          <button class="tpl-create-btn is-primary" ${canSubmit ? '' : 'disabled'} onclick="submitCreateTemplate()">
+            Create template &amp; customize →
+          </button>
+        </div>
+      </div>
+    </section>
+  `;
+}
+
+function selectCreateSource(id) {
+  tplCreateState.sourceId = id;
+  // Suggest a name based on the source when blank.
+  if (!tplCreateState.name) {
+    if (id === '__scratch__') tplCreateState.name = '';
+    else {
+      const src = findTemplate(id);
+      if (src) tplCreateState.name = src.name + ' (copy)';
+    }
+  }
+  renderTemplateCreate();
+}
+function updateCreateName(v) {
+  tplCreateState.name = v;
+  // Only re-render the submit button state — re-rendering the whole view
+  // would steal focus from the input. Lightweight DOM tweak instead.
+  const btn = document.querySelector('.tpl-create-btn.is-primary');
+  if (btn) {
+    const ok = !!tplCreateState.sourceId && (v || '').trim().length > 0;
+    if (ok) btn.removeAttribute('disabled'); else btn.setAttribute('disabled','');
+  }
+}
+function updateCreateDescription(v) { tplCreateState.description = v; }
+
+function submitCreateTemplate() {
+  const sourceId = tplCreateState.sourceId;
+  const name = (tplCreateState.name || '').trim();
+  if (!sourceId || !name) return;
+
+  const id = 'tpl_' + Date.now();
+  let newTpl;
+  if (sourceId === '__scratch__') {
+    newTpl = {
+      id, name,
+      description: tplCreateState.description || '',
+      industryId: tplIndustry,
+      source: 'custom',
+      sourceLabel: 'Built from scratch',
+      inUseBy: [],
+      customFieldDefs: [],
+      versions: [],
+      tree: [],
+    };
+  } else {
+    const src = findTemplate(sourceId);
+    if (!src) return;
+    newTpl = {
+      id, name,
+      description: tplCreateState.description || src.description || '',
+      industryId: src.industryId || tplIndustry,
+      source: 'cloned',
+      sourceLabel: 'Cloned from ' + src.name,
+      inUseBy: [],
+      customFieldDefs: JSON.parse(JSON.stringify(src.customFieldDefs || [])),
+      versions: [],
+      tree: cloneTree(src.tree),
+    };
+  }
+  // Seed first version.
+  newTpl.versions = [{
+    id: 'v1',
+    label: 'Created template',
+    createdAt: Date.now(),
+    author: 'You',
+    snapshot: cloneTree(newTpl.tree),
+    customFieldDefs: JSON.parse(JSON.stringify(newTpl.customFieldDefs || [])),
+  }];
+  upsertTemplate(newTpl);
+  trackTpl('created', { templateId: newTpl.id, source: newTpl.source, sourceTemplate: sourceId });
+  location.hash = '/templates/' + encodeURIComponent(newTpl.id);
+}
+
+/* =========================
+   Detail view — Phase 1 stub
+   (full editor lands in Phase 2)
+   ========================= */
+function renderTemplateDetail(rawId) {
+  const id = decodeURIComponent(rawId || '');
+  const tpl = findTemplate(id);
+  if (!tpl) {
+    $('content').innerHTML = `
+      <section class="surface">
+        <div class="breadcrumb">
+          <a href="#/templates">Templates</a><span class="crumb-sep">›</span>
+          <span class="crumb-current">Not found</span>
+        </div>
+        <div class="tpl-detail-stub">
+          <div class="tpl-detail-stub-title">Template not found</div>
+          <div class="tpl-detail-stub-sub">No template with ID <code>${escapeHtml(id)}</code>. <a href="#/templates" style="color:var(--cyan)">Back to library</a>.</div>
+        </div>
+      </section>
+    `;
+    return;
+  }
+  const stats = countNodes(tpl.tree || []);
+  const inUseCount = (tpl.inUseBy || []).length;
+
+  $('content').innerHTML = `
+    <section class="surface">
+      <div class="breadcrumb">
+        <a href="#/templates">Templates</a><span class="crumb-sep">›</span>
+        <span class="crumb-current">${escapeHtml(tpl.name)}</span>
+      </div>
+
+      <div class="tpl-detail-h-row">
+        <div class="tpl-detail-h-l">
+          <div class="tpl-detail-name">${escapeHtml(tpl.name)}</div>
+          <div class="tpl-detail-desc">${escapeHtml(tpl.description || '')}</div>
+          <div class="tpl-detail-h-meta">
+            <span class="tpl-card-source-pill is-${tpl.source}">${tpl.source}</span>
+            <span>${stats.groups} groups · ${stats.lines} lines · ${stats.kpis} KPIs · ${inUseCount} site${inUseCount === 1 ? '' : 's'}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="tpl-detail-stub">
+        <div class="tpl-detail-stub-title">Editor coming in Phase 2</div>
+        <div class="tpl-detail-stub-sub">
+          The split-layout editor (tree on the left, tabbed inspector on the right) lands in the next phase.
+          For now this surface confirms the template exists and the route works.
+          <br/><br/>
+          <span style="color:var(--t3);font-size:12px">Template ID: <code>${escapeHtml(tpl.id)}</code> · Industry: ${escapeHtml(INDUSTRY_PRESETS[tpl.industryId] ? INDUSTRY_PRESETS[tpl.industryId].label : tpl.industryId)}</span>
+        </div>
+      </div>
+    </section>
+  `;
+}
+
+/* End Templates Phase 1 */
+
+
 function render() {
   const parts = parseRoute();
   paintSsbActive();
@@ -5838,7 +6925,11 @@ function render() {
   }
   if (parts[0] === 'mappings')    return renderPlaceholder('Field mappings', 'Cross-connection mapping overview. For now, edit mappings inside each connection.');
   if (parts[0] === 'schema')      return renderPlaceholder('Schema versions', 'History of every table change — who made it and when.');
-  if (parts[0] === 'templates')   return renderPlaceholder('Templates', 'Pre-built tables for common verticals (automotive, finance, healthcare).');
+  if (parts[0] === 'templates') {
+    if (parts[1] === 'new') return renderTemplateCreate();
+    if (parts[1]) return renderTemplateDetail(parts[1]);
+    return renderTemplates();
+  }
   if (parts[0] === 'onboarding')  return renderPlaceholder('Onboarding flow', 'Sebastian designed a setup flow for first-time Data Studio users.');
 
   renderConnections();
