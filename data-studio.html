@@ -4137,6 +4137,222 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
 }
 .tpl-insp-summary-row b{color:var(--t1);font-weight:600;}
 
+
+/* ============================================================
+   TEMPLATES — Phase 4 (Versions + Settings + Usage panels)
+   ============================================================ */
+
+/* ---------- Versions ---------- */
+.tpl-ver-h{
+  font-size:11px;color:var(--t2);line-height:1.5;margin-bottom:10px;
+  padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,0.05);
+}
+.tpl-ver-h b{color:var(--t1);font-weight:600;}
+.tpl-ver-list{display:flex;flex-direction:column;gap:7px;}
+.tpl-ver-row{
+  position:relative;
+  display:flex;align-items:center;gap:10px;
+  padding:9px 11px 9px 13px;
+  background:rgba(255,255,255,0.022);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:9px;
+  transition:background .12s,border-color .12s;
+}
+.tpl-ver-row:hover{background:rgba(255,255,255,0.034);border-color:rgba(255,255,255,0.1);}
+.tpl-ver-row.is-current{
+  background:linear-gradient(90deg, rgba(16,185,129,0.1), rgba(16,185,129,0.025));
+  border-color:rgba(16,185,129,0.34);
+}
+.tpl-ver-row::before{
+  content:'';position:absolute;left:0;top:14px;bottom:14px;width:3px;
+  background:rgba(255,255,255,0.12);border-radius:0 3px 3px 0;
+}
+.tpl-ver-row.is-current::before{background:#34d39c;}
+.tpl-ver-l{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;}
+.tpl-ver-label{font-size:12.5px;color:var(--t1);font-weight:500;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.tpl-ver-meta{font-size:10.5px;color:var(--t3);display:flex;gap:8px;align-items:center;}
+.tpl-ver-meta-id{font-family:'SF Mono', ui-monospace, monospace;background:rgba(255,255,255,0.04);
+  padding:1px 5px;border-radius:4px;color:var(--t2);}
+.tpl-ver-current-pill{
+  display:inline-flex;align-items:center;
+  padding:2px 7px;border-radius:999px;
+  background:rgba(16,185,129,0.18);color:#34d39c;
+  font-size:9.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+  flex-shrink:0;
+}
+.tpl-ver-restore{
+  padding:5px 10px;border-radius:6px;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.1);
+  color:var(--t2);font-size:11px;font-weight:500;font-family:inherit;
+  cursor:pointer;transition:all .12s;flex-shrink:0;
+}
+.tpl-ver-restore:hover{background:rgba(56,189,248,0.14);border-color:rgba(56,189,248,0.34);color:var(--t1);}
+
+/* ---------- Settings (custom field defs) ---------- */
+.tpl-cfd-h{
+  font-size:11px;color:var(--t2);line-height:1.5;margin-bottom:10px;
+  padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,0.05);
+}
+.tpl-cfd-h b{color:var(--t1);font-weight:600;}
+.tpl-cfd-list{display:flex;flex-direction:column;gap:7px;margin-bottom:10px;}
+.tpl-cfd-row{
+  display:flex;align-items:center;gap:8px;
+  padding:9px 11px;
+  background:rgba(255,255,255,0.022);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:8px;
+}
+.tpl-cfd-l{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;}
+.tpl-cfd-name{font-size:12.5px;color:var(--t1);font-weight:500;}
+.tpl-cfd-meta{font-size:10.5px;color:var(--t3);font-family:'SF Mono', ui-monospace, monospace;}
+.tpl-cfd-actions{display:flex;gap:4px;flex-shrink:0;}
+.tpl-cfd-act{
+  padding:5px 9px;border-radius:6px;
+  background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);
+  color:var(--t2);font-size:11px;font-weight:500;font-family:inherit;
+  cursor:pointer;transition:all .12s;
+}
+.tpl-cfd-act:hover{background:rgba(255,255,255,0.08);color:var(--t1);}
+.tpl-cfd-act.is-danger:hover{background:rgba(244,63,94,0.14);border-color:rgba(244,63,94,0.36);color:#ff7d7d;}
+
+.tpl-cfd-empty{
+  padding:18px 14px;text-align:center;
+  font-size:12px;color:var(--t3);line-height:1.5;
+  background:rgba(255,255,255,0.022);
+  border:1px dashed rgba(255,255,255,0.1);border-radius:9px;
+}
+.tpl-cfd-add{
+  display:flex;align-items:center;gap:6px;justify-content:center;
+  width:100%;padding:9px;border-radius:9px;
+  background:transparent;
+  border:1px dashed rgba(56,189,248,0.34);
+  color:#7ed3f7;font-size:12px;font-weight:600;font-family:inherit;
+  cursor:pointer;transition:all .12s;
+}
+.tpl-cfd-add:hover{background:rgba(56,189,248,0.06);border-color:rgba(56,189,248,0.5);border-style:solid;}
+
+.tpl-cfd-editor{
+  padding:12px 13px;
+  background:rgba(56,189,248,0.05);
+  border:1px solid rgba(56,189,248,0.28);
+  border-radius:10px;
+  display:flex;flex-direction:column;gap:10px;
+  margin-bottom:10px;
+}
+.tpl-cfd-editor-h{
+  font-size:11px;font-weight:700;letter-spacing:.08em;
+  color:#7ed3f7;text-transform:uppercase;
+}
+.tpl-cfd-editor-fields{display:flex;flex-direction:column;gap:8px;}
+.tpl-cfd-editor-actions{
+  display:flex;gap:6px;justify-content:flex-end;
+  padding-top:8px;border-top:1px solid rgba(56,189,248,0.18);
+}
+.tpl-cfd-footer{
+  font-size:11px;color:var(--t3);font-style:italic;line-height:1.5;
+  padding-top:8px;border-top:1px solid rgba(255,255,255,0.04);
+}
+
+/* ---------- Usage ---------- */
+.tpl-usage-h{
+  font-size:11px;color:var(--t2);line-height:1.5;margin-bottom:10px;
+  padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,0.05);
+}
+.tpl-usage-h b{color:var(--t1);font-weight:600;}
+
+.tpl-usage-group{
+  display:flex;flex-direction:column;gap:4px;
+  margin-bottom:10px;
+}
+.tpl-usage-group-h{
+  display:flex;align-items:center;gap:6px;
+  font-size:11px;font-weight:700;letter-spacing:.05em;color:var(--t2);
+  text-transform:uppercase;
+  padding-bottom:4px;
+}
+.tpl-usage-row{
+  display:flex;align-items:center;gap:8px;
+  padding:7px 11px;
+  background:rgba(255,255,255,0.022);
+  border:1px solid rgba(255,255,255,0.05);
+  border-radius:7px;
+}
+.tpl-usage-field{font-family:'SF Mono', ui-monospace, monospace;font-size:12px;color:var(--t1);flex:1;}
+.tpl-usage-remove{
+  background:transparent;border:0;color:var(--t3);cursor:pointer;font:inherit;
+  width:22px;height:22px;border-radius:5px;
+  display:inline-flex;align-items:center;justify-content:center;
+  transition:all .12s;
+}
+.tpl-usage-remove:hover{background:rgba(244,63,94,0.14);color:#ff7d7d;}
+
+.tpl-usage-empty{
+  padding:18px 14px;text-align:center;
+  font-size:12px;color:var(--t3);line-height:1.5;
+  background:rgba(255,255,255,0.022);
+  border:1px dashed rgba(255,255,255,0.1);border-radius:9px;
+  margin-bottom:10px;
+}
+.tpl-usage-empty b{display:block;color:var(--t2);font-weight:600;margin-bottom:3px;}
+.tpl-usage-add{
+  display:flex;align-items:center;gap:6px;justify-content:center;
+  width:100%;padding:9px;border-radius:9px;
+  background:transparent;
+  border:1px dashed rgba(56,189,248,0.34);
+  color:#7ed3f7;font-size:12px;font-weight:600;font-family:inherit;
+  cursor:pointer;transition:all .12s;
+}
+.tpl-usage-add:hover{background:rgba(56,189,248,0.06);border-color:rgba(56,189,248,0.5);border-style:solid;}
+
+/* Apply picker (inline panel) */
+.tpl-apply-picker{
+  background:rgba(56,189,248,0.05);
+  border:1px solid rgba(56,189,248,0.28);
+  border-radius:10px;
+  padding:11px 12px;
+  display:flex;flex-direction:column;gap:9px;
+  margin-bottom:10px;
+}
+.tpl-apply-picker-h{
+  display:flex;align-items:center;justify-content:space-between;gap:6px;
+}
+.tpl-apply-picker-title{
+  font-size:11px;font-weight:700;letter-spacing:.08em;
+  color:#7ed3f7;text-transform:uppercase;
+}
+.tpl-apply-picker-close{
+  background:transparent;border:0;color:var(--t3);cursor:pointer;font:inherit;
+  width:22px;height:22px;border-radius:5px;
+  display:inline-flex;align-items:center;justify-content:center;
+}
+.tpl-apply-picker-close:hover{background:rgba(255,255,255,0.06);color:var(--t1);}
+.tpl-apply-picker-breadcrumb{font-size:11px;color:var(--t3);}
+.tpl-apply-picker-breadcrumb b{color:var(--t2);font-weight:600;}
+.tpl-apply-picker-list{
+  display:flex;flex-direction:column;gap:3px;
+  max-height:240px;overflow-y:auto;
+  background:rgba(255,255,255,0.022);border-radius:7px;
+  padding:4px;
+}
+.tpl-apply-picker-row{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  padding:7px 10px;border-radius:6px;
+  cursor:pointer;
+  font-size:12px;color:var(--t1);
+  background:transparent;border:0;
+  font-family:inherit;text-align:left;
+  transition:background .1s;
+}
+.tpl-apply-picker-row:hover{background:rgba(56,189,248,0.1);}
+.tpl-apply-picker-row.is-applied{opacity:0.45;cursor:not-allowed;}
+.tpl-apply-picker-row.is-applied:hover{background:transparent;}
+.tpl-apply-picker-row-meta{font-size:10.5px;color:var(--t3);}
+.tpl-apply-picker-empty{
+  padding:14px;text-align:center;font-size:11.5px;color:var(--t3);font-style:italic;
+}
+
 </style>
 </head>
 <body>
@@ -8961,7 +9177,446 @@ function _renderCustomPropInputInner(node, def, editable) {
     ${editable ? `onchange="updateNodeCustomProp('${escapeHtml(node.id)}','${escapeHtml(def.id)}', this.value)"` : 'disabled'} />`;
 }
 
-/* End Templates Phase 3 */
+
+
+/* =========================
+   Phase 4 — Versions / Settings / Usage panels
+   ========================= */
+
+/* Replace the Phase 2 stubs by overwriting the references at call time. */
+
+function renderVersionsTab(tpl) {
+  const versions = (tpl.versions || []);
+  const editable = tpl.source !== 'system';
+  if (versions.length === 0) {
+    return `<div class="tpl-rail-stub"><b>No versions yet</b>Each edit captures a snapshot — they'll show up here.</div>`;
+  }
+  const rows = versions.map((v, i) => {
+    const isCurrent = i === 0;
+    return `
+      <div class="tpl-ver-row ${isCurrent ? 'is-current' : ''}">
+        <div class="tpl-ver-l">
+          <div class="tpl-ver-label">${escapeHtml(v.label || 'Untitled')}</div>
+          <div class="tpl-ver-meta">
+            <span class="tpl-ver-meta-id">${escapeHtml(v.id)}</span>
+            <span>${escapeHtml(v.author || 'Unknown')} · ${escapeHtml(formatTplRelative(v.createdAt))}</span>
+          </div>
+        </div>
+        ${isCurrent
+          ? `<span class="tpl-ver-current-pill">Current</span>`
+          : (editable
+              ? `<button class="tpl-ver-restore" onclick="restoreTplVersion('${escapeHtml(tpl.id)}','${escapeHtml(v.id)}')">Restore</button>`
+              : '')}
+      </div>
+    `;
+  }).join('');
+  return `
+    <div class="tpl-ver-h"><b>${versions.length}</b> version${versions.length === 1 ? '' : 's'} captured. Restoring creates a backup of the current state first, so it's always reversible.</div>
+    <div class="tpl-ver-list">${rows}</div>
+  `;
+}
+
+function restoreTplVersion(templateId, versionId) {
+  const tpl = findTemplate(templateId);
+  if (!_guardEditable(tpl)) return;
+  const versions = tpl.versions || [];
+  const target = versions.find(v => v.id === versionId);
+  if (!target) return;
+  if (!confirm('Restore "' + (target.label || versionId) + '"? Your current state will be saved as a backup version first.')) return;
+
+  // 1. Create the backup version (snapshot of current tree).
+  const now = Date.now();
+  const backupId = 'v' + (versions.length + 1);
+  const backup = {
+    id: backupId,
+    label: 'Auto-saved before restoring "' + (target.label || versionId) + '"',
+    createdAt: now,
+    author: 'You',
+    snapshot: cloneTree(tpl.tree),
+    customFieldDefs: JSON.parse(JSON.stringify(tpl.customFieldDefs || [])),
+  };
+  // 2. Apply the target snapshot to the live tree.
+  tpl.tree = cloneTree(target.snapshot);
+  if (Array.isArray(target.customFieldDefs)) {
+    tpl.customFieldDefs = JSON.parse(JSON.stringify(target.customFieldDefs));
+  }
+  // 3. Create a new current version describing the restore.
+  const restoreId = 'v' + (versions.length + 2);
+  const restoreEntry = {
+    id: restoreId,
+    label: 'Restored "' + (target.label || versionId) + '"',
+    createdAt: now + 1,  // distinct timestamp so it sorts above the backup
+    author: 'You',
+    snapshot: cloneTree(tpl.tree),
+    customFieldDefs: JSON.parse(JSON.stringify(tpl.customFieldDefs || [])),
+  };
+  // Order: restore at top, backup just under it, then the rest.
+  tpl.versions = [restoreEntry, backup].concat(versions);
+  upsertTemplate(tpl);
+  trackTpl('version_restored', { templateId, fromVersionId: versionId });
+  // Clear selection in case the selected node no longer exists.
+  if (tplDetailState.selectedNodeId) {
+    if (!findNode(tpl.tree, tplDetailState.selectedNodeId)) tplDetailState.selectedNodeId = null;
+  }
+  renderTemplateDetail(encodeURIComponent(templateId));
+}
+
+/* ---------- Settings (custom field defs) ---------- */
+
+tplDetailState.cfdEditingId = tplDetailState.cfdEditingId || null;
+tplDetailState.cfdDraft = tplDetailState.cfdDraft || null;
+
+function _defaultCfdDraft() {
+  return { name:'', appliesTo:'rule', type:'text', optionsText:'' };
+}
+function startEditCfd(templateId, cfdId) {
+  const tpl = findTemplate(templateId);
+  if (!_guardEditable(tpl)) return;
+  if (cfdId === 'new') {
+    tplDetailState.cfdEditingId = 'new';
+    tplDetailState.cfdDraft = _defaultCfdDraft();
+  } else {
+    const def = (tpl.customFieldDefs || []).find(d => d.id === cfdId);
+    if (!def) return;
+    tplDetailState.cfdEditingId = cfdId;
+    tplDetailState.cfdDraft = {
+      name: def.name,
+      appliesTo: def.appliesTo,
+      type: def.type,
+      optionsText: (def.options || []).join('\n'),
+    };
+  }
+  renderTemplateDetail(encodeURIComponent(templateId));
+}
+function updateCfdDraft(field, value) {
+  if (!tplDetailState.cfdDraft) return;
+  tplDetailState.cfdDraft[field] = value;
+}
+function cancelCfdEdit(templateId) {
+  tplDetailState.cfdEditingId = null;
+  tplDetailState.cfdDraft = null;
+  renderTemplateDetail(encodeURIComponent(templateId));
+}
+function commitCfdEdit(templateId) {
+  const tpl = findTemplate(templateId);
+  if (!_guardEditable(tpl)) return;
+  const d = tplDetailState.cfdDraft;
+  if (!d || !d.name || !d.name.trim()) {
+    alert('A name is required for the custom field.');
+    return;
+  }
+  const cleanName = d.name.trim();
+  const options = d.type === 'select'
+    ? (d.optionsText || '').split('\n').map(s => s.trim()).filter(s => s.length > 0)
+    : [];
+  if (d.type === 'select' && options.length === 0) {
+    alert('A dropdown custom field needs at least one option (one per line).');
+    return;
+  }
+  const editing = tplDetailState.cfdEditingId;
+  const defs = (tpl.customFieldDefs || []).slice();
+  let label;
+  if (editing === 'new') {
+    // Generate cfd_xxx id from name
+    const base = 'cfd_' + cleanName.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+    let id = base, n = 2;
+    while (defs.some(x => x.id === id)) { id = base + '_' + n; n++; }
+    defs.push({ id, name: cleanName, appliesTo: d.appliesTo, type: d.type, options });
+    label = 'Added custom field "' + cleanName + '"';
+  } else {
+    const idx = defs.findIndex(x => x.id === editing);
+    if (idx === -1) { cancelCfdEdit(templateId); return; }
+    defs[idx] = Object.assign({}, defs[idx], {
+      name: cleanName,
+      appliesTo: d.appliesTo,
+      type: d.type,
+      options,
+    });
+    label = 'Updated custom field "' + cleanName + '"';
+  }
+  tpl.customFieldDefs = defs;
+  upsertTemplate(tpl);
+  _autoVersionTpl(templateId, label);
+  trackTpl('cfd_saved', { templateId, isNew: editing === 'new', type: d.type, appliesTo: d.appliesTo });
+  tplDetailState.cfdEditingId = null;
+  tplDetailState.cfdDraft = null;
+  renderTemplateDetail(encodeURIComponent(templateId));
+}
+function deleteCfd(templateId, cfdId) {
+  const tpl = findTemplate(templateId);
+  if (!_guardEditable(tpl)) return;
+  const def = (tpl.customFieldDefs || []).find(d => d.id === cfdId);
+  if (!def) return;
+  if (!confirm('Delete custom field "' + def.name + '"? Existing values on rules/groups stay (they\'re orphaned but recoverable by re-adding a field with the same id).')) return;
+  tpl.customFieldDefs = (tpl.customFieldDefs || []).filter(d => d.id !== cfdId);
+  upsertTemplate(tpl);
+  _autoVersionTpl(templateId, 'Deleted custom field "' + def.name + '"');
+  trackTpl('cfd_deleted', { templateId, cfdId });
+  renderTemplateDetail(encodeURIComponent(templateId));
+}
+
+function renderSettingsTab(tpl) {
+  const editable = tpl.source !== 'system';
+  const defs = tpl.customFieldDefs || [];
+  const editing = tplDetailState.cfdEditingId;
+  const d = tplDetailState.cfdDraft;
+
+  const editor = editing && d ? `
+    <div class="tpl-cfd-editor">
+      <div class="tpl-cfd-editor-h">${editing === 'new' ? 'New custom field' : 'Edit ' + escapeHtml((defs.find(x => x.id === editing) || {}).name || '')}</div>
+      <div class="tpl-cfd-editor-fields">
+        <div class="tpl-insp-field" style="margin:0">
+          <label class="tpl-insp-field-label">Field name<span style="color:#ff7d7d;margin-left:3px">*</span></label>
+          <input class="tpl-insp-input" type="text" placeholder="e.g. Owner, Review cadence"
+            value="${escapeHtml(d.name)}"
+            oninput="updateCfdDraft('name', this.value)" />
+        </div>
+
+        <div class="tpl-insp-field" style="margin:0">
+          <label class="tpl-insp-field-label">Applies to</label>
+          <select class="tpl-insp-select" onchange="updateCfdDraft('appliesTo', this.value)">
+            <option value="rule"  ${d.appliesTo === 'rule'  ? 'selected' : ''}>Rules only</option>
+            <option value="group" ${d.appliesTo === 'group' ? 'selected' : ''}>Groups only</option>
+            <option value="both"  ${d.appliesTo === 'both'  ? 'selected' : ''}>Both rules and groups</option>
+          </select>
+        </div>
+
+        <div class="tpl-insp-field" style="margin:0">
+          <label class="tpl-insp-field-label">Type</label>
+          <select class="tpl-insp-select" onchange="updateCfdDraft('type', this.value);renderTemplateDetail(encodeURIComponent('${escapeHtml(tpl.id)}'))">
+            ${TPL_CFD_TYPES.map(t => `<option value="${t.id}" ${d.type === t.id ? 'selected' : ''}>${escapeHtml(t.label)}</option>`).join('')}
+          </select>
+        </div>
+
+        ${d.type === 'select' ? `
+        <div class="tpl-insp-field" style="margin:0">
+          <label class="tpl-insp-field-label">Options <span style="color:var(--t3);font-weight:400;text-transform:none;letter-spacing:0">(one per line)</span></label>
+          <textarea class="tpl-insp-textarea" placeholder="Weekly&#10;Monthly&#10;Quarterly"
+            oninput="updateCfdDraft('optionsText', this.value)">${escapeHtml(d.optionsText)}</textarea>
+        </div>` : ''}
+      </div>
+      <div class="tpl-cfd-editor-actions">
+        <button class="tpl-cfd-act" onclick="cancelCfdEdit('${escapeHtml(tpl.id)}')">Cancel</button>
+        <button class="tpl-cfd-act" style="background:rgba(56,189,248,0.18);border-color:rgba(56,189,248,0.4);color:#7ed3f7" onclick="commitCfdEdit('${escapeHtml(tpl.id)}')">${editing === 'new' ? 'Add field' : 'Save changes'}</button>
+      </div>
+    </div>
+  ` : '';
+
+  const defsRows = defs.length > 0 ? defs.map(def => {
+    const typeMeta = TPL_CFD_TYPES.find(t => t.id === def.type) || { label: def.type };
+    const appliesLabel = def.appliesTo === 'both' ? 'rules + groups' : def.appliesTo + 's';
+    return `
+      <div class="tpl-cfd-row">
+        <div class="tpl-cfd-l">
+          <div class="tpl-cfd-name">${escapeHtml(def.name)}</div>
+          <div class="tpl-cfd-meta">${escapeHtml(def.id)} · ${escapeHtml(typeMeta.label)} · ${escapeHtml(appliesLabel)}${def.type === 'select' ? ' · ' + (def.options || []).length + ' option' + ((def.options || []).length === 1 ? '' : 's') : ''}</div>
+        </div>
+        ${editable ? `
+        <div class="tpl-cfd-actions">
+          <button class="tpl-cfd-act" onclick="startEditCfd('${escapeHtml(tpl.id)}','${escapeHtml(def.id)}')">Edit</button>
+          <button class="tpl-cfd-act is-danger" onclick="deleteCfd('${escapeHtml(tpl.id)}','${escapeHtml(def.id)}')" aria-label="Delete ${escapeHtml(def.name)}">
+            <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M3 3l10 10M13 3L3 13"/></svg>
+          </button>
+        </div>` : ''}
+      </div>
+    `;
+  }).join('') : '';
+
+  return `
+    <div class="tpl-cfd-h">${editable
+      ? '<b>Custom fields</b> extend the data model for this template. Each field appears in the Custom tab of every rule or group it applies to. Define once here, value once per node.'
+      : 'This system pack defines the following custom fields. Clone to edit.'}
+    </div>
+    ${editor}
+    ${defs.length === 0 && !editing
+      ? `<div class="tpl-cfd-empty">No custom fields defined yet.${editable ? ' Add one below to extend the data model.' : ''}</div>`
+      : `<div class="tpl-cfd-list">${defsRows}</div>`}
+    ${editable && !editing ? `<button class="tpl-cfd-add" onclick="startEditCfd('${escapeHtml(tpl.id)}','new')">
+      <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9"/></svg>
+      Add custom field
+    </button>` : ''}
+    ${defs.length > 0 ? `<div class="tpl-cfd-footer">Deleting a definition orphans values on existing nodes but doesn't remove them — re-add a field with the same id to recover them.</div>` : ''}
+  `;
+}
+
+/* ---------- Usage (Applied to fields) ---------- */
+
+tplDetailState.applyPickerOpen = tplDetailState.applyPickerOpen || false;
+tplDetailState.applyPickerStep = tplDetailState.applyPickerStep || 'table';
+tplDetailState.applyPickerTable = tplDetailState.applyPickerTable || null;
+
+function openApplyPicker(templateId) {
+  const tpl = findTemplate(templateId);
+  if (!_guardEditable(tpl)) return;
+  tplDetailState.applyPickerOpen = true;
+  tplDetailState.applyPickerStep = 'table';
+  tplDetailState.applyPickerTable = null;
+  trackTpl('apply_picker_opened', { templateId });
+  renderTemplateDetail(encodeURIComponent(templateId));
+}
+function closeApplyPicker(templateId) {
+  tplDetailState.applyPickerOpen = false;
+  tplDetailState.applyPickerStep = 'table';
+  tplDetailState.applyPickerTable = null;
+  renderTemplateDetail(encodeURIComponent(templateId));
+}
+function selectApplyTable(templateId, tableName) {
+  tplDetailState.applyPickerTable = tableName;
+  tplDetailState.applyPickerStep = 'field';
+  renderTemplateDetail(encodeURIComponent(templateId));
+}
+function applyTplToField(templateId, tableName, fieldName) {
+  const tpl = findTemplate(templateId);
+  if (!_guardEditable(tpl)) return;
+  const exists = (tpl.appliedTo || []).some(a => a.tableName === tableName && a.fieldName === fieldName);
+  if (exists) {
+    closeApplyPicker(templateId);
+    return;
+  }
+  tpl.appliedTo = (tpl.appliedTo || []).concat([{ tableName, fieldName }]);
+  upsertTemplate(tpl);
+  _autoVersionTpl(templateId, 'Applied to ' + tableName + '.' + fieldName);
+  trackTpl('applied_to_field', { templateId, tableName, fieldName });
+  closeApplyPicker(templateId);
+}
+function removeTplFromField(templateId, tableName, fieldName) {
+  const tpl = findTemplate(templateId);
+  if (!_guardEditable(tpl)) return;
+  if (!confirm('Stop applying this pack to ' + tableName + '.' + fieldName + '?')) return;
+  tpl.appliedTo = (tpl.appliedTo || []).filter(a => !(a.tableName === tableName && a.fieldName === fieldName));
+  upsertTemplate(tpl);
+  _autoVersionTpl(templateId, 'Removed application from ' + tableName + '.' + fieldName);
+  trackTpl('removed_from_field', { templateId, tableName, fieldName });
+  renderTemplateDetail(encodeURIComponent(templateId));
+}
+
+/* Build the picker's table list from getAllTables() (real Tables surface). */
+function _availableTablesForPicker() {
+  try {
+    const tables = typeof getAllTables === 'function' ? getAllTables() : [];
+    // Each table → list of unique field names from its sources.
+    return tables.map(t => {
+      const fieldSet = new Set();
+      (t.sources || []).forEach(s => {
+        (s.fields || []).forEach(f => {
+          // f.tgt is "<TableName>.<fieldName>" — extract field part.
+          if (f.tgt) {
+            const dot = f.tgt.indexOf('.');
+            if (dot > 0) fieldSet.add(f.tgt.substring(dot + 1));
+          }
+        });
+      });
+      return { name: t.name, fields: Array.from(fieldSet).sort() };
+    });
+  } catch(e) { return []; }
+}
+
+function renderUsageTab(tpl) {
+  const editable = tpl.source !== 'system';
+  const applied = (tpl.appliedTo || []);
+  const picker = tplDetailState.applyPickerOpen;
+
+  // Group applied by tableName
+  const byTable = {};
+  applied.forEach(a => {
+    if (!byTable[a.tableName]) byTable[a.tableName] = [];
+    byTable[a.tableName].push(a.fieldName);
+  });
+  const groups = Object.keys(byTable).sort().map(tableName => {
+    const fields = byTable[tableName].sort();
+    return `
+      <div class="tpl-usage-group">
+        <div class="tpl-usage-group-h">${escapeHtml(tableName)}</div>
+        ${fields.map(fn => `
+          <div class="tpl-usage-row">
+            <span class="tpl-usage-field">${escapeHtml(fn)}</span>
+            ${editable ? `<button class="tpl-usage-remove" onclick="removeTplFromField('${escapeHtml(tpl.id)}','${escapeHtml(tableName)}','${escapeHtml(fn)}')" aria-label="Stop applying to ${escapeHtml(tableName)}.${escapeHtml(fn)}">
+              <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M3 3l10 10M13 3L3 13"/></svg>
+            </button>` : ''}
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }).join('');
+
+  let pickerHtml = '';
+  if (picker) {
+    const tables = _availableTablesForPicker();
+    if (tplDetailState.applyPickerStep === 'table') {
+      const tableRows = tables.length === 0
+        ? `<div class="tpl-apply-picker-empty">No Tables yet. Connect a source first.</div>`
+        : tables.map(t => `
+            <button class="tpl-apply-picker-row" onclick="selectApplyTable('${escapeHtml(tpl.id)}','${escapeHtml(t.name)}')">
+              <span>${escapeHtml(t.name)}</span>
+              <span class="tpl-apply-picker-row-meta">${t.fields.length} field${t.fields.length === 1 ? '' : 's'}</span>
+            </button>
+          `).join('');
+      pickerHtml = `
+        <div class="tpl-apply-picker">
+          <div class="tpl-apply-picker-h">
+            <span class="tpl-apply-picker-title">Apply to a field · pick a Table</span>
+            <button class="tpl-apply-picker-close" onclick="closeApplyPicker('${escapeHtml(tpl.id)}')" aria-label="Close picker">
+              <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M3 3l10 10M13 3L3 13"/></svg>
+            </button>
+          </div>
+          <div class="tpl-apply-picker-list">${tableRows}</div>
+        </div>
+      `;
+    } else {
+      const tableName = tplDetailState.applyPickerTable;
+      const t = tables.find(x => x.name === tableName);
+      const fields = t ? t.fields : [];
+      const fieldRows = fields.length === 0
+        ? `<div class="tpl-apply-picker-empty">No fields on this Table yet.</div>`
+        : fields.map(fn => {
+            const already = applied.some(a => a.tableName === tableName && a.fieldName === fn);
+            return `
+              <button class="tpl-apply-picker-row ${already ? 'is-applied' : ''}"
+                ${already ? 'disabled' : `onclick="applyTplToField('${escapeHtml(tpl.id)}','${escapeHtml(tableName)}','${escapeHtml(fn)}')"`}>
+                <span style="font-family:'SF Mono', ui-monospace, monospace;">${escapeHtml(fn)}</span>
+                <span class="tpl-apply-picker-row-meta">${already ? 'already applied' : 'apply'}</span>
+              </button>
+            `;
+          }).join('');
+      pickerHtml = `
+        <div class="tpl-apply-picker">
+          <div class="tpl-apply-picker-h">
+            <span class="tpl-apply-picker-title">Apply to a field · pick a field</span>
+            <button class="tpl-apply-picker-close" onclick="closeApplyPicker('${escapeHtml(tpl.id)}')" aria-label="Close picker">
+              <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M3 3l10 10M13 3L3 13"/></svg>
+            </button>
+          </div>
+          <div class="tpl-apply-picker-breadcrumb"><b>${escapeHtml(tableName)}</b> · <span style="cursor:pointer;color:var(--cyan);text-decoration:underline" onclick="tplDetailState.applyPickerStep='table';renderTemplateDetail(encodeURIComponent('${escapeHtml(tpl.id)}'))">change Table</span></div>
+          <div class="tpl-apply-picker-list">${fieldRows}</div>
+        </div>
+      `;
+    }
+  }
+
+  const body = applied.length === 0
+    ? `<div class="tpl-usage-empty">
+        <b>Not applied yet</b>
+        ${editable ? 'Use the picker below to apply this pack to one or more Table fields.' : 'This pack hasn\'t been wired to any fields yet.'}
+      </div>`
+    : groups;
+
+  return `
+    <div class="tpl-usage-h"><b>${applied.length}</b> field${applied.length === 1 ? '' : 's'} currently uses this template's rules at ingest. Editing the template updates every applied field immediately.</div>
+    ${pickerHtml}
+    ${body}
+    ${editable && !picker ? `<button class="tpl-usage-add" onclick="openApplyPicker('${escapeHtml(tpl.id)}')">
+      <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9"/></svg>
+      Apply to a field
+    </button>` : ''}
+  `;
+}
+
+/* Re-route the stubs from Phase 2 to the real renderers above. */
+function renderVersionsTabStub(tpl) { return renderVersionsTab(tpl); }
+function renderSettingsTabStub(tpl) { return renderSettingsTab(tpl); }
+function renderUsageTabStub(tpl)    { return renderUsageTab(tpl); }
+
+/* End Templates Phase 4 */
 
 
 
