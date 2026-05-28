@@ -450,7 +450,60 @@ These cover the long tail of data sources that don't have an API but matter to t
 
 ---
 
-## 20. Stack
+## 20. Data Studio — onboarding wizard
+
+> Lives in `data-studio.html`. Spec: [`OnboardingFlow.md`](OnboardingFlow.md). Adapted from the standalone `OnboardingFlow.jsx` artifact described in `OnboardingFlow_Documentation.pdf`.
+
+This is the **first-run experience** for Data Studio. A fresh visitor (no localStorage) lands directly on the empty state with a strong CTA to connect their first data source.
+
+### 1-minute demo path
+
+The fastest way to see everything we built:
+
+1. Open **`data-studio.html`**. Sidebar bottom → **"Take the guided tour"**.
+2. A 13-step popover walks through: empty state → wizard open → all 6 wizard steps → Done → fresh connection on the dashboard.
+
+### Manual walkthrough
+
+For demoing without the tour:
+
+1. **Empty state.** Hero with 6-step preview + floating cards. Primary CTA "Connect your first source".
+2. **Wizard opens.** Centered modal, 960px wide, 6-step progress bar. Resumable: close at any time and re-open continues where you left off.
+3. **Step 1 Category.** 7 cards (CRM, project tools, data, marketing, support, custom API, files). Each shows live count of connectors.
+4. **Step 2 Connector.** Filtered grid with Popular/Recommended badges and auth method chips.
+5. **Step 3 Sign in.** Six auth flavors (OAuth, API key, service account, basic, manual, file upload, email-to-inbox). Each has its own UI. **Inline validation** before submit. Three-state machine: idle → connecting → connected.
+6. **Step 4 Preview.** Read-only checkpoint. 4 stat tiles + table of every detected field with type and sample value. Per-connector realistic sample data (HubSpot shows `properties.firstname`, BigQuery shows `event_timestamp`, etc.).
+7. **Step 5 Field matching.** AI confidence pills (green ≥90, blue 75-89, amber <75). Bulk "Accept all high-confidence" banner. **Quarantine pattern** for fields with no AI match — held aside with amber stripe and "no AI match" chip, never silently included.
+8. **Step 6 Refresh schedule.** 4 cadence cards (Real-time / Hourly / Daily / Manual). Real-time auto-disabled for connectors without webhook support. Incremental sync shows only when timestamp fields are mapped. Recap card at the bottom.
+9. **Done screen.** Hero with checkmark, 5-row recap, **3 cross-studio cards**: Build agent tools (Agent Studio), Set who can access (Admin Studio), Add another source.
+10. **Click Open Dashboard.** Modal closes. The freshly-created connection appears at the **top of the connections list** with "just now" as last sync.
+11. **Click the fresh card.** Opens a synthetic detail page built from your wizard inputs — same code path as the demo connections, with a green banner "X is live — Created via setup".
+
+### Demo controls (sidebar bottom)
+
+| Control | What it does |
+|---|---|
+| **Take the guided tour** | Launches the 13-step popover walkthrough. |
+| **Reset to first time setup** | Wipes wizard state + lastCompleted, returns to empty state. |
+| **Show errors** (toggle) | When ON, the next Connect attempt fails with a realistic error message. Cycles through timeout / denied / rate_limit (OAuth), invalid_key (API key), IAM missing (service account), 404 / 401 (manual), malformed_data (file upload). |
+
+### Key features built
+
+| Feature | Where to see it |
+|---|---|
+| Resumable | Close the modal at step 3 → re-open from "Resume at step 3 of 6" CTA in the empty state |
+| AI confidence pills | Step 5 — three colors per confidence range |
+| Quarantine over silent inclusion | Step 5 with HubSpot or Asana (both have fields with conf=0) — see the amber banner and parked rows |
+| Error states | Toggle "Show errors" in the sidebar → reach step 3 → click Connect → see the error banner with Dismiss + retry path |
+| Inline field validation | Step 3 with API key (type "abc") or Service account (paste invalid JSON) — inline error before submit |
+| Cross-studio bridges | Done step → 3 cards. "Build agent tools" goes to agent-tools.html, "Set who can access" goes to settings.html |
+| Synthetic detail page | After finishing, click the fresh card at the top of the connections list |
+| Telemetry | DevTools console + `window.AIMS_DEBUG = true` → see 21 events fire as you walk through |
+| Step transitions | Every step body fades+slides on Next/Back. Cards stagger. Reduced motion respected. |
+
+---
+
+## 21. Stack
 
 Zero-dependency vanilla HTML / CSS / JS. ~4.5k lines in a single file. All state in-memory.
 
