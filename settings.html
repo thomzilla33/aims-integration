@@ -4010,6 +4010,119 @@ html.theme-light .theme-icon-moon{display:block}
 .impact-modal-f .btn-danger{background:#ef4444;color:#fff;border:none}
 .impact-modal-f .btn-danger:hover{background:#dc2626}
 
+
+/* ============ PUBLISH WORKFLOW ============ */
+.lc-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:3px 9px;border-radius:99px;
+  font-size:10.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;
+  margin-left:8px;vertical-align:middle;
+}
+.lc-badge-dot{width:6px;height:6px;border-radius:50%}
+.lc-badge.is-draft     { background:rgba(255,255,255,0.04); color:var(--t3); border:1px solid var(--line) }
+.lc-badge.is-draft .lc-badge-dot{ background:var(--t3) }
+.lc-badge.is-staged    { background:rgba(245,158,11,0.10); color:var(--amber); border:1px solid rgba(245,158,11,0.32) }
+.lc-badge.is-staged .lc-badge-dot{ background:var(--amber) }
+.lc-badge.is-published { background:rgba(16,185,129,0.10); color:var(--green); border:1px solid rgba(16,185,129,0.32) }
+.lc-badge.is-published .lc-badge-dot{ background:var(--green) }
+.lc-badge.is-archived  { background:rgba(255,255,255,0.02); color:var(--t3); border:1px dashed var(--line); opacity:.7 }
+
+.publish-card{
+  display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap;
+  padding:16px 18px;margin-bottom:16px;
+  background:linear-gradient(135deg, rgba(43,127,255,0.05) 0%, rgba(167,139,250,0.04) 100%);
+  border:1px solid rgba(43,127,255,0.28);
+  border-radius:12px;
+}
+.publish-card.is-published{
+  background:linear-gradient(135deg, rgba(16,185,129,0.06) 0%, rgba(43,127,255,0.03) 100%);
+  border-color:rgba(16,185,129,0.32);
+}
+.publish-card-l{flex:1;min-width:300px}
+.publish-card-h{display:flex;align-items:center;gap:9px;margin-bottom:8px}
+.publish-card-ic{
+  width:32px;height:32px;border-radius:9px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.publish-card-ic.is-draft     { background:rgba(255,255,255,0.05); color:var(--t2); border:1px solid var(--line) }
+.publish-card-ic.is-staged    { background:rgba(245,158,11,0.12); color:var(--amber); border:1px solid rgba(245,158,11,0.32) }
+.publish-card-ic.is-published { background:rgba(16,185,129,0.12); color:var(--green); border:1px solid rgba(16,185,129,0.32) }
+.publish-card-t{font-size:13px;font-weight:700;color:var(--t1);letter-spacing:-.01em}
+.publish-card-d{font-size:11.5px;color:var(--t2);line-height:1.55;max-width:560px}
+.publish-card-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.publish-card-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:7px 13px;border-radius:8px;
+  font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;
+  transition:transform .12s, box-shadow .12s;
+}
+.publish-card-btn.is-primary{
+  background:linear-gradient(135deg, #2B7FFF 0%, #1E63CC 100%);
+  color:#fff;border:none;
+  box-shadow:0 6px 18px -6px rgba(43,127,255,0.55);
+}
+.publish-card-btn.is-primary:hover{transform:translateY(-1px);box-shadow:0 8px 22px -6px rgba(43,127,255,0.65)}
+.publish-card-btn.is-secondary{
+  background:transparent;color:var(--t2);
+  border:1px solid var(--line-strong);
+}
+.publish-card-btn.is-secondary:hover{border-color:var(--blue);color:var(--blue)}
+
+.publish-progress{
+  display:flex;align-items:center;gap:0;margin-top:14px;
+}
+.publish-step{
+  display:flex;align-items:center;gap:7px;
+  flex:1;min-width:0;
+  padding:6px 11px;
+  font-size:11px;font-weight:700;color:var(--t3);
+  border-radius:8px;
+  background:rgba(255,255,255,0.02);
+  border:1px solid var(--line);
+}
+.publish-step.is-active{
+  background:rgba(43,127,255,0.10);color:var(--blue);
+  border-color:rgba(43,127,255,0.42);
+}
+.publish-step.is-done{
+  background:rgba(16,185,129,0.08);color:var(--green);
+  border-color:rgba(16,185,129,0.32);
+}
+.publish-step-num{
+  width:20px;height:20px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:800;
+  background:rgba(255,255,255,0.05);color:var(--t3);
+  border:1px solid var(--line);flex-shrink:0;
+}
+.publish-step.is-active .publish-step-num{background:var(--blue);color:#fff;border-color:var(--blue)}
+.publish-step.is-done   .publish-step-num{background:var(--green);color:#fff;border-color:var(--green)}
+.publish-step-arrow{color:var(--t3);margin:0 4px;flex-shrink:0}
+
+.publish-approvers{
+  display:flex;flex-direction:column;gap:6px;margin-top:14px;
+  padding:11px 13px;
+  background:rgba(255,255,255,0.02);
+  border:1px solid var(--line);border-radius:9px;
+}
+.publish-approvers-h{
+  font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--t3);margin-bottom:4px;
+}
+.publish-approver-row{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  font-size:11.5px;
+}
+.publish-approver-l{display:flex;align-items:center;gap:8px;color:var(--t2)}
+.publish-approver-l b{color:var(--t1);font-weight:600}
+.publish-approver-status{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:2px 8px;border-radius:99px;
+  font-size:10px;font-weight:700;
+}
+.publish-approver-status.is-approved{background:rgba(16,185,129,0.10);color:var(--green);border:1px solid rgba(16,185,129,0.32)}
+.publish-approver-status.is-pending{background:rgba(245,158,11,0.10);color:var(--amber);border:1px solid rgba(245,158,11,0.32)}
+
 </style>
 </head>
 <body>
@@ -4970,15 +5083,21 @@ const INTEGRATIONS = [
     capabilities:['tools'], authMethods:['apikey'], source:'private',
     connected:true, health:'healthy', lastRun:'12 min ago', errors24h:0,
     connectedBy:{name:'Diana Pérez',initials:'DP'}, connectedAt:'10 days ago',
-    studios:{governance:false,agentic:true,workforce:false}, allowPersonal:false
+    studios:{governance:false,agentic:true,workforce:false}, allowPersonal:false,
+    lifecycle:'published', publishedAt:'8 days ago', publishedBy:'Alex Park', version:'v1.2',
+    approvers:[{name:'Alex Park',role:'Finance Ops',status:'approved',at:'8 days ago'},{name:'Diana Pérez',role:'IT Security',status:'approved',at:'8 days ago'}]
   },
   { slug:'customer-db', name:'Customer DB Reporter', vendor:'Built by your workspace', category:'custom', color:'#A78BFA',
     desc:'Read-only access to the customer Postgres reporting replica.',
-    capabilities:['knowledge','tools'], authMethods:['apikey'], source:'private', connected:false
+    capabilities:['knowledge','tools'], authMethods:['apikey'], source:'private', connected:false,
+    lifecycle:'staged', stagedAt:'3 days ago', stagedBy:'Carlos Tovar', version:'v0.4-rc',
+    approvers:[{name:'Diana Pérez',role:'IT Security',status:'pending',at:null},{name:'Carlos Tovar',role:'Eng Manager',status:'approved',at:'3 days ago'}]
   },
   { slug:'ops-monitor', name:'Slack #ai-ops monitor', vendor:'Built by your workspace', category:'custom', color:'#4A154B',
     desc:'Listens to #ai-ops and triggers an agent on critical alerts.',
-    capabilities:['triggers'], authMethods:['oauth'], source:'private', connected:false
+    capabilities:['triggers'], authMethods:['oauth'], source:'private', connected:false,
+    lifecycle:'draft', draftedAt:'5 hours ago', draftedBy:'Thomas González', version:'v0.1',
+    approvers:[]
   }
 ];
 
@@ -7003,6 +7122,115 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
+
+
+/* ============ PUBLISH LIFECYCLE ============ */
+const LC_STAGES = ['draft', 'staged', 'published'];
+
+function lcBadgeHtml(integ) {
+  if (!integ || !integ.lifecycle || integ.source === 'official') return '';
+  const lc = integ.lifecycle;
+  const labels = { draft:'Draft', staged:'Staged', published:'Published', archived:'Archived' };
+  return `<span class="lc-badge is-${lc}"><span class="lc-badge-dot"></span>${labels[lc] || lc}${integ.version ? ' &middot; ' + escapeHtml(integ.version) : ''}</span>`;
+}
+
+function publishCardHtml(integ) {
+  if (!integ || integ.source === 'official') return '';
+  const lc = integ.lifecycle || 'draft';
+  const stageIdx = Math.max(0, LC_STAGES.indexOf(lc));
+
+  let iconSvg, title, desc, action;
+  if (lc === 'draft') {
+    iconSvg = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 113 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>';
+    title = 'In draft — finish setup to stage for review';
+    desc = 'This is an internal integration being built. When the wizard is done and tests pass, move it to <b>Staged</b> for approval before publishing to the workspace library.';
+    action = `<button class="publish-card-btn is-primary" onclick="advanceLifecycle('${integ.slug}','staged')">Move to staged &rarr;</button>`;
+  } else if (lc === 'staged') {
+    const pending = (integ.approvers || []).filter(a => a.status === 'pending').length;
+    iconSvg = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 6 12 12 16 14"/></svg>';
+    title = pending > 0 ? `Awaiting ${pending} approval${pending===1?'':'s'} before publish` : 'All approvals in — ready to publish';
+    desc = `Staged ${integ.stagedAt ? escapeHtml(integ.stagedAt) : 'recently'} by <b>${escapeHtml(integ.stagedBy || 'workspace admin')}</b>. Test runs on a dry-run dataset are passing. Once all approvers sign off, you can publish to the library so any workspace can install it.`;
+    action = pending > 0
+      ? `<button class="publish-card-btn is-secondary" onclick="toast('Reminder sent to ' + ${pending} + ' pending approver' + (${pending}===1?'':'s'))">Remind approvers</button><button class="publish-card-btn is-primary" onclick="advanceLifecycle('${integ.slug}','published')">Publish anyway &rarr;</button>`
+      : `<button class="publish-card-btn is-primary" onclick="advanceLifecycle('${integ.slug}','published')">Publish to library &rarr;</button>`;
+  } else if (lc === 'published') {
+    iconSvg = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-12"/></svg>';
+    title = `Published ${integ.publishedAt ? escapeHtml(integ.publishedAt) : ''} &middot; ${escapeHtml(integ.version || 'v1.0')}`;
+    desc = `Live in the workspace library. Published by <b>${escapeHtml(integ.publishedBy || 'workspace admin')}</b>. Any workspace can install it (subject to Distribution rules). Re-staging will roll back the published version while you iterate.`;
+    action = `<button class="publish-card-btn is-secondary" onclick="advanceLifecycle('${integ.slug}','staged')">Re-stage for changes</button>`;
+  } else {
+    return '';
+  }
+
+  const approvers = (integ.approvers || []);
+  const approversHtml = approvers.length === 0 ? '' : `
+    <div class="publish-approvers">
+      <div class="publish-approvers-h">Approvers</div>
+      ${approvers.map(a => `
+        <div class="publish-approver-row">
+          <div class="publish-approver-l"><b>${escapeHtml(a.name)}</b><span style="color:var(--t3)">&middot; ${escapeHtml(a.role)}</span></div>
+          <span class="publish-approver-status is-${a.status}">${a.status === 'approved' ? '✓ Approved' : '◐ Pending'}${a.at ? ' &middot; ' + escapeHtml(a.at) : ''}</span>
+        </div>
+      `).join('')}
+    </div>
+  `;
+
+  return `
+    <div class="publish-card ${lc === 'published' ? 'is-published' : ''}">
+      <div class="publish-card-l">
+        <div class="publish-card-h">
+          <span class="publish-card-ic is-${lc}">${iconSvg}</span>
+          <div class="publish-card-t">${title}</div>
+        </div>
+        <div class="publish-card-d">${desc}</div>
+
+        <div class="publish-progress">
+          <div class="publish-step ${stageIdx === 0 ? 'is-active' : stageIdx > 0 ? 'is-done' : ''}">
+            <span class="publish-step-num">${stageIdx > 0 ? '✓' : '1'}</span>
+            <span>Draft</span>
+          </div>
+          <span class="publish-step-arrow">→</span>
+          <div class="publish-step ${stageIdx === 1 ? 'is-active' : stageIdx > 1 ? 'is-done' : ''}">
+            <span class="publish-step-num">${stageIdx > 1 ? '✓' : '2'}</span>
+            <span>Staged &middot; approval</span>
+          </div>
+          <span class="publish-step-arrow">→</span>
+          <div class="publish-step ${stageIdx === 2 ? 'is-active' : ''}">
+            <span class="publish-step-num">${stageIdx >= 2 ? '✓' : '3'}</span>
+            <span>Published</span>
+          </div>
+        </div>
+
+        ${approversHtml}
+      </div>
+      <div class="publish-card-actions">${action}</div>
+    </div>
+  `;
+}
+
+function advanceLifecycle(slug, target) {
+  const i = INTEGRATIONS.find(x => x.slug === slug);
+  if (!i) return;
+  const prev = i.lifecycle || 'draft';
+  i.lifecycle = target;
+  if (target === 'staged') {
+    i.stagedAt = 'just now';
+    i.stagedBy = (getOwner(slug) && getOwner(slug).name) || 'workspace admin';
+  }
+  if (target === 'published') {
+    i.publishedAt = 'just now';
+    i.publishedBy = (getOwner(slug) && getOwner(slug).name) || 'workspace admin';
+    // Bump version on publish
+    const v = (i.version || 'v0.1').match(/v(\d+)\.(\d+)/);
+    if (v) {
+      i.version = 'v' + (parseInt(v[1])+(prev==='staged'?0:1)) + '.' + (parseInt(v[2])+1);
+    }
+  }
+  const labels = { draft:'Draft', staged:'Staged', published:'Published' };
+  toast(i.name + ': ' + labels[prev] + ' → ' + labels[target]);
+  paintDetail(i);
+}
+
 function renderDetail(slug) {
   const i = findIntegration(slug);
   if (!i) { renderNotFound(slug); return; }
@@ -7163,7 +7391,7 @@ function paintDetail(i) {
       <div class="detail-row">
         ${logo(i, 'lg')}
         <div class="detail-text">
-          <div class="detail-name">${escapeHtml(i.name)} ${srcBadge(i)}</div>
+          <div class="detail-name">${escapeHtml(i.name)} ${srcBadge(i)} ${lcBadgeHtml(i)}</div>
           <div class="detail-vendor">${escapeHtml(i.vendor||'')} · ${escapeHtml(cat?cat.label:'')}</div>
           ${i.connected ? `
             <div class="detail-meta">
@@ -7191,6 +7419,8 @@ function paintDetail(i) {
         </div>
       </div>
     </div>
+
+    ${publishCardHtml(i)}
 
     <div class="tabs">
       ${(state.persona === 'user'
