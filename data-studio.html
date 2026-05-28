@@ -1234,7 +1234,28 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
 .ds-tour-pop-h{
   display:flex;align-items:center;justify-content:space-between;
   margin-bottom:8px;
+  cursor:grab;
+  user-select:none;
+  -webkit-user-select:none;
 }
+.ds-tour-pop-h:active{cursor:grabbing}
+.ds-tour-pop.is-dragging{
+  transition:none !important;
+  cursor:grabbing;
+}
+.ds-tour-pop.is-dragging .ds-tour-pop-h{cursor:grabbing}
+/* Visual hint that the header is a drag handle */
+.ds-tour-pop-h::after{
+  content:'';
+  position:absolute;
+  top:6px;left:50%;transform:translateX(-50%);
+  width:36px;height:3px;border-radius:2px;
+  background:rgba(255,255,255,0.10);
+  transition:background .12s;
+  pointer-events:none;
+}
+.ds-tour-pop-h:hover::after{background:rgba(43,127,255,0.45)}
+.ds-tour-pop-h{position:relative;padding-top:8px}
 .ds-tour-pop-step{
   display:inline-flex;align-items:center;gap:6px;
   padding:2px 9px;border-radius:99px;
@@ -1981,7 +2002,7 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
 <div class="ds-tour-backdrop" id="dsTourBackdrop" onclick="endDsTour()"></div>
 <div class="ds-tour-pop" id="dsTourPop" style="display:none;left:50%;top:50%;transform:translate(-50%,-50%)">
   <div class="ds-tour-pop-arrow" id="dsTourArrow" style="display:none"></div>
-  <div class="ds-tour-pop-h">
+  <div class="ds-tour-pop-h" onmousedown="dsTourDragStart(event)" ontouchstart="dsTourDragStartTouch(event)">
     <span class="ds-tour-pop-step" id="dsTourStep">Step 1 of 12</span>
     <button class="ds-tour-pop-close" onclick="endDsTour()" aria-label="Close tour">
       <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
@@ -4809,6 +4830,101 @@ window.addEventListener('resize', () => {
     if (step) positionDsTour(step);
   }
 });
+
+/* ============ TOUR POPOVER DRAG ============ */
+let _dsTourDrag = null;
+
+function dsTourDragStart(e) {
+  // Don't start drag if the click landed on an interactive element (buttons, etc.)
+  if (e.target.closest('button, a, input, select, textarea')) return;
+  const pop = document.getElementById('dsTourPop');
+  if (!pop) return;
+  const rect = pop.getBoundingClientRect();
+  _dsTourDrag = { startX: e.clientX, startY: e.clientY, popX: rect.left, popY: rect.top };
+  // Pin the popover to its current pixel position so the drag math is consistent.
+  pop.style.left = rect.left + 'px';
+  pop.style.top = rect.top + 'px';
+  pop.style.transform = 'none';
+  pop.classList.add('is-dragging');
+  document.addEventListener('mousemove', dsTourDragMove);
+  document.addEventListener('mouseup', dsTourDragEnd);
+  e.preventDefault();
+}
+
+function dsTourDragMove(e) {
+  if (!_dsTourDrag) return;
+  const pop = document.getElementById('dsTourPop');
+  const dx = e.clientX - _dsTourDrag.startX;
+  const dy = e.clientY - _dsTourDrag.startY;
+  let nextLeft = _dsTourDrag.popX + dx;
+  let nextTop  = _dsTourDrag.popY + dy;
+  // Clamp inside the viewport with an 8px margin
+  const popW = pop.offsetWidth;
+  const popH = pop.offsetHeight;
+  nextLeft = Math.max(8, Math.min(window.innerWidth - popW - 8, nextLeft));
+  nextTop  = Math.max(8, Math.min(window.innerHeight - popH - 8, nextTop));
+  pop.style.left = nextLeft + 'px';
+  pop.style.top  = nextTop + 'px';
+  // Hide the arrow once moved — it no longer points to the target
+  const arrow = document.getElementById('dsTourArrow');
+  if (arrow) arrow.style.display = 'none';
+}
+
+function dsTourDragEnd() {
+  if (!_dsTourDrag) return;
+  _dsTourDrag = null;
+  const pop = document.getElementById('dsTourPop');
+  if (pop) pop.classList.remove('is-dragging');
+  document.removeEventListener('mousemove', dsTourDragMove);
+  document.removeEventListener('mouseup', dsTourDragEnd);
+}
+
+/* Touch variants */
+function dsTourDragStartTouch(e) {
+  if (e.target.closest('button, a, input, select, textarea')) return;
+  if (!e.touches || !e.touches[0]) return;
+  const t = e.touches[0];
+  const pop = document.getElementById('dsTourPop');
+  if (!pop) return;
+  const rect = pop.getBoundingClientRect();
+  _dsTourDrag = { startX: t.clientX, startY: t.clientY, popX: rect.left, popY: rect.top };
+  pop.style.left = rect.left + 'px';
+  pop.style.top = rect.top + 'px';
+  pop.style.transform = 'none';
+  pop.classList.add('is-dragging');
+  document.addEventListener('touchmove', dsTourDragMoveTouch, { passive: false });
+  document.addEventListener('touchend', dsTourDragEndTouch);
+  e.preventDefault();
+}
+
+function dsTourDragMoveTouch(e) {
+  if (!_dsTourDrag || !e.touches || !e.touches[0]) return;
+  const t = e.touches[0];
+  const pop = document.getElementById('dsTourPop');
+  const dx = t.clientX - _dsTourDrag.startX;
+  const dy = t.clientY - _dsTourDrag.startY;
+  let nextLeft = _dsTourDrag.popX + dx;
+  let nextTop  = _dsTourDrag.popY + dy;
+  const popW = pop.offsetWidth;
+  const popH = pop.offsetHeight;
+  nextLeft = Math.max(8, Math.min(window.innerWidth - popW - 8, nextLeft));
+  nextTop  = Math.max(8, Math.min(window.innerHeight - popH - 8, nextTop));
+  pop.style.left = nextLeft + 'px';
+  pop.style.top  = nextTop + 'px';
+  const arrow = document.getElementById('dsTourArrow');
+  if (arrow) arrow.style.display = 'none';
+  e.preventDefault();
+}
+
+function dsTourDragEndTouch() {
+  if (!_dsTourDrag) return;
+  _dsTourDrag = null;
+  const pop = document.getElementById('dsTourPop');
+  if (pop) pop.classList.remove('is-dragging');
+  document.removeEventListener('touchmove', dsTourDragMoveTouch);
+  document.removeEventListener('touchend', dsTourDragEndTouch);
+}
+
 
 /* ====================== BOOT ====================== */
 window.addEventListener('hashchange', render);
