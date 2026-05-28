@@ -4489,6 +4489,241 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
 .tpl-rail-body{animation:tplRailFade .14s ease-out;}
 @keyframes tplRailFade{from{opacity:0;transform:translateY(2px);} to{opacity:1;transform:translateY(0);}}
 
+
+/* ============================================================
+   FIELD MAPPINGS — Mike thesis surface (#/mappings)
+   ============================================================ */
+
+.fm-wrap{display:flex;flex-direction:column;gap:14px;}
+
+.fm-h-eyebrow{font-size:10px;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--cyan);display:flex;align-items:center;gap:6px;margin-bottom:4px;}
+.fm-h-eyebrow-dot{width:6px;height:6px;border-radius:50%;background:var(--cyan);
+  box-shadow:0 0 0 2px rgba(56,189,248,0.18);}
+.fm-h-title{font-size:22px;font-weight:700;color:var(--t1);letter-spacing:-0.015em;}
+.fm-h-sub{font-size:13px;color:var(--t2);max-width:680px;line-height:1.55;margin-top:4px;}
+
+/* KPI strip */
+.fm-kpi-strip{
+  display:grid;grid-template-columns:repeat(auto-fit, minmax(160px, 1fr));gap:10px;
+  margin-bottom:4px;
+}
+.fm-kpi{
+  background:linear-gradient(180deg, rgba(255,255,255,0.034), rgba(255,255,255,0.014));
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:12px;padding:12px 14px;
+  display:flex;flex-direction:column;gap:3px;
+}
+.fm-kpi-v{font-size:22px;font-weight:700;color:var(--t1);font-variant-numeric:tabular-nums;letter-spacing:-0.01em;}
+.fm-kpi-k{font-size:10.5px;font-weight:600;letter-spacing:.08em;color:var(--t3);text-transform:uppercase;}
+.fm-kpi.is-auto .fm-kpi-v{color:#34d39c;}
+.fm-kpi.is-review .fm-kpi-v{color:#fbbf24;}
+.fm-kpi.is-resolved .fm-kpi-v{color:#7ed3f7;}
+.fm-kpi.is-skipped .fm-kpi-v{color:var(--t3);}
+
+/* Toolbar */
+.fm-toolbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.fm-search{position:relative;flex:1 1 320px;max-width:420px;}
+.fm-search input{
+  width:100%;padding:9px 12px 9px 34px;border-radius:9px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.08);
+  color:var(--t1);font-size:13px;font-family:inherit;outline:none;
+  transition:border-color .15s ease,background .15s ease;
+}
+.fm-search input::placeholder{color:var(--t3);}
+.fm-search input:focus{border-color:var(--cyan);background:rgba(255,255,255,0.06);}
+.fm-search-ico{position:absolute;left:11px;top:50%;transform:translateY(-50%);
+  color:var(--t3);pointer-events:none;}
+.fm-search-clear{
+  position:absolute;right:8px;top:50%;transform:translateY(-50%);
+  background:transparent;border:0;color:var(--t3);cursor:pointer;
+  width:22px;height:22px;border-radius:6px;
+  display:flex;align-items:center;justify-content:center;
+  transition:background .15s,color .15s;
+}
+.fm-search-clear:hover{background:rgba(255,255,255,0.06);color:var(--t1);}
+
+.fm-filter-pills{display:flex;gap:6px;flex-wrap:wrap;}
+.fm-filter{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:6px 12px;border-radius:999px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.08);
+  color:var(--t2);font-size:12px;font-weight:500;
+  cursor:pointer;transition:all .15s ease;font-family:inherit;
+}
+.fm-filter:hover{background:rgba(255,255,255,0.07);color:var(--t1);}
+.fm-filter.is-active{background:rgba(56,189,248,0.14);border-color:rgba(56,189,248,0.42);color:var(--t1);}
+.fm-filter-badge{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-width:18px;height:18px;padding:0 5px;border-radius:9px;
+  background:rgba(255,255,255,0.08);color:var(--t2);
+  font-size:10px;font-weight:600;
+}
+.fm-filter.is-active .fm-filter-badge{background:rgba(56,189,248,0.26);color:var(--t1);}
+.fm-filter.is-warn.is-active{background:rgba(245,158,11,0.16);border-color:rgba(245,158,11,0.42);}
+
+/* List */
+.fm-conn-group{
+  background:linear-gradient(180deg, rgba(255,255,255,0.034), rgba(255,255,255,0.014));
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:14px;overflow:hidden;
+}
+.fm-conn-h{
+  display:flex;align-items:center;gap:10px;
+  padding:11px 14px;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+  background:rgba(255,255,255,0.012);
+}
+.fm-conn-dot{
+  width:18px;height:18px;border-radius:5px;flex-shrink:0;
+}
+.fm-conn-name{font-size:13px;font-weight:600;color:var(--t1);flex:1;}
+.fm-conn-counts{display:flex;gap:10px;font-size:11px;color:var(--t3);align-items:center;}
+.fm-conn-count{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:1px 7px;border-radius:8px;
+  background:rgba(255,255,255,0.04);color:var(--t2);
+}
+.fm-conn-count.is-warn{background:rgba(245,158,11,0.14);color:#fbbf24;}
+.fm-conn-count.is-good{background:rgba(16,185,129,0.14);color:#34d39c;}
+
+.fm-list{display:flex;flex-direction:column;}
+.fm-row{
+  display:grid;grid-template-columns:minmax(0, 1fr) 18px minmax(0, 1fr) auto auto;
+  gap:10px;align-items:center;
+  padding:10px 14px;
+  border-bottom:1px solid rgba(255,255,255,0.04);
+  font-size:12.5px;
+}
+.fm-row:last-child{border-bottom:0;}
+.fm-row:hover{background:rgba(255,255,255,0.02);}
+.fm-row-src{
+  font-family:'SF Mono', ui-monospace, monospace;font-size:11.5px;color:var(--t1);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.fm-row-arrow{color:var(--t3);display:flex;align-items:center;justify-content:center;}
+.fm-row-tgt{
+  font-family:'SF Mono', ui-monospace, monospace;font-size:11.5px;color:var(--t1);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.fm-row-tgt.is-empty{color:var(--t3);font-style:italic;font-family:inherit;}
+
+/* Status pill */
+.fm-status{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:2px 8px;border-radius:999px;
+  font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+  flex-shrink:0;
+}
+.fm-status.is-auto{background:rgba(16,185,129,0.16);color:#34d39c;}
+.fm-status.is-review{background:rgba(245,158,11,0.16);color:#fbbf24;}
+.fm-status.is-accepted{background:rgba(56,189,248,0.16);color:#7ed3f7;}
+.fm-status.is-skipped{background:rgba(100,116,139,0.18);color:var(--t3);}
+.fm-status.is-custom{background:rgba(168,85,247,0.18);color:#cda5ff;}
+
+.fm-conf{
+  font-size:10.5px;font-weight:600;color:var(--t3);
+  padding:1px 6px;border-radius:5px;background:rgba(255,255,255,0.04);
+}
+.fm-conf.is-high{color:#34d39c;background:rgba(16,185,129,0.1);}
+.fm-conf.is-med{color:#fbbf24;background:rgba(245,158,11,0.1);}
+.fm-conf.is-low{color:#ff7d7d;background:rgba(244,63,94,0.1);}
+
+.fm-row-action{
+  padding:5px 10px;border-radius:7px;
+  background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);
+  color:var(--t1);font-size:11.5px;font-weight:500;font-family:inherit;
+  cursor:pointer;transition:all .12s;
+}
+.fm-row-action:hover{background:rgba(56,189,248,0.14);border-color:rgba(56,189,248,0.34);}
+.fm-row-action.is-primary{background:rgba(245,158,11,0.16);border-color:rgba(245,158,11,0.36);color:#fbbf24;font-weight:600;}
+.fm-row-action.is-primary:hover{background:rgba(245,158,11,0.24);border-color:rgba(245,158,11,0.5);}
+.fm-row-action.is-ghost{background:transparent;border-color:transparent;color:var(--t3);}
+.fm-row-action.is-ghost:hover{color:var(--t1);background:rgba(255,255,255,0.05);border-color:rgba(255,255,255,0.1);}
+
+/* Resolve drawer (inline expand) */
+.fm-resolve{
+  grid-column:1 / -1;
+  margin:6px 0 12px;
+  padding:14px 16px;
+  background:rgba(245,158,11,0.04);
+  border:1px solid rgba(245,158,11,0.28);
+  border-radius:10px;
+  display:flex;flex-direction:column;gap:11px;
+}
+.fm-resolve-h{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+}
+.fm-resolve-title{
+  font-size:11px;font-weight:700;letter-spacing:.08em;
+  color:#fbbf24;text-transform:uppercase;
+}
+.fm-resolve-close{
+  background:transparent;border:0;color:var(--t3);cursor:pointer;font:inherit;
+  width:22px;height:22px;border-radius:5px;
+  display:inline-flex;align-items:center;justify-content:center;
+}
+.fm-resolve-close:hover{background:rgba(255,255,255,0.06);color:var(--t1);}
+.fm-resolve-opts{display:flex;flex-direction:column;gap:7px;}
+.fm-resolve-opt{
+  display:flex;align-items:flex-start;gap:9px;
+  padding:9px 11px;border-radius:8px;
+  background:rgba(255,255,255,0.022);
+  border:1px solid rgba(255,255,255,0.07);
+  cursor:pointer;transition:all .12s;
+}
+.fm-resolve-opt:hover{background:rgba(255,255,255,0.034);border-color:rgba(255,255,255,0.12);}
+.fm-resolve-opt.is-selected{border-color:var(--cyan);background:rgba(56,189,248,0.06);}
+.fm-resolve-opt-radio{
+  width:14px;height:14px;border-radius:50%;
+  border:1.5px solid rgba(255,255,255,0.2);
+  display:inline-flex;align-items:center;justify-content:center;
+  flex-shrink:0;margin-top:1px;
+  transition:border-color .12s;
+}
+.fm-resolve-opt.is-selected .fm-resolve-opt-radio{border-color:var(--cyan);}
+.fm-resolve-opt.is-selected .fm-resolve-opt-radio::after{
+  content:'';width:7px;height:7px;border-radius:50%;background:var(--cyan);
+}
+.fm-resolve-opt-l{flex:1;}
+.fm-resolve-opt-h{
+  display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--t1);font-weight:600;
+}
+.fm-resolve-opt-sub{font-size:11px;color:var(--t2);margin-top:2px;line-height:1.5;}
+.fm-resolve-opt-input{
+  width:100%;margin-top:6px;padding:6px 9px;border-radius:6px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.1);
+  color:var(--t1);font-size:11.5px;font-family:'SF Mono', ui-monospace, monospace;outline:none;
+}
+.fm-resolve-opt-input:focus{border-color:var(--cyan);background:rgba(255,255,255,0.06);}
+.fm-resolve-actions{
+  display:flex;justify-content:flex-end;gap:7px;
+  padding-top:8px;border-top:1px solid rgba(245,158,11,0.18);
+}
+.fm-resolve-btn{
+  padding:7px 13px;border-radius:7px;
+  background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);
+  color:var(--t1);font-size:12px;font-weight:500;font-family:inherit;
+  cursor:pointer;transition:all .12s;
+}
+.fm-resolve-btn:hover{background:rgba(255,255,255,0.08);}
+.fm-resolve-btn.is-primary{background:rgba(245,158,11,0.18);border-color:rgba(245,158,11,0.42);color:#fbbf24;font-weight:600;}
+.fm-resolve-btn.is-primary:hover{background:rgba(245,158,11,0.28);border-color:rgba(245,158,11,0.6);}
+.fm-resolve-btn:disabled{opacity:.4;cursor:not-allowed;}
+
+/* Empty state */
+.fm-empty{
+  padding:48px 24px;text-align:center;
+  background:rgba(255,255,255,0.022);
+  border:1px dashed rgba(255,255,255,0.1);
+  border-radius:14px;
+}
+.fm-empty-title{font-size:15px;font-weight:600;color:var(--t1);margin-bottom:6px;}
+.fm-empty-sub{font-size:13px;color:var(--t2);max-width:420px;margin:0 auto;line-height:1.5;}
+
 </style>
 </head>
 <body>
@@ -4602,7 +4837,6 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
         <button class="ssb-item" data-route="mappings" onclick="navigate('mappings')">
           <span class="ssb-item-ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="4" height="3" rx=".6"/><rect x="2" y="10" width="4" height="3" rx=".6"/><rect x="10" y="3" width="4" height="3" rx=".6"/><rect x="10" y="10" width="4" height="3" rx=".6"/><path d="M6 4.5h2v7h2M6 11.5h2v-7h2"/></svg></span>
           <span class="ssb-item-label">Field mappings</span>
-          <span class="ssb-item-badge">Soon</span>
         </button>
         <button class="ssb-item" data-route="schema" onclick="navigate('schema')">
           <span class="ssb-item-ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="4.5" cy="4" r="1.8"/><circle cx="4.5" cy="12" r="1.8"/><circle cx="11.5" cy="8" r="1.8"/><path d="M4.5 5.8v4.4M6.2 4.6l4.1 2.6M6.2 11.4l4.1-2.6"/></svg></span>
@@ -11127,6 +11361,368 @@ function _renderDoneStep() {
 /* End Tenant Onboarding Phase 1 */
 
 
+
+
+/* ============================================================
+   FIELD MAPPINGS — Mike thesis surface
+   ============================================================ */
+
+const FM_DECISIONS_KEY = 'aims_ds_field_mapping_decisions';
+let mappingDecisions = (function() {
+  try {
+    const raw = localStorage.getItem(FM_DECISIONS_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch(e) { return {}; }
+})();
+
+function persistMappingDecisions() {
+  try { localStorage.setItem(FM_DECISIONS_KEY, JSON.stringify(mappingDecisions)); } catch(e) {}
+}
+
+let fmFilter = { search: '', status: 'all', connectionSlug: 'all' };
+let fmResolveOpenKey = null;
+let fmResolveDraft = { mode: 'accept', customName: '' };
+
+function setFmSearch(v) { fmFilter.search = (v || '').toLowerCase().trim(); renderFieldMappings(); }
+function clearFmSearch() {
+  fmFilter.search = '';
+  const el = document.getElementById('fmSearchInput');
+  if (el) el.value = '';
+  renderFieldMappings();
+}
+function setFmStatus(s) { fmFilter.status = s; renderFieldMappings(); }
+
+function openFmResolve(rowKey, suggested) {
+  fmResolveOpenKey = rowKey;
+  fmResolveDraft = { mode: suggested ? 'accept' : 'create', customName: '' };
+  // Try to derive a sensible default for the create-name input from the source field.
+  const parts = rowKey.split('::');
+  const fieldName = parts[2];
+  fmResolveDraft.customName = (fieldName || '').replace(/_+c$/i, '').replace(/__c$/i, '').replace(/[^a-z0-9_]/gi, '_').toLowerCase();
+  trackFm('resolve_opened', { rowKey });
+  renderFieldMappings();
+}
+function closeFmResolve() {
+  fmResolveOpenKey = null;
+  renderFieldMappings();
+}
+function setFmResolveMode(mode) {
+  fmResolveDraft.mode = mode;
+  renderFieldMappings();
+}
+function updateFmResolveCustom(v) {
+  fmResolveDraft.customName = v;
+}
+
+function trackFm(event, payload) {
+  if (typeof track === 'function') {
+    try { track('fm_' + event, payload || {}); } catch(e){}
+  }
+}
+
+/* Build the cross-connection inventory rows from DS_CONNECTIONS. */
+function _buildFmInventory() {
+  const out = []; // { key, connSlug, connName, connColor, event, src, tgt, status, confidence, suggested, decision }
+
+  const conns = Object.values(DS_CONNECTIONS);
+  // Optionally append the freshly-completed wizard connection.
+  if (typeof obState !== 'undefined' && obState && obState.lastCompleted) {
+    const lc = obState.lastCompleted;
+    if (!conns.some(x => x.slug === lc.slug)) {
+      conns.push({
+        slug: lc.slug, name: lc.name, color: lc.color,
+        events: [{
+          name: lc.object + '.row_inserted', rate:'(new)',
+          autoMappedCount: lc.fieldsIncluded || 0,
+          autoSamples: [],
+          custom: []
+        }]
+      });
+    }
+  }
+
+  conns.forEach(conn => {
+    (conn.events || []).forEach(ev => {
+      // Auto-mapped samples → status 'auto'
+      (ev.autoSamples || []).forEach(s => {
+        const key = conn.slug + '::' + ev.name + '::' + s.src;
+        out.push({
+          key, connSlug: conn.slug, connName: conn.name, connColor: conn.color,
+          event: ev.name, src: s.src, tgt: s.tgt,
+          status: 'auto', confidence: null, suggested: null, decision: null,
+        });
+      });
+      // Custom fields → status depends on stored decision OR ev.custom[i].decision
+      (ev.custom || []).forEach(cf => {
+        const key = conn.slug + '::' + ev.name + '::' + cf.name;
+        const stored = mappingDecisions[key];
+        const dec = (stored && stored.decision) || cf.decision || null;
+        let status, tgt;
+        if (dec === 'accept') {
+          status = 'accepted';
+          tgt = (cf.suggested || stored.customName || cf.name) ? ((stored && stored.acceptedAs) || cf.suggested || '—') : '—';
+        } else if (dec === 'create') {
+          status = 'custom';
+          tgt = (stored && stored.customName) || '—';
+        } else if (dec === 'skip') {
+          status = 'skipped';
+          tgt = null;
+        } else {
+          status = 'review';
+          tgt = cf.suggested || null;
+        }
+        out.push({
+          key, connSlug: conn.slug, connName: conn.name, connColor: conn.color,
+          event: ev.name, src: cf.name, tgt,
+          status, confidence: cf.confidence, suggested: cf.suggested, decision: dec,
+        });
+      });
+    });
+  });
+  return out;
+}
+
+function renderFieldMappings() {
+  const inventory = _buildFmInventory();
+  const q = fmFilter.search;
+  const filt = fmFilter.status;
+
+  const filtered = inventory.filter(r => {
+    if (filt !== 'all' && r.status !== filt) return false;
+    if (q) {
+      const hay = ((r.src || '') + ' ' + (r.tgt || '') + ' ' + r.connName + ' ' + r.event).toLowerCase();
+      if (hay.indexOf(q) === -1) return false;
+    }
+    return true;
+  });
+
+  const counts = {
+    all:      inventory.length,
+    auto:     inventory.filter(r => r.status === 'auto').length,
+    review:   inventory.filter(r => r.status === 'review').length,
+    accepted: inventory.filter(r => r.status === 'accepted' || r.status === 'custom').length,
+    skipped:  inventory.filter(r => r.status === 'skipped').length,
+  };
+
+  // Group filtered rows by connection
+  const byConn = {};
+  filtered.forEach(r => {
+    if (!byConn[r.connSlug]) byConn[r.connSlug] = { name: r.connName, color: r.connColor, rows: [] };
+    byConn[r.connSlug].rows.push(r);
+  });
+
+  const groupsHtml = Object.keys(byConn).length > 0
+    ? Object.keys(byConn).sort((a,b) => byConn[a].name.localeCompare(byConn[b].name)).map(slug => {
+        const g = byConn[slug];
+        const subCounts = {
+          auto: g.rows.filter(r => r.status === 'auto').length,
+          review: g.rows.filter(r => r.status === 'review').length,
+          accepted: g.rows.filter(r => r.status === 'accepted' || r.status === 'custom').length,
+        };
+        return `
+          <div class="fm-conn-group">
+            <div class="fm-conn-h">
+              <div class="fm-conn-dot" style="background:${escapeHtml(g.color || '#3b82f6')}"></div>
+              <div class="fm-conn-name">${escapeHtml(g.name)}</div>
+              <div class="fm-conn-counts">
+                ${subCounts.auto > 0 ? `<span class="fm-conn-count is-good">${subCounts.auto} auto</span>` : ''}
+                ${subCounts.review > 0 ? `<span class="fm-conn-count is-warn">${subCounts.review} need review</span>` : ''}
+                ${subCounts.accepted > 0 ? `<span class="fm-conn-count">${subCounts.accepted} resolved</span>` : ''}
+              </div>
+            </div>
+            <div class="fm-list">
+              ${g.rows.map(_renderFmRow).join('')}
+            </div>
+          </div>
+        `;
+      }).join('')
+    : `<div class="fm-empty">
+        <div class="fm-empty-title">${q || filt !== 'all' ? 'No fields match your filters' : 'No mappings yet'}</div>
+        <div class="fm-empty-sub">${q || filt !== 'all' ? 'Try a different search term or clear the filter.' : 'Connect a source from Data Studio → Connections to see field mappings appear here.'}</div>
+      </div>`;
+
+  $('content').innerHTML = `
+    <section class="surface fm-wrap">
+      <div class="breadcrumb">
+        <span class="crumb-current">Field mappings</span>
+      </div>
+
+      <div>
+        <div class="fm-h-eyebrow"><span class="fm-h-eyebrow-dot"></span>Data Studio · Field mappings</div>
+        <h1 class="fm-h-title">Cross-connection field mappings</h1>
+        <p class="fm-h-sub">Every source field across every connection, with what it maps to in your Tables. AIMS auto-maps the standard fields it recognizes; custom fields wait here until you decide what to do with them.</p>
+      </div>
+
+      <div class="fm-kpi-strip">
+        <div class="fm-kpi"><span class="fm-kpi-v">${counts.all}</span><span class="fm-kpi-k">Total fields</span></div>
+        <div class="fm-kpi is-auto"><span class="fm-kpi-v">${counts.auto}</span><span class="fm-kpi-k">Auto-mapped</span></div>
+        <div class="fm-kpi is-review"><span class="fm-kpi-v">${counts.review}</span><span class="fm-kpi-k">Needs review</span></div>
+        <div class="fm-kpi is-resolved"><span class="fm-kpi-v">${counts.accepted}</span><span class="fm-kpi-k">You've resolved</span></div>
+        <div class="fm-kpi is-skipped"><span class="fm-kpi-v">${counts.skipped}</span><span class="fm-kpi-k">Skipped</span></div>
+      </div>
+
+      <div class="fm-toolbar">
+        <div class="fm-search">
+          <svg class="fm-search-ico" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/></svg>
+          <input id="fmSearchInput" type="text" placeholder="Search by source field, target field, or connection"
+            value="${escapeHtml(fmFilter.search)}"
+            oninput="setFmSearch(this.value)" />
+          ${q ? `<button class="fm-search-clear" onclick="clearFmSearch()" aria-label="Clear search">
+            <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M3 3l10 10M13 3L3 13"/></svg>
+          </button>` : ''}
+        </div>
+        <div class="fm-filter-pills">
+          <button class="fm-filter ${filt === 'all' ? 'is-active' : ''}" onclick="setFmStatus('all')">All<span class="fm-filter-badge">${counts.all}</span></button>
+          <button class="fm-filter ${filt === 'auto' ? 'is-active' : ''}" onclick="setFmStatus('auto')">Auto-mapped<span class="fm-filter-badge">${counts.auto}</span></button>
+          <button class="fm-filter is-warn ${filt === 'review' ? 'is-active' : ''}" onclick="setFmStatus('review')">Needs review<span class="fm-filter-badge">${counts.review}</span></button>
+          <button class="fm-filter ${filt === 'accepted' ? 'is-active' : ''}" onclick="setFmStatus('accepted')">Resolved<span class="fm-filter-badge">${counts.accepted}</span></button>
+          <button class="fm-filter ${filt === 'skipped' ? 'is-active' : ''}" onclick="setFmStatus('skipped')">Skipped<span class="fm-filter-badge">${counts.skipped}</span></button>
+        </div>
+      </div>
+
+      ${groupsHtml}
+    </section>
+  `;
+  trackFm('viewed', { count: filtered.length, filter: filt, hasSearch: !!q });
+}
+
+function _confidenceCls(c) {
+  if (c == null) return '';
+  if (c >= 90) return 'is-high';
+  if (c >= 75) return 'is-med';
+  return 'is-low';
+}
+function _renderFmRow(r) {
+  const open = fmResolveOpenKey === r.key;
+  // Status label
+  const statusLabel = r.status === 'auto' ? 'Auto'
+                    : r.status === 'review' ? 'Needs review'
+                    : r.status === 'accepted' ? 'Accepted'
+                    : r.status === 'custom' ? 'Custom field'
+                    : r.status === 'skipped' ? 'Skipped'
+                    : r.status;
+  const statusCls = r.status;
+  const tgtHtml = r.tgt
+    ? `<span class="fm-row-tgt">${escapeHtml(r.tgt)}</span>`
+    : `<span class="fm-row-tgt is-empty">—</span>`;
+  let actionHtml = '';
+  if (r.status === 'review') {
+    actionHtml = `<button class="fm-row-action is-primary" onclick="openFmResolve('${escapeHtml(r.key)}', ${r.suggested ? 'true' : 'false'})">Resolve</button>`;
+  } else if (r.status === 'accepted' || r.status === 'custom' || r.status === 'skipped') {
+    actionHtml = `<button class="fm-row-action is-ghost" onclick="reopenFmResolve('${escapeHtml(r.key)}')">Change</button>`;
+  }
+
+  let resolveHtml = '';
+  if (open) {
+    const acceptOpt = r.suggested ? `
+      <button class="fm-resolve-opt ${fmResolveDraft.mode === 'accept' ? 'is-selected' : ''}" onclick="setFmResolveMode('accept')">
+        <span class="fm-resolve-opt-radio"></span>
+        <div class="fm-resolve-opt-l">
+          <div class="fm-resolve-opt-h">
+            Accept AI suggestion
+            ${r.confidence ? `<span class="fm-conf ${_confidenceCls(r.confidence)}">${r.confidence}% confidence</span>` : ''}
+          </div>
+          <div class="fm-resolve-opt-sub">Map <code style="font-family:'SF Mono', ui-monospace, monospace;background:rgba(255,255,255,0.05);padding:1px 4px;border-radius:3px;">${escapeHtml(r.src)}</code> → <code style="font-family:'SF Mono', ui-monospace, monospace;background:rgba(255,255,255,0.05);padding:1px 4px;border-radius:3px;">${escapeHtml(r.suggested)}</code> in your schema.</div>
+        </div>
+      </button>
+    ` : '';
+    resolveHtml = `
+      <div class="fm-resolve">
+        <div class="fm-resolve-h">
+          <div class="fm-resolve-title">Resolve · ${escapeHtml(r.src)}</div>
+          <button class="fm-resolve-close" onclick="closeFmResolve()" aria-label="Close">
+            <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M3 3l10 10M13 3L3 13"/></svg>
+          </button>
+        </div>
+        <div class="fm-resolve-opts">
+          ${acceptOpt}
+          <button class="fm-resolve-opt ${fmResolveDraft.mode === 'create' ? 'is-selected' : ''}" onclick="setFmResolveMode('create')">
+            <span class="fm-resolve-opt-radio"></span>
+            <div class="fm-resolve-opt-l">
+              <div class="fm-resolve-opt-h">Create new field</div>
+              <div class="fm-resolve-opt-sub">Add a new field to your AIMS schema with the name below. You can change it later in Tables.</div>
+              ${fmResolveDraft.mode === 'create' ? `<input class="fm-resolve-opt-input" type="text" placeholder="field_name" value="${escapeHtml(fmResolveDraft.customName)}" oninput="updateFmResolveCustom(this.value)" />` : ''}
+            </div>
+          </button>
+          <button class="fm-resolve-opt ${fmResolveDraft.mode === 'skip' ? 'is-selected' : ''}" onclick="setFmResolveMode('skip')">
+            <span class="fm-resolve-opt-radio"></span>
+            <div class="fm-resolve-opt-l">
+              <div class="fm-resolve-opt-h">Skip this field</div>
+              <div class="fm-resolve-opt-sub">Don't ingest <code style="font-family:'SF Mono', ui-monospace, monospace;background:rgba(255,255,255,0.05);padding:1px 4px;border-radius:3px;">${escapeHtml(r.src)}</code>. You can come back later.</div>
+            </div>
+          </button>
+        </div>
+        <div class="fm-resolve-actions">
+          <button class="fm-resolve-btn" onclick="closeFmResolve()">Cancel</button>
+          <button class="fm-resolve-btn is-primary" onclick="commitFmResolve('${escapeHtml(r.key)}')" ${fmResolveDraft.mode === 'create' && !(fmResolveDraft.customName || '').trim() ? 'disabled' : ''}>Save decision</button>
+        </div>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="fm-row">
+      <span class="fm-row-src">${escapeHtml(r.src)}</span>
+      <span class="fm-row-arrow">
+        <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M3 8h10M9.5 4.5L13 8l-3.5 3.5"/></svg>
+      </span>
+      ${tgtHtml}
+      <div style="display:flex;align-items:center;gap:6px;">
+        <span class="fm-status is-${statusCls}">${escapeHtml(statusLabel)}</span>
+        ${r.confidence != null && r.status === 'review' ? `<span class="fm-conf ${_confidenceCls(r.confidence)}">${r.confidence}%</span>` : ''}
+      </div>
+      ${actionHtml}
+    </div>
+    ${resolveHtml}
+  `;
+}
+
+function reopenFmResolve(rowKey) {
+  // Re-open with the existing decision as default. Strip it so the user
+  // can change without losing the row in the filter (it stays in its
+  // current bucket until they commit a new decision).
+  const stored = mappingDecisions[rowKey] || {};
+  const inv = _buildFmInventory();
+  const r = inv.find(x => x.key === rowKey);
+  fmResolveOpenKey = rowKey;
+  fmResolveDraft = {
+    mode: stored.decision || (r && r.suggested ? 'accept' : 'create'),
+    customName: stored.customName || ''
+  };
+  renderFieldMappings();
+}
+
+function commitFmResolve(rowKey) {
+  const parts = rowKey.split('::');
+  const slug = parts[0], evName = parts[1], fieldName = parts[2];
+  const conn = DS_CONNECTIONS[slug];
+  if (!conn) { closeFmResolve(); return; }
+  const ev = (conn.events || []).find(e => e.name === evName);
+  if (!ev) { closeFmResolve(); return; }
+  const cf = (ev.custom || []).find(x => x.name === fieldName);
+  // Persist decision
+  const dec = fmResolveDraft.mode;
+  const customName = dec === 'create' ? (fmResolveDraft.customName || '').trim() : null;
+  if (dec === 'create' && !customName) return;  // disabled state
+  mappingDecisions[rowKey] = {
+    decision: dec,
+    customName: dec === 'create' ? customName : null,
+    acceptedAs: dec === 'accept' && cf ? cf.suggested : null,
+    decidedAt: Date.now(),
+  };
+  persistMappingDecisions();
+  // Also mutate the in-memory custom field so the inventory reflects it.
+  if (cf) {
+    cf.decision = dec;
+    if (dec === 'create') cf._customName = customName;
+  }
+  trackFm('resolved', { rowKey, decision: dec });
+  fmResolveOpenKey = null;
+  renderFieldMappings();
+}
+
+
+
 function render() {
   const parts = parseRoute();
   paintSsbActive();
@@ -11146,7 +11742,7 @@ function render() {
     if (parts[1]) return renderTableDetail(parts[1]);
     return renderTables();
   }
-  if (parts[0] === 'mappings')    return renderPlaceholder('Field mappings', 'Cross-connection mapping overview. For now, edit mappings inside each connection.');
+  if (parts[0] === 'mappings')    return renderFieldMappings();
   if (parts[0] === 'schema')      return renderPlaceholder('Schema versions', 'History of every table change — who made it and when.');
   if (parts[0] === 'templates') {
     if (parts[1] === 'new') return renderTemplateCreate();
