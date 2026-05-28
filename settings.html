@@ -3620,6 +3620,12 @@ html.theme-light .theme-icon-moon{display:block}
 }
 .dist-filter:hover{border-color:var(--line-strong);color:var(--t1)}
 .dist-filter.is-active{background:rgba(43,127,255,0.08);border-color:rgba(43,127,255,0.40);color:var(--blue)}
+.dist-filter.is-warn{background:rgba(245,158,11,0.10);border-color:rgba(245,158,11,0.40);color:var(--amber)}
+.dist-filter.is-warn.is-active{background:rgba(245,158,11,0.20);border-color:rgba(245,158,11,0.60)}
+.dist-filter-badge{
+  font-size:10px;font-weight:800;padding:0 6px;border-radius:99px;
+  background:rgba(255,255,255,0.10);color:inherit;
+}
 
 .dist-table-wrap{
   border:1px solid var(--line);border-radius:12px;overflow:hidden;
@@ -4174,6 +4180,10 @@ html.theme-light .theme-icon-moon{display:block}
 }
 .wg-filter:hover{border-color:var(--line-strong);color:var(--t1)}
 .wg-filter.is-active{background:rgba(16,185,129,0.08);border-color:rgba(16,185,129,0.40);color:var(--green)}
+.wg-filter-badge{
+  font-size:10px;font-weight:800;padding:0 6px;border-radius:99px;
+  background:rgba(255,255,255,0.10);color:inherit;
+}
 
 .wg-grid{
   display:grid;grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));gap:12px;
@@ -5937,6 +5947,8 @@ function renderDistribution() {
 
   // Counts (on the full connected set, not filtered)
   const totalConn = connected.length;
+  const workingCount = connected.filter(i => distStatusBucketOf(i) === 'working').length;
+  const needsCount   = connected.filter(i => distStatusBucketOf(i) === 'needs').length;
   let exposedAll = 0, unexposedAll = 0;
   connected.forEach(i => {
     const dist = getDistribution(i.slug);
@@ -5972,9 +5984,9 @@ function renderDistribution() {
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="7" cy="7" r="5"/><path d="M14 14l-3-3"/></svg>
           <input id="distSearchInput" type="text" placeholder="Search integrations..." value="${escapeHtml(_distFilters.search)}" oninput="distSearchInput(this.value)"/>
         </label>
-        <button class="dist-filter ${_distFilters.status==='all'?'is-active':''}" onclick="distSetFilter('status','all')">All</button>
-        <button class="dist-filter ${_distFilters.status==='working'?'is-active':''}" onclick="distSetFilter('status','working')">Working</button>
-        <button class="dist-filter ${_distFilters.status==='needs'?'is-active':''}" onclick="distSetFilter('status','needs')">Needs attention</button>
+        <button class="dist-filter ${_distFilters.status==='all'?'is-active':''}" onclick="distSetFilter('status','all')">All <span class="dist-filter-badge">${totalConn}</span></button>
+        <button class="dist-filter ${_distFilters.status==='working'?'is-active':''}" onclick="distSetFilter('status','working')">Working <span class="dist-filter-badge">${workingCount}</span></button>
+        ${needsCount > 0 ? `<button class="dist-filter is-warn ${_distFilters.status==='needs'?'is-active':''}" onclick="distSetFilter('status','needs')">Needs attention <span class="dist-filter-badge">${needsCount}</span></button>` : ''}
       </div>
 
       <div class="dist-table-wrap">
@@ -6192,7 +6204,10 @@ function renderWidgetsLibrary() {
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="7" cy="7" r="5"/><path d="M14 14l-3-3"/></svg>
           <input type="text" placeholder="Search widgets..." value="${escapeHtml(_wgFilters.search)}" oninput="wgSearchInput(this.value)"/>
         </label>
-        ${WG_CATEGORIES.map(c => `<button class="wg-filter ${_wgFilters.category===c.id?'is-active':''}" onclick="wgSetFilter('category','${c.id}')">${escapeHtml(c.label)}</button>`).join('')}
+        ${WG_CATEGORIES.map(cat => {
+          const count = cat.id === 'all' ? MOCK_WIDGET_TEMPLATES.length : MOCK_WIDGET_TEMPLATES.filter(w => w.category === cat.id).length;
+          return `<button class="wg-filter ${_wgFilters.category===cat.id?'is-active':''}" onclick="wgSetFilter('category','${cat.id}')">${escapeHtml(cat.label)} <span class="wg-filter-badge">${count}</span></button>`;
+        }).join('')}
       </div>
 
       <div class="wg-grid">
