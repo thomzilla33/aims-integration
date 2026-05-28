@@ -2511,6 +2511,35 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
 }
 .tbl-add-rule-cancel:hover{color:var(--t1)}
 
+
+/* UX FIX — name edit affordance (Phase 2 polish) */
+.tbl-fi-name-btn{
+  display:inline-flex;align-items:center;gap:7px;
+  background:transparent;border:none;cursor:pointer;
+  padding:2px 6px;margin:-2px -6px;border-radius:5px;
+  transition:background .12s;
+}
+.tbl-fi-name-btn:hover{background:rgba(255,255,255,0.05)}
+.tbl-fi-name-btn .tbl-fi-name{cursor:pointer}
+.tbl-fi-name-edit{color:var(--t3);transition:color .12s;flex-shrink:0}
+.tbl-fi-name-btn:hover .tbl-fi-name-edit{color:var(--emerald)}
+
+/* UX FIX — Description add button + edit affordance */
+.tbl-be-l-edit{
+  background:transparent;border:none;cursor:pointer;
+  color:var(--blue);font-family:inherit;font-size:10px;font-weight:700;
+  text-transform:none;letter-spacing:0;padding:0;
+}
+.tbl-be-l-edit:hover{text-decoration:underline}
+.tbl-be-add-desc{
+  display:inline-flex;align-items:center;gap:6px;
+  background:transparent;border:1px dashed var(--line-strong);
+  color:var(--t3);font-family:inherit;font-size:11.5px;font-weight:600;
+  padding:8px 12px;border-radius:7px;cursor:pointer;
+  transition:border-color .12s, color .12s, background .12s;
+}
+.tbl-be-add-desc:hover{border-color:var(--emerald);color:var(--emerald);background:rgba(16,185,129,0.04)}
+
 </style>
 </head>
 <body>
@@ -3067,7 +3096,24 @@ function tableAggregateStatus(tbl) {
 }
 
 function statusLabel(st) {
-  return ({ connected:'Connected', syncing:'Syncing', paused:'Paused', error:'Sync error', pending:'Pending' })[st] || st;
+  return ({ connected:'Connected', syncing:'Syncing', paused:'Paused', error:'Error', pending:'Pending' })[st] || st;
+}
+
+function statusIconSvg(st) {
+  const label = statusLabel(st);
+  let icon;
+  if (st === 'connected') {
+    icon = '<svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6l3 3 5-7"/></svg>';
+  } else if (st === 'syncing') {
+    icon = '<svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="animation:obSpin 1s linear infinite"><path d="M10.5 6a4.5 4.5 0 11-4.5-4.5"/><path d="M10.5 1.5v3h-3"/></svg>';
+  } else if (st === 'paused') {
+    icon = '<svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4.5" y1="2.5" x2="4.5" y2="9.5"/><line x1="7.5" y1="2.5" x2="7.5" y2="9.5"/></svg>';
+  } else if (st === 'error') {
+    icon = '<svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="6" cy="6" r="4.5"/><path d="M6 4v2.5M6 8.2h.01"/></svg>';
+  } else {
+    icon = '<svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="4"/></svg>';
+  }
+  return icon + ' ' + label;
 }
 
 // Table-level state (selected source for sync tab, selected field for field tab, etc)
@@ -3284,7 +3330,7 @@ function renderTables() {
                   <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="12" height="10" rx="1.2"/><path d="M2 6.5h12M2 9.5h12M5.5 3v10M10.5 3v10"/></svg>
                 </span>
                 <span class="tbl-card-status is-${t._status === 'error' ? 'error-st' : t._status}">
-                  <span class="tbl-card-status-dot"></span>${statusLabel(t._status)}
+                  ${statusIconSvg(t._status)}
                 </span>
               </div>
               <div class="tbl-card-name">${escapeHtml(t.name)}</div>
@@ -3391,7 +3437,7 @@ function renderTableDetail(tableName) {
           <div>
             <div class="tbl-detail-name">${escapeHtml(t.name)}</div>
             <div class="tbl-detail-meta">
-              <span class="tbl-card-status is-${aggStatus === 'error' ? 'error-st' : aggStatus}" style="margin-right:6px"><span class="tbl-card-status-dot"></span>${statusLabel(aggStatus)}</span>
+              <span class="tbl-card-status is-${aggStatus === 'error' ? 'error-st' : aggStatus}" style="margin-right:6px">${statusIconSvg(aggStatus)}</span>
               <span><b>${t.sources.length}</b> source${t.sources.length === 1 ? '' : 's'}</span>
               <span class="dot">·</span>
               <span><b>${allFields.length}</b> columns</span>
@@ -3413,8 +3459,8 @@ function renderTableDetail(tableName) {
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="3" cy="3" r="1.5"/><circle cx="13" cy="3" r="1.5"/><circle cx="3" cy="13" r="1.5"/><circle cx="13" cy="13" r="1.5"/><path d="M3 4.5v7M13 4.5v7M4.5 3h7M4.5 13h7"/></svg>
           </span>
           <div>
-            <div class="tbl-ms-banner-t">This is a multi-source table (extension of spec)</div>
-            <div class="tbl-ms-banner-d">${t.sources.length} connections feed this logical table. Schema is unified; sync state is tracked per-source. The Sync tab shows a source picker so you can inspect each one.</div>
+            <div class="tbl-ms-banner-t">Multi-source table</div>
+            <div class="tbl-ms-banner-d">${t.sources.length} connections feed this table. The schema is unified, but each source keeps its own sync state — switch between them in the Sync tab.</div>
           </div>
         </div>
       ` : ''}
@@ -3464,8 +3510,8 @@ function renderTableDetail(tableName) {
             </button>
             <button class="tbl-rail-tab ${tblRailTab === 'conn' ? 'is-active' : ''}" onclick="setTblRailTab('conn')">Conn</button>
             <button class="tbl-rail-tab ${tblRailTab === 'used' ? 'is-active' : ''}" onclick="setTblRailTab('used')">Used by <span class="tbl-rail-tab-count">0</span></button>
-            <button class="tbl-rail-tab ${tblRailTab === 'ver' ? 'is-active' : ''}" onclick="setTblRailTab('ver')">Ver <span class="tbl-rail-tab-count">1</span></button>
-            <button class="tbl-rail-tab ${tblRailTab === 'set' ? 'is-active' : ''}" onclick="setTblRailTab('set')">Set</button>
+            <button class="tbl-rail-tab ${tblRailTab === 'ver' ? 'is-active' : ''}" onclick="setTblRailTab('ver')">Versions <span class="tbl-rail-tab-count">1</span></button>
+            <button class="tbl-rail-tab ${tblRailTab === 'set' ? 'is-active' : ''}" onclick="setTblRailTab('set')">Settings</button>
           </div>
           <div class="tbl-rail-body">
             ${renderTblRail(t, allFields, aggStatus)}
@@ -3528,19 +3574,13 @@ function renderTblSyncTab(t) {
         : s.status === 'error'    ? '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="8" cy="8" r="6"/><path d="M8 5v3M8 11h.01"/></svg>'
         :                           '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="6"/></svg>'}
       </div>
-      <div>
-        <div class="tbl-sync-banner-t">${escapeHtml(bannerCopy.t)}</div>
-        <div class="tbl-sync-banner-d">${escapeHtml(bannerCopy.d)}</div>
+      <div style="flex:1;min-width:0">
+        <div class="tbl-sync-banner-t">${escapeHtml(s.status === 'error' && s.lastError ? s.lastError.message : bannerCopy.t)}</div>
+        <div class="tbl-sync-banner-d">${s.status === 'error' && s.lastError
+          ? '<span class="mono" style="font-family:ui-monospace,monospace;color:var(--t1)">' + escapeHtml(s.lastError.code) + '</span> &middot; ' + escapeHtml(s.lastError.occurredAt) + (s.lastError.retryable ? ' &middot; <i>retryable — click Sync now after fixing</i>' : '')
+          : escapeHtml(bannerCopy.d)}</div>
       </div>
     </div>
-
-    ${s.lastError ? `
-      <div class="tbl-sync-err">
-        <div class="tbl-sync-err-t">${escapeHtml(s.lastError.message)}</div>
-        <div class="tbl-sync-err-meta">${escapeHtml(s.lastError.code)} &middot; ${escapeHtml(s.lastError.occurredAt)}</div>
-        ${s.lastError.retryable ? '<div class="tbl-sync-err-retry">Retryable — click Sync now after fixing the credentials.</div>' : ''}
-      </div>
-    ` : ''}
 
     <div class="tbl-sync-actions">
       ${s.status === 'syncing' ? `
@@ -3774,6 +3814,8 @@ function toggleFiFlag(tableName, fieldName, flag, current) {
     patch.nullable = false;
   }
   patchFieldOverride(tableName, fieldName, patch);
+  const flagLabel = ({ isPrimaryKey:'primary key', isIndexed:'indexed', nullable:'nullable' })[flag] || flag;
+  toast(fieldName + ': ' + flagLabel + ' ' + (next ? 'on' : 'off'));
 }
 
 function startFiDescEdit(current) {
@@ -3882,7 +3924,10 @@ function renderTblFieldTab(fields) {
           ? `<input id="tblFiNameInput" class="tbl-fi-name-input" value="${escapeHtml(displayName)}"
               onblur="commitFiNameEdit('${tableName}','${escapeHtml(f.name)}', this.value)"
               onkeydown="if(event.key==='Enter')this.blur(); else if(event.key==='Escape')cancelFiNameEdit()"/>`
-          : `<span class="tbl-fi-name" onclick="startFiNameEdit()" title="Click to rename">${escapeHtml(displayName)}</span>`}
+          : `<button class="tbl-fi-name-btn" onclick="startFiNameEdit()" title="Click to rename">
+              <span class="tbl-fi-name">${escapeHtml(displayName)}</span>
+              <svg class="tbl-fi-name-edit" width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 2.5l3 3-8 8H2.5v-3l8-8z"/></svg>
+            </button>`}
         <div class="tbl-fi-id">id: <span class="mono">${escapeHtml(f.name)}</span></div>
         <div class="tbl-fi-pills">
           <span class="tbl-field-type ob-type-pill t-${f.type}">${escapeHtml(f.type)}</span>
@@ -3921,16 +3966,26 @@ function renderFiBasics(f, tableName) {
 
   return `
     <div class="tbl-be-row">
-      <div class="tbl-be-l">Description<span class="tbl-be-l-help">${editingDesc ? 'editing' : 'click below to edit'}</span></div>
-      <textarea class="tbl-be-textarea" placeholder="What does this field represent? Where does it come from? Any gotchas?"
-        oninput="updateFiDescDraft(this.value)"
-        onfocus="if(!${editingDesc})startFiDescEdit(${JSON.stringify(desc)})">${escapeHtml(draftValue)}</textarea>
+      <div class="tbl-be-l">
+        Description
+        ${!editingDesc && desc ? `<button class="tbl-be-l-edit" onclick="startFiDescEdit(${JSON.stringify(desc)})">Edit</button>` : ''}
+      </div>
       ${editingDesc ? `
+        <textarea class="tbl-be-textarea" placeholder="What does this field represent? Where does it come from? Any gotchas?"
+          autofocus
+          oninput="updateFiDescDraft(this.value)">${escapeHtml(draftValue)}</textarea>
         <div class="tbl-be-textarea-actions">
-          <button class="tbl-be-btn" onclick="revertFiDescEdit()">Revert</button>
+          <button class="tbl-be-btn" onclick="revertFiDescEdit()">Cancel</button>
           <button class="tbl-be-btn is-primary" onclick="commitFiDescEdit('${tableName}','${escapeHtml(f.name)}')">Save</button>
         </div>
-      ` : ''}
+      ` : desc ? `
+        <div class="tbl-fb-v" style="white-space:pre-wrap">${escapeHtml(desc)}</div>
+      ` : `
+        <button class="tbl-be-add-desc" onclick="startFiDescEdit('')">
+          <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 1.5v9M1.5 6h9"/></svg>
+          Add description
+        </button>
+      `}
     </div>
 
     <div class="tbl-be-row">
@@ -3995,7 +4050,7 @@ function renderFiValidation(f, tableName) {
 
   return `
     <div class="tbl-vt-note">
-      <b>Records that fail validation are flagged at ingest time.</b> They still land in the table, but downstream consumers can filter them out. Validation is non-blocking by default.
+      <b>Flagged, not blocked.</b> Records that fail validation still land in the table — downstream views can filter them out. To reject records hard, configure that in the connector's ingestion settings.
     </div>
 
     ${validations.length === 0 ? `
@@ -4061,7 +4116,7 @@ function renderFiTransformation(f, tableName) {
 
   return `
     <div class="tbl-vt-note">
-      <b>Transformations run in order</b> on incoming values before storage. Useful for normalizing source data (trim whitespace, lowercase emails, round amounts, etc.).
+      <b>Applied in order to every incoming value</b> before storage. Use them to normalize source data — trim whitespace, lowercase emails, round amounts.
     </div>
 
     ${transformations.length === 0 ? `
