@@ -4724,6 +4724,127 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
 .fm-empty-title{font-size:15px;font-weight:600;color:var(--t1);margin-bottom:6px;}
 .fm-empty-sub{font-size:13px;color:var(--t2);max-width:420px;margin:0 auto;line-height:1.5;}
 
+
+/* ============================================================
+   SCHEMA VERSIONS — Mike thesis surface (#/schema)
+   ============================================================ */
+
+.sv-wrap{display:flex;flex-direction:column;gap:14px;}
+
+.sv-h-eyebrow{font-size:10px;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--cyan);display:flex;align-items:center;gap:6px;margin-bottom:4px;}
+.sv-h-eyebrow-dot{width:6px;height:6px;border-radius:50%;background:var(--cyan);
+  box-shadow:0 0 0 2px rgba(56,189,248,0.18);}
+.sv-h-title{font-size:22px;font-weight:700;color:var(--t1);letter-spacing:-0.015em;}
+.sv-h-sub{font-size:13px;color:var(--t2);max-width:680px;line-height:1.55;margin-top:4px;}
+
+.sv-kpi-strip{
+  display:grid;grid-template-columns:repeat(auto-fit, minmax(160px, 1fr));gap:10px;
+}
+.sv-kpi{
+  background:linear-gradient(180deg, rgba(255,255,255,0.034), rgba(255,255,255,0.014));
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:12px;padding:12px 14px;
+  display:flex;flex-direction:column;gap:3px;
+}
+.sv-kpi-v{font-size:22px;font-weight:700;color:var(--t1);font-variant-numeric:tabular-nums;letter-spacing:-0.01em;}
+.sv-kpi-k{font-size:10.5px;font-weight:600;letter-spacing:.08em;color:var(--t3);text-transform:uppercase;}
+
+.sv-toolbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.sv-search{position:relative;flex:1 1 320px;max-width:420px;}
+.sv-search input{
+  width:100%;padding:9px 12px 9px 34px;border-radius:9px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.08);
+  color:var(--t1);font-size:13px;font-family:inherit;outline:none;
+  transition:border-color .15s ease,background .15s ease;
+}
+.sv-search input:focus{border-color:var(--cyan);background:rgba(255,255,255,0.06);}
+.sv-search-ico{position:absolute;left:11px;top:50%;transform:translateY(-50%);
+  color:var(--t3);pointer-events:none;}
+.sv-search-clear{
+  position:absolute;right:8px;top:50%;transform:translateY(-50%);
+  background:transparent;border:0;color:var(--t3);cursor:pointer;
+  width:22px;height:22px;border-radius:6px;
+  display:flex;align-items:center;justify-content:center;
+}
+.sv-search-clear:hover{background:rgba(255,255,255,0.06);color:var(--t1);}
+
+.sv-filter-pills{display:flex;gap:6px;flex-wrap:wrap;}
+.sv-filter{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:6px 12px;border-radius:999px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.08);
+  color:var(--t2);font-size:12px;font-weight:500;
+  cursor:pointer;transition:all .15s ease;font-family:inherit;
+}
+.sv-filter:hover{background:rgba(255,255,255,0.07);color:var(--t1);}
+.sv-filter.is-active{background:rgba(56,189,248,0.14);border-color:rgba(56,189,248,0.42);color:var(--t1);}
+.sv-filter-badge{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-width:18px;height:18px;padding:0 5px;border-radius:9px;
+  background:rgba(255,255,255,0.08);color:var(--t2);
+  font-size:10px;font-weight:600;
+}
+.sv-filter.is-active .sv-filter-badge{background:rgba(56,189,248,0.26);color:var(--t1);}
+
+/* Timeline */
+.sv-bucket{margin-bottom:10px;}
+.sv-bucket-h{
+  font-size:10.5px;font-weight:700;letter-spacing:.1em;
+  color:var(--t3);text-transform:uppercase;
+  margin:14px 0 8px 4px;
+}
+.sv-bucket:first-child .sv-bucket-h{margin-top:0;}
+
+.sv-list{
+  background:linear-gradient(180deg, rgba(255,255,255,0.034), rgba(255,255,255,0.014));
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:12px;overflow:hidden;
+}
+.sv-row{
+  display:grid;grid-template-columns:auto auto 1fr auto auto;
+  gap:12px;align-items:center;
+  padding:11px 14px;
+  border-bottom:1px solid rgba(255,255,255,0.04);
+  cursor:pointer;transition:background .12s;
+}
+.sv-row:last-child{border-bottom:0;}
+.sv-row:hover{background:rgba(56,189,248,0.05);}
+
+.sv-time{
+  font-family:'SF Mono', ui-monospace, monospace;
+  font-size:11px;color:var(--t3);
+  min-width:56px;
+}
+.sv-tbl-chip{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:3px 9px;border-radius:999px;
+  background:rgba(56,189,248,0.14);
+  border:1px solid rgba(56,189,248,0.28);
+  color:#7ed3f7;font-size:11px;font-weight:500;
+  white-space:nowrap;
+}
+.sv-tbl-chip-ico{width:8px;height:8px;border-radius:2px;background:#7ed3f7;flex-shrink:0;}
+.sv-label{
+  font-size:13px;color:var(--t1);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;
+}
+.sv-author{font-size:11px;color:var(--t3);white-space:nowrap;}
+.sv-row-arrow{color:var(--t3);}
+.sv-row:hover .sv-row-arrow{color:var(--cyan);}
+
+/* Empty */
+.sv-empty{
+  padding:48px 24px;text-align:center;
+  background:rgba(255,255,255,0.022);
+  border:1px dashed rgba(255,255,255,0.1);
+  border-radius:14px;
+}
+.sv-empty-title{font-size:15px;font-weight:600;color:var(--t1);margin-bottom:6px;}
+.sv-empty-sub{font-size:13px;color:var(--t2);max-width:420px;margin:0 auto;line-height:1.5;}
+
 </style>
 </head>
 <body>
@@ -4841,7 +4962,6 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
         <button class="ssb-item" data-route="schema" onclick="navigate('schema')">
           <span class="ssb-item-ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="4.5" cy="4" r="1.8"/><circle cx="4.5" cy="12" r="1.8"/><circle cx="11.5" cy="8" r="1.8"/><path d="M4.5 5.8v4.4M6.2 4.6l4.1 2.6M6.2 11.4l4.1-2.6"/></svg></span>
           <span class="ssb-item-label">Schema versions</span>
-          <span class="ssb-item-badge">Soon</span>
         </button>
       </div>
 
@@ -11723,6 +11843,208 @@ function commitFmResolve(rowKey) {
 
 
 
+
+
+/* ============================================================
+   SCHEMA VERSIONS — Mike thesis surface
+   ============================================================ */
+
+let svFilter = { search: '', range: 'all', tableName: 'all' };
+
+function setSvSearch(v) { svFilter.search = (v || '').toLowerCase().trim(); renderSchemaVersions(); }
+function clearSvSearch() {
+  svFilter.search = '';
+  const el = document.getElementById('svSearchInput');
+  if (el) el.value = '';
+  renderSchemaVersions();
+}
+function setSvRange(r) { svFilter.range = r; renderSchemaVersions(); }
+function setSvTable(t) { svFilter.tableName = t; renderSchemaVersions(); }
+
+function trackSv(event, payload) {
+  if (typeof track === 'function') {
+    try { track('sv_' + event, payload || {}); } catch(e){}
+  }
+}
+
+function _svBuildFlatTimeline() {
+  // tableVersions is keyed by tableName → array of versions newest-first.
+  if (typeof tableVersions === 'undefined') return [];
+  const out = [];
+  Object.keys(tableVersions).forEach(tn => {
+    (tableVersions[tn] || []).forEach(v => {
+      out.push({
+        tableName: tn,
+        id: v.id,
+        label: v.label || 'Edit',
+        createdAt: v.createdAt,
+        author: v.author || 'You',
+      });
+    });
+  });
+  // Sort newest first
+  out.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+  return out;
+}
+
+function _svBucketFor(timestamp) {
+  if (!timestamp) return 'older';
+  const now = Date.now();
+  const diffH = (now - timestamp) / 3600000;
+  if (diffH < 24) return 'today';
+  if (diffH < 48) return 'yesterday';
+  if (diffH < 24 * 7) return 'this_week';
+  if (diffH < 24 * 30) return 'this_month';
+  return 'older';
+}
+const SV_BUCKET_LABELS = {
+  today:'Today', yesterday:'Yesterday', this_week:'This week',
+  this_month:'This month', older:'Older',
+};
+
+function _svFormatTime(ts) {
+  if (!ts) return '—';
+  const d = new Date(ts);
+  const now = new Date();
+  const sameDay = d.toDateString() === now.toDateString();
+  if (sameDay) {
+    return d.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit', hour12:false });
+  }
+  // Show e.g. "May 28"
+  return d.toLocaleDateString([], { month:'short', day:'numeric' });
+}
+
+function renderSchemaVersions() {
+  const timeline = _svBuildFlatTimeline();
+
+  const tableSet = new Set(timeline.map(t => t.tableName));
+  const tableList = Array.from(tableSet).sort();
+
+  const now = Date.now();
+  const isInRange = (ts) => {
+    if (svFilter.range === 'all') return true;
+    if (!ts) return false;
+    const diffH = (now - ts) / 3600000;
+    if (svFilter.range === 'week')  return diffH < 24 * 7;
+    if (svFilter.range === 'month') return diffH < 24 * 30;
+    if (svFilter.range === 'year')  return diffH < 24 * 365;
+    return true;
+  };
+
+  const filtered = timeline.filter(v => {
+    if (!isInRange(v.createdAt)) return false;
+    if (svFilter.tableName !== 'all' && v.tableName !== svFilter.tableName) return false;
+    if (svFilter.search) {
+      const hay = (v.label + ' ' + v.tableName + ' ' + v.author).toLowerCase();
+      if (hay.indexOf(svFilter.search) === -1) return false;
+    }
+    return true;
+  });
+
+  // KPIs based on full timeline (not filtered) so the strip shows the global view
+  const weekCount = timeline.filter(v => v.createdAt && (now - v.createdAt) / 3600000 < 24 * 7).length;
+  const monthCount = timeline.filter(v => v.createdAt && (now - v.createdAt) / 3600000 < 24 * 30).length;
+
+  // Group filtered by bucket
+  const buckets = { today:[], yesterday:[], this_week:[], this_month:[], older:[] };
+  filtered.forEach(v => buckets[_svBucketFor(v.createdAt)].push(v));
+
+  const bucketHtml = ['today','yesterday','this_week','this_month','older']
+    .filter(k => buckets[k].length > 0)
+    .map(k => `
+      <div class="sv-bucket">
+        <div class="sv-bucket-h">${escapeHtml(SV_BUCKET_LABELS[k])} · ${buckets[k].length}</div>
+        <div class="sv-list">
+          ${buckets[k].map(_svRenderRow).join('')}
+        </div>
+      </div>
+    `).join('');
+
+  const bodyHtml = filtered.length === 0
+    ? `<div class="sv-empty">
+        <div class="sv-empty-title">${svFilter.search || svFilter.range !== 'all' || svFilter.tableName !== 'all' ? 'No versions match your filters' : 'No schema changes yet'}</div>
+        <div class="sv-empty-sub">${svFilter.search || svFilter.range !== 'all' || svFilter.tableName !== 'all'
+          ? 'Try a different search term or widen the filters.'
+          : 'Every edit to a Table (field rename, type change, validation toggle, etc.) captures a version. They will show up here in real time.'}</div>
+      </div>`
+    : bucketHtml;
+
+  const tablePills = tableList.length > 1
+    ? `<div class="sv-filter-pills" style="margin-top:6px">
+        <button class="sv-filter ${svFilter.tableName === 'all' ? 'is-active' : ''}" onclick="setSvTable('all')">All tables</button>
+        ${tableList.map(tn => `<button class="sv-filter ${svFilter.tableName === tn ? 'is-active' : ''}" onclick="setSvTable('${escapeHtml(tn)}')">${escapeHtml(tn)}</button>`).join('')}
+      </div>`
+    : '';
+
+  $('content').innerHTML = `
+    <section class="surface sv-wrap">
+      <div class="breadcrumb">
+        <span class="crumb-current">Schema versions</span>
+      </div>
+
+      <div>
+        <div class="sv-h-eyebrow"><span class="sv-h-eyebrow-dot"></span>Data Studio · Schema versions</div>
+        <h1 class="sv-h-title">Schema change history</h1>
+        <p class="sv-h-sub">Every edit to a Table — field rename, type change, validation toggle, custom property update — captures a version. Browse the unified timeline, jump to any Table to inspect or restore.</p>
+      </div>
+
+      <div class="sv-kpi-strip">
+        <div class="sv-kpi"><span class="sv-kpi-v">${timeline.length}</span><span class="sv-kpi-k">Total versions</span></div>
+        <div class="sv-kpi"><span class="sv-kpi-v">${weekCount}</span><span class="sv-kpi-k">This week</span></div>
+        <div class="sv-kpi"><span class="sv-kpi-v">${monthCount}</span><span class="sv-kpi-k">This month</span></div>
+        <div class="sv-kpi"><span class="sv-kpi-v">${tableSet.size}</span><span class="sv-kpi-k">Tables touched</span></div>
+      </div>
+
+      <div class="sv-toolbar">
+        <div class="sv-search">
+          <svg class="sv-search-ico" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/></svg>
+          <input id="svSearchInput" type="text" placeholder="Search by label, table, or author"
+            value="${escapeHtml(svFilter.search)}"
+            oninput="setSvSearch(this.value)" />
+          ${svFilter.search ? `<button class="sv-search-clear" onclick="clearSvSearch()" aria-label="Clear search">
+            <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M3 3l10 10M13 3L3 13"/></svg>
+          </button>` : ''}
+        </div>
+        <div class="sv-filter-pills">
+          <button class="sv-filter ${svFilter.range === 'all' ? 'is-active' : ''}" onclick="setSvRange('all')">All time</button>
+          <button class="sv-filter ${svFilter.range === 'week' ? 'is-active' : ''}" onclick="setSvRange('week')">Last 7 days<span class="sv-filter-badge">${weekCount}</span></button>
+          <button class="sv-filter ${svFilter.range === 'month' ? 'is-active' : ''}" onclick="setSvRange('month')">Last 30 days<span class="sv-filter-badge">${monthCount}</span></button>
+          <button class="sv-filter ${svFilter.range === 'year' ? 'is-active' : ''}" onclick="setSvRange('year')">Last 12 months</button>
+        </div>
+      </div>
+      ${tablePills}
+
+      ${bodyHtml}
+    </section>
+  `;
+  trackSv('viewed', { count: filtered.length, range: svFilter.range, tableName: svFilter.tableName, hasSearch: !!svFilter.search });
+}
+
+function _svRenderRow(v) {
+  return `
+    <div class="sv-row" onclick="_svOpenTableVersions('${escapeHtml(v.tableName)}')">
+      <span class="sv-time">${escapeHtml(_svFormatTime(v.createdAt))}</span>
+      <span class="sv-tbl-chip"><span class="sv-tbl-chip-ico"></span>${escapeHtml(v.tableName)}</span>
+      <span class="sv-label">${escapeHtml(v.label)}</span>
+      <span class="sv-author">${escapeHtml(v.author)}</span>
+      <span class="sv-row-arrow">
+        <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 4l4 4-4 4"/></svg>
+      </span>
+    </div>
+  `;
+}
+
+function _svOpenTableVersions(tableName) {
+  // Set the table rail tab to versions so the user lands ready to restore.
+  if (typeof tblRailTab !== 'undefined') {
+    tblRailTab = 'ver';
+  }
+  trackSv('row_opened', { tableName });
+  location.hash = '/tables/' + encodeURIComponent(tableName);
+}
+
+
+
 function render() {
   const parts = parseRoute();
   paintSsbActive();
@@ -11743,7 +12065,7 @@ function render() {
     return renderTables();
   }
   if (parts[0] === 'mappings')    return renderFieldMappings();
-  if (parts[0] === 'schema')      return renderPlaceholder('Schema versions', 'History of every table change — who made it and when.');
+  if (parts[0] === 'schema')      return renderSchemaVersions();
   if (parts[0] === 'templates') {
     if (parts[1] === 'new') return renderTemplateCreate();
     if (parts[1]) return renderTemplateDetail(parts[1]);
