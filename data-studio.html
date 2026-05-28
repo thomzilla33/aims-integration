@@ -4512,7 +4512,7 @@ function renderOnboardingEmptyState() {
 const DS_TOUR_STEPS = [
   {
     title: 'Welcome to Data Studio',
-    body: "This is where your data takes shape before flowing to your agents. I'll walk you through the new onboarding flow in about a minute. You can skip anytime.",
+    body: "Data Studio turns raw source data into structured tables your agents can query. This tour walks through the setup flow that takes a workspace from empty to working in about a minute.",
     setup: () => {
       // Reset to first-time empty state and land on connections home
       obState = { phase:'pending', step:0, category:null, connector:null, auth:{}, mapping:[], sync:{}, lastCompleted:null };
@@ -4525,26 +4525,26 @@ const DS_TOUR_STEPS = [
   },
   {
     title: 'The empty state',
-    body: 'First-time users land here. The 6-step preview sets expectations and the floating cards on the right give a visual hint of what data flow looks like once connected.',
+    body: 'Your starting point when no data is connected. The 6-step preview tells you exactly what you will do and how long it takes — so there is no guessing about where to begin.',
     target: '.ob-empty',
     scrollToTarget: true
   },
   {
     title: 'One click opens the wizard',
-    body: '"Connect your first source" launches a centered modal — <b>960px wide</b>, 6-step progress bar at the top. Closing the modal preserves your progress in localStorage so the user can resume.',
+    body: 'Starts the data connection wizard. Everything from here is a guided 6-step sequence with progress saved automatically — close at any time and come back to continue where you left off.',
     target: '.ob-empty-btn-primary',
     pulse: true
   },
   {
     title: 'Step 1 — Pick a category',
-    body: '<b>Seven categories</b> from the doc: CRM, project tools, data, marketing, support, custom API, files. Each card shows how many connectors are available. Click to select.',
+    body: '<b>What it does:</b> narrows the catalog of 16+ tools to only the ones that fit your data type. <b>Input:</b> one of 7 buckets (CRM, project tools, data, marketing, support, custom API, files). <b>Output:</b> a focused list of connectors in the next step.',
     setup: () => { openWizard(); },
     target: '.ob-cat-grid',
     autoOpen: true
   },
   {
     title: 'Step 2 — Pick a connector',
-    body: 'Filtered grid showing only the matching tools. Logos, vendor, description, and <b>Popular / Recommended badges</b>. The auth method chip ("OAuth", "API key", etc) tells the user what kind of sign-in is coming.',
+    body: '<b>What it does:</b> identifies the specific tool you are pulling data from. <b>Input:</b> one of the filtered connectors. <b>Output:</b> locks in the auth method and the sample schema the wizard will use from this point on. Popular and Recommended badges hint at what works well for similar workspaces.',
     setup: () => {
       obPickCategory('crm');
       obState.step = 1;
@@ -4555,7 +4555,7 @@ const DS_TOUR_STEPS = [
   },
   {
     title: 'Step 3 — Sign in',
-    body: 'Six auth flavors: OAuth, API key, service account, basic, manual endpoint, file upload, email-to-inbox. Each one has its own UI. We also added <b>error states</b> — toggle "Show errors" in the sidebar to test failure UX with inline validation and server error banners.',
+    body: '<b>What it does:</b> verifies you have permission to read this connector and tests the connection. <b>Input:</b> credentials for the chosen tool (OAuth click-through, API key, service account JSON, file upload, or an inbox address). <b>Output:</b> an encrypted connection plus the list of data types we can read. Toggle <b>Show errors</b> in the sidebar to see the failure path.',
     setup: () => {
       obPickConnector('hubspot');
       obState.step = 2;
@@ -4567,7 +4567,7 @@ const DS_TOUR_STEPS = [
   },
   {
     title: 'Step 4 — Preview',
-    body: 'Read-only checkpoint after auth. Four stat tiles (data type, fields found, sample size, time to load) and a table of every detected field with type and sample value. Every connector has its own realistic shape — picking <code>Asana</code> shows task fields, picking <code>BigQuery</code> shows event_timestamp.',
+    body: '<b>What it does:</b> shows a sample of the data we just pulled, before any shaping happens. <b>Input:</b> nothing — read-only checkpoint. <b>Output:</b> confidence that you are connected to the right account with the right scope. Catches mistakes (wrong workspace, missing permissions, empty objects) before they get committed.',
     setup: () => {
       obState.auth = { status:'connected', detected: 12 };
       obState.step = 3;
@@ -4578,7 +4578,7 @@ const DS_TOUR_STEPS = [
   },
   {
     title: 'Step 5 — AI field matching',
-    body: 'The most important step. AI suggests matches with <b>confidence pills</b> (green ≥90, blue 75-89, amber <75). The banner up top lets you accept all high-confidence matches in one click. Per-row Accept / Dismiss for the rest.',
+    body: '<b>What it does:</b> maps each source field to a clean Studio column name so queries work across different tools. <b>Input:</b> accept, edit, or dismiss each AI-suggested match per row. <b>Output:</b> a schema where every column is intentional — e.g., <code>properties.firstname</code> becomes <code>first_name</code>. Bulk-accept the high-confidence ones to skip the manual review.',
     setup: () => {
       obState.step = 4;
       persistOb();
@@ -4588,12 +4588,12 @@ const DS_TOUR_STEPS = [
   },
   {
     title: 'Quarantine over silent inclusion',
-    body: 'Fields the AI <i>could not</i> match are <b>parked</b> — visible with an amber stripe and "no AI match" chip. They will not flow into your table until you decide. The Next button changes to <b>"Continue with N parked →"</b> so the user knows what is deferred.',
+    body: '<b>What it does:</b> isolates fields the AI could not confidently match instead of silently including or dropping them. <b>Input:</b> decide per field — accept with the auto-generated name, or dismiss to exclude. <b>Output:</b> every column in your table was a deliberate choice. Schema stays clean and audit-friendly.',
     target: '.ob-q-banner'
   },
   {
     title: 'Step 6 — Refresh schedule',
-    body: 'Cadence picker: Real-time (webhooks), Hourly, Daily, Manual. Real-time auto-disables for connectors without webhook support. <b>Incremental sync</b> only shows when timestamp fields are mapped. Bottom of the step is a recap card so the user can sanity-check before clicking Create.',
+    body: '<b>What it does:</b> sets how often Data Studio re-fetches data from this source. <b>Input:</b> a cadence (real-time, hourly, daily, manual) plus an optional timestamp field for incremental sync. <b>Output:</b> a sync schedule the platform runs automatically. Match cadence to the data — events want real-time, ledgers want daily.',
     setup: () => {
       obState.step = 5;
       persistOb();
@@ -4603,7 +4603,7 @@ const DS_TOUR_STEPS = [
   },
   {
     title: 'Done — Cross-studio handoff',
-    body: 'After Create, the modal stays open on a Done screen. <b>Three next-step cards</b>: Build agent tools (Agent Studio), Set who can access (Admin Studio), Add another source. This is where AIMS-OS\'s 3-studio model pays off — the wizard hands off to the right surface.',
+    body: '<b>What it does:</b> confirms the connection is live and surfaces what to do next. <b>Input:</b> pick your next move. <b>Output:</b> navigates to <b>Agent Studio</b> (turn this data into agent-callable actions), <b>Admin Studio</b> (set who can read or sync it), or back into the wizard to connect another source.',
     setup: () => {
       obState.step = WIZARD_STEPS.length;
       obState.completedAt = new Date().toISOString();
@@ -4614,7 +4614,7 @@ const DS_TOUR_STEPS = [
   },
   {
     title: 'Your connection is live',
-    body: 'After clicking Open Dashboard, the new connection appears at the <b>top of the connections list</b> with "just now" as last sync. Clicking it opens a synthetic detail page built from your wizard inputs — same code path as the demo connections.',
+    body: '<b>What it does:</b> the finished connection becomes a card in the Connections list. <b>Input:</b> click the card. <b>Output:</b> a detail page where you review the field mapping, see the tables that were produced, and troubleshoot if something breaks. This is where the connection lives long-term.',
     setup: () => {
       const cn = obConnector(obState.connector);
       if (cn) {
@@ -4637,7 +4637,7 @@ const DS_TOUR_STEPS = [
   },
   {
     title: 'That is the flow',
-    body: 'Resumable, AI-aware, with quarantine UX, error states, and cross-studio bridges. <b>Click Reset to first time setup</b> in the sidebar to take it for a spin yourself, or toggle <b>Show errors</b> to see the failure UX.',
+    body: 'That is the full flow. Use <b>Reset to first time setup</b> in the sidebar to replay it from the empty state, or <b>Show errors</b> to see the failure paths. The full spec lives at <code>docs/OnboardingFlow.md</code>.',
   }
 ];
 
