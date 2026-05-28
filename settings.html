@@ -627,14 +627,59 @@ html.theme-light .btn-primary.btn-outline{color:var(--cyan); border-color:rgba(6
 .divider{height:1px; background:var(--line); margin:8px 0}
 
 /* ── Detail page ── */
-.detail-head{padding:18px 32px; border-bottom:1px solid var(--line); display:flex; flex-direction:column; gap:10px}
-.detail-row{display:flex; align-items:center; gap:14px}
-.detail-text{flex:1; min-width:0}
-.detail-name{display:flex; align-items:center; gap:8px; font-size:22px; font-weight:700; color:var(--t1); letter-spacing:-.01em}
-.detail-vendor{font-size:12px; color:var(--t2); margin-top:2px}
-.detail-meta{display:flex; align-items:center; gap:8px; font-size:12px; color:var(--t2); flex-wrap:wrap; margin-top:4px}
-.detail-meta .sep{color:var(--t3); opacity:.6}
-.detail-actions{display:flex; align-items:center; gap:8px; flex-shrink:0}
+.detail-head{padding:22px 32px 18px; border-bottom:1px solid var(--line); display:flex; flex-direction:column; gap:12px}
+.detail-row{display:flex; align-items:flex-start; gap:16px}
+.detail-text{flex:1; min-width:0; display:flex; flex-direction:column; gap:5px}
+.detail-eyebrow-row{
+  display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+  font-size:11.5px; color:var(--t3); margin-bottom:2px;
+}
+.detail-cat-chip{
+  display:inline-flex; align-items:center; gap:5px;
+  padding:3px 9px; border-radius:11px;
+  background:rgba(43,127,255,0.10);
+  border:1px solid rgba(43,127,255,0.28);
+  color:#2B7FFF; font-size:10.5px; font-weight:700;
+  text-transform:uppercase; letter-spacing:.06em;
+}
+.detail-cat-chip[data-cat]::before{
+  content:''; width:5px; height:5px; border-radius:50%;
+  background:currentColor;
+}
+.detail-time{
+  display:inline-flex; align-items:center; gap:6px;
+  font-size:11.5px; color:var(--t3); font-weight:500;
+}
+.detail-time::before{
+  content:''; width:5px; height:5px; border-radius:50%;
+  background:#10b981; box-shadow:0 0 0 2px rgba(16,185,129,0.18);
+}
+.detail-name{
+  display:flex; align-items:center; gap:9px; flex-wrap:wrap;
+  font-size:24px; font-weight:700; color:var(--t1); letter-spacing:-.015em;
+  line-height:1.2;
+}
+.detail-vendor{font-size:13px; color:var(--t2); font-weight:500}
+.detail-meta{
+  display:flex; align-items:center; gap:6px; flex-wrap:wrap;
+  margin-top:6px;
+}
+.detail-meta-pill{
+  display:inline-flex; align-items:center; gap:5px;
+  padding:4px 9px; border-radius:8px;
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.06);
+  color:var(--t2); font-size:11.5px; font-weight:500;
+}
+.detail-meta-pill b{color:var(--t1); font-weight:600;}
+.detail-meta-pill .ic{color:var(--t3); flex-shrink:0;}
+.detail-actions{display:flex; align-items:center; gap:8px; flex-shrink:0;}
+@media (max-width:760px){
+  .detail-head{padding:18px 20px 14px}
+  .detail-name{font-size:20px}
+  .detail-row{flex-wrap:wrap}
+  .detail-actions{width:100%; margin-top:6px}
+}
 
 .tabs{display:flex; gap:2px; padding:0 32px; border-bottom:1px solid var(--line); background:var(--bg)}
 .tab{
@@ -7742,23 +7787,39 @@ function paintDetail(i) {
       <div class="detail-row">
         ${logo(i, 'lg')}
         <div class="detail-text">
+          <div class="detail-eyebrow-row">
+            ${cat ? `<span class="detail-cat-chip" data-cat style="color:${cat.color || '#2B7FFF'}">${escapeHtml(cat.label)}</span>` : ''}
+            ${i.connected ? healthBadge(i.health) : ''}
+            ${i.connected ? `<span class="detail-time">Last run · ${escapeHtml(i.lastRun)}</span>` : ''}
+          </div>
           <div class="detail-name">${escapeHtml(i.name)} ${srcBadge(i)} ${lcBadgeHtml(i)}</div>
-          <div class="detail-vendor">${escapeHtml(i.vendor||'')} · ${escapeHtml(cat?cat.label:'')}</div>
+          <div class="detail-vendor">${escapeHtml(i.vendor||'')}</div>
           ${i.connected ? `
             <div class="detail-meta">
-              ${healthBadge(i.health)}
-              <span class="sep">·</span><span>Last run <strong style="color:var(--t1)">${escapeHtml(i.lastRun)}</strong></span>
-              <span class="sep">·</span><span>Connected by ${escapeHtml(i.connectedBy.name)} · ${escapeHtml(i.connectedAt)}</span>
-              <span class="sep">·</span><span>${i.authMethods.includes('oauth')?'OAuth 2.0':i.authMethods[0]==='apikey'?'API key':'Service account'}</span>
+              <span class="detail-meta-pill">
+                <svg class="ic" width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="10" height="7" rx="1.2"/><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2"/></svg>
+                ${i.authMethods.includes('oauth')?'OAuth 2.0':i.authMethods[0]==='apikey'?'API key':'Service account'}
+              </span>
+              <span class="detail-meta-pill">
+                <svg class="ic" width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8" r="6.5"/><path d="M8 5v3.5l2 1.5"/></svg>
+                Connected <b>${escapeHtml(i.connectedAt)}</b>
+              </span>
+              <span class="detail-meta-pill">
+                <svg class="ic" width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="5.5" r="2.5"/><path d="M3 13.5c0-2.5 2.2-4 5-4s5 1.5 5 4"/></svg>
+                by <b>${escapeHtml(i.connectedBy.name)}</b>
+              </span>
+              ${ownerPillHtml(i.slug)}
             </div>
-            <div style="margin-top:10px">${ownerPillHtml(i.slug)}</div>
           ` : `
-            <div class="detail-meta"><span>Not connected · ${i.authMethods.map(a=>a==='oauth'?'OAuth 2.0':a==='apikey'?'API key':'Service account').join(' · ')}</span></div>
+            <div class="detail-meta">
+              <span class="detail-meta-pill" style="color:var(--t3)">Not connected</span>
+              <span class="detail-meta-pill">${i.authMethods.map(a=>a==='oauth'?'OAuth 2.0':a==='apikey'?'API key':'Service account').join(' · ')}</span>
+            </div>
           `}
         </div>
         <div class="detail-actions">
           <button class="btn-ai" onclick="openAIDrawer('${i.slug}')" title="Ask AI about ${escapeHtml(i.name)}">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 2.5c.5 0 1 .4 1.1.9l1.1 4.9c.1.3.3.5.6.6l4.9 1.1c.5.1.9.6.9 1.1s-.4 1-.9 1.1l-4.9 1.1c-.3.1-.5.3-.6.6l-1.1 4.9c-.1.5-.6.9-1.1.9s-1-.4-1.1-.9l-1.1-4.9c-.1-.3-.3-.5-.6-.6l-4.9-1.1c-.5-.1-.9-.6-.9-1.1s.4-1 .9-1.1l4.9-1.1c.3-.1.5-.3.6-.6l1.1-4.9c.1-.5.6-.9 1.1-.9z" fill="currentColor"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2.5c.5 0 1 .4 1.1.9l1.1 4.9c.1.3.3.5.6.6l4.9 1.1c.5.1.9.6.9 1.1s-.4 1-.9 1.1l-4.9 1.1c-.3.1-.5.3-.6.6l-1.1 4.9c-.1.5-.6.9-1.1.9s-1-.4-1.1-.9l-1.1-4.9c-.1-.3-.3-.5-.6-.6l-4.9-1.1c-.5-.1-.9-.6-.9-1.1s.4-1 .9-1.1l4.9-1.1c.3-.1.5-.3.6-.6l1.1-4.9c.1-.5.6-.9 1.1-.9z" fill="currentColor"/></svg>
             Ask AI
           </button>
           ${i.connected ? `
