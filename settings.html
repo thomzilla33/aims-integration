@@ -1267,39 +1267,88 @@ html.theme-light .btn-primary.btn-outline{color:var(--cyan); border-color:rgba(6
    "Status of your data infrastructure" instead of "Here are integrations"
    ────────────────────────────────────────────────────────── */
 .op-hero{
-  display:flex; gap:32px; align-items:center; justify-content:space-between;
-  padding:36px 32px 28px;
+  display:flex; gap:28px; align-items:center; justify-content:space-between;
+  padding:28px 32px 24px;
   border-bottom:1px solid var(--line);
 }
-.op-hero-left{flex:1; min-width:0}
+.op-hero-left{flex:1; min-width:0; display:flex; flex-direction:column; gap:10px;}
 .op-hero-eyebrow{
-  display:inline-flex; align-items:center; gap:10px; margin-bottom:14px;
+  display:inline-flex; align-items:center; gap:10px;
 }
 .op-mode-tag{
   display:inline-flex; align-items:center; gap:5px; height:22px; padding:0 9px;
-  background:rgba(6,182,212,0.10); color:var(--cyan);
-  border:1px solid rgba(6,182,212,0.28); border-radius:11px;
+  background:rgba(43,127,255,0.12); color:#2B7FFF;
+  border:1px solid rgba(43,127,255,0.34); border-radius:11px;
   font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.06em;
 }
-.op-hero-sub{font-size:12px; color:var(--t3); font-weight:500}
+.op-hero-sub{font-size:13px; color:var(--t2); font-weight:500}
 .op-hero-title{
-  font-size:30px; font-weight:800; color:var(--t1); margin-bottom:8px;
-  letter-spacing:-.02em; line-height:1.15;
+  font-size:28px; font-weight:800; color:var(--t1); margin:0;
+  letter-spacing:-.02em; line-height:1.18;
 }
-.op-hero-desc{font-size:14px; color:var(--t2); line-height:1.55; max-width:580px}
+.op-hero-time{
+  font-size:11.5px; color:var(--t3); font-weight:500;
+  display:inline-flex; align-items:center; gap:6px;
+}
+.op-hero-time::before{
+  content:''; width:5px; height:5px; border-radius:50%;
+  background:#10b981; box-shadow:0 0 0 2px rgba(16,185,129,0.18);
+}
+.op-hero-desc{font-size:13.5px; color:var(--t2); line-height:1.55; max-width:580px; margin:0;}
+
 .op-hero-right{
-  display:flex; gap:24px; flex-shrink:0; padding-left:24px;
-  border-left:1px solid var(--line);
+  display:flex; gap:14px; flex-shrink:0; align-items:stretch;
 }
-.op-kpi{text-align:right}
-.op-kpi-n{font-size:30px; font-weight:800; line-height:1; letter-spacing:-.02em}
-.op-kpi-l{font-size:11px; color:var(--t3); margin-top:5px; text-transform:uppercase; letter-spacing:.05em; font-weight:600}
+.op-kpi{
+  display:flex; flex-direction:column; gap:4px; align-items:flex-start;
+  padding:10px 16px;
+  background:rgba(255,255,255,0.022);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:11px;
+  min-width:96px;
+  transition:transform .15s, border-color .15s, background .15s;
+}
+.op-kpi.is-ok{
+  background:rgba(16,185,129,0.08);
+  border-color:rgba(16,185,129,0.28);
+}
+.op-kpi.is-warn{
+  background:rgba(245,158,11,0.08);
+  border-color:rgba(245,158,11,0.34);
+}
+.op-kpi.is-idle{
+  background:rgba(148,163,184,0.06);
+  border-color:rgba(148,163,184,0.18);
+}
+.op-kpi-n{font-size:28px; font-weight:800; line-height:1; letter-spacing:-.02em;}
+.op-kpi-l{font-size:10.5px; color:var(--t3); text-transform:uppercase; letter-spacing:.06em; font-weight:600;}
+.op-kpi.is-ok .op-kpi-l{color:#34d39c;}
+.op-kpi.is-warn .op-kpi-l{color:#fbbf24;}
+.op-kpi.is-idle .op-kpi-l{color:var(--t3);}
+
+/* Primary CTA next to KPIs when needs_attention > 0 */
+.op-hero-cta{
+  display:inline-flex; align-items:center; gap:8px;
+  padding:10px 16px; border-radius:10px;
+  background:linear-gradient(135deg, rgba(245,158,11,0.22), rgba(245,158,11,0.10));
+  border:1px solid rgba(245,158,11,0.45);
+  color:#fbbf24; font-size:13px; font-weight:700;
+  font-family:inherit; cursor:pointer;
+  text-decoration:none; white-space:nowrap;
+  transition:all .15s ease;
+  align-self:stretch;
+}
+.op-hero-cta:hover{
+  background:linear-gradient(135deg, rgba(245,158,11,0.32), rgba(245,158,11,0.16));
+  border-color:rgba(245,158,11,0.65);
+  transform:translateY(-1px);
+}
 
 @media (max-width:860px){
-  .op-hero{flex-direction:column; align-items:flex-start; gap:20px}
-  .op-hero-right{border-left:none; padding-left:0; gap:18px}
-  .op-kpi{text-align:left}
+  .op-hero{flex-direction:column; align-items:flex-start; gap:18px}
+  .op-hero-right{flex-wrap:wrap; gap:10px}
   .op-hero-title{font-size:22px}
+  .op-kpi{min-width:84px}
 }
 
 /* Tabs */
@@ -1328,10 +1377,17 @@ html.theme-light .btn-primary.btn-outline{color:var(--cyan); border-color:rgba(6
 .op-tab-count-idle{background:rgba(148,163,184,0.15); color:var(--t3)}
 .op-tab-count-neutral{background:var(--hover); color:var(--t2)}
 .op-link{
-  color:var(--cyan); font-size:13px; font-weight:600; text-decoration:none;
-  padding:0 10px; height:32px; display:inline-flex; align-items:center;
+  display:inline-flex; align-items:center; gap:6px;
+  height:32px; padding:0 12px; border-radius:8px;
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.08);
+  color:var(--t2); font-size:13px; font-weight:600; text-decoration:none;
+  transition:all .15s ease;
 }
-.op-link:hover{text-decoration:underline}
+.op-link:hover{
+  background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.14);
+  color:var(--t1); text-decoration:none;
+}
 
 /* List */
 .op-list{padding:8px 24px 32px; display:flex; flex-direction:column; gap:6px}
@@ -6539,16 +6595,21 @@ function renderOperateHome() {
           <span class="op-hero-sub">Status of your data infrastructure</span>
         </div>
         <h1 class="op-hero-title">${counts.needs_attention > 0
-          ? `<span style="color:var(--amber)">${counts.needs_attention}</span> integration${counts.needs_attention===1?'':'s'} need your attention`
+          ? `<span style="color:#fbbf24">${counts.needs_attention}</span> integration${counts.needs_attention===1?'':'s'} need your attention`
           : `Everything is running clean`}</h1>
+        <span class="op-hero-time">Updated just now${connected.length ? ' · ' + connected.length + ' connected integration' + (connected.length===1?'':'s') : ''}</span>
         <p class="op-hero-desc">${counts.needs_attention > 0
           ? 'Resolve mapping gaps, expired credentials and schema drift before they break workflows downstream.'
           : 'All connected integrations are mapped, validated and authenticated. Browse the catalog to add more.'}</p>
       </div>
       <div class="op-hero-right">
-        <div class="op-kpi"><div class="op-kpi-n" style="color:var(--green)">${counts.working}</div><div class="op-kpi-l">Working</div></div>
-        <div class="op-kpi"><div class="op-kpi-n" style="color:var(--amber)">${counts.needs_attention}</div><div class="op-kpi-l">Needs attention</div></div>
-        <div class="op-kpi"><div class="op-kpi-n" style="color:var(--t3)">${counts.inactive}</div><div class="op-kpi-l">Inactive</div></div>
+        <div class="op-kpi is-ok"><div class="op-kpi-n" style="color:#34d39c">${counts.working}</div><div class="op-kpi-l">Working</div></div>
+        <div class="op-kpi ${counts.needs_attention > 0 ? 'is-warn' : ''}"><div class="op-kpi-n" style="color:${counts.needs_attention > 0 ? '#fbbf24' : 'var(--t3)'}">${counts.needs_attention}</div><div class="op-kpi-l">Needs attention</div></div>
+        <div class="op-kpi is-idle"><div class="op-kpi-n" style="color:var(--t3)">${counts.inactive}</div><div class="op-kpi-l">Inactive</div></div>
+        ${counts.needs_attention > 0 ? `<button class="op-hero-cta" onclick="setOpTab('needs_attention')" aria-label="Jump to needs-attention list">
+          Resolve ${counts.needs_attention} issue${counts.needs_attention===1?'':'s'}
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 8h10M9.5 4.5L13 8l-3.5 3.5"/></svg>
+        </button>` : ''}
       </div>
     </section>
 
@@ -6558,7 +6619,10 @@ function renderOperateHome() {
       ${tabBtn('inactive', 'Inactive', counts.inactive, 'idle')}
       ${tabBtn('all', 'All connected', connected.length, 'neutral')}
       <span style="flex:1"></span>
-      <a class="op-link" href="#/integrations" onclick="setMode('browse');return false;">Browse catalog →</a>
+      <a class="op-link" href="#/integrations" onclick="setMode('browse');return false;">
+        <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/></svg>
+        Browse catalog
+      </a>
     </div>
 
     <div class="op-list">
