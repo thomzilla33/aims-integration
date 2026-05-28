@@ -10,7 +10,7 @@
 
 The **Settings → Integrations** surface for AIMS-OS. It's the place where workspace admins connect external tools (Slack, Salesforce, Snowflake, GitHub, etc.) and configure how agents, workflows, and studios consume them.
 
-This prototype implements the model described in the internal engineering brief by Sebastian Blandon (SVP Engineering) and Edgardo Sierra (Chief Architect). The shape of the UI deliberately mirrors the shape of the backend so that nothing gets lost in translation.
+This prototype implements the model described in the internal engineering brief by Thomas González (SVP Engineering) and Edgardo Sierra (Chief Architect). The shape of the UI deliberately mirrors the shape of the backend so that nothing gets lost in translation.
 
 **Status:** Design prototype, not production code. All data is mocked in-memory.
 
@@ -291,7 +291,7 @@ The Marketplace also lets workspaces add their **own private providers** — giv
 
 ## 17. Coverage vs the Engineering Brief
 
-The internal brief by Sebastian Blandon + Edgardo Sierra has 13 main sections + 6 product questions. This prototype covers:
+The internal brief by Thomas González + Edgardo Sierra has 13 main sections + 6 product questions. This prototype covers:
 
 | § | Concept | Status |
 |---|---|---|
@@ -341,7 +341,7 @@ That covers the architectural model + the polish layer + the AI moments + the wo
 After a working session with Mike Dullea (founder), the prototype was rotated around an explicit thesis:
 
 > Integrations is the **control plane** for an agentic data infrastructure, not just a marketplace.
-> Data Studio (Sebastian) does the deep field mapping. Integrations orchestrates the lifecycle, surfaces system truth, and gatekeeps usage.
+> Data Studio (Thomas) does the deep field mapping. Integrations orchestrates the lifecycle, surfaces system truth, and gatekeeps usage.
 
 ### 3 decisions locked
 
@@ -383,14 +383,14 @@ Each card shows only the bucket chip. The specific state is surfaced inside the 
 The sub-sidebar now has a dedicated **Data Studio** section containing:
 
 - **Connections** (the surface this prototype builds out, the former "Integrations")
-- **Tables** (coming soon, will host Sebastian's table definitions)
+- **Tables** (coming soon, will host Thomas's table definitions)
 - **Field mappings** (coming soon, the auto-map + custom-flag UI)
 - **Schema versions** (coming soon, history per table)
 - **Requests** (live, see below)
 
 Breadcrumbs are now `Settings > Data Studio > Connections > [integration]` instead of the previous `Settings > Integrations > [integration]`. The Browse home hero gained a `Data Studio · Connections` eyebrow that frames the marketplace as one of Data Studio's surfaces, not a standalone product.
 
-This locks the architectural decision from the founder session: **Integrations is the control plane of Data Studio, not a sibling**. Sebastian's field mapping engine lives in Data Studio; this prototype is what hands off to it.
+This locks the architectural decision from the founder session: **Integrations is the control plane of Data Studio, not a sibling**. Thomas's field mapping engine lives in Data Studio; this prototype is what hands off to it.
 
 ### Connect → Map (wizard step 6 of 7)
 
@@ -517,4 +517,4 @@ This was deliberate — the prototype is meant to be inspectable, hackable, and 
 
 ---
 
-*This file documents the design prototype, not the production implementation. For the engineering brief that defines the backend model, contact Sebastian Blandon (SVP Engineering) or Edgardo Sierra (Chief Architect).*
+*This file documents the design prototype, not the production implementation. For the engineering brief that defines the backend model, contact Thomas González (SVP Engineering) or Edgardo Sierra (Chief Architect).*
