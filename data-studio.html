@@ -1181,6 +1181,124 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
 
 
 
+
+/* ============ INTERACTIVE TOUR ============ */
+.ds-tour-backdrop{
+  position:fixed;inset:0;z-index:400;
+  background:rgba(4,8,18,0.50);
+  backdrop-filter:blur(2px);
+  display:none;
+  animation:obFade .2s ease-out;
+}
+.ds-tour-backdrop.is-active{display:block}
+
+.ds-tour-target-glow{
+  position:relative;z-index:401 !important;
+  box-shadow:0 0 0 4px rgba(43,127,255,0.55), 0 0 32px 6px rgba(43,127,255,0.35), 0 0 0 1px rgba(43,127,255,0.85) !important;
+  border-radius:8px;
+  transition:box-shadow .25s cubic-bezier(.2,.8,.2,1);
+}
+
+.ds-tour-pop{
+  position:fixed;z-index:402;
+  width:340px;max-width:calc(100vw - 32px);
+  background:#0c1428;
+  border:1px solid rgba(43,127,255,0.45);
+  border-radius:14px;
+  box-shadow:0 24px 60px -16px rgba(0,0,0,0.7), 0 0 0 1px rgba(43,127,255,0.15);
+  padding:18px 20px 14px;
+  animation:dsTourPop 280ms cubic-bezier(.2,.8,.2,1);
+}
+@keyframes dsTourPop{
+  from{opacity:0;transform:translateY(6px) scale(.97)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+.ds-tour-pop-h{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:8px;
+}
+.ds-tour-pop-step{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:2px 9px;border-radius:99px;
+  background:rgba(43,127,255,0.12);color:var(--blue);
+  border:1px solid rgba(43,127,255,0.32);
+  font-size:10.5px;font-weight:800;letter-spacing:.04em;
+}
+.ds-tour-pop-close{
+  background:transparent;border:none;cursor:pointer;
+  width:24px;height:24px;border-radius:6px;
+  color:var(--t3);display:flex;align-items:center;justify-content:center;
+  transition:background .12s, color .12s;
+}
+.ds-tour-pop-close:hover{background:var(--hover);color:var(--t1)}
+.ds-tour-pop-title{
+  font-size:15px;font-weight:800;color:var(--t1);letter-spacing:-.01em;
+  margin-bottom:6px;line-height:1.3;
+}
+.ds-tour-pop-body{
+  font-size:12.5px;color:var(--t2);line-height:1.55;
+  margin-bottom:14px;
+}
+.ds-tour-pop-body b{color:var(--t1);font-weight:600}
+.ds-tour-pop-body code{
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;
+  background:rgba(43,127,255,0.10);padding:1px 5px;border-radius:4px;color:var(--cyan);
+}
+.ds-tour-pop-f{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:10px;padding-top:10px;border-top:1px solid var(--line);
+}
+.ds-tour-pop-skip{
+  background:transparent;border:none;
+  color:var(--t3);font-family:inherit;font-size:11.5px;font-weight:500;cursor:pointer;
+  padding:4px 6px;border-radius:5px;
+  transition:color .12s;
+}
+.ds-tour-pop-skip:hover{color:var(--t2)}
+.ds-tour-pop-nav{display:flex;align-items:center;gap:8px}
+.ds-tour-pop-back{
+  background:transparent;border:1px solid var(--line-strong);
+  color:var(--t2);font-family:inherit;font-size:11.5px;font-weight:600;
+  padding:5px 11px;border-radius:7px;cursor:pointer;
+  transition:border-color .12s, color .12s;
+}
+.ds-tour-pop-back:hover{border-color:var(--blue);color:var(--blue)}
+.ds-tour-pop-next{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:6px 13px;
+  background:linear-gradient(135deg, #2B7FFF 0%, #1E63CC 100%);
+  color:#fff;border:none;border-radius:7px;
+  font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;
+  box-shadow:0 4px 12px -4px rgba(43,127,255,0.45);
+  transition:transform .12s, box-shadow .12s;
+}
+.ds-tour-pop-next:hover{transform:translateY(-1px);box-shadow:0 6px 16px -4px rgba(43,127,255,0.55)}
+
+.ds-tour-pop-arrow{
+  position:absolute;width:14px;height:14px;
+  background:#0c1428;
+  border-left:1px solid rgba(43,127,255,0.45);
+  border-top:1px solid rgba(43,127,255,0.45);
+}
+.ds-tour-pop-arrow.top   { top:-8px;    transform:rotate(45deg) }
+.ds-tour-pop-arrow.bottom{ bottom:-8px; transform:rotate(225deg) }
+.ds-tour-pop-arrow.left  { left:-8px;   transform:rotate(-45deg) }
+.ds-tour-pop-arrow.right { right:-8px;  transform:rotate(135deg) }
+
+/* Tour trigger button in the sidebar Demo controls */
+.ssb-demo-tour{
+  display:flex;align-items:center;gap:8px;width:100%;
+  margin-top:6px;padding:8px 10px;
+  background:rgba(43,127,255,0.07);
+  border:1px solid rgba(43,127,255,0.32);
+  border-radius:7px;
+  color:var(--blue);font-family:inherit;font-size:11.5px;font-weight:700;
+  cursor:pointer;
+  transition:background .12s, border-color .12s, transform .12s;
+}
+.ssb-demo-tour:hover{background:rgba(43,127,255,0.14);border-color:rgba(43,127,255,0.55);transform:translateY(-1px)}
+.ssb-demo-tour-ic{flex-shrink:0;color:currentColor}
+
 /* ============ WIZARD MICRO-ANIMATIONS ============ */
 @media (prefers-reduced-motion: no-preference) {
   /* Step body slide+fade on every paintWizard (innerHTML replace) */
@@ -1782,6 +1900,10 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
     </div>
     <div class="ssb-demo">
       <div class="ssb-demo-l">Demo controls</div>
+      <button class="ssb-demo-tour" onclick="startDsTour()" title="Walk through the onboarding flow">
+        <svg class="ssb-demo-tour-ic" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="6.5"/><path d="M5.5 7l2.5 2.5L11 5.5"/></svg>
+        Take the guided tour
+      </button>
       <button class="ssb-demo-btn" onclick="resetOnboarding()" title="Show first time setup">
         <svg class="ssb-demo-btn-ic" width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8a6 6 0 0 1 10.5-4M14 8a6 6 0 0 1-10.5 4"/><path d="M12 2v3h-3M4 14v-3h3"/></svg>
         Reset to first time setup
@@ -1834,6 +1956,27 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
         <button class="btn btn-primary btn-sm" onclick="wizardNext()" id="obNext">Next &rarr;</button>
       </div>
     </footer>
+  </div>
+</div>
+
+<!-- Interactive tour overlay -->
+<div class="ds-tour-backdrop" id="dsTourBackdrop" onclick="endDsTour()"></div>
+<div class="ds-tour-pop" id="dsTourPop" style="display:none;left:50%;top:50%;transform:translate(-50%,-50%)">
+  <div class="ds-tour-pop-arrow" id="dsTourArrow" style="display:none"></div>
+  <div class="ds-tour-pop-h">
+    <span class="ds-tour-pop-step" id="dsTourStep">Step 1 of 12</span>
+    <button class="ds-tour-pop-close" onclick="endDsTour()" aria-label="Close tour">
+      <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+  <div class="ds-tour-pop-title" id="dsTourTitle">Welcome to Data Studio</div>
+  <div class="ds-tour-pop-body" id="dsTourBody">A guided tour of the new onboarding flow.</div>
+  <div class="ds-tour-pop-f">
+    <button class="ds-tour-pop-skip" onclick="endDsTour()">Skip tour</button>
+    <div class="ds-tour-pop-nav">
+      <button class="ds-tour-pop-back" id="dsTourBack" onclick="prevDsTour()" style="display:none">&larr; Back</button>
+      <button class="ds-tour-pop-next" id="dsTourNext" onclick="nextDsTour()">Next &rarr;</button>
+    </div>
   </div>
 </div>
 
@@ -4340,6 +4483,310 @@ function renderOnboardingEmptyState() {
   `;
 }
 
+
+
+
+/* ============ INTERACTIVE TOUR ============ */
+const DS_TOUR_STEPS = [
+  {
+    title: 'Welcome to Data Studio',
+    body: "This is where your data takes shape before flowing to your agents. I'll walk you through the new onboarding flow in about a minute. You can skip anytime.",
+    setup: () => {
+      // Reset to first-time empty state and land on connections home
+      obState = { phase:'pending', step:0, category:null, connector:null, auth:{}, mapping:[], sync:{}, lastCompleted:null };
+      _obStepStarts = {};
+      persistOb();
+      closeWizard();
+      if (location.hash && location.hash !== '#/connections' && location.hash !== '#/') location.hash = '/connections';
+      else render();
+    }
+  },
+  {
+    title: 'The empty state',
+    body: 'First-time users land here. The 6-step preview sets expectations and the floating cards on the right give a visual hint of what data flow looks like once connected.',
+    target: '.ob-empty',
+    scrollToTarget: true
+  },
+  {
+    title: 'One click opens the wizard',
+    body: '"Connect your first source" launches a centered modal — <b>960px wide</b>, 6-step progress bar at the top. Closing the modal preserves your progress in localStorage so the user can resume.',
+    target: '.ob-empty-btn-primary',
+    pulse: true
+  },
+  {
+    title: 'Step 1 — Pick a category',
+    body: '<b>Seven categories</b> from the doc: CRM, project tools, data, marketing, support, custom API, files. Each card shows how many connectors are available. Click to select.',
+    setup: () => { openWizard(); },
+    target: '.ob-cat-grid',
+    autoOpen: true
+  },
+  {
+    title: 'Step 2 — Pick a connector',
+    body: 'Filtered grid showing only the matching tools. Logos, vendor, description, and <b>Popular / Recommended badges</b>. The auth method chip ("OAuth", "API key", etc) tells the user what kind of sign-in is coming.',
+    setup: () => {
+      obPickCategory('crm');
+      obState.step = 1;
+      persistOb();
+      paintWizard();
+    },
+    target: '.ob-conn-grid'
+  },
+  {
+    title: 'Step 3 — Sign in',
+    body: 'Six auth flavors: OAuth, API key, service account, basic, manual endpoint, file upload, email-to-inbox. Each one has its own UI. We also added <b>error states</b> — toggle "Show errors" in the sidebar to test failure UX with inline validation and server error banners.',
+    setup: () => {
+      obPickConnector('hubspot');
+      obState.step = 2;
+      persistOb();
+      paintWizard();
+    },
+    target: '.ob-auth-card, .ob-auth-hero',
+    targetFirst: true
+  },
+  {
+    title: 'Step 4 — Preview',
+    body: 'Read-only checkpoint after auth. Four stat tiles (data type, fields found, sample size, time to load) and a table of every detected field with type and sample value. Every connector has its own realistic shape — picking <code>Asana</code> shows task fields, picking <code>BigQuery</code> shows event_timestamp.',
+    setup: () => {
+      obState.auth = { status:'connected', detected: 12 };
+      obState.step = 3;
+      persistOb();
+      paintWizard();
+    },
+    target: '.ob-preview-tiles'
+  },
+  {
+    title: 'Step 5 — AI field matching',
+    body: 'The most important step. AI suggests matches with <b>confidence pills</b> (green ≥90, blue 75-89, amber <75). The banner up top lets you accept all high-confidence matches in one click. Per-row Accept / Dismiss for the rest.',
+    setup: () => {
+      obState.step = 4;
+      persistOb();
+      paintWizard();
+    },
+    target: '.ob-ai-banner'
+  },
+  {
+    title: 'Quarantine over silent inclusion',
+    body: 'Fields the AI <i>could not</i> match are <b>parked</b> — visible with an amber stripe and "no AI match" chip. They will not flow into your table until you decide. The Next button changes to <b>"Continue with N parked →"</b> so the user knows what is deferred.',
+    target: '.ob-q-banner'
+  },
+  {
+    title: 'Step 6 — Refresh schedule',
+    body: 'Cadence picker: Real-time (webhooks), Hourly, Daily, Manual. Real-time auto-disables for connectors without webhook support. <b>Incremental sync</b> only shows when timestamp fields are mapped. Bottom of the step is a recap card so the user can sanity-check before clicking Create.',
+    setup: () => {
+      obState.step = 5;
+      persistOb();
+      paintWizard();
+    },
+    target: '.ob-sync-grid'
+  },
+  {
+    title: 'Done — Cross-studio handoff',
+    body: 'After Create, the modal stays open on a Done screen. <b>Three next-step cards</b>: Build agent tools (Agent Studio), Set who can access (Admin Studio), Add another source. This is where AIMS-OS\'s 3-studio model pays off — the wizard hands off to the right surface.',
+    setup: () => {
+      obState.step = WIZARD_STEPS.length;
+      obState.completedAt = new Date().toISOString();
+      persistOb();
+      paintWizard();
+    },
+    target: '.ob-done-cards'
+  },
+  {
+    title: 'Your connection is live',
+    body: 'After clicking Open Dashboard, the new connection appears at the <b>top of the connections list</b> with "just now" as last sync. Clicking it opens a synthetic detail page built from your wizard inputs — same code path as the demo connections.',
+    setup: () => {
+      const cn = obConnector(obState.connector);
+      if (cn) {
+        const sample = obSampleFor(cn.slug);
+        const counts = obMappingCounts();
+        obState.lastCompleted = {
+          slug: cn.slug, name: cn.name, vendor: cn.vendor, logo: cn.logo, color: cn.color,
+          object: sample.object,
+          fieldsIncluded: counts.included || 10, fieldsTotal: counts.total || 12,
+          cadence: (obState.sync && obState.sync.cadence) || 'hourly',
+          authType: cn.authType,
+          completedAt: obState.completedAt
+        };
+      }
+      completeOnboarding();
+      closeWizard();
+      render();
+    },
+    target: '.ds-grid .ds-card'
+  },
+  {
+    title: 'That is the flow',
+    body: 'Resumable, AI-aware, with quarantine UX, error states, and cross-studio bridges. <b>Click Reset to first time setup</b> in the sidebar to take it for a spin yourself, or toggle <b>Show errors</b> to see the failure UX.',
+  }
+];
+
+let dsTourIdx = -1;
+
+function startDsTour() {
+  track('tour_started', { surface: 'data-studio' });
+  dsTourIdx = -1;
+  $('dsTourBackdrop').classList.add('is-active');
+  $('dsTourPop').style.display = 'block';
+  nextDsTour();
+}
+
+function endDsTour() {
+  track('tour_ended', { last_step: dsTourIdx + 1, completed: dsTourIdx >= DS_TOUR_STEPS.length - 1 });
+  dsTourIdx = -1;
+  $('dsTourBackdrop').classList.remove('is-active');
+  $('dsTourPop').style.display = 'none';
+  document.querySelectorAll('.ds-tour-target-glow').forEach(el => el.classList.remove('ds-tour-target-glow'));
+}
+
+function nextDsTour() {
+  if (dsTourIdx < DS_TOUR_STEPS.length - 1) {
+    dsTourIdx += 1;
+    paintDsTour();
+  } else {
+    endDsTour();
+  }
+}
+
+function prevDsTour() {
+  if (dsTourIdx > 0) {
+    dsTourIdx -= 1;
+    paintDsTour();
+  }
+}
+
+function paintDsTour() {
+  const step = DS_TOUR_STEPS[dsTourIdx];
+  if (!step) return endDsTour();
+
+  // Run any setup action for this step (may re-render the page)
+  if (typeof step.setup === 'function') {
+    try { step.setup(); } catch (e) { /* ignore */ }
+  }
+
+  // Update popover content
+  $('dsTourStep').textContent = 'Step ' + (dsTourIdx + 1) + ' of ' + DS_TOUR_STEPS.length;
+  $('dsTourTitle').textContent = step.title;
+  $('dsTourBody').innerHTML = step.body || '';
+  $('dsTourBack').style.display = dsTourIdx === 0 ? 'none' : 'inline-flex';
+  $('dsTourNext').textContent = (dsTourIdx === DS_TOUR_STEPS.length - 1) ? 'Done' : 'Next →';
+
+  // Clear previous glow + position popover
+  document.querySelectorAll('.ds-tour-target-glow').forEach(el => el.classList.remove('ds-tour-target-glow'));
+
+  // Defer positioning so DOM updates from setup() have a chance to paint
+  setTimeout(() => positionDsTour(step), 60);
+}
+
+function positionDsTour(step) {
+  const pop = $('dsTourPop');
+  const arrow = $('dsTourArrow');
+  pop.style.transition = 'top .25s, left .25s, transform .25s';
+
+  // If no target, center the popover
+  if (!step.target) {
+    pop.style.left = '50%';
+    pop.style.top = '50%';
+    pop.style.transform = 'translate(-50%, -50%)';
+    arrow.style.display = 'none';
+    return;
+  }
+
+  // Find the target element
+  let target = null;
+  if (step.targetFirst) {
+    // Comma-separated selectors, pick the first that matches
+    const selectors = step.target.split(',').map(s => s.trim());
+    for (const sel of selectors) {
+      target = document.querySelector(sel);
+      if (target) break;
+    }
+  } else {
+    target = document.querySelector(step.target);
+  }
+
+  if (!target) {
+    // Element not visible — center the popover
+    pop.style.left = '50%';
+    pop.style.top = '50%';
+    pop.style.transform = 'translate(-50%, -50%)';
+    arrow.style.display = 'none';
+    return;
+  }
+
+  // Scroll into view if requested
+  if (step.scrollToTarget) {
+    target.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  }
+
+  // Apply glow class
+  target.classList.add('ds-tour-target-glow');
+  if (step.pulse) {
+    // Already has glow; could add a pulse animation but keeping it simple
+  }
+
+  // Position popover near the target
+  const rect = target.getBoundingClientRect();
+  const popW = pop.offsetWidth || 340;
+  const popH = pop.offsetHeight || 200;
+  const margin = 16;
+
+  // Prefer below target; fallback to above; fallback to right; fallback to centered
+  const spaceBelow = window.innerHeight - rect.bottom;
+  const spaceAbove = rect.top;
+  const spaceRight = window.innerWidth - rect.right;
+
+  let top, left, arrowSide = 'top';
+
+  if (spaceBelow >= popH + margin) {
+    top = rect.bottom + margin;
+    left = Math.max(margin, Math.min(window.innerWidth - popW - margin, rect.left + rect.width / 2 - popW / 2));
+    arrowSide = 'top';
+  } else if (spaceAbove >= popH + margin) {
+    top = rect.top - popH - margin;
+    left = Math.max(margin, Math.min(window.innerWidth - popW - margin, rect.left + rect.width / 2 - popW / 2));
+    arrowSide = 'bottom';
+  } else if (spaceRight >= popW + margin) {
+    top = Math.max(margin, Math.min(window.innerHeight - popH - margin, rect.top + rect.height / 2 - popH / 2));
+    left = rect.right + margin;
+    arrowSide = 'left';
+  } else {
+    top = (window.innerHeight - popH) / 2;
+    left = (window.innerWidth - popW) / 2;
+    arrowSide = 'none';
+  }
+
+  pop.style.left = left + 'px';
+  pop.style.top = top + 'px';
+  pop.style.transform = 'none';
+
+  // Position arrow
+  if (arrowSide === 'none') {
+    arrow.style.display = 'none';
+  } else {
+    arrow.style.display = 'block';
+    arrow.className = 'ds-tour-pop-arrow ' + arrowSide;
+    if (arrowSide === 'top' || arrowSide === 'bottom') {
+      const arrowLeft = Math.max(20, Math.min(popW - 28, rect.left + rect.width / 2 - left - 7));
+      arrow.style.left = arrowLeft + 'px';
+      arrow.style.right = 'auto';
+      arrow.style.top = arrowSide === 'top' ? '-8px' : 'auto';
+      arrow.style.bottom = arrowSide === 'bottom' ? '-8px' : 'auto';
+    } else if (arrowSide === 'left' || arrowSide === 'right') {
+      const arrowTop = Math.max(20, Math.min(popH - 28, rect.top + rect.height / 2 - top - 7));
+      arrow.style.top = arrowTop + 'px';
+      arrow.style.bottom = 'auto';
+      arrow.style.left = arrowSide === 'left' ? '-8px' : 'auto';
+      arrow.style.right = arrowSide === 'right' ? '-8px' : 'auto';
+    }
+  }
+}
+
+// Keep popover positioned on window resize
+window.addEventListener('resize', () => {
+  if (dsTourIdx >= 0) {
+    const step = DS_TOUR_STEPS[dsTourIdx];
+    if (step) positionDsTour(step);
+  }
+});
 
 /* ====================== BOOT ====================== */
 window.addEventListener('hashchange', render);
