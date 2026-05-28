@@ -2788,6 +2788,176 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
 .tbl-reauth-status.is-success{color:var(--green)}
 .tbl-reauth-f{display:flex;gap:8px;justify-content:flex-end}
 
+
+/* ============ TABLES QUICK WINS (search, sparkline, drag, diff, cascade) ============ */
+
+/* Search within field list */
+.tbl-fieldlist-search{
+  display:flex;align-items:center;gap:7px;
+  padding:6px 11px;margin:8px 12px;
+  background:#070e1c;border:1px solid var(--line);border-radius:7px;
+}
+.tbl-fieldlist-search svg{color:var(--t3);flex-shrink:0}
+.tbl-fieldlist-search input{
+  flex:1;background:transparent;border:none;outline:none;
+  color:var(--t1);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11.5px;
+}
+.tbl-fieldlist-search input::placeholder{color:var(--t3);font-family:inherit}
+.tbl-fieldlist-search-clear{
+  background:transparent;border:none;cursor:pointer;color:var(--t3);
+  padding:0;line-height:0;display:none;
+}
+.tbl-fieldlist-search-clear.is-visible{display:inline-flex}
+.tbl-fieldlist-search-clear:hover{color:var(--t1)}
+.tbl-fieldlist-empty{
+  padding:24px;text-align:center;color:var(--t3);
+  font-size:11.5px;line-height:1.5;
+}
+
+/* Sync timing sparkline */
+.tbl-sync-stat-sparkline{margin-top:6px;height:18px;width:100%}
+.tbl-sync-stat-sparkline path{
+  stroke:var(--emerald);stroke-width:1.5;fill:none;stroke-linecap:round;stroke-linejoin:round;
+}
+.tbl-sync-stat-sparkline path.fill{fill:rgba(16,185,129,0.10);stroke:none}
+
+/* Drag handle for transformations */
+.tbl-rule-card.is-tx{cursor:grab}
+.tbl-rule-card.is-tx:active{cursor:grabbing}
+.tbl-rule-card.is-tx.is-dragging{opacity:.45;background:rgba(43,127,255,0.04)}
+.tbl-rule-card.is-tx.is-drop-target{
+  box-shadow:0 -2px 0 0 var(--blue) inset, 0 0 0 1px rgba(43,127,255,0.32);
+}
+.tbl-rule-num.t-tx{position:relative;cursor:grab}
+.tbl-rule-num.t-tx::before{
+  content:'⋮⋮';position:absolute;left:-12px;top:50%;transform:translateY(-50%);
+  font-size:9px;color:var(--t3);letter-spacing:-1px;font-family:ui-monospace,monospace;
+  opacity:0;transition:opacity .12s;
+}
+.tbl-rule-card.is-tx:hover .tbl-rule-num.t-tx::before{opacity:1}
+
+/* Cascade preview modal — reuses impact modal pattern */
+.tbl-cascade-overlay{
+  position:fixed;inset:0;z-index:280;
+  background:rgba(4,8,18,0.72);backdrop-filter:blur(5px);
+  display:none;align-items:center;justify-content:center;padding:24px;
+  animation:obFade .18s ease-out;
+}
+.tbl-cascade-overlay.is-open{display:flex}
+.tbl-cascade-modal{
+  width:100%;max-width:520px;max-height:88vh;
+  background:#0c1428;border:1px solid rgba(245,158,11,0.32);border-radius:14px;
+  display:flex;flex-direction:column;overflow:hidden;
+  animation:obSlide .22s cubic-bezier(.2,.8,.2,1);
+  box-shadow:0 32px 80px -20px rgba(0,0,0,0.7);
+}
+.tbl-cascade-h{
+  padding:18px 22px;border-bottom:1px solid var(--line);
+  display:flex;align-items:center;gap:12px;
+}
+.tbl-cascade-h-ic{
+  width:36px;height:36px;border-radius:10px;
+  background:rgba(245,158,11,0.14);color:var(--amber);
+  border:1px solid rgba(245,158,11,0.32);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.tbl-cascade-h-t{font-size:15px;font-weight:800;color:var(--t1);letter-spacing:-.01em;line-height:1.3}
+.tbl-cascade-h-d{font-size:11.5px;color:var(--t2);margin-top:3px;line-height:1.45}
+.tbl-cascade-body{flex:1;overflow-y:auto;padding:18px 22px;font-size:12.5px;color:var(--t2);line-height:1.55}
+.tbl-cascade-list{display:flex;flex-direction:column;gap:6px;margin-top:12px}
+.tbl-cascade-line{
+  display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:flex-start;
+  padding:10px 12px;background:rgba(245,158,11,0.05);border:1px solid rgba(245,158,11,0.22);
+  border-radius:9px;font-size:12px;
+}
+.tbl-cascade-line-template{
+  font-size:9.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--amber);padding:2px 7px;border-radius:5px;
+  background:rgba(245,158,11,0.10);border:1px solid rgba(245,158,11,0.24);
+  white-space:nowrap;
+}
+.tbl-cascade-line-body{min-width:0}
+.tbl-cascade-line-name{font-weight:700;color:var(--t1)}
+.tbl-cascade-line-meta{
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:10.5px;color:var(--t3);
+  margin-top:3px;
+}
+.tbl-cascade-f{
+  display:flex;align-items:center;justify-content:flex-end;gap:8px;
+  padding:14px 22px;border-top:1px solid var(--line);
+  background:rgba(255,255,255,0.015);
+}
+.tbl-cascade-f .btn-danger{background:#ef4444;color:#fff;border:none}
+.tbl-cascade-f .btn-danger:hover{background:#dc2626}
+
+/* Schema diff modal */
+.tbl-diff-overlay{
+  position:fixed;inset:0;z-index:285;
+  background:rgba(4,8,18,0.72);backdrop-filter:blur(5px);
+  display:none;align-items:center;justify-content:center;padding:24px;
+  animation:obFade .18s ease-out;
+}
+.tbl-diff-overlay.is-open{display:flex}
+.tbl-diff-modal{
+  width:100%;max-width:600px;max-height:88vh;
+  background:#0c1428;border:1px solid rgba(43,127,255,0.32);border-radius:14px;
+  display:flex;flex-direction:column;overflow:hidden;
+  animation:obSlide .22s cubic-bezier(.2,.8,.2,1);
+}
+.tbl-diff-h{
+  padding:18px 22px;border-bottom:1px solid var(--line);
+  display:flex;align-items:center;gap:12px;
+}
+.tbl-diff-h-ic{
+  width:36px;height:36px;border-radius:10px;
+  background:rgba(43,127,255,0.14);color:var(--blue);
+  border:1px solid rgba(43,127,255,0.32);
+  display:flex;align-items:center;justify-content:center;
+}
+.tbl-diff-h-t{font-size:15px;font-weight:800;color:var(--t1);letter-spacing:-.01em}
+.tbl-diff-h-d{font-size:11.5px;color:var(--t2);margin-top:3px;line-height:1.45}
+.tbl-diff-body{flex:1;overflow-y:auto;padding:18px 22px}
+.tbl-diff-section{margin-bottom:16px}
+.tbl-diff-section-h{
+  font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
+  margin-bottom:8px;display:flex;align-items:center;gap:7px;
+}
+.tbl-diff-section-h.add{color:var(--green)}
+.tbl-diff-section-h.rm{color:#fca5a5}
+.tbl-diff-section-h.mod{color:var(--blue)}
+.tbl-diff-section-h-count{
+  font-size:9.5px;font-weight:800;padding:1px 6px;border-radius:99px;
+  background:rgba(255,255,255,0.06);color:inherit;
+}
+.tbl-diff-row{
+  padding:9px 12px;margin-bottom:5px;
+  background:rgba(255,255,255,0.025);border:1px solid var(--line);border-radius:8px;
+  font-size:12px;
+}
+.tbl-diff-row.add{background:rgba(16,185,129,0.05);border-color:rgba(16,185,129,0.22)}
+.tbl-diff-row.rm{background:rgba(239,68,68,0.05);border-color:rgba(239,68,68,0.22)}
+.tbl-diff-row-name{
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  color:var(--t1);font-weight:600;
+}
+.tbl-diff-row-changes{
+  margin-top:6px;display:flex;flex-direction:column;gap:3px;
+  font-size:11px;color:var(--t2);
+}
+.tbl-diff-row-change-prop{color:var(--t3);font-family:ui-monospace,monospace;font-size:10.5px}
+.tbl-diff-row-change-arrow{color:var(--t3);margin:0 6px;font-family:ui-monospace,monospace}
+.tbl-diff-row-change-from{color:#fca5a5;font-family:ui-monospace,monospace;text-decoration:line-through;text-decoration-color:rgba(239,68,68,0.5)}
+.tbl-diff-row-change-to{color:var(--green);font-family:ui-monospace,monospace}
+.tbl-diff-empty{
+  padding:32px 18px;text-align:center;color:var(--t3);
+  border:1px dashed var(--line);border-radius:9px;font-size:11.5px;
+}
+.tbl-diff-f{
+  display:flex;align-items:center;justify-content:flex-end;gap:8px;
+  padding:14px 22px;border-top:1px solid var(--line);
+  background:rgba(255,255,255,0.015);
+}
+
 </style>
 </head>
 <body>
@@ -3020,6 +3190,41 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
   </div>
 </div>
 
+
+
+<!-- Cascade preview modal (field delete with template refs) -->
+<div class="tbl-cascade-overlay" id="tblCascadeOverlay" onclick="if(event.target===this)closeCascadeModal()">
+  <div class="tbl-cascade-modal">
+    <header class="tbl-cascade-h">
+      <div class="tbl-cascade-h-ic">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+      </div>
+      <div style="flex:1;min-width:0">
+        <div class="tbl-cascade-h-t" id="tblCascadeTitle">Delete field?</div>
+        <div class="tbl-cascade-h-d" id="tblCascadeSub">This field is referenced by template lines</div>
+      </div>
+    </header>
+    <div class="tbl-cascade-body" id="tblCascadeBody"></div>
+    <footer class="tbl-cascade-f" id="tblCascadeFooter"></footer>
+  </div>
+</div>
+
+<!-- Schema diff modal (preview before restore) -->
+<div class="tbl-diff-overlay" id="tblDiffOverlay" onclick="if(event.target===this)closeDiffModal()">
+  <div class="tbl-diff-modal">
+    <header class="tbl-diff-h">
+      <div class="tbl-diff-h-ic">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+      </div>
+      <div style="flex:1;min-width:0">
+        <div class="tbl-diff-h-t" id="tblDiffTitle">Schema diff</div>
+        <div class="tbl-diff-h-d" id="tblDiffSub">What changes when you restore</div>
+      </div>
+    </header>
+    <div class="tbl-diff-body" id="tblDiffBody"></div>
+    <footer class="tbl-diff-f" id="tblDiffFooter"></footer>
+  </div>
+</div>
 
 <!-- Re-authenticate modal (shared) -->
 <div class="tbl-reauth-overlay" id="tblReauthOverlay" onclick="if(event.target===this)closeReauthModal()">
@@ -3423,6 +3628,7 @@ function triggerSyncNow(slug) {
   // Re-paint
   const parts = parseRoute();
   if (parts[0] === 'tables' && parts[1]) renderTableDetail(parts[1]);
+  trackTbl('tables_sync_triggered', { connector: slug, manual: true });
   toast(conn.name + ': sync started');
   setTimeout(() => {
     s.status = 'connected';
@@ -3451,6 +3657,7 @@ function pauseSync(slug) {
   ensureSyncState(conn).status = 'paused';
   const parts = parseRoute();
   if (parts[0] === 'tables' && parts[1]) renderTableDetail(parts[1]);
+  trackTbl('tables_sync_paused', { connector: slug });
   toast(conn.name + ': sync paused');
 }
 function resumeSync(slug) {
@@ -3461,6 +3668,7 @@ function resumeSync(slug) {
   s.lastError = null;
   const parts = parseRoute();
   if (parts[0] === 'tables' && parts[1]) renderTableDetail(parts[1]);
+  trackTbl('tables_sync_resumed', { connector: slug });
   toast(conn.name + ': sync resumed');
 }
 
@@ -3712,6 +3920,24 @@ function renderTableDetail(tableName) {
     return conn && ensureSyncState(conn).status === 'error';
   });
 
+  // QW: filter visible fields by search query (track original index so selection still works)
+  const visibleFields = (tblFieldSearch
+    ? allFields.map((f, i) => ({ f, _origIdx: i })).filter(({ f }) => (f.displayName || f.name).toLowerCase().indexOf(tblFieldSearch) !== -1).map(({ f, _origIdx }) => Object.assign({}, f, { _origIdx }))
+    : allFields.map((f, i) => Object.assign({}, f, { _origIdx: i })));
+
+  // QW: usage count per field for U<n> flag (uses mock template references)
+  visibleFields.forEach(f => {
+    const usage = getFieldUsage(t.name, f.displayName || f.name);
+    f.usageCount = usage.length;
+  });
+  // Also annotate allFields for everything else (renderTblFieldTab uses it)
+  allFields.forEach(f => {
+    const usage = getFieldUsage(t.name, f.displayName || f.name);
+    f.usageCount = usage.length;
+  });
+
+  trackTbl('tables_detail_viewed', { table: t.name, sources: t.sources.length });
+
   $('content').innerHTML = `
     <div class="tbl-wrap">
       <div class="breadcrumb">
@@ -3761,9 +3987,14 @@ function renderTableDetail(tableName) {
           <div class="tbl-fieldlist-h">
             <div class="tbl-fieldlist-t">
               Fields
-              <span class="tbl-fieldlist-count">${allFields.length}</span>
+              <span class="tbl-fieldlist-count">${visibleFields.length}${visibleFields.length !== allFields.length ? ' of ' + allFields.length : ''}</span>
             </div>
             <button class="tbl-fieldlist-add" onclick="tblAddField('${escapeHtml(t.name)}')">+ Add field</button>
+          </div>
+          <div class="tbl-fieldlist-search">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="7" cy="7" r="5"/><path d="M14 14l-3-3"/></svg>
+            <input type="text" placeholder="Search fields..." value="${escapeHtml(tblFieldSearch)}" oninput="tblFieldSearchInput(this.value)"/>
+            ${tblFieldSearch ? `<button class="tbl-fieldlist-search-clear is-visible" onclick="tblFieldSearchClear()" title="Clear"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 2l8 8M10 2L2 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>` : ''}
           </div>
           <div class="tbl-fieldlist-body">
             <div class="tbl-fieldlist-row is-header">
@@ -3772,7 +4003,9 @@ function renderTableDetail(tableName) {
               <span>Flags</span>
               <span>Sample</span>
             </div>
-            ${allFields.map((f, idx) => `
+            ${(visibleFields.length === 0 ? '<div class="tbl-fieldlist-empty">No fields match &quot;' + escapeHtml(tblFieldSearch) + '&quot;</div>' : visibleFields.map((f) => {
+              const idx = f._origIdx;
+              return `
               <div class="tbl-fieldlist-row ${tblSelectedField === idx ? 'is-selected' : ''} ${f._isManual ? 'is-manual' : ''}" onclick="setTblField(${idx})">
                 <span class="tbl-field-name">${escapeHtml(f.displayName || f.name)}${f._isManual ? `<button class="tbl-field-rm" onclick="event.stopPropagation();tblRemoveField('${escapeHtml(t.name)}','${escapeHtml(f.name)}')" title="Remove field"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 2l8 8M10 2L2 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>` : ''}</span>
                 <span><span class="tbl-field-type ob-type-pill t-${f.type}">${escapeHtml(f.type)}</span></span>
@@ -3787,7 +4020,8 @@ function renderTableDetail(tableName) {
                 </span>
                 <span class="tbl-field-sample">${escapeHtml(f.sampleValue || (f.sources[0] && f.sources[0].srcField) || '—')}</span>
               </div>
-            `).join('')}
+            `;
+            }).join(''))}
           </div>
         </div>
 
@@ -3800,7 +4034,7 @@ function renderTableDetail(tableName) {
               ${hasErrSource ? '<span class="tbl-rail-tab-err-dot" title="A source is in error"></span>' : ''}
             </button>
             <button class="tbl-rail-tab ${tblRailTab === 'conn' ? 'is-active' : ''}" onclick="setTblRailTab('conn')">Conn</button>
-            <button class="tbl-rail-tab ${tblRailTab === 'used' ? 'is-active' : ''}" onclick="setTblRailTab('used')">Used by <span class="tbl-rail-tab-count">0</span></button>
+            <button class="tbl-rail-tab ${tblRailTab === 'used' ? 'is-active' : ''}" onclick="setTblRailTab('used')">Used by <span class="tbl-rail-tab-count">${getTableUsage(t.name).length}</span></button>
             <button class="tbl-rail-tab ${tblRailTab === 'ver' ? 'is-active' : ''}" onclick="setTblRailTab('ver')">Versions <span class="tbl-rail-tab-count">1</span></button>
             <button class="tbl-rail-tab ${tblRailTab === 'set' ? 'is-active' : ''}" onclick="setTblRailTab('set')">Custom fields</button>
           </div>
@@ -3899,6 +4133,13 @@ function renderTblSyncTab(t) {
       <div class="tbl-sync-stat">
         <div class="tbl-sync-stat-l">Last sync</div>
         <div class="tbl-sync-stat-v">${escapeHtml(s.lastSyncAt)}</div>
+        ${(() => {
+          const durs = (s.history || []).filter(ev => ev.status !== 'error').slice(0, 10).reverse().map(ev => ev.durationMs);
+          if (durs.length < 2) return '';
+          const path = sparklinePath(durs, 100, 16);
+          const fill = sparklineFillPath(durs, 100, 16);
+          return `<svg class="tbl-sync-stat-sparkline" viewBox="0 0 100 18" preserveAspectRatio="none" title="Sync duration over last ${durs.length} runs"><path class="fill" d="${fill}"/><path d="${path}"/></svg>`;
+        })()}
       </div>
       <div class="tbl-sync-stat">
         <div class="tbl-sync-stat-l">Next sync</div>
@@ -4081,6 +4322,7 @@ function tblAddField(tableName) {
   });
   persistManualFields();
   createVersion(tableName, 'Added field "' + name + '"');
+  trackTbl('tables_field_added', { table: tableName, field: name });
   toast('Added field "' + name + '" — rename in Basics');
   // Auto-select the new field (it'll be the last manual one)
   // Get the new field's index in the rendered fields array (after detected + manual)
@@ -4101,19 +4343,27 @@ function tblAddField(tableName) {
 }
 
 function tblRemoveField(tableName, fieldName) {
-  if (!confirm('Remove field "' + fieldName + '" from this table? Validations and transformations on this field will be lost. This cannot be undone except via Restore from Versions.')) return;
-  const list = tableManualFields[tableName] || [];
-  tableManualFields[tableName] = list.filter(f => f.name !== fieldName);
-  // Also clear any overrides for this field
-  if (tableFieldOverrides[tableName]) {
-    delete tableFieldOverrides[tableName][fieldName];
-    persistTableFieldOverrides();
+  const usage = getFieldUsage(tableName, fieldName);
+  const doRemove = () => {
+    const list = tableManualFields[tableName] || [];
+    tableManualFields[tableName] = list.filter(f => f.name !== fieldName);
+    if (tableFieldOverrides[tableName]) {
+      delete tableFieldOverrides[tableName][fieldName];
+      persistTableFieldOverrides();
+    }
+    persistManualFields();
+    createVersion(tableName, 'Removed field "' + fieldName + '"');
+    trackTbl('tables_field_removed', { table: tableName, field: fieldName, broke_lines: usage.length });
+    toast('Removed "' + fieldName + '"');
+    tblSelectedField = null;
+    rerenderTableDetail();
+  };
+  if (usage.length > 0) {
+    openCascadeModal(tableName, fieldName, usage, doRemove);
+    return;
   }
-  persistManualFields();
-  createVersion(tableName, 'Removed field "' + fieldName + '"');
-  toast('Removed "' + fieldName + '"');
-  tblSelectedField = null;
-  rerenderTableDetail();
+  if (!confirm('Remove field "' + fieldName + '" from this table? Validations and transformations on this field will be lost. This cannot be undone except via Restore from Versions.')) return;
+  doRemove();
 }
 
 // Helper used by tblAddField's post-render setTimeout
@@ -4200,6 +4450,7 @@ function removeSourceFromTable(tableName, slug) {
   }
   persistSourceExclusions();
   createVersion(tableName, 'Removed ' + sourceName + ' from this table');
+  trackTbl('tables_source_removed', { table: tableName, source: slug });
   toast(sourceName + ' removed from this table');
   rerenderTableDetail();
 }
@@ -4233,6 +4484,7 @@ function openReauthModal(slug) {
   `;
   $('tblReauthOverlay').classList.add('is-open');
   document.body.style.overflow = 'hidden';
+  trackTbl('tables_reauth_opened', { connector: slug });
 }
 function closeReauthModal() {
   if (_reauthTimer) { clearTimeout(_reauthTimer); _reauthTimer = null; }
@@ -4266,6 +4518,357 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
     const ov = document.getElementById('tblReauthOverlay');
     if (ov && ov.classList.contains('is-open')) closeReauthModal();
+  }
+});
+
+
+
+/* ============ TABLES QUICK WINS ============ */
+
+/* QW 1: Search within fields */
+let tblFieldSearch = '';
+function tblFieldSearchInput(value) {
+  tblFieldSearch = (value || '').toLowerCase();
+  rerenderTableDetail();
+}
+function tblFieldSearchClear() {
+  tblFieldSearch = '';
+  rerenderTableDetail();
+}
+
+/* QW 2: Telemetry on Tables — reuses track() from onboarding telemetry */
+function trackTbl(event, props) {
+  if (typeof track === 'function') {
+    track(event, Object.assign({ surface: 'data-studio.tables' }, props || {}));
+  }
+}
+
+/* QW 3: Sparkline for sync history durations */
+function sparklinePath(values, width, height) {
+  if (!values || values.length === 0) return '';
+  if (values.length === 1) {
+    const y = height/2;
+    return `M0,${y} L${width},${y}`;
+  }
+  const max = Math.max(...values);
+  const min = Math.min(...values);
+  const range = Math.max(1, max - min);
+  const step = width / (values.length - 1);
+  const points = values.map((v, i) => {
+    const x = i * step;
+    const y = height - ((v - min) / range) * (height - 2) - 1;
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  });
+  return 'M' + points.join(' L');
+}
+
+function sparklineFillPath(values, width, height) {
+  if (!values || values.length === 0) return '';
+  const line = sparklinePath(values, width, height);
+  if (!line) return '';
+  return line + ` L${width},${height} L0,${height} Z`;
+}
+
+/* QW 4: Drag-to-reorder transformations */
+let _txDragSrcId = null;
+function tblTxDragStart(evt, ruleId) {
+  _txDragSrcId = ruleId;
+  evt.currentTarget.classList.add('is-dragging');
+  evt.dataTransfer.effectAllowed = 'move';
+  // Required for Firefox
+  try { evt.dataTransfer.setData('text/plain', ruleId); } catch(e){}
+}
+function tblTxDragEnd(evt) {
+  evt.currentTarget.classList.remove('is-dragging');
+  document.querySelectorAll('.tbl-rule-card.is-drop-target').forEach(el => el.classList.remove('is-drop-target'));
+  _txDragSrcId = null;
+}
+function tblTxDragOver(evt, ruleId) {
+  if (!_txDragSrcId || _txDragSrcId === ruleId) return;
+  evt.preventDefault();
+  evt.dataTransfer.dropEffect = 'move';
+  document.querySelectorAll('.tbl-rule-card.is-drop-target').forEach(el => el.classList.remove('is-drop-target'));
+  evt.currentTarget.classList.add('is-drop-target');
+}
+function tblTxDrop(evt, tableName, fieldName, dropTargetId) {
+  evt.preventDefault();
+  if (!_txDragSrcId || _txDragSrcId === dropTargetId) return;
+  const ov = ensureFieldOverride(tableName, fieldName);
+  const list = ov.transformations || [];
+  const srcIdx = list.findIndex(x => x.id === _txDragSrcId);
+  const dstIdx = list.findIndex(x => x.id === dropTargetId);
+  if (srcIdx === -1 || dstIdx === -1) return;
+  const [moved] = list.splice(srcIdx, 1);
+  list.splice(dstIdx, 0, moved);
+  persistTableFieldOverrides();
+  createVersion(tableName, 'Reordered transformations on ' + fieldName);
+  trackTbl('tables_transformation_reordered', { table: tableName, field: fieldName });
+  toast('Transformations reordered');
+  _txDragSrcId = null;
+  rerenderTableDetail();
+}
+
+/* QW 5: Mock template lines (would come from Templates surface) */
+const MOCK_TEMPLATE_LINES = [
+  { templateId:'tpl_industry_standard', templateName:'Industry standard', lineId:'product_revenue',  lineName:'Product revenue',           tableObject:'opportunity', fieldName:'amount',       aggregation:'sum' },
+  { templateId:'tpl_industry_standard', templateName:'Industry standard', lineId:'closed_won_count', lineName:'Closed-won count',          tableObject:'opportunity', fieldName:'stage_name',   aggregation:'count' },
+  { templateId:'tpl_industry_standard', templateName:'Industry standard', lineId:'avg_deal_size',    lineName:'Average deal size',         tableObject:'opportunity', fieldName:'amount',       aggregation:'average' },
+  { templateId:'tpl_industry_standard', templateName:'Industry standard', lineId:'mrr',              lineName:'Monthly recurring revenue', tableObject:'opportunity', fieldName:'amount',       aggregation:'sum' },
+  { templateId:'tpl_industry_standard', templateName:'Industry standard', lineId:'pipeline_value',   lineName:'Open pipeline value',       tableObject:'opportunity', fieldName:'amount',       aggregation:'sum',  note:'filtered to stage=open' },
+  { templateId:'tpl_industry_standard', templateName:'Industry standard', lineId:'new_customers',    lineName:'New customers / month',     tableObject:'customer',    fieldName:'created_at',   aggregation:'count' },
+  { templateId:'tpl_industry_standard', templateName:'Industry standard', lineId:'customer_count',   lineName:'Total customers',           tableObject:'customer',    fieldName:'id',           aggregation:'count_distinct' },
+  { templateId:'tpl_category_variant',  templateName:'Category variant',  lineId:'churn_rate',       lineName:'Customer churn rate',       tableObject:'customer',    fieldName:'status',       aggregation:'count' },
+  { templateId:'tpl_category_variant',  templateName:'Category variant',  lineId:'avg_lifetime',     lineName:'Average customer lifetime', tableObject:'customer',    fieldName:'created_at',   aggregation:'average' },
+  { templateId:'tpl_industry_standard', templateName:'Industry standard', lineId:'pr_throughput',    lineName:'PR throughput',             tableObject:'pull_request',fieldName:'id',           aggregation:'count' }
+];
+
+function getFieldUsage(tableObject, fieldName) {
+  return MOCK_TEMPLATE_LINES.filter(l => l.tableObject === tableObject && l.fieldName === fieldName);
+}
+function getTableUsage(tableObject) {
+  return MOCK_TEMPLATE_LINES.filter(l => l.tableObject === tableObject);
+}
+
+/* Cascade modal */
+let _cascadeCallback = null;
+function openCascadeModal(tableName, fieldName, usage, onConfirm) {
+  _cascadeCallback = onConfirm || null;
+  $('tblCascadeTitle').textContent = 'Delete field "' + fieldName + '"?';
+  $('tblCascadeSub').textContent = usage.length + ' template line' + (usage.length === 1 ? '' : 's') + ' will break';
+  $('tblCascadeBody').innerHTML = `
+    <div>Deleting <span class="mono" style="font-family:ui-monospace,monospace;color:var(--cyan)">${escapeHtml(fieldName)}</span> from <span class="mono" style="font-family:ui-monospace,monospace;color:var(--cyan)">${escapeHtml(tableName)}</span> will leave the following template lines with broken references. The lines will keep existing but stop computing values until you remap them.</div>
+    <div class="tbl-cascade-list">
+      ${usage.map(u => `
+        <div class="tbl-cascade-line">
+          <span class="tbl-cascade-line-template">${escapeHtml(u.templateName)}</span>
+          <div class="tbl-cascade-line-body">
+            <div class="tbl-cascade-line-name">${escapeHtml(u.lineName)}</div>
+            <div class="tbl-cascade-line-meta">${escapeHtml(u.aggregation)}(${escapeHtml(u.fieldName)})${u.note ? ' &middot; <i>' + escapeHtml(u.note) + '</i>' : ''}</div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+  $('tblCascadeFooter').innerHTML = `
+    <button class="btn btn-ghost btn-sm" onclick="closeCascadeModal()">Cancel</button>
+    <button class="btn btn-danger btn-sm" onclick="confirmCascadeModal()">Delete anyway</button>
+  `;
+  $('tblCascadeOverlay').classList.add('is-open');
+  document.body.style.overflow = 'hidden';
+}
+function closeCascadeModal() {
+  $('tblCascadeOverlay').classList.remove('is-open');
+  document.body.style.overflow = '';
+  _cascadeCallback = null;
+}
+function confirmCascadeModal() {
+  const cb = _cascadeCallback;
+  closeCascadeModal();
+  if (typeof cb === 'function') cb();
+}
+
+/* QW 6: Schema diff between versions */
+function buildSchemaDiff(currentOverrides, currentDefs, targetOverrides, targetDefs) {
+  const cFields = new Set(Object.keys(currentOverrides || {}));
+  const tFields = new Set(Object.keys(targetOverrides || {}));
+  const added = [];   // in target, not in current → restoring adds them
+  const removed = []; // in current, not in target → restoring removes them
+  const modified = []; // in both, different
+
+  tFields.forEach(name => {
+    if (!cFields.has(name)) {
+      added.push({ name, props: targetOverrides[name] });
+    } else {
+      const a = currentOverrides[name] || {};
+      const b = targetOverrides[name] || {};
+      const changes = [];
+      // Compare scalar properties
+      ['displayName','type','isPrimaryKey','isIndexed','nullable','description'].forEach(k => {
+        if (JSON.stringify(a[k]) !== JSON.stringify(b[k])) {
+          changes.push({ prop: k, from: a[k], to: b[k] });
+        }
+      });
+      // Compare array sizes (validations / transformations)
+      ['validations','transformations'].forEach(k => {
+        const aLen = (a[k] || []).length;
+        const bLen = (b[k] || []).length;
+        if (aLen !== bLen) {
+          changes.push({ prop: k, from: aLen + ' rule' + (aLen === 1 ? '' : 's'), to: bLen + ' rule' + (bLen === 1 ? '' : 's') });
+        }
+      });
+      // Compare customProps
+      const aCp = JSON.stringify(a.customProps || {});
+      const bCp = JSON.stringify(b.customProps || {});
+      if (aCp !== bCp) changes.push({ prop: 'customProps', from: 'modified', to: 'modified' });
+      if (changes.length > 0) modified.push({ name, changes });
+    }
+  });
+  cFields.forEach(name => {
+    if (!tFields.has(name)) {
+      removed.push({ name, props: currentOverrides[name] });
+    }
+  });
+
+  // Custom field def diffs
+  const cDefs = currentDefs || [];
+  const tDefs = targetDefs || [];
+  const cDefIds = new Set(cDefs.map(d => d.id));
+  const tDefIds = new Set(tDefs.map(d => d.id));
+  const defsAdded   = tDefs.filter(d => !cDefIds.has(d.id));
+  const defsRemoved = cDefs.filter(d => !tDefIds.has(d.id));
+
+  return { added, removed, modified, defsAdded, defsRemoved };
+}
+
+let _diffRestoreVersionId = null;
+let _diffRestoreTableName = null;
+function openDiffModal(tableName, versionId) {
+  const list = tableVersions[tableName] || [];
+  const target = list.find(v => v.id === versionId);
+  if (!target) return;
+  const current = takeSnapshot(tableName);
+  const diff = buildSchemaDiff(current.overrides, current.customDefs, target.snapshot.overrides, target.snapshot.customDefs);
+
+  _diffRestoreVersionId = versionId;
+  _diffRestoreTableName = tableName;
+
+  $('tblDiffTitle').textContent = 'Restore "' + (target.label || versionId) + '"?';
+  $('tblDiffSub').textContent = 'Preview of what changes when you confirm';
+
+  const totalChanges = diff.added.length + diff.removed.length + diff.modified.length + diff.defsAdded.length + diff.defsRemoved.length;
+
+  let body = '';
+  if (totalChanges === 0) {
+    body = '<div class="tbl-diff-empty">No differences — current state already matches this version. Restoring still creates a backup version and a Restored entry.</div>';
+  } else {
+    if (diff.added.length > 0) {
+      body += `
+        <div class="tbl-diff-section">
+          <div class="tbl-diff-section-h add">
+            <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 1.5v9M1.5 6h9"/></svg>
+            Restoring adds <span class="tbl-diff-section-h-count">${diff.added.length}</span>
+          </div>
+          ${diff.added.map(item => `
+            <div class="tbl-diff-row add"><div class="tbl-diff-row-name">${escapeHtml(item.name)}</div></div>
+          `).join('')}
+        </div>
+      `;
+    }
+    if (diff.removed.length > 0) {
+      body += `
+        <div class="tbl-diff-section">
+          <div class="tbl-diff-section-h rm">
+            <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1.5 6h9"/></svg>
+            Restoring removes <span class="tbl-diff-section-h-count">${diff.removed.length}</span>
+          </div>
+          ${diff.removed.map(item => `
+            <div class="tbl-diff-row rm"><div class="tbl-diff-row-name">${escapeHtml(item.name)}</div></div>
+          `).join('')}
+        </div>
+      `;
+    }
+    if (diff.modified.length > 0) {
+      body += `
+        <div class="tbl-diff-section">
+          <div class="tbl-diff-section-h mod">
+            <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1.5 6h7M5 3l3 3-3 3"/></svg>
+            Modified <span class="tbl-diff-section-h-count">${diff.modified.length}</span>
+          </div>
+          ${diff.modified.map(item => `
+            <div class="tbl-diff-row">
+              <div class="tbl-diff-row-name">${escapeHtml(item.name)}</div>
+              <div class="tbl-diff-row-changes">
+                ${item.changes.map(ch => `
+                  <div>
+                    <span class="tbl-diff-row-change-prop">${escapeHtml(ch.prop)}:</span>
+                    <span class="tbl-diff-row-change-from">${escapeHtml(String(ch.from === undefined ? '—' : ch.from))}</span>
+                    <span class="tbl-diff-row-change-arrow">→</span>
+                    <span class="tbl-diff-row-change-to">${escapeHtml(String(ch.to === undefined ? '—' : ch.to))}</span>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+    if (diff.defsAdded.length > 0 || diff.defsRemoved.length > 0) {
+      body += `
+        <div class="tbl-diff-section">
+          <div class="tbl-diff-section-h mod">
+            <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="6" cy="6" r="2"/><circle cx="6" cy="6" r="4.5"/></svg>
+            Custom field definitions
+          </div>
+          ${diff.defsAdded.map(d => `<div class="tbl-diff-row add"><div class="tbl-diff-row-name">+ ${escapeHtml(d.name)} <span style="color:var(--t3);font-weight:500">(${escapeHtml(d.type)})</span></div></div>`).join('')}
+          ${diff.defsRemoved.map(d => `<div class="tbl-diff-row rm"><div class="tbl-diff-row-name">− ${escapeHtml(d.name)} <span style="color:var(--t3);font-weight:500">(${escapeHtml(d.type)})</span></div></div>`).join('')}
+        </div>
+      `;
+    }
+  }
+  $('tblDiffBody').innerHTML = body;
+  $('tblDiffFooter').innerHTML = `
+    <button class="btn btn-ghost btn-sm" onclick="closeDiffModal()">Cancel</button>
+    <button class="btn btn-primary btn-sm" onclick="confirmRestoreFromDiff()">Restore</button>
+  `;
+
+  $('tblDiffOverlay').classList.add('is-open');
+  document.body.style.overflow = 'hidden';
+}
+function closeDiffModal() {
+  $('tblDiffOverlay').classList.remove('is-open');
+  document.body.style.overflow = '';
+  _diffRestoreVersionId = null;
+  _diffRestoreTableName = null;
+}
+function confirmRestoreFromDiff() {
+  const tableName = _diffRestoreTableName;
+  const versionId = _diffRestoreVersionId;
+  closeDiffModal();
+  if (tableName && versionId) {
+    _doRestoreVersion(tableName, versionId);
+  }
+}
+
+// Internal restore — no confirm dialog (modal already confirmed)
+function _doRestoreVersion(tableName, versionId) {
+  const list = tableVersions[tableName] || [];
+  const target = list.find(v => v.id === versionId);
+  if (!target) return;
+  list.unshift({
+    id: 'v_backup_' + Date.now(),
+    label: 'Auto-saved before restoring "' + target.label + '"',
+    createdAt: 'just now',
+    author: 'You',
+    snapshot: takeSnapshot(tableName)
+  });
+  tableFieldOverrides[tableName] = JSON.parse(JSON.stringify(target.snapshot.overrides || {}));
+  tableCustomDefs[tableName] = JSON.parse(JSON.stringify(target.snapshot.customDefs || []));
+  list.unshift({
+    id: 'v_restore_' + Date.now(),
+    label: 'Restored "' + target.label + '"',
+    createdAt: 'just now',
+    author: 'You',
+    snapshot: takeSnapshot(tableName)
+  });
+  persistTableFieldOverrides();
+  persistTableCustomDefs();
+  persistTableVersions();
+  trackTbl('tables_version_restored', { table: tableName, version: target.label });
+  toast('Restored ' + target.label);
+  rerenderTableDetail();
+}
+
+// Override the public restoreVersion to open the diff modal first
+restoreVersion = function(tableName, versionId) {
+  openDiffModal(tableName, versionId);
+};
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    const cov = document.getElementById('tblCascadeOverlay');
+    const dov = document.getElementById('tblDiffOverlay');
+    if (cov && cov.classList.contains('is-open')) closeCascadeModal();
+    if (dov && dov.classList.contains('is-open')) closeDiffModal();
   }
 });
 
@@ -4379,6 +4982,7 @@ function addValidation(tableName, fieldName, ruleId) {
   ov.validations.push({ id: 'v_' + Date.now() + '_' + Math.floor(Math.random()*999), ruleId: ruleId, value: '' });
   persistTableFieldOverrides();
   tblFiAddingPicker = null;
+  trackTbl('tables_validation_added', { table: tableName, field: fieldName, rule: ruleId });
   toast('Added validation: ' + ruleId);
   rerenderTableDetail();
 }
@@ -4400,6 +5004,7 @@ function addTransformation(tableName, fieldName, transformId) {
   ov.transformations.push({ id: 't_' + Date.now() + '_' + Math.floor(Math.random()*999), transformId: transformId, value: '' });
   persistTableFieldOverrides();
   tblFiAddingPicker = null;
+  trackTbl('tables_transformation_added', { table: tableName, field: fieldName, transform: transformId });
   toast('Added transformation: ' + transformId);
   rerenderTableDetail();
 }
@@ -4657,7 +5262,7 @@ function renderFiTransformation(f, tableName) {
       const def = TBL_TRANSFORMATIONS.find(r => r.id === t.transformId);
       if (!def) return '';
       return `
-        <div class="tbl-rule-card">
+        <div class="tbl-rule-card is-tx" draggable="true" ondragstart="tblTxDragStart(event,'${t.id}')" ondragend="tblTxDragEnd(event)" ondragover="tblTxDragOver(event,'${t.id}')" ondrop="tblTxDrop(event,'${tableName}','${escapeHtml(f.name)}','${t.id}')" title="Drag to reorder">
           <div class="tbl-rule-num t-tx">${idx + 1}</div>
           <div class="tbl-rule-body">
             <div class="tbl-rule-name">${escapeHtml(def.name)}</div>
@@ -4668,7 +5273,7 @@ function renderFiTransformation(f, tableName) {
               </div>
             ` : ''}
           </div>
-          <button class="tbl-rule-rm" onclick="removeTransformation('${tableName}','${escapeHtml(f.name)}','${t.id}')" title="Remove">
+          <button class="tbl-rule-rm" onclick="event.stopPropagation();removeTransformation('${tableName}','${escapeHtml(f.name)}','${t.id}')" title="Remove">
             <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
           </button>
         </div>
@@ -4831,13 +5436,46 @@ function renderTblConnTab(t) {
 }
 
 function renderTblUsedTab(t) {
-  return `
-    <div class="tbl-rail-placeholder">
-      <div class="tbl-rail-placeholder-ic">
-        <svg width="22" height="22" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="12" height="6" rx="1"/><rect x="2" y="10" width="6" height="4" rx="1"/><rect x="10" y="10" width="4" height="4" rx="1"/></svg>
+  const usage = getTableUsage(t.name);
+  if (usage.length === 0) {
+    return `
+      <div class="tbl-rail-placeholder">
+        <div class="tbl-rail-placeholder-ic">
+          <svg width="22" height="22" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="12" height="6" rx="1"/><rect x="2" y="10" width="6" height="4" rx="1"/><rect x="10" y="10" width="4" height="4" rx="1"/></svg>
+        </div>
+        <div class="tbl-rail-placeholder-t">No template lines reference this table</div>
+        <div class="tbl-rail-placeholder-d">When a Templates line uses one of this table&rsquo;s fields, it&rsquo;ll appear here with the field, aggregation, and any filter context. Safe to edit or delete this table without affecting any composite calculations.</div>
       </div>
-      <div class="tbl-rail-placeholder-t">No template lines reference this table</div>
-      <div class="tbl-rail-placeholder-d">Templates is a separate Data Studio surface that we haven&rsquo;t built yet. When a template line uses one of this table&rsquo;s fields, it&rsquo;ll appear here with the field, aggregation, and any filter context.</div>
+    `;
+  }
+  // Group by template
+  const byTemplate = {};
+  usage.forEach(u => {
+    if (!byTemplate[u.templateId]) byTemplate[u.templateId] = { name: u.templateName, lines: [] };
+    byTemplate[u.templateId].lines.push(u);
+  });
+  return `
+    <div style="font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--t3);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between">
+      <span>Used by template lines</span>
+      <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--t3)">${usage.length} reference${usage.length === 1 ? '' : 's'}</span>
+    </div>
+    ${Object.entries(byTemplate).map(([tplId, tpl]) => `
+      <div style="margin-bottom:12px;border:1px solid var(--line);border-radius:10px;overflow:hidden">
+        <div style="padding:9px 12px;background:rgba(255,255,255,0.025);border-bottom:1px solid var(--line);font-size:11.5px;font-weight:700;color:var(--t1)">
+          ${escapeHtml(tpl.name)} <span style="color:var(--t3);font-weight:500;font-size:10.5px;margin-left:4px">${tpl.lines.length} line${tpl.lines.length === 1 ? '' : 's'}</span>
+        </div>
+        ${tpl.lines.map(line => `
+          <div style="padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.04);display:flex;align-items:flex-start;justify-content:space-between;gap:10px;font-size:11.5px">
+            <div style="min-width:0">
+              <div style="color:var(--t1);font-weight:600">${escapeHtml(line.lineName)}</div>
+              <div style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:10.5px;color:var(--t3);margin-top:3px">${escapeHtml(line.aggregation)}(${escapeHtml(line.fieldName)})${line.note ? ' &middot; <i>' + escapeHtml(line.note) + '</i>' : ''}</div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `).join('')}
+    <div style="margin-top:10px;padding:10px 12px;background:rgba(245,158,11,0.05);border:1px dashed rgba(245,158,11,0.28);border-radius:8px;font-size:10.5px;color:var(--t2);line-height:1.5">
+      <b style="color:var(--t1)">Heads up:</b> renaming or deleting a field that&rsquo;s referenced here will break the listed lines. Deleting will surface a preview of what breaks before you confirm.
     </div>
   `;
 }
