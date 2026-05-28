@@ -5813,14 +5813,35 @@ function renderRequestsInbox() {
           <span class="op-mode-tag">Inbox</span>
           <span class="op-hero-sub">Integration requests from your workspace</span>
         </div>
-        <h1 class="op-hero-title">${activeCount > 0 ? `<span style="color:var(--amber)">${activeCount}</span> request${activeCount===1?'':'s'} waiting on you` : 'No pending requests'}</h1>
-        <p class="op-hero-desc">Review, scope, quote and approve integration requests from members. The AIMS managed services team picks up everything that passes admin review.</p>
+        <h1 class="op-hero-title">${activeCount > 0 ? `<span style="color:#fbbf24">${activeCount}</span> request${activeCount===1?'':'s'} waiting on you` : 'No pending requests'}</h1>
+        <span class="op-hero-time">${REQUESTS.length} total request${REQUESTS.length===1?'':'s'} · ${counts.done} delivered</span>
+        <p class="op-hero-desc">Review, scope, quote and approve integration requests — the AIMS managed services team picks up everything that passes admin review.</p>
       </div>
       <div class="op-hero-right">
-        <div class="op-kpi"><div class="op-kpi-n" style="color:var(--amber)">${counts.pending_review}</div><div class="op-kpi-l">Pending</div></div>
-        <div class="op-kpi"><div class="op-kpi-n" style="color:var(--purple)">${counts.quoted}</div><div class="op-kpi-l">Quoted</div></div>
-        <div class="op-kpi"><div class="op-kpi-n" style="color:var(--cyan)">${counts.in_progress}</div><div class="op-kpi-l">In progress</div></div>
-        <div class="op-kpi"><div class="op-kpi-n" style="color:var(--green)">${counts.done}</div><div class="op-kpi-l">Delivered</div></div>
+        <div class="op-kpi ${counts.pending_review > 0 ? 'is-warn' : 'is-idle'}">
+          <div class="op-kpi-n" style="color:${counts.pending_review > 0 ? '#fbbf24' : 'var(--t3)'}">${counts.pending_review}</div>
+          <div class="op-kpi-l">Pending</div>
+        </div>
+        <div class="op-kpi" style="background:rgba(168,85,247,0.08);border-color:rgba(168,85,247,0.28)">
+          <div class="op-kpi-n" style="color:#cda5ff">${counts.quoted}</div>
+          <div class="op-kpi-l" style="color:#cda5ff">Quoted</div>
+        </div>
+        <div class="op-kpi" style="background:rgba(56,189,248,0.08);border-color:rgba(56,189,248,0.28)">
+          <div class="op-kpi-n" style="color:#7ed3f7">${counts.in_progress}</div>
+          <div class="op-kpi-l" style="color:#7ed3f7">In progress</div>
+        </div>
+        <div class="op-kpi is-ok">
+          <div class="op-kpi-n" style="color:#34d39c">${counts.done}</div>
+          <div class="op-kpi-l">Delivered</div>
+        </div>
+        ${counts.pending_review > 0
+          ? `<button class="op-hero-cta" onclick="toast('Filter coming soon')" aria-label="Jump to pending requests">
+              Review ${counts.pending_review} pending
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 8h10M9.5 4.5L13 8l-3.5 3.5"/></svg>
+             </button>`
+          : `<a class="op-hero-cta" href="#/request" style="background:linear-gradient(135deg,rgba(56,189,248,0.22),rgba(56,189,248,0.10));border-color:rgba(56,189,248,0.42);color:#7ed3f7" aria-label="Submit a new request">
+              + New request
+             </a>`}
       </div>
     </section>
 
@@ -5831,7 +5852,6 @@ function renderRequestsInbox() {
       <button class="op-tab" onclick="toast('Filter coming soon')"><span>In progress</span><span class="op-tab-count op-tab-count-neutral">${counts.in_progress}</span></button>
       <button class="op-tab" onclick="toast('Filter coming soon')"><span>Done</span><span class="op-tab-count op-tab-count-ok">${counts.done}</span></button>
       <span style="flex:1"></span>
-      <a class="btn btn-primary btn-sm" href="#/request" style="text-decoration:none">+ New request</a>
     </div>
 
     <div class="req-list">
