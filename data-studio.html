@@ -2472,6 +2472,7 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
 /* Add rule picker */
 .tbl-add-rule{
   margin-top:10px;
+  position:relative;
 }
 .tbl-add-rule-btn{
   display:inline-flex;align-items:center;gap:6px;
@@ -2482,9 +2483,14 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
 }
 .tbl-add-rule-btn:hover{border-color:var(--emerald);color:var(--emerald);background:rgba(16,185,129,0.04)}
 .tbl-add-rule-picker{
-  margin-top:8px;padding:8px;
-  background:rgba(255,255,255,0.025);
-  border:1px solid var(--emerald);border-radius:9px;
+  position:absolute;top:calc(100% + 6px);left:0;
+  z-index:10;
+  width:min(380px, calc(100% + 80px));
+  padding:8px;
+  background:#0c1428;
+  border:1px solid var(--emerald);border-radius:10px;
+  box-shadow:0 18px 42px -12px rgba(0,0,0,0.6), 0 0 0 1px rgba(16,185,129,0.10);
+  animation:obFade .14s ease-out;
 }
 .tbl-add-rule-h{
   font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
@@ -2673,6 +2679,23 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
 .tbl-cp-toggle-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .tbl-cp-toggle-yes{font-size:11px;color:var(--t2)}
 .tbl-cp-toggle-yes b{color:var(--t1)}
+
+
+/* FIX 2 — autosave hint in description editor */
+.tbl-be-autosave-hint{
+  font-size:10px;font-weight:500;color:var(--t3);
+  font-style:italic;
+  display:inline-flex;align-items:center;gap:5px;
+  margin-right:auto;
+}
+.tbl-be-autosave-hint::before{
+  content:'';display:inline-block;width:6px;height:6px;border-radius:50%;
+  background:var(--emerald);
+  box-shadow:0 0 0 2px rgba(16,185,129,0.18);
+}
+.tbl-be-textarea-actions{
+  display:flex;gap:8px;margin-top:8px;align-items:center;
+}
 
 </style>
 </head>
@@ -3645,7 +3668,7 @@ function renderTableDetail(tableName) {
             <button class="tbl-rail-tab ${tblRailTab === 'conn' ? 'is-active' : ''}" onclick="setTblRailTab('conn')">Conn</button>
             <button class="tbl-rail-tab ${tblRailTab === 'used' ? 'is-active' : ''}" onclick="setTblRailTab('used')">Used by <span class="tbl-rail-tab-count">0</span></button>
             <button class="tbl-rail-tab ${tblRailTab === 'ver' ? 'is-active' : ''}" onclick="setTblRailTab('ver')">Versions <span class="tbl-rail-tab-count">1</span></button>
-            <button class="tbl-rail-tab ${tblRailTab === 'set' ? 'is-active' : ''}" onclick="setTblRailTab('set')">Settings</button>
+            <button class="tbl-rail-tab ${tblRailTab === 'set' ? 'is-active' : ''}" onclick="setTblRailTab('set')">Custom fields</button>
           </div>
           <div class="tbl-rail-body">
             ${renderTblRail(t, allFields, aggStatus)}
@@ -4107,10 +4130,11 @@ function renderFiBasics(f, tableName) {
       ${editingDesc ? `
         <textarea class="tbl-be-textarea" placeholder="What does this field represent? Where does it come from? Any gotchas?"
           autofocus
-          oninput="updateFiDescDraft(this.value)">${escapeHtml(draftValue)}</textarea>
+          oninput="updateFiDescDraft(this.value)"
+          onblur="commitFiDescEdit('${tableName}','${escapeHtml(f.name)}')">${escapeHtml(draftValue)}</textarea>
         <div class="tbl-be-textarea-actions">
-          <button class="tbl-be-btn" onclick="revertFiDescEdit()">Cancel</button>
-          <button class="tbl-be-btn is-primary" onclick="commitFiDescEdit('${tableName}','${escapeHtml(f.name)}')">Save</button>
+          <span class="tbl-be-autosave-hint">Autosaves on blur</span>
+          <button class="tbl-be-btn" onclick="revertFiDescEdit()">Cancel changes</button>
         </div>
       ` : desc ? `
         <div class="tbl-fb-v" style="white-space:pre-wrap">${escapeHtml(desc)}</div>
@@ -4497,10 +4521,14 @@ function restoreVersion(tableName, versionId) {
 }
 
 // Auto-version helper: hook into patchFieldOverride to record snapshots.
-// Reasonable labels are generated from the patch payload.
+// Debounced — if the same field gets multiple edits within 2.5s, we update the
+// existing version's label + snapshot rather than create a new one. Keeps the
+// history readable while still capturing every change.
+let _lastVersionStamp = null; // { tableName, fieldName, time, versionId }
+const VERSION_DEBOUNCE_MS = 2500;
+
 const _origPatchFieldOverride = patchFieldOverride;
 patchFieldOverride = function(tableName, fieldName, patch) {
-  // Snapshot label based on what's in the patch
   let label = 'Edited ' + fieldName;
   if ('displayName' in patch) label = 'Renamed ' + fieldName + ' to ' + patch.displayName;
   else if ('type' in patch) label = 'Changed type of ' + fieldName + ' to ' + patch.type;
@@ -4512,7 +4540,28 @@ patchFieldOverride = function(tableName, fieldName, patch) {
   else if ('transformations' in patch) label = 'Updated transformations on ' + fieldName;
   else if ('customProps' in patch) label = 'Updated custom properties on ' + fieldName;
   _origPatchFieldOverride(tableName, fieldName, patch);
-  createVersion(tableName, label);
+
+  const now = Date.now();
+  const versions = tableVersions[tableName] || [];
+  if (_lastVersionStamp
+      && _lastVersionStamp.tableName === tableName
+      && _lastVersionStamp.fieldName === fieldName
+      && (now - _lastVersionStamp.time) < VERSION_DEBOUNCE_MS
+      && versions.length > 0
+      && versions[0].id === _lastVersionStamp.versionId) {
+    // Merge into the existing top version
+    versions[0].label = label;
+    versions[0].createdAt = 'just now';
+    versions[0].snapshot = takeSnapshot(tableName);
+    persistTableVersions();
+    _lastVersionStamp.time = now;
+  } else {
+    createVersion(tableName, label);
+    const newest = (tableVersions[tableName] || [])[0];
+    if (newest) {
+      _lastVersionStamp = { tableName, fieldName, time: now, versionId: newest.id };
+    }
+  }
 };
 
 /* ============ Custom field defs CRUD ============ */
