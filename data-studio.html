@@ -2303,6 +2303,214 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
 .tbl-fb-v.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--cyan)}
 .tbl-fb-v.muted{color:var(--t3);font-style:italic}
 
+
+/* ============ TABLES PHASE 2 — Field inspector ============ */
+.tbl-fi-h{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  margin-bottom:14px;flex-wrap:wrap;
+}
+.tbl-fi-name-wrap{flex:1;min-width:0}
+.tbl-fi-name{
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  font-size:16px;font-weight:800;color:var(--t1);letter-spacing:-.01em;
+  cursor:pointer;padding:2px 6px;border-radius:5px;
+  margin:-2px -6px;display:inline-block;
+  transition:background .12s;
+}
+.tbl-fi-name:hover{background:rgba(255,255,255,0.04)}
+.tbl-fi-name-input{
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  font-size:16px;font-weight:800;color:var(--t1);
+  background:#070e1c;border:1px solid var(--emerald);border-radius:6px;
+  padding:3px 7px;outline:none;width:240px;
+}
+.tbl-fi-id{font-family:ui-monospace,monospace;font-size:10.5px;color:var(--t3);margin-top:4px}
+.tbl-fi-pills{display:flex;gap:5px;align-items:center;margin-top:7px;flex-wrap:wrap}
+
+/* Sub-tab nav inside the Field tab */
+.tbl-fi-subtabs{
+  display:flex;gap:3px;padding:4px;
+  background:rgba(255,255,255,0.025);
+  border:1px solid var(--line);border-radius:9px;
+  margin-bottom:16px;
+}
+.tbl-fi-subtab{
+  flex:1;
+  background:transparent;border:none;cursor:pointer;
+  font-family:inherit;font-size:11px;font-weight:700;
+  color:var(--t3);padding:7px 10px;
+  border-radius:6px;text-align:center;
+  display:inline-flex;align-items:center;justify-content:center;gap:5px;
+  transition:background .12s, color .12s;
+}
+.tbl-fi-subtab:hover{color:var(--t1);background:rgba(255,255,255,0.03)}
+.tbl-fi-subtab.is-active{background:#0a1228;color:var(--emerald);box-shadow:inset 0 0 0 1px rgba(16,185,129,0.32)}
+.tbl-fi-subtab-count{font-size:9.5px;font-weight:800;padding:0 5px;border-radius:99px;background:rgba(255,255,255,0.06);color:inherit}
+.tbl-fi-subtab.is-active .tbl-fi-subtab-count{background:rgba(16,185,129,0.20)}
+
+/* Basics editor */
+.tbl-be-row{
+  padding:12px 0;
+  border-bottom:1px solid rgba(255,255,255,0.04);
+}
+.tbl-be-row:last-child{border-bottom:none}
+.tbl-be-l{
+  font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--t3);margin-bottom:7px;display:flex;align-items:center;justify-content:space-between;
+}
+.tbl-be-l-help{
+  font-size:10px;font-weight:500;color:var(--t3);
+  text-transform:none;letter-spacing:0;font-style:italic;
+}
+.tbl-be-select{
+  width:100%;padding:8px 11px;
+  background:#070e1c;border:1px solid var(--line-strong);border-radius:8px;
+  color:var(--t1);font-family:inherit;font-size:12.5px;cursor:pointer;
+  outline:none;transition:border-color .12s;
+}
+.tbl-be-select:focus{border-color:var(--emerald)}
+.tbl-be-select-hint{font-size:10.5px;color:var(--t3);margin-top:5px;font-style:italic;line-height:1.45}
+
+.tbl-be-flags{
+  display:flex;flex-direction:column;gap:6px;
+  padding:10px 12px;
+  background:rgba(255,255,255,0.02);
+  border:1px solid var(--line);border-radius:9px;
+}
+.tbl-be-flag-row{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:6px 0;font-size:12px;
+}
+.tbl-be-flag-row + .tbl-be-flag-row{border-top:1px solid rgba(255,255,255,0.04)}
+.tbl-be-flag-row-l{color:var(--t1)}
+.tbl-be-flag-row-l b{font-weight:700}
+.tbl-be-flag-row-d{font-size:10.5px;color:var(--t3);margin-top:2px}
+.tbl-be-flag-row.is-disabled{opacity:.55}
+
+.tbl-be-toggle{
+  position:relative;width:34px;height:20px;border-radius:99px;
+  background:var(--line-strong);
+  border:none;cursor:pointer;flex-shrink:0;padding:0;
+  transition:background .14s;
+}
+.tbl-be-toggle::after{
+  content:'';position:absolute;width:14px;height:14px;border-radius:50%;
+  background:#fff;top:3px;left:3px;
+  transition:transform .14s cubic-bezier(.2,.8,.2,1);
+}
+.tbl-be-toggle.is-on{background:var(--emerald)}
+.tbl-be-toggle.is-on::after{transform:translateX(14px)}
+.tbl-be-toggle:disabled{cursor:not-allowed;opacity:.45}
+
+.tbl-be-textarea{
+  width:100%;min-height:84px;padding:9px 11px;
+  background:#070e1c;border:1px solid var(--line-strong);border-radius:8px;
+  color:var(--t1);font-family:inherit;font-size:12.5px;line-height:1.5;
+  outline:none;resize:vertical;
+  transition:border-color .12s;
+}
+.tbl-be-textarea:focus{border-color:var(--emerald)}
+.tbl-be-textarea-actions{display:flex;gap:7px;margin-top:7px;justify-content:flex-end}
+.tbl-be-btn{
+  background:transparent;border:1px solid var(--line);
+  color:var(--t2);font-family:inherit;font-size:11px;font-weight:700;
+  padding:5px 11px;border-radius:6px;cursor:pointer;
+  transition:border-color .12s, color .12s, background .12s;
+}
+.tbl-be-btn:hover{border-color:var(--line-strong);color:var(--t1)}
+.tbl-be-btn.is-primary{background:rgba(16,185,129,0.10);color:var(--emerald);border-color:rgba(16,185,129,0.36)}
+.tbl-be-btn.is-primary:hover{background:rgba(16,185,129,0.18);border-color:rgba(16,185,129,0.55)}
+.tbl-be-btn:disabled{opacity:.45;cursor:not-allowed}
+
+/* Validation + Transformation header note */
+.tbl-vt-note{
+  padding:9px 12px;margin-bottom:14px;
+  background:rgba(255,255,255,0.02);
+  border:1px dashed var(--line);border-radius:9px;
+  font-size:11px;color:var(--t2);line-height:1.5;
+}
+.tbl-vt-note b{color:var(--t1)}
+
+/* Validation / Transformation rule card */
+.tbl-rule-card{
+  display:grid;grid-template-columns:auto 1fr auto;gap:11px;align-items:flex-start;
+  padding:11px 12px;margin-bottom:7px;
+  background:rgba(255,255,255,0.025);
+  border:1px solid var(--line);border-radius:9px;
+}
+.tbl-rule-num{
+  width:22px;height:22px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(16,185,129,0.14);color:var(--green);
+  border:1px solid rgba(16,185,129,0.32);
+  font-size:10.5px;font-weight:800;font-family:ui-monospace,monospace;
+  flex-shrink:0;
+}
+.tbl-rule-num.t-tx{background:rgba(43,127,255,0.14);color:var(--blue);border-color:rgba(43,127,255,0.32)}
+.tbl-rule-body{min-width:0}
+.tbl-rule-name{font-size:12px;font-weight:700;color:var(--t1)}
+.tbl-rule-desc{font-size:10.5px;color:var(--t3);margin-top:2px;line-height:1.4}
+.tbl-rule-value{
+  margin-top:7px;display:flex;align-items:center;gap:6px;
+}
+.tbl-rule-input{
+  flex:1;padding:5px 9px;
+  background:#070e1c;border:1px solid var(--line);border-radius:6px;
+  color:var(--t1);font-family:ui-monospace,monospace;font-size:11px;
+  outline:none;transition:border-color .12s;
+}
+.tbl-rule-input:focus{border-color:var(--blue)}
+.tbl-rule-input::placeholder{color:var(--t3)}
+.tbl-rule-rm{
+  background:transparent;border:none;cursor:pointer;
+  color:var(--t3);width:24px;height:24px;border-radius:5px;
+  display:flex;align-items:center;justify-content:center;
+  transition:background .12s, color .12s;
+}
+.tbl-rule-rm:hover{background:rgba(239,68,68,0.10);color:#ef4444}
+
+/* Add rule picker */
+.tbl-add-rule{
+  margin-top:10px;
+}
+.tbl-add-rule-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:7px 12px;border-radius:7px;
+  background:transparent;border:1px dashed var(--line-strong);
+  color:var(--t2);font-family:inherit;font-size:11.5px;font-weight:700;cursor:pointer;
+  transition:border-color .12s, color .12s, background .12s;
+}
+.tbl-add-rule-btn:hover{border-color:var(--emerald);color:var(--emerald);background:rgba(16,185,129,0.04)}
+.tbl-add-rule-picker{
+  margin-top:8px;padding:8px;
+  background:rgba(255,255,255,0.025);
+  border:1px solid var(--emerald);border-radius:9px;
+}
+.tbl-add-rule-h{
+  font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--t3);margin-bottom:7px;padding:0 4px;
+}
+.tbl-add-rule-list{display:flex;flex-direction:column;gap:2px;max-height:240px;overflow-y:auto}
+.tbl-add-rule-row{
+  display:flex;align-items:flex-start;gap:9px;
+  padding:7px 9px;border-radius:6px;cursor:pointer;
+  background:transparent;border:none;
+  text-align:left;font-family:inherit;color:inherit;width:100%;
+  transition:background .12s;
+}
+.tbl-add-rule-row:hover{background:rgba(43,127,255,0.10)}
+.tbl-add-rule-row-name{
+  font-family:ui-monospace,monospace;font-size:11.5px;font-weight:700;color:var(--t1);
+}
+.tbl-add-rule-row-desc{font-size:10.5px;color:var(--t3);margin-top:2px;line-height:1.4}
+.tbl-add-rule-empty{padding:14px;font-size:11px;color:var(--t3);text-align:center;font-style:italic}
+.tbl-add-rule-cancel{
+  background:transparent;border:none;color:var(--t3);
+  font-family:inherit;font-size:10.5px;cursor:pointer;
+  padding:5px 8px;margin-top:5px;width:100%;text-align:right;
+}
+.tbl-add-rule-cancel:hover{color:var(--t1)}
+
 </style>
 </head>
 <body>
@@ -3127,7 +3335,7 @@ function renderTableDetail(tableName) {
       if (!fieldsByName[colName]) {
         const inferredType = inferTypeFromName(colName);
         const isPk = (colName === 'id');
-        fieldsByName[colName] = {
+        const baseField = {
           name: colName,
           type: inferredType,
           sources: [],
@@ -3138,16 +3346,22 @@ function renderTableDetail(tableName) {
           description: null,
           validations: [],
           transformations: [],
+          customProps: {},
           usageCount: 0
         };
-        allFields.push(fieldsByName[colName]);
+        // Apply persisted overrides on top
+        applyFieldOverrideTo(baseField, t.name);
+        fieldsByName[colName] = baseField;
+        allFields.push(baseField);
       }
       fieldsByName[colName].sources.push({ slug: s.slug, name: s.name, logo: s.logo, color: s.color, srcField: f.src });
     });
   });
   if (allFields.length === 0) {
     for (let i = 1; i <= Math.min(t.totalColumns, 8); i++) {
-      allFields.push({ name: 'column_' + i, type: 'string', sources: t.sources.slice(0, 1), nullable: i > 1, isPrimaryKey:false, isIndexed:false, sampleValue:null, description:null, validations:[], transformations:[], usageCount:0 });
+      const baseField = { name: 'column_' + i, type: 'string', sources: t.sources.slice(0, 1), nullable: i > 1, isPrimaryKey:false, isIndexed:false, sampleValue:null, description:null, validations:[], transformations:[], customProps:{}, usageCount:0 };
+      applyFieldOverrideTo(baseField, t.name);
+      allFields.push(baseField);
     }
   }
 
@@ -3224,7 +3438,7 @@ function renderTableDetail(tableName) {
             </div>
             ${allFields.map((f, idx) => `
               <div class="tbl-fieldlist-row ${tblSelectedField === idx ? 'is-selected' : ''}" onclick="setTblField(${idx})">
-                <span class="tbl-field-name">${escapeHtml(f.name)}</span>
+                <span class="tbl-field-name">${escapeHtml(f.displayName || f.name)}</span>
                 <span><span class="tbl-field-type ob-type-pill t-${f.type}">${escapeHtml(f.type)}</span></span>
                 <span class="tbl-field-flags">
                   ${f.isPrimaryKey ? '<span class="tbl-field-flag f-pk" title="Primary key">PK</span>' : ''}
@@ -3402,6 +3616,235 @@ function renderTblSyncTab(t) {
   `;
 }
 
+
+
+/* ============ TABLES PHASE 2 — Field inspector ============ */
+
+const TBL_FIELD_TYPES = [
+  { id:'string',    label:'string',    desc:'Short text up to ~255 characters' },
+  { id:'text',      label:'text',      desc:'Multi-line text or descriptions' },
+  { id:'int',       label:'int',       desc:'Whole numbers' },
+  { id:'decimal',   label:'decimal',   desc:'Floating-point numbers' },
+  { id:'bool',      label:'bool',      desc:'True or false' },
+  { id:'date',      label:'date',      desc:'Calendar date without time' },
+  { id:'timestamp', label:'timestamp', desc:'Date and time with timezone' },
+  { id:'enum',      label:'enum',      desc:'One of a fixed set of values' },
+  { id:'array',     label:'array',     desc:'List of values' },
+  { id:'ref',       label:'ref',       desc:'ID pointing to another record' },
+  { id:'json',      label:'json',      desc:'Nested structured value' }
+];
+
+// appliesTo categories per spec: 'all' | 'text' | 'number' | 'date'
+function typeAppliesToCategory(type) {
+  if (['string','text','enum'].includes(type)) return 'text';
+  if (['int','decimal'].includes(type))        return 'number';
+  if (['date','timestamp'].includes(type))     return 'date';
+  return null; // bool / array / ref / json — only 'all' rules apply
+}
+
+const TBL_VALIDATION_RULES = [
+  { id:'required',     name:'required',     desc:'Field must have a value (cannot be null or empty)',                              appliesTo:'all',     valueType:null,                       placeholder:null },
+  { id:'min_length',   name:'min_length',   desc:'String must be at least N characters long',                                       appliesTo:'text',    valueType:'number',                   placeholder:'e.g. 1' },
+  { id:'max_length',   name:'max_length',   desc:'String must be no more than N characters long',                                   appliesTo:'text',    valueType:'number',                   placeholder:'e.g. 255' },
+  { id:'min_value',    name:'min_value',    desc:'Number must be at least the given value',                                         appliesTo:'number',  valueType:'number',                   placeholder:'e.g. 0' },
+  { id:'max_value',    name:'max_value',    desc:'Number must be no more than the given value',                                     appliesTo:'number',  valueType:'number',                   placeholder:'e.g. 999999' },
+  { id:'regex',        name:'regex',        desc:'String must match this regular expression',                                       appliesTo:'text',    valueType:'text',                     placeholder:'^[a-z0-9_]+$' },
+  { id:'enum_values',  name:'enum_values',  desc:'Value must be one of this comma-separated list',                                  appliesTo:'all',     valueType:'text',                     placeholder:'open, won, lost' },
+  { id:'before_date',  name:'before_date',  desc:'Date must be before the given date',                                              appliesTo:'date',    valueType:'text',                     placeholder:'2030-01-01' },
+  { id:'after_date',   name:'after_date',   desc:'Date must be after the given date',                                               appliesTo:'date',    valueType:'text',                     placeholder:'2020-01-01' }
+];
+
+const TBL_TRANSFORMATIONS = [
+  { id:'trim',            name:'trim',            desc:'Remove whitespace from start and end',                                       appliesTo:'text',    valueType:null,    placeholder:null },
+  { id:'lowercase',       name:'lowercase',       desc:'Convert all characters to lowercase',                                        appliesTo:'text',    valueType:null,    placeholder:null },
+  { id:'uppercase',       name:'uppercase',       desc:'Convert all characters to uppercase',                                        appliesTo:'text',    valueType:null,    placeholder:null },
+  { id:'round',           name:'round',           desc:'Round to N decimal places',                                                   appliesTo:'number',  valueType:'number', placeholder:'e.g. 2' },
+  { id:'abs',             name:'abs',             desc:'Absolute value (drop sign)',                                                  appliesTo:'number',  valueType:null,    placeholder:null },
+  { id:'parse_date',      name:'parse_date',      desc:'Parse string into a date using this format',                                  appliesTo:'text',    valueType:'text',  placeholder:'YYYY-MM-DD' },
+  { id:'coerce_bool',     name:'coerce_bool',     desc:'Convert truthy/falsy values into a real boolean',                             appliesTo:'all',     valueType:null,    placeholder:null },
+  { id:'default_if_null', name:'default_if_null', desc:'Substitute this value when the field is null or empty',                       appliesTo:'all',     valueType:'text',  placeholder:'unknown' }
+];
+
+function ruleApplies(rule, fieldType) {
+  if (rule.appliesTo === 'all') return true;
+  return typeAppliesToCategory(fieldType) === rule.appliesTo;
+}
+
+// Persistent overrides per (tableName, fieldName) — captures user edits
+let tableFieldOverrides = (function(){
+  try {
+    const raw = localStorage.getItem('aims_ds_table_field_overrides');
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  return {};
+})();
+
+function persistTableFieldOverrides() {
+  try { localStorage.setItem('aims_ds_table_field_overrides', JSON.stringify(tableFieldOverrides)); } catch(e){}
+}
+
+function getFieldOverride(tableName, fieldName) {
+  if (!tableFieldOverrides[tableName]) return null;
+  return tableFieldOverrides[tableName][fieldName] || null;
+}
+function ensureFieldOverride(tableName, fieldName) {
+  if (!tableFieldOverrides[tableName]) tableFieldOverrides[tableName] = {};
+  if (!tableFieldOverrides[tableName][fieldName]) {
+    tableFieldOverrides[tableName][fieldName] = {};
+  }
+  return tableFieldOverrides[tableName][fieldName];
+}
+function patchFieldOverride(tableName, fieldName, patch) {
+  const o = ensureFieldOverride(tableName, fieldName);
+  Object.assign(o, patch);
+  persistTableFieldOverrides();
+  rerenderTableDetail();
+}
+
+function rerenderTableDetail() {
+  const parts = parseRoute();
+  if (parts[0] === 'tables' && parts[1]) renderTableDetail(parts[1]);
+}
+
+function applyFieldOverrideTo(field, tableName) {
+  const ov = getFieldOverride(tableName, field.name);
+  if (!ov) return field;
+  if (ov.type)              field.type = ov.type;
+  if (ov.isPrimaryKey !== undefined) field.isPrimaryKey = ov.isPrimaryKey;
+  if (ov.isIndexed !== undefined)    field.isIndexed = ov.isIndexed;
+  if (ov.nullable !== undefined)     field.nullable = ov.nullable;
+  if (ov.description)       field.description = ov.description;
+  if (ov.displayName)       field.displayName = ov.displayName;
+  if (ov.validations)       field.validations = ov.validations;
+  if (ov.transformations)   field.transformations = ov.transformations;
+  if (ov.customProps)       field.customProps = ov.customProps;
+  return field;
+}
+
+/* ============ Sub-tab state ============ */
+let tblFieldSubTab = 'basics';   // basics | validation | transformation | custom
+let tblFiNameEditing = false;
+let tblFiDescDraft = null;        // null when not editing, string when editing
+let tblFiAddingPicker = null;     // null | 'validation' | 'transformation'
+
+function setTblFieldSubTab(tab) {
+  tblFieldSubTab = tab;
+  tblFiAddingPicker = null;
+  rerenderTableDetail();
+}
+
+function startFiNameEdit() {
+  tblFiNameEditing = true;
+  rerenderTableDetail();
+  setTimeout(() => {
+    const el = document.getElementById('tblFiNameInput');
+    if (el) { el.focus(); el.select(); }
+  }, 30);
+}
+
+function commitFiNameEdit(tableName, originalName, newName) {
+  const trimmed = (newName || '').trim();
+  if (!trimmed || trimmed === originalName) {
+    tblFiNameEditing = false;
+    rerenderTableDetail();
+    return;
+  }
+  patchFieldOverride(tableName, originalName, { displayName: trimmed });
+  toast('Renamed to ' + trimmed);
+  tblFiNameEditing = false;
+  rerenderTableDetail();
+}
+
+function cancelFiNameEdit() {
+  tblFiNameEditing = false;
+  rerenderTableDetail();
+}
+
+function setFiType(tableName, fieldName, newType) {
+  patchFieldOverride(tableName, fieldName, { type: newType });
+  toast('Type changed to ' + newType);
+}
+
+function toggleFiFlag(tableName, fieldName, flag, current) {
+  const next = !current;
+  const patch = {};
+  patch[flag] = next;
+  // PK auto-disables nullable when turned on
+  if (flag === 'isPrimaryKey' && next) {
+    patch.nullable = false;
+  }
+  patchFieldOverride(tableName, fieldName, patch);
+}
+
+function startFiDescEdit(current) {
+  tblFiDescDraft = current || '';
+  rerenderTableDetail();
+}
+function updateFiDescDraft(v) {
+  tblFiDescDraft = v;
+}
+function commitFiDescEdit(tableName, fieldName) {
+  if (tblFiDescDraft === null) return;
+  patchFieldOverride(tableName, fieldName, { description: tblFiDescDraft });
+  tblFiDescDraft = null;
+  toast('Description saved');
+}
+function revertFiDescEdit() {
+  tblFiDescDraft = null;
+  rerenderTableDetail();
+}
+
+function openAddRulePicker(kind) {
+  tblFiAddingPicker = kind;
+  rerenderTableDetail();
+}
+function closeAddRulePicker() {
+  tblFiAddingPicker = null;
+  rerenderTableDetail();
+}
+
+function addValidation(tableName, fieldName, ruleId) {
+  const ov = ensureFieldOverride(tableName, fieldName);
+  if (!ov.validations) ov.validations = [];
+  ov.validations.push({ id: 'v_' + Date.now() + '_' + Math.floor(Math.random()*999), ruleId: ruleId, value: '' });
+  persistTableFieldOverrides();
+  tblFiAddingPicker = null;
+  toast('Added validation: ' + ruleId);
+  rerenderTableDetail();
+}
+function setValidationValue(tableName, fieldName, ruleInstanceId, value) {
+  const ov = ensureFieldOverride(tableName, fieldName);
+  const r = (ov.validations || []).find(x => x.id === ruleInstanceId);
+  if (r) { r.value = value; persistTableFieldOverrides(); }
+}
+function removeValidation(tableName, fieldName, ruleInstanceId) {
+  const ov = ensureFieldOverride(tableName, fieldName);
+  ov.validations = (ov.validations || []).filter(x => x.id !== ruleInstanceId);
+  persistTableFieldOverrides();
+  rerenderTableDetail();
+}
+
+function addTransformation(tableName, fieldName, transformId) {
+  const ov = ensureFieldOverride(tableName, fieldName);
+  if (!ov.transformations) ov.transformations = [];
+  ov.transformations.push({ id: 't_' + Date.now() + '_' + Math.floor(Math.random()*999), transformId: transformId, value: '' });
+  persistTableFieldOverrides();
+  tblFiAddingPicker = null;
+  toast('Added transformation: ' + transformId);
+  rerenderTableDetail();
+}
+function setTransformationValue(tableName, fieldName, transformInstanceId, value) {
+  const ov = ensureFieldOverride(tableName, fieldName);
+  const r = (ov.transformations || []).find(x => x.id === transformInstanceId);
+  if (r) { r.value = value; persistTableFieldOverrides(); }
+}
+function removeTransformation(tableName, fieldName, transformInstanceId) {
+  const ov = ensureFieldOverride(tableName, fieldName);
+  ov.transformations = (ov.transformations || []).filter(x => x.id !== transformInstanceId);
+  persistTableFieldOverrides();
+  rerenderTableDetail();
+}
+
 function renderTblFieldTab(fields) {
   if (tblSelectedField === null) {
     return `
@@ -3426,52 +3869,266 @@ function renderTblFieldTab(fields) {
     `;
   }
   const f = fields[tblSelectedField];
+  const parts = parseRoute();
+  const tableName = decodeURIComponent(parts[1] || '');
+  const displayName = f.displayName || f.name;
+  const validations = f.validations || [];
+  const transformations = f.transformations || [];
+
   return `
-    <div class="tbl-fb-h">
-      <div class="tbl-fb-name">${escapeHtml(f.name)}</div>
-      <div class="tbl-fb-id">id: ${escapeHtml(f.name)}</div>
-      <div class="tbl-fb-pills">
-        <span class="tbl-field-type ob-type-pill t-${f.type}">${escapeHtml(f.type)}</span>
-        ${f.isPrimaryKey ? '<span class="tbl-field-flag f-pk">PK</span>' : ''}
-        ${f.isIndexed && !f.isPrimaryKey ? '<span class="tbl-field-flag f-ix">IX</span>' : ''}
-        ${!f.nullable && !f.isPrimaryKey ? '<span class="tbl-field-flag f-nn">NN</span>' : ''}
+    <div class="tbl-fi-h">
+      <div class="tbl-fi-name-wrap">
+        ${tblFiNameEditing
+          ? `<input id="tblFiNameInput" class="tbl-fi-name-input" value="${escapeHtml(displayName)}"
+              onblur="commitFiNameEdit('${tableName}','${escapeHtml(f.name)}', this.value)"
+              onkeydown="if(event.key==='Enter')this.blur(); else if(event.key==='Escape')cancelFiNameEdit()"/>`
+          : `<span class="tbl-fi-name" onclick="startFiNameEdit()" title="Click to rename">${escapeHtml(displayName)}</span>`}
+        <div class="tbl-fi-id">id: <span class="mono">${escapeHtml(f.name)}</span></div>
+        <div class="tbl-fi-pills">
+          <span class="tbl-field-type ob-type-pill t-${f.type}">${escapeHtml(f.type)}</span>
+          ${f.isPrimaryKey ? '<span class="tbl-field-flag f-pk">PK</span>' : ''}
+          ${f.isIndexed && !f.isPrimaryKey ? '<span class="tbl-field-flag f-ix">IX</span>' : ''}
+          ${!f.nullable && !f.isPrimaryKey ? '<span class="tbl-field-flag f-nn">NN</span>' : ''}
+          ${validations.length ? '<span class="tbl-field-flag f-v">V' + validations.length + '</span>' : ''}
+          ${transformations.length ? '<span class="tbl-field-flag f-t">T' + transformations.length + '</span>' : ''}
+        </div>
       </div>
     </div>
 
-    <div class="tbl-fb-row">
-      <div class="tbl-fb-l">Description</div>
-      <div class="tbl-fb-v muted">No description yet. Phase 2 will add inline editing.</div>
+    <div class="tbl-fi-subtabs">
+      <button class="tbl-fi-subtab ${tblFieldSubTab === 'basics' ? 'is-active' : ''}" onclick="setTblFieldSubTab('basics')">Basics</button>
+      <button class="tbl-fi-subtab ${tblFieldSubTab === 'validation' ? 'is-active' : ''}" onclick="setTblFieldSubTab('validation')">
+        Validation ${validations.length ? '<span class="tbl-fi-subtab-count">' + validations.length + '</span>' : ''}
+      </button>
+      <button class="tbl-fi-subtab ${tblFieldSubTab === 'transformation' ? 'is-active' : ''}" onclick="setTblFieldSubTab('transformation')">
+        Transform ${transformations.length ? '<span class="tbl-fi-subtab-count">' + transformations.length + '</span>' : ''}
+      </button>
+      <button class="tbl-fi-subtab ${tblFieldSubTab === 'custom' ? 'is-active' : ''}" onclick="setTblFieldSubTab('custom')">Custom</button>
     </div>
 
-    <div class="tbl-fb-row">
-      <div class="tbl-fb-l">Type</div>
-      <div class="tbl-fb-v">${escapeHtml(f.type)} &middot; <span style="color:var(--t3);font-size:11px">type editor lands in Phase 2</span></div>
+    ${tblFieldSubTab === 'basics'         ? renderFiBasics(f, tableName)         : ''}
+    ${tblFieldSubTab === 'validation'     ? renderFiValidation(f, tableName)     : ''}
+    ${tblFieldSubTab === 'transformation' ? renderFiTransformation(f, tableName) : ''}
+    ${tblFieldSubTab === 'custom'         ? renderFiCustom(f, tableName)         : ''}
+  `;
+}
+
+function renderFiBasics(f, tableName) {
+  const desc = (f.description != null ? f.description : '');
+  const editingDesc = tblFiDescDraft !== null;
+  const draftValue = editingDesc ? tblFiDescDraft : desc;
+  const selectedType = TBL_FIELD_TYPES.find(t => t.id === f.type) || TBL_FIELD_TYPES[0];
+
+  return `
+    <div class="tbl-be-row">
+      <div class="tbl-be-l">Description<span class="tbl-be-l-help">${editingDesc ? 'editing' : 'click below to edit'}</span></div>
+      <textarea class="tbl-be-textarea" placeholder="What does this field represent? Where does it come from? Any gotchas?"
+        oninput="updateFiDescDraft(this.value)"
+        onfocus="if(!${editingDesc})startFiDescEdit(${JSON.stringify(desc)})">${escapeHtml(draftValue)}</textarea>
+      ${editingDesc ? `
+        <div class="tbl-be-textarea-actions">
+          <button class="tbl-be-btn" onclick="revertFiDescEdit()">Revert</button>
+          <button class="tbl-be-btn is-primary" onclick="commitFiDescEdit('${tableName}','${escapeHtml(f.name)}')">Save</button>
+        </div>
+      ` : ''}
     </div>
 
-    <div class="tbl-fb-row">
-      <div class="tbl-fb-l">Flags</div>
-      <div class="tbl-fb-v">
-        Primary key: <b>${f.isPrimaryKey ? 'yes' : 'no'}</b><br/>
-        Indexed: <b>${f.isIndexed ? 'yes' : 'no'}</b><br/>
-        Nullable: <b>${f.nullable ? 'yes' : 'no'}</b>
+    <div class="tbl-be-row">
+      <div class="tbl-be-l">Type</div>
+      <select class="tbl-be-select" onchange="setFiType('${tableName}','${escapeHtml(f.name)}', this.value)">
+        ${TBL_FIELD_TYPES.map(t => `<option value="${t.id}" ${f.type === t.id ? 'selected' : ''}>${escapeHtml(t.label)}</option>`).join('')}
+      </select>
+      <div class="tbl-be-select-hint">${escapeHtml(selectedType.desc)}</div>
+    </div>
+
+    <div class="tbl-be-row">
+      <div class="tbl-be-l">Flags</div>
+      <div class="tbl-be-flags">
+        <div class="tbl-be-flag-row">
+          <div class="tbl-be-flag-row-l">
+            <b>Primary key</b>
+            <div class="tbl-be-flag-row-d">Unique, non-null. Auto-disables nullable.</div>
+          </div>
+          <button class="tbl-be-toggle ${f.isPrimaryKey ? 'is-on' : ''}" onclick="toggleFiFlag('${tableName}','${escapeHtml(f.name)}','isPrimaryKey', ${f.isPrimaryKey ? 'true' : 'false'})" aria-label="Toggle primary key" role="switch" aria-checked="${f.isPrimaryKey ? 'true' : 'false'}"></button>
+        </div>
+        <div class="tbl-be-flag-row">
+          <div class="tbl-be-flag-row-l">
+            <b>Indexed</b>
+            <div class="tbl-be-flag-row-d">Maintain an index for fast lookups on this field.</div>
+          </div>
+          <button class="tbl-be-toggle ${f.isIndexed ? 'is-on' : ''}" onclick="toggleFiFlag('${tableName}','${escapeHtml(f.name)}','isIndexed', ${f.isIndexed ? 'true' : 'false'})" aria-label="Toggle indexed" role="switch" aria-checked="${f.isIndexed ? 'true' : 'false'}"></button>
+        </div>
+        <div class="tbl-be-flag-row ${f.isPrimaryKey ? 'is-disabled' : ''}">
+          <div class="tbl-be-flag-row-l">
+            <b>Nullable</b>
+            <div class="tbl-be-flag-row-d">${f.isPrimaryKey ? 'Locked off because this is a primary key.' : 'Allow null values for this field.'}</div>
+          </div>
+          <button class="tbl-be-toggle ${f.nullable && !f.isPrimaryKey ? 'is-on' : ''}" onclick="toggleFiFlag('${tableName}','${escapeHtml(f.name)}','nullable', ${f.nullable ? 'true' : 'false'})" ${f.isPrimaryKey ? 'disabled' : ''} aria-label="Toggle nullable" role="switch" aria-checked="${f.nullable && !f.isPrimaryKey ? 'true' : 'false'}"></button>
+        </div>
       </div>
     </div>
 
-    <div class="tbl-fb-row">
-      <div class="tbl-fb-l">Sources</div>
+    <div class="tbl-be-row">
+      <div class="tbl-be-l">Sample value<span class="tbl-be-l-help">read-only · first sample at table creation</span></div>
+      <div class="tbl-fb-v mono">${escapeHtml(f.sampleValue || (f.sources[0] && f.sources[0].srcField) || '—')}</div>
+    </div>
+
+    <div class="tbl-be-row">
+      <div class="tbl-be-l">Sources</div>
       <div class="tbl-fb-v">
         ${f.sources.map(s => `<div style="display:flex;align-items:center;gap:7px;margin-bottom:4px">
           ${s.logo
             ? `<span class="tbl-src-pick-logo"><img src="https://api.iconify.design/logos:${s.logo}.svg" alt="${escapeHtml(s.name)}"/></span>`
             : `<span class="tbl-src-pick-logo" style="background:${s.color};color:#fff;font-size:7px;font-weight:800;padding:0;display:flex;align-items:center;justify-content:center">${escapeHtml(s.name.slice(0,2).toUpperCase())}</span>`}
-          <span>${escapeHtml(s.name)} &middot; <span class="mono" style="color:var(--cyan)">${escapeHtml(s.srcField || '—')}</span></span>
+          <span style="font-size:11.5px">${escapeHtml(s.name)} &middot; <span class="mono" style="color:var(--cyan)">${escapeHtml(s.srcField || '—')}</span></span>
         </div>`).join('')}
       </div>
     </div>
+  `;
+}
 
-    <div class="tbl-fb-row">
-      <div class="tbl-fb-l">Sample value</div>
-      <div class="tbl-fb-v mono">${escapeHtml(f.sampleValue || '—')}</div>
+function renderFiValidation(f, tableName) {
+  const validations = f.validations || [];
+  const available = TBL_VALIDATION_RULES.filter(r => ruleApplies(r, f.type));
+  const usedIds = new Set(validations.map(v => v.ruleId));
+  const addable = available.filter(r => !(usedIds.has(r.id) && r.id !== 'enum_values'));
+
+  return `
+    <div class="tbl-vt-note">
+      <b>Records that fail validation are flagged at ingest time.</b> They still land in the table, but downstream consumers can filter them out. Validation is non-blocking by default.
+    </div>
+
+    ${validations.length === 0 ? `
+      <div class="tbl-rail-placeholder" style="padding:24px 18px;margin-bottom:10px">
+        <div class="tbl-rail-placeholder-t">No validation rules yet</div>
+        <div class="tbl-rail-placeholder-d">Add a rule below — only rules that apply to <b>${escapeHtml(f.type)}</b> fields are offered.</div>
+      </div>
+    ` : validations.map(v => {
+      const rule = TBL_VALIDATION_RULES.find(r => r.id === v.ruleId);
+      if (!rule) return '';
+      return `
+        <div class="tbl-rule-card">
+          <div class="tbl-rule-num">V</div>
+          <div class="tbl-rule-body">
+            <div class="tbl-rule-name">${escapeHtml(rule.name)}</div>
+            <div class="tbl-rule-desc">${escapeHtml(rule.desc)}</div>
+            ${rule.valueType ? `
+              <div class="tbl-rule-value">
+                <input class="tbl-rule-input" type="${rule.valueType === 'number' ? 'number' : 'text'}" value="${escapeHtml(v.value || '')}" placeholder="${escapeHtml(rule.placeholder || '')}" oninput="setValidationValue('${tableName}','${escapeHtml(f.name)}','${v.id}', this.value)"/>
+              </div>
+            ` : ''}
+          </div>
+          <button class="tbl-rule-rm" onclick="removeValidation('${tableName}','${escapeHtml(f.name)}','${v.id}')" title="Remove">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+      `;
+    }).join('')}
+
+    <div class="tbl-add-rule">
+      ${tblFiAddingPicker === 'validation' ? `
+        <div class="tbl-add-rule-picker">
+          <div class="tbl-add-rule-h">Pick a rule for ${escapeHtml(f.type)} fields</div>
+          ${addable.length === 0 ? `
+            <div class="tbl-add-rule-empty">No more applicable rules for this field type.</div>
+          ` : `
+            <div class="tbl-add-rule-list">
+              ${addable.map(r => `
+                <button class="tbl-add-rule-row" onclick="addValidation('${tableName}','${escapeHtml(f.name)}','${r.id}')">
+                  <div>
+                    <div class="tbl-add-rule-row-name">${escapeHtml(r.name)}</div>
+                    <div class="tbl-add-rule-row-desc">${escapeHtml(r.desc)}</div>
+                  </div>
+                </button>
+              `).join('')}
+            </div>
+          `}
+          <button class="tbl-add-rule-cancel" onclick="closeAddRulePicker()">Cancel</button>
+        </div>
+      ` : `
+        <button class="tbl-add-rule-btn" onclick="openAddRulePicker('validation')">
+          <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 1.5v9M1.5 6h9"/></svg>
+          Add validation rule
+        </button>
+      `}
+    </div>
+  `;
+}
+
+function renderFiTransformation(f, tableName) {
+  const transformations = f.transformations || [];
+  const available = TBL_TRANSFORMATIONS.filter(t => ruleApplies(t, f.type));
+
+  return `
+    <div class="tbl-vt-note">
+      <b>Transformations run in order</b> on incoming values before storage. Useful for normalizing source data (trim whitespace, lowercase emails, round amounts, etc.).
+    </div>
+
+    ${transformations.length === 0 ? `
+      <div class="tbl-rail-placeholder" style="padding:24px 18px;margin-bottom:10px">
+        <div class="tbl-rail-placeholder-t">No transformations yet</div>
+        <div class="tbl-rail-placeholder-d">Add a transformation below — only ones that apply to <b>${escapeHtml(f.type)}</b> fields are offered. Order matters: insertion order is the run order.</div>
+      </div>
+    ` : transformations.map((t, idx) => {
+      const def = TBL_TRANSFORMATIONS.find(r => r.id === t.transformId);
+      if (!def) return '';
+      return `
+        <div class="tbl-rule-card">
+          <div class="tbl-rule-num t-tx">${idx + 1}</div>
+          <div class="tbl-rule-body">
+            <div class="tbl-rule-name">${escapeHtml(def.name)}</div>
+            <div class="tbl-rule-desc">${escapeHtml(def.desc)}</div>
+            ${def.valueType ? `
+              <div class="tbl-rule-value">
+                <input class="tbl-rule-input" type="${def.valueType === 'number' ? 'number' : 'text'}" value="${escapeHtml(t.value || '')}" placeholder="${escapeHtml(def.placeholder || '')}" oninput="setTransformationValue('${tableName}','${escapeHtml(f.name)}','${t.id}', this.value)"/>
+              </div>
+            ` : ''}
+          </div>
+          <button class="tbl-rule-rm" onclick="removeTransformation('${tableName}','${escapeHtml(f.name)}','${t.id}')" title="Remove">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+      `;
+    }).join('')}
+
+    <div class="tbl-add-rule">
+      ${tblFiAddingPicker === 'transformation' ? `
+        <div class="tbl-add-rule-picker">
+          <div class="tbl-add-rule-h">Pick a transformation for ${escapeHtml(f.type)} fields</div>
+          ${available.length === 0 ? `
+            <div class="tbl-add-rule-empty">No transformations apply to this field type.</div>
+          ` : `
+            <div class="tbl-add-rule-list">
+              ${available.map(t => `
+                <button class="tbl-add-rule-row" onclick="addTransformation('${tableName}','${escapeHtml(f.name)}','${t.id}')">
+                  <div>
+                    <div class="tbl-add-rule-row-name">${escapeHtml(t.name)}</div>
+                    <div class="tbl-add-rule-row-desc">${escapeHtml(t.desc)}</div>
+                  </div>
+                </button>
+              `).join('')}
+            </div>
+          `}
+          <button class="tbl-add-rule-cancel" onclick="closeAddRulePicker()">Cancel</button>
+        </div>
+      ` : `
+        <button class="tbl-add-rule-btn" onclick="openAddRulePicker('transformation')">
+          <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 1.5v9M1.5 6h9"/></svg>
+          Add transformation
+        </button>
+      `}
+    </div>
+  `;
+}
+
+function renderFiCustom(f, tableName) {
+  return `
+    <div class="tbl-rail-placeholder">
+      <div class="tbl-rail-placeholder-ic">
+        <svg width="22" height="22" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="2"/><path d="M8 1.5v2M8 12.5v2M1.5 8h2M12.5 8h2M3.4 3.4l1.4 1.4M11.2 11.2l1.4 1.4M3.4 12.6l1.4-1.4M11.2 4.8l1.4-1.4"/></svg>
+      </div>
+      <div class="tbl-rail-placeholder-t">No custom properties on this table</div>
+      <div class="tbl-rail-placeholder-d">Define table-scoped properties (e.g. <i>Data steward</i>, <i>Contains PII</i>, <i>Regulatory category</i>) from the <b>Set</b> tab. Once defined, every field on this table can carry its own value here.</div>
     </div>
   `;
 }
