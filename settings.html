@@ -5957,8 +5957,8 @@ function renderDistribution() {
       <header class="dist-h">
         <div class="dist-h-l">
           <div class="dist-h-eyebrow"><span class="dist-h-eyebrow-dot"></span>Admin Studio &middot; Distribution control</div>
-          <h1 class="dist-h-title">Where each integration is exposed</h1>
-          <p class="dist-h-desc">One place to control which downstream surfaces can use each authenticated integration. Toggling a cell here updates the integration's availability for that surface across the workspace.</p>
+          <h1 class="dist-h-title">Where each integration shows up</h1>
+          <p class="dist-h-desc">Control which downstream surfaces can use each connected integration. Toggling a cell updates availability across the whole workspace.</p>
         </div>
         <div class="dist-counts">
           <div class="dist-count"><div class="dist-count-v">${totalConn}</div><div class="dist-count-l">Connected</div></div>
@@ -5970,7 +5970,7 @@ function renderDistribution() {
       <div class="dist-toolbar">
         <label class="dist-search">
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="7" cy="7" r="5"/><path d="M14 14l-3-3"/></svg>
-          <input id="distSearchInput" type="text" placeholder="Search by integration or vendor..." value="${escapeHtml(_distFilters.search)}" oninput="distSearchInput(this.value)"/>
+          <input id="distSearchInput" type="text" placeholder="Search integrations..." value="${escapeHtml(_distFilters.search)}" oninput="distSearchInput(this.value)"/>
         </label>
         <button class="dist-filter ${_distFilters.status==='all'?'is-active':''}" onclick="distSetFilter('status','all')">All</button>
         <button class="dist-filter ${_distFilters.status==='working'?'is-active':''}" onclick="distSetFilter('status','working')">Working</button>
@@ -6030,7 +6030,7 @@ function renderDistribution() {
                         <button class="dist-toggle ${isOn?'is-on':'is-off'}" onclick="toggleDistribution('${i.slug}','${s.id}')" title="${isOn ? 'Available — click to disable' : 'Disabled — click to enable'} for ${escapeHtml(s.name)}">
                           ${isOn
                             ? '<svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 6l3 3 5-7"/></svg> Available'
-                            : '<svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="4"/></svg> Off'}
+                            : '<svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="4"/></svg> Disabled'}
                         </button>
                       </td>`;
                     }).join('')}
@@ -6177,8 +6177,8 @@ function renderWidgetsLibrary() {
       <header class="wg-h">
         <div class="wg-h-l">
           <div class="wg-h-eyebrow"><span class="wg-h-eyebrow-dot"></span>Admin Studio &middot; Widgets library</div>
-          <h1 class="wg-h-title">Widget templates for your workspace</h1>
-          <p class="wg-h-desc">Pre-built dashboards and cards that consume your authenticated integrations. Each template lists the integrations it requires — install the ones you have, request the rest. Visibility is tenant-wide; <a href="#/distribution" style="color:var(--cyan);text-decoration:none">Distribution</a> controls which integrations can power widgets at all.</p>
+          <h1 class="wg-h-title">Widget templates</h1>
+          <p class="wg-h-desc">Pre-built dashboards and cards that consume your connected integrations. Install the ones you already have — the rest stay greyed out until their required integrations are connected and exposed via <a href="#/distribution" style="color:var(--cyan);text-decoration:none">Distribution</a>.</p>
         </div>
         <div class="wg-counts">
           <div class="wg-count"><div class="wg-count-v">${total}</div><div class="wg-count-l">Available</div></div>
@@ -6190,7 +6190,7 @@ function renderWidgetsLibrary() {
       <div class="wg-toolbar">
         <label class="wg-search">
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="7" cy="7" r="5"/><path d="M14 14l-3-3"/></svg>
-          <input type="text" placeholder="Search widgets or integrations..." value="${escapeHtml(_wgFilters.search)}" oninput="wgSearchInput(this.value)"/>
+          <input type="text" placeholder="Search widgets..." value="${escapeHtml(_wgFilters.search)}" oninput="wgSearchInput(this.value)"/>
         </label>
         ${WG_CATEGORIES.map(c => `<button class="wg-filter ${_wgFilters.category===c.id?'is-active':''}" onclick="wgSetFilter('category','${c.id}')">${escapeHtml(c.label)}</button>`).join('')}
       </div>
@@ -6201,7 +6201,7 @@ function renderWidgetsLibrary() {
         ` : filtered.map(w => {
           const st = widgetStatus(w);
           const missing = widgetMissingIntegrations(w);
-          const statusLabel = st === 'installed' ? 'Installed' : (st === 'available' ? 'Available' : 'Missing integrations');
+          const statusLabel = st === 'installed' ? 'Installed' : (st === 'available' ? 'Ready to install' : 'Blocked');
           return `
             <div class="wg-card ${st === 'blocked' ? 'is-blocked' : ''}">
               <div class="wg-card-h">
@@ -7019,8 +7019,8 @@ function detailWorkspaces(integ) {
               <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1.5" y="2.5" width="5" height="5" rx="1"/><rect x="9.5" y="2.5" width="5" height="5" rx="1"/><rect x="1.5" y="8.5" width="5" height="5" rx="1"/><rect x="9.5" y="8.5" width="5" height="5" rx="1"/></svg>
             </span>
             <div>
-              <div class="ws-hero-t">${escapeHtml(integ.name)} is available in <b>${enabledCount}</b> of <b>${total}</b> workspaces</div>
-              <div class="ws-hero-d">Toggling a workspace off removes <b>${escapeHtml(integ.name)}</b> from its catalog, its agents, and its workflows. Users with active sessions are not interrupted but won't be able to start new ones until re-enabled.</div>
+              <div class="ws-hero-t">Enabled in <b>${enabledCount}</b> of <b>${total}</b> workspaces</div>
+              <div class="ws-hero-d">Turning a workspace off hides <b>${escapeHtml(integ.name)}</b> from its catalog, its agents, and its workflows. People mid-session aren't kicked out, but no new sessions can start until you re-enable.</div>
             </div>
           </div>
           <div class="ws-hero-actions">
@@ -7056,7 +7056,7 @@ function detailWorkspaces(integ) {
         </div>
 
         <div class="ws-foot">
-          <b>Note:</b> Workspace availability is independent from <a href="#/integrations/${integ.slug}" onclick="setDetailTab('${integ.slug}','permissions');return false" style="color:var(--cyan);text-decoration:none">role permissions</a>. Even in enabled workspaces, individual users still need the right role to access ${escapeHtml(integ.name)}. To control downstream surfaces (Data Studio, Agent Studio, etc.), see <a href="#/distribution" style="color:var(--cyan);text-decoration:none">Distribution</a>.
+          <b>Note:</b> Workspace availability is separate from <a href="#/integrations/${integ.slug}" onclick="setDetailTab('${integ.slug}','permissions');return false" style="color:var(--cyan);text-decoration:none">role permissions</a> — people in enabled workspaces still need the right role. For downstream surfaces (Data Studio, Agent Studio, etc.), use <a href="#/distribution" style="color:var(--cyan);text-decoration:none">Distribution</a>.
         </div>
 
       </div>
@@ -7396,8 +7396,8 @@ function openImpactModal(slug, onConfirm) {
   const body = `
     <div style="font-size:12.5px;color:var(--t2);line-height:1.6;margin-bottom:14px">
       ${imp.total === 0
-        ? `<b style="color:var(--t1)">${escapeHtml(integ.name)}</b> isn't used by any workflow, agent, network or widget. Disconnecting is safe — credentials will be revoked and the integration will move to the Not connected state.`
-        : `Disconnecting <b style="color:var(--t1)">${escapeHtml(integ.name)}</b> will revoke credentials and stop all data flow. The following consumers will be affected immediately:`}
+        ? `<b style="color:var(--t1)">${escapeHtml(integ.name)}</b> isn't used anywhere yet. Disconnecting is safe — credentials get revoked and the integration moves to Not connected.`
+        : `Revokes credentials and stops data flow. These consumers break immediately:`}
     </div>
     ${imp.total > 0 ? `
       <div class="impact-summary">
@@ -7461,21 +7461,21 @@ function publishCardHtml(integ) {
   let iconSvg, title, desc, action;
   if (lc === 'draft') {
     iconSvg = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 113 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>';
-    title = 'In draft — finish setup to stage for review';
-    desc = 'This is an internal integration being built. When the wizard is done and tests pass, move it to <b>Staged</b> for approval before publishing to the workspace library.';
+    title = 'Draft — finish setup to send for review';
+    desc = 'An internal integration in progress. When the build is done and tests pass, move to <b>Staged</b> so reviewers can sign off before it goes live for the workspace.';
     action = `<button class="publish-card-btn is-primary" onclick="advanceLifecycle('${integ.slug}','staged')">Move to staged &rarr;</button>`;
   } else if (lc === 'staged') {
     const pending = (integ.approvers || []).filter(a => a.status === 'pending').length;
     iconSvg = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 6 12 12 16 14"/></svg>';
     title = pending > 0 ? `Awaiting ${pending} approval${pending===1?'':'s'} before publish` : 'All approvals in — ready to publish';
-    desc = `Staged ${integ.stagedAt ? escapeHtml(integ.stagedAt) : 'recently'} by <b>${escapeHtml(integ.stagedBy || 'workspace admin')}</b>. Test runs on a dry-run dataset are passing. Once all approvers sign off, you can publish to the library so any workspace can install it.`;
+    desc = `Staged ${integ.stagedAt ? escapeHtml(integ.stagedAt) : 'recently'} by <b>${escapeHtml(integ.stagedBy || 'workspace admin')}</b>. Tests are passing on dry-run data. Once approvers sign off, publish to make it available for any workspace to install.`;
     action = pending > 0
       ? `<button class="publish-card-btn is-secondary" onclick="toast('Reminder sent to ' + ${pending} + ' pending approver' + (${pending}===1?'':'s'))">Remind approvers</button><button class="publish-card-btn is-primary" onclick="advanceLifecycle('${integ.slug}','published')">Publish anyway &rarr;</button>`
       : `<button class="publish-card-btn is-primary" onclick="advanceLifecycle('${integ.slug}','published')">Publish to library &rarr;</button>`;
   } else if (lc === 'published') {
     iconSvg = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-12"/></svg>';
     title = `Published ${integ.publishedAt ? escapeHtml(integ.publishedAt) : ''} &middot; ${escapeHtml(integ.version || 'v1.0')}`;
-    desc = `Live in the workspace library. Published by <b>${escapeHtml(integ.publishedBy || 'workspace admin')}</b>. Any workspace can install it (subject to Distribution rules). Re-staging will roll back the published version while you iterate.`;
+    desc = `Live in the workspace library. Published by <b>${escapeHtml(integ.publishedBy || 'workspace admin')}</b>. Any workspace can install it (Distribution rules still apply). Re-stage to roll back while you iterate.`;
     action = `<button class="publish-card-btn is-secondary" onclick="advanceLifecycle('${integ.slug}','staged')">Re-stage for changes</button>`;
   } else {
     return '';
