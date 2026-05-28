@@ -14614,8 +14614,43 @@ const DS_TOUR_STEPS = [
     target: '.ds-grid .ds-card'
   },
   {
-    title: 'That is the flow',
-    body: 'That is the full flow. Use <b>Reset to first time setup</b> in the sidebar to replay it from the empty state, or <b>Show errors</b> to see the failure paths. The full spec lives at <code>docs/OnboardingFlow.md</code>.',
+    title: 'Where your data lives — Tables',
+    body: '<b>What it does:</b> each connection produces Tables — structured rows your agents can query. <b>Input:</b> click a Table card to see its schema, sync state, and applied validations. <b>Output:</b> a per-Table inspector with tabs for Sync, Conn, Used by, Versions, and Custom fields.',
+    setup: () => { location.hash = '/tables'; },
+    target: '.tbl-grid',
+    scrollToTarget: true
+  },
+  {
+    title: 'Reusable rule packs — Templates',
+    body: '<b>What it does:</b> Templates are reusable libraries of validation + transformation rules. Apply once to a Table\u00d7Field and every ingest gets the same guardrails. <b>Input:</b> pick a system pack (Email & contact, Currency, PII) or clone to build your own. <b>Output:</b> consistent data quality across every Table that uses the pack — edit the pack, every applied field updates.',
+    setup: () => { location.hash = '/templates'; },
+    target: '.tpl-lib-grid',
+    scrollToTarget: true
+  },
+  {
+    title: 'Field mappings — the peanut-butter-cup view',
+    body: '<b>What it does:</b> cross-connection inventory of every source field that maps (or is pending) to your Tables. Auto-mapped fields go through silently; custom fields wait here for a decision. <b>Input:</b> click <b>Resolve</b> on any \u201cNeeds review\u201d row and pick from three options — Accept AI suggestion, Create new field, or Skip. <b>Output:</b> a tenant-wide log of every mapping decision.',
+    setup: () => { location.hash = '/mappings'; },
+    target: '.fm-kpi-strip',
+    scrollToTarget: true
+  },
+  {
+    title: 'Schema versions — change history',
+    body: '<b>What it does:</b> every edit to a Table — field rename, type change, validation toggle — captures a version. <b>Input:</b> filter by Table, time range, or search by label/author. <b>Output:</b> a unified timeline grouped by Today / Yesterday / This week / This month / Older. Click any row to jump into that Table\u2019s Versions tab and restore.',
+    setup: () => { location.hash = '/schema'; },
+    target: '.sv-kpi-strip',
+    scrollToTarget: true
+  },
+  {
+    title: 'Tenant onboarding — the welcome flow',
+    body: '<b>What it does:</b> the 8-step flow a fresh tenant sees on first run. <b>Phase 1</b> (Welcome \u2192 Organization \u2192 Starter setup \u2192 Workspace grouping) sets up the tenant identity. <b>Phase 2</b> (Workspace profile \u2192 Connect data \u2192 Apply templates) configures the first workspace. <b>Phase 3</b> wraps with a Done summary. <b>Try it:</b> clear <code>aims_ds_tenant_onboarding_v1</code> in localStorage and refresh.',
+    setup: () => { location.hash = '/onboarding'; },
+    target: '.tonb-h-eyebrow',
+    scrollToTarget: true
+  },
+  {
+    title: 'That is the flow — and the surfaces around it',
+    body: 'You just walked the data-connection wizard plus the four surfaces that surround it (Tables, Templates, Field mappings, Schema versions) and the tenant onboarding. Use <b>Reset to first time setup</b> in the sidebar to replay from the empty state, or <b>Show errors</b> to see the failure paths. Specs at <code>docs/OnboardingFlow.md</code> and <code>docs/DEMO.md</code>.',
   }
 ];
 
