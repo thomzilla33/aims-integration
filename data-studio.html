@@ -2291,7 +2291,7 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
 .tbl-rail-placeholder-t{font-size:13.5px;font-weight:700;color:var(--t2);margin-bottom:6px}
 .tbl-rail-placeholder-d{font-size:11.5px;color:var(--t3);line-height:1.5;max-width:280px;margin:0 auto}
 
-/* Field tab — Basics (read-only for Phase 1, full edit in Phase 2) */
+/* Field tab — Basics (full editor with rename, type, flags, description) */
 .tbl-fb-h{margin-bottom:14px}
 .tbl-fb-name{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:16px;font-weight:800;color:var(--t1);letter-spacing:-.01em}
 .tbl-fb-id{font-family:ui-monospace,monospace;font-size:10.5px;color:var(--t3);margin-top:3px}
@@ -2518,7 +2518,7 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
 .tbl-add-rule-cancel:hover{color:var(--t1)}
 
 
-/* UX FIX — name edit affordance (Phase 2 polish) */
+/* Name edit affordance — pencil icon + hover state */
 .tbl-fi-name-btn{
   display:inline-flex;align-items:center;gap:7px;
   background:transparent;border:none;cursor:pointer;
@@ -2696,6 +2696,97 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
 .tbl-be-textarea-actions{
   display:flex;gap:8px;margin-top:8px;align-items:center;
 }
+
+
+/* ============ TABLES PRIO 1+2 — wiring stubs + Conn actions ============ */
+
+/* Manual field badge (added via + Add field) */
+.tbl-field-flag.f-manual{
+  background:rgba(167,139,250,0.10);color:var(--purple);
+  border:1px solid rgba(167,139,250,0.32);
+}
+.tbl-fieldlist-row.is-manual{background:rgba(167,139,250,0.025)}
+
+/* Remove field button on hover, only for manual fields */
+.tbl-field-rm{
+  background:transparent;border:none;cursor:pointer;
+  color:var(--t3);width:18px;height:18px;border-radius:4px;
+  display:none;align-items:center;justify-content:center;
+  margin-left:5px;flex-shrink:0;
+  transition:background .12s, color .12s;
+}
+.tbl-fieldlist-row.is-manual:hover .tbl-field-rm{display:inline-flex}
+.tbl-field-rm:hover{background:rgba(239,68,68,0.10);color:#ef4444}
+
+/* Cadence inline editor */
+.tbl-sync-cadence-editor{
+  display:flex;align-items:center;gap:8px;
+  padding:10px 12px;margin-bottom:14px;
+  background:rgba(255,255,255,0.02);border:1px solid var(--emerald);border-radius:9px;
+}
+.tbl-sync-cadence-editor select{
+  flex:1;padding:6px 10px;background:#070e1c;border:1px solid var(--line);
+  border-radius:6px;color:var(--t1);font-family:inherit;font-size:12px;cursor:pointer;outline:none;
+}
+.tbl-sync-cadence-editor select:focus{border-color:var(--emerald)}
+
+/* Conn tab — action buttons on each source card */
+.tbl-conn-card{
+  display:flex;align-items:center;gap:12px;
+  padding:12px;background:rgba(255,255,255,0.02);
+  border:1px solid var(--line);border-radius:10px;margin-bottom:8px;
+}
+.tbl-conn-card-logo{width:34px;height:34px;border-radius:8px;background:#fff;padding:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.tbl-conn-card-logo img{width:100%;height:100%;object-fit:contain}
+.tbl-conn-card-body{flex:1;min-width:0}
+.tbl-conn-card-name{font-size:12.5px;font-weight:700;color:var(--t1);line-height:1.3}
+.tbl-conn-card-meta{font-size:10.5px;color:var(--t3);margin-top:3px}
+.tbl-conn-card-actions{display:flex;gap:5px;flex-shrink:0;align-items:center}
+.tbl-conn-action{
+  background:transparent;border:1px solid var(--line);
+  color:var(--t2);font-family:inherit;font-size:10.5px;font-weight:700;
+  padding:5px 9px;border-radius:6px;cursor:pointer;
+  display:inline-flex;align-items:center;gap:4px;
+  transition:border-color .12s, color .12s, background .12s;
+}
+.tbl-conn-action:hover{border-color:var(--line-strong);color:var(--t1)}
+.tbl-conn-action.is-warning:hover{border-color:rgba(245,158,11,0.5);color:var(--amber);background:rgba(245,158,11,0.06)}
+.tbl-conn-action.is-danger:hover{border-color:rgba(239,68,68,0.5);color:#ef4444;background:rgba(239,68,68,0.06)}
+.tbl-conn-action.is-primary{background:rgba(43,127,255,0.10);color:var(--blue);border-color:rgba(43,127,255,0.32)}
+.tbl-conn-action.is-primary:hover{background:rgba(43,127,255,0.18);border-color:rgba(43,127,255,0.55)}
+
+/* Re-auth modal (mock) */
+.tbl-reauth-overlay{
+  position:fixed;inset:0;z-index:300;
+  background:rgba(4,8,18,0.72);backdrop-filter:blur(5px);
+  display:none;align-items:center;justify-content:center;padding:24px;
+  animation:obFade .18s ease-out;
+}
+.tbl-reauth-overlay.is-open{display:flex}
+.tbl-reauth-modal{
+  width:100%;max-width:440px;background:#0c1428;
+  border:1px solid rgba(43,127,255,0.32);border-radius:14px;
+  padding:24px;animation:obSlide .22s cubic-bezier(.2,.8,.2,1);
+}
+.tbl-reauth-h{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.tbl-reauth-h-ic{
+  width:36px;height:36px;border-radius:10px;
+  background:rgba(43,127,255,0.14);color:var(--blue);
+  border:1px solid rgba(43,127,255,0.32);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.tbl-reauth-h-t{font-size:15px;font-weight:800;color:var(--t1);letter-spacing:-.01em}
+.tbl-reauth-h-d{font-size:11.5px;color:var(--t2);margin-top:3px;line-height:1.5}
+.tbl-reauth-body{
+  padding:14px;background:rgba(255,255,255,0.025);border:1px solid var(--line);border-radius:9px;
+  font-size:12px;color:var(--t2);line-height:1.55;margin-bottom:14px;
+}
+.tbl-reauth-body b{color:var(--t1)}
+.tbl-reauth-status{
+  display:flex;align-items:center;gap:9px;margin-top:10px;font-size:11.5px;color:var(--blue);
+}
+.tbl-reauth-status.is-success{color:var(--green)}
+.tbl-reauth-f{display:flex;gap:8px;justify-content:flex-end}
 
 </style>
 </head>
@@ -2926,6 +3017,24 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
       <button class="ds-tour-pop-back" id="dsTourBack" onclick="prevDsTour()" style="display:none">&larr; Back</button>
       <button class="ds-tour-pop-next" id="dsTourNext" onclick="nextDsTour()">Next &rarr;</button>
     </div>
+  </div>
+</div>
+
+
+<!-- Re-authenticate modal (shared) -->
+<div class="tbl-reauth-overlay" id="tblReauthOverlay" onclick="if(event.target===this)closeReauthModal()">
+  <div class="tbl-reauth-modal" id="tblReauthModal">
+    <div class="tbl-reauth-h">
+      <div class="tbl-reauth-h-ic">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+      </div>
+      <div>
+        <div class="tbl-reauth-h-t" id="tblReauthTitle">Re-authenticate</div>
+        <div class="tbl-reauth-h-d" id="tblReauthSub">Refresh expired credentials</div>
+      </div>
+    </div>
+    <div class="tbl-reauth-body" id="tblReauthBody"></div>
+    <div class="tbl-reauth-f" id="tblReauthFooter"></div>
   </div>
 </div>
 
@@ -3529,10 +3638,13 @@ function renderTableDetail(tableName) {
 
   const aggStatus = tableAggregateStatus(t);
 
-  // Aggregate columns across all sources (using fields from autoSamples)
+  // Apply source exclusions (Conn tab — remove source per-table)
+  const excluded = tableSourceExclusions[t.name] || [];
+  const includedSources = t.sources.filter(s => excluded.indexOf(s.slug) === -1);
+  // Aggregate columns across included sources (using fields from autoSamples)
   const allFields = [];
   const fieldsByName = {};
-  t.sources.forEach(s => {
+  includedSources.forEach(s => {
     (s.fields || []).forEach(f => {
       const colName = (f.tgt || '').replace(/^[^.]+\./, '');
       if (!fieldsByName[colName]) {
@@ -3560,6 +3672,27 @@ function renderTableDetail(tableName) {
       fieldsByName[colName].sources.push({ slug: s.slug, name: s.name, logo: s.logo, color: s.color, srcField: f.src });
     });
   });
+  // Append manually-added fields
+  (tableManualFields[t.name] || []).forEach(mf => {
+    const baseField = {
+      name: mf.name,
+      type: mf.type || 'string',
+      sources: [],
+      nullable: mf.nullable != null ? mf.nullable : true,
+      isPrimaryKey: !!mf.isPrimaryKey,
+      isIndexed: !!mf.isIndexed,
+      sampleValue: null,
+      description: null,
+      validations: [],
+      transformations: [],
+      customProps: {},
+      usageCount: 0,
+      _isManual: true
+    };
+    applyFieldOverrideTo(baseField, t.name);
+    allFields.push(baseField);
+  });
+
   if (allFields.length === 0) {
     for (let i = 1; i <= Math.min(t.totalColumns, 8); i++) {
       const baseField = { name: 'column_' + i, type: 'string', sources: t.sources.slice(0, 1), nullable: i > 1, isPrimaryKey:false, isIndexed:false, sampleValue:null, description:null, validations:[], transformations:[], customProps:{}, usageCount:0 };
@@ -3630,7 +3763,7 @@ function renderTableDetail(tableName) {
               Fields
               <span class="tbl-fieldlist-count">${allFields.length}</span>
             </div>
-            <button class="tbl-fieldlist-add" onclick="toast('Add field — Phase 2')">+ Add field</button>
+            <button class="tbl-fieldlist-add" onclick="tblAddField('${escapeHtml(t.name)}')">+ Add field</button>
           </div>
           <div class="tbl-fieldlist-body">
             <div class="tbl-fieldlist-row is-header">
@@ -3640,10 +3773,11 @@ function renderTableDetail(tableName) {
               <span>Sample</span>
             </div>
             ${allFields.map((f, idx) => `
-              <div class="tbl-fieldlist-row ${tblSelectedField === idx ? 'is-selected' : ''}" onclick="setTblField(${idx})">
-                <span class="tbl-field-name">${escapeHtml(f.displayName || f.name)}</span>
+              <div class="tbl-fieldlist-row ${tblSelectedField === idx ? 'is-selected' : ''} ${f._isManual ? 'is-manual' : ''}" onclick="setTblField(${idx})">
+                <span class="tbl-field-name">${escapeHtml(f.displayName || f.name)}${f._isManual ? `<button class="tbl-field-rm" onclick="event.stopPropagation();tblRemoveField('${escapeHtml(t.name)}','${escapeHtml(f.name)}')" title="Remove field"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 2l8 8M10 2L2 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>` : ''}</span>
                 <span><span class="tbl-field-type ob-type-pill t-${f.type}">${escapeHtml(f.type)}</span></span>
                 <span class="tbl-field-flags">
+                  ${f._isManual ? '<span class="tbl-field-flag f-manual" title="Manually added">M</span>' : ''}
                   ${f.isPrimaryKey ? '<span class="tbl-field-flag f-pk" title="Primary key">PK</span>' : ''}
                   ${f.isIndexed && !f.isPrimaryKey ? '<span class="tbl-field-flag f-ix" title="Indexed">IX</span>' : ''}
                   ${!f.nullable && !f.isPrimaryKey ? '<span class="tbl-field-flag f-nn" title="Not nullable">NN</span>' : ''}
@@ -3774,11 +3908,25 @@ function renderTblSyncTab(t) {
 
     <div class="tbl-sync-section-l">
       <span>Cadence</span>
-      <button class="tbl-sync-section-edit" onclick="toast('Edit cadence — Phase 2')">Edit</button>
+      ${tblSyncEditingCadence
+        ? `<button class="tbl-sync-section-edit" onclick="cancelEditCadence()">Cancel</button>`
+        : `<button class="tbl-sync-section-edit" onclick="startEditCadence()">Edit</button>`}
     </div>
-    <div class="tbl-sync-cadence">
-      Refresh <b>${escapeHtml(s.cadence)}</b>
-    </div>
+    ${tblSyncEditingCadence ? `
+      <div class="tbl-sync-cadence-editor">
+        <select id="tblCadenceSelect">
+          <option value="realtime" ${s.cadence === 'realtime' ? 'selected' : ''}>Real-time (webhook)</option>
+          <option value="hourly"   ${s.cadence === 'hourly'   ? 'selected' : ''}>Hourly</option>
+          <option value="daily"    ${s.cadence === 'daily'    ? 'selected' : ''}>Daily</option>
+          <option value="manual"   ${s.cadence === 'manual'   ? 'selected' : ''}>Manual only</option>
+        </select>
+        <button class="tbl-be-btn is-primary" onclick="commitEditCadence('${src.slug}', document.getElementById('tblCadenceSelect').value)">Save</button>
+      </div>
+    ` : `
+      <div class="tbl-sync-cadence">
+        Refresh <b>${escapeHtml(s.cadence)}</b>
+      </div>
+    `}
 
     ${s.incrementalKey ? `
       <div class="tbl-sync-section-l"><span>Incremental sync</span></div>
@@ -3897,6 +4045,229 @@ function patchFieldOverride(tableName, fieldName, patch) {
   persistTableFieldOverrides();
   rerenderTableDetail();
 }
+
+
+
+/* ============ TABLES PRIO 1+2 — Manual fields + Cadence edit + Conn actions ============ */
+
+// Manual fields (added via + Add field). Keyed by tableName.
+let tableManualFields = (function(){
+  try {
+    const raw = localStorage.getItem('aims_ds_table_manual_fields');
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  return {};
+})();
+function persistManualFields() {
+  try { localStorage.setItem('aims_ds_table_manual_fields', JSON.stringify(tableManualFields)); } catch(e){}
+}
+
+function tblAddField(tableName) {
+  if (!tableManualFields[tableName]) tableManualFields[tableName] = [];
+  const list = tableManualFields[tableName];
+  // Generate unique name
+  let n = list.length + 1;
+  let name = 'new_field_' + n;
+  const existing = new Set(list.map(f => f.name));
+  while (existing.has(name)) { n++; name = 'new_field_' + n; }
+  list.push({
+    name: name,
+    type: 'string',
+    nullable: true,
+    isPrimaryKey: false,
+    isIndexed: false,
+    sampleValue: null,
+    _isManual: true
+  });
+  persistManualFields();
+  createVersion(tableName, 'Added field "' + name + '"');
+  toast('Added field "' + name + '" — rename in Basics');
+  // Auto-select the new field (it'll be the last manual one)
+  // Get the new field's index in the rendered fields array (after detected + manual)
+  // Since we don't know exact index until render, just trigger rerender + open Field tab
+  tblRailTab = 'field';
+  // Find the index in next render
+  rerenderTableDetail();
+  // After render, find the field's index and select it
+  setTimeout(() => {
+    const allFields = currentFieldsForSelectedTable();
+    const idx = allFields.findIndex(f => f.name === name);
+    if (idx >= 0) {
+      tblSelectedField = idx;
+      tblFieldSubTab = 'basics';
+      rerenderTableDetail();
+    }
+  }, 50);
+}
+
+function tblRemoveField(tableName, fieldName) {
+  if (!confirm('Remove field "' + fieldName + '" from this table? Validations and transformations on this field will be lost. This cannot be undone except via Restore from Versions.')) return;
+  const list = tableManualFields[tableName] || [];
+  tableManualFields[tableName] = list.filter(f => f.name !== fieldName);
+  // Also clear any overrides for this field
+  if (tableFieldOverrides[tableName]) {
+    delete tableFieldOverrides[tableName][fieldName];
+    persistTableFieldOverrides();
+  }
+  persistManualFields();
+  createVersion(tableName, 'Removed field "' + fieldName + '"');
+  toast('Removed "' + fieldName + '"');
+  tblSelectedField = null;
+  rerenderTableDetail();
+}
+
+// Helper used by tblAddField's post-render setTimeout
+function currentFieldsForSelectedTable() {
+  const parts = parseRoute();
+  if (parts[0] !== 'tables' || !parts[1]) return [];
+  const tableName = decodeURIComponent(parts[1]);
+  const tables = getAllTables();
+  const t = tables.find(x => x.name === tableName);
+  if (!t) return [];
+  // Mirror the field-building logic from renderTableDetail
+  const allFields = [];
+  const fieldsByName = {};
+  t.sources.forEach(s => {
+    (s.fields || []).forEach(f => {
+      const colName = (f.tgt || '').replace(/^[^.]+\./, '');
+      if (!fieldsByName[colName]) {
+        const fld = { name: colName };
+        applyFieldOverrideTo(fld, t.name);
+        fieldsByName[colName] = fld;
+        allFields.push(fld);
+      }
+    });
+  });
+  // Append manual fields
+  (tableManualFields[t.name] || []).forEach(mf => {
+    const fld = { name: mf.name, _isManual: true };
+    applyFieldOverrideTo(fld, t.name);
+    allFields.push(fld);
+  });
+  return allFields;
+}
+
+/* ============ Cadence inline editor ============ */
+let tblSyncEditingCadence = false;
+
+function startEditCadence() {
+  tblSyncEditingCadence = true;
+  rerenderTableDetail();
+}
+function cancelEditCadence() {
+  tblSyncEditingCadence = false;
+  rerenderTableDetail();
+}
+function commitEditCadence(slug, newCadence) {
+  const conn = DS_CONNECTIONS[slug];
+  if (!conn) return;
+  const s = ensureSyncState(conn);
+  const prev = s.cadence;
+  if (prev === newCadence) { cancelEditCadence(); return; }
+  s.cadence = newCadence;
+  tblSyncEditingCadence = false;
+  toast(conn.name + ' cadence: ' + prev + ' → ' + newCadence);
+  // Trigger version on the table whose detail is currently open
+  const parts = parseRoute();
+  if (parts[0] === 'tables' && parts[1]) {
+    const tableName = decodeURIComponent(parts[1]);
+    createVersion(tableName, 'Changed ' + conn.name + ' sync cadence to ' + newCadence);
+  }
+  rerenderTableDetail();
+}
+
+/* ============ Source exclusion + re-auth ============ */
+let tableSourceExclusions = (function(){
+  try {
+    const raw = localStorage.getItem('aims_ds_table_source_exclusions');
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  return {};
+})();
+function persistSourceExclusions() {
+  try { localStorage.setItem('aims_ds_table_source_exclusions', JSON.stringify(tableSourceExclusions)); } catch(e){}
+}
+function isSourceExcluded(tableName, slug) {
+  return (tableSourceExclusions[tableName] || []).indexOf(slug) !== -1;
+}
+function removeSourceFromTable(tableName, slug) {
+  const conn = DS_CONNECTIONS[slug];
+  const sourceName = conn ? conn.name : slug;
+  if (!confirm('Remove ' + sourceName + ' from this table?\n\n' + sourceName + ' will keep syncing for other tables. Only this table stops including its data. Fields contributed only by ' + sourceName + ' will disappear from the schema.')) return;
+  if (!tableSourceExclusions[tableName]) tableSourceExclusions[tableName] = [];
+  if (tableSourceExclusions[tableName].indexOf(slug) === -1) {
+    tableSourceExclusions[tableName].push(slug);
+  }
+  persistSourceExclusions();
+  createVersion(tableName, 'Removed ' + sourceName + ' from this table');
+  toast(sourceName + ' removed from this table');
+  rerenderTableDetail();
+}
+function restoreSourceToTable(tableName, slug) {
+  const conn = DS_CONNECTIONS[slug];
+  const sourceName = conn ? conn.name : slug;
+  if (!tableSourceExclusions[tableName]) return;
+  tableSourceExclusions[tableName] = tableSourceExclusions[tableName].filter(s => s !== slug);
+  persistSourceExclusions();
+  createVersion(tableName, 'Restored ' + sourceName + ' to this table');
+  toast(sourceName + ' restored to this table');
+  rerenderTableDetail();
+}
+
+let _reauthTimer = null;
+function openReauthModal(slug) {
+  const conn = DS_CONNECTIONS[slug];
+  if (!conn) return;
+  $('tblReauthTitle').textContent = 'Re-authenticate ' + conn.name;
+  $('tblReauthSub').textContent = 'Refresh credentials and restart sync';
+  $('tblReauthBody').innerHTML = `
+    <div>Re-authenticating <b>${escapeHtml(conn.name)}</b> sends you through the OAuth handshake again. Existing field mappings, validations, transformations, and sync schedule are preserved.</div>
+    <div class="tbl-reauth-status" id="tblReauthStatus" style="display:none">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="animation:obSpin 1s linear infinite"><path d="M14 8a6 6 0 11-6-6"/><path d="M14 2v4h-4"/></svg>
+      <span>Re-authenticating with ${escapeHtml(conn.name)}&hellip;</span>
+    </div>
+  `;
+  $('tblReauthFooter').innerHTML = `
+    <button class="tbl-be-btn" onclick="closeReauthModal()">Cancel</button>
+    <button class="tbl-be-btn is-primary" id="tblReauthGo" onclick="runReauth('${slug}')">Re-authenticate</button>
+  `;
+  $('tblReauthOverlay').classList.add('is-open');
+  document.body.style.overflow = 'hidden';
+}
+function closeReauthModal() {
+  if (_reauthTimer) { clearTimeout(_reauthTimer); _reauthTimer = null; }
+  $('tblReauthOverlay').classList.remove('is-open');
+  document.body.style.overflow = '';
+}
+function runReauth(slug) {
+  const conn = DS_CONNECTIONS[slug];
+  const status = $('tblReauthStatus');
+  const goBtn = $('tblReauthGo');
+  if (status) status.style.display = 'flex';
+  if (goBtn) goBtn.disabled = true;
+  _reauthTimer = setTimeout(() => {
+    _reauthTimer = null;
+    // Clear any error on the source's sync state
+    if (conn) {
+      const s = ensureSyncState(conn);
+      if (s.status === 'error') {
+        s.status = 'connected';
+        s.lastError = null;
+        s.lastSyncAt = 'just now';
+      }
+    }
+    toast(conn.name + ' re-authenticated');
+    closeReauthModal();
+    rerenderTableDetail();
+  }, 1500);
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    const ov = document.getElementById('tblReauthOverlay');
+    if (ov && ov.classList.contains('is-open')) closeReauthModal();
+  }
+});
 
 function rerenderTableDetail() {
   const parts = parseRoute();
@@ -4384,25 +4755,77 @@ function renderFiCustom(f, tableName) {
 }
 
 function renderTblConnTab(t) {
+  const allSources = t.sources;
+  const excluded = tableSourceExclusions[t.name] || [];
+  const active = allSources.filter(s => excluded.indexOf(s.slug) === -1);
+  const inactive = allSources.filter(s => excluded.indexOf(s.slug) !== -1);
+
   return `
-    <div style="font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--t3);margin-bottom:10px">Source connections</div>
-    ${t.sources.map(s => {
+    <div style="font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--t3);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between">
+      <span>Active sources</span>
+      <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--t3)">${active.length} of ${allSources.length} feeding this table</span>
+    </div>
+
+    ${active.map(s => {
       const conn = DS_CONNECTIONS[s.slug];
+      const syncStatus = conn ? ensureSyncState(conn).status : 'pending';
+      const isError = syncStatus === 'error';
       return `
-        <div style="display:flex;align-items:center;gap:12px;padding:12px;background:rgba(255,255,255,0.02);border:1px solid var(--line);border-radius:10px;margin-bottom:8px">
+        <div class="tbl-conn-card">
           ${s.logo
-            ? `<div style="width:34px;height:34px;border-radius:8px;background:#fff;padding:5px;display:flex;align-items:center;justify-content:center"><img src="https://api.iconify.design/logos:${s.logo}.svg" alt=""/></div>`
-            : `<div style="width:34px;height:34px;border-radius:8px;background:${s.color};color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center">${escapeHtml(s.name.slice(0,2).toUpperCase())}</div>`}
-          <div style="flex:1;min-width:0">
-            <div style="font-size:12.5px;font-weight:700;color:var(--t1)">${escapeHtml(s.name)}</div>
-            <div style="font-size:10.5px;color:var(--t3);margin-top:2px">Source object: <span class="mono" style="color:var(--cyan)">${escapeHtml(t.name)}</span> &middot; Connected ${escapeHtml((conn && conn.activatedAt) || '—')}</div>
+            ? `<div class="tbl-conn-card-logo"><img src="https://api.iconify.design/logos:${s.logo}.svg" alt="${escapeHtml(s.name)}"/></div>`
+            : `<div class="tbl-conn-card-logo" style="background:${s.color};color:#fff;font-size:11px;font-weight:800;padding:0">${escapeHtml(s.name.slice(0,2).toUpperCase())}</div>`}
+          <div class="tbl-conn-card-body">
+            <div class="tbl-conn-card-name">${escapeHtml(s.name)}</div>
+            <div class="tbl-conn-card-meta">Object: <span class="mono" style="color:var(--cyan)">${escapeHtml(t.name)}</span> &middot; Connected ${escapeHtml((conn && conn.activatedAt) || '—')}${isError ? ' &middot; <span style="color:#fca5a5">sync error</span>' : ''}</div>
           </div>
-          <a class="btn btn-ghost btn-sm" href="#/connections/${s.slug}" style="text-decoration:none">Open ↗</a>
+          <div class="tbl-conn-card-actions">
+            <a class="tbl-conn-action" href="#/connections/${s.slug}" style="text-decoration:none">
+              Open
+              <svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h4v4M9 3L4 8"/></svg>
+            </a>
+            <button class="tbl-conn-action ${isError ? 'is-primary' : ''}" onclick="openReauthModal('${s.slug}')" title="Refresh credentials and restart sync">
+              <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6a4 4 0 017-2.5"/><path d="M10 1.5v3h-3"/><path d="M10 6a4 4 0 01-7 2.5"/><path d="M2 10.5v-3h3"/></svg>
+              Re-auth
+            </button>
+            <button class="tbl-conn-action is-danger" onclick="removeSourceFromTable('${escapeHtml(t.name)}','${s.slug}')" title="Stop including this source's data in this table">
+              <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 6h8"/></svg>
+              Remove
+            </button>
+          </div>
         </div>
       `;
     }).join('')}
-    <div style="margin-top:14px;padding:11px 13px;background:rgba(245,158,11,0.05);border:1px solid rgba(245,158,11,0.28);border-radius:9px;font-size:11px;color:var(--t2);line-height:1.5">
-      <b style="color:var(--t1)">Re-authenticate</b> — Phase 2 will add a per-source re-auth flow that routes back into the appropriate AuthScreen with the existing Table preserved.
+
+    ${inactive.length > 0 ? `
+      <div style="font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--t3);margin:18px 0 10px;display:flex;align-items:center;justify-content:space-between">
+        <span>Removed from this table</span>
+        <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--t3)">${inactive.length} excluded</span>
+      </div>
+      ${inactive.map(s => {
+        const conn = DS_CONNECTIONS[s.slug];
+        return `
+          <div class="tbl-conn-card" style="opacity:.6">
+            ${s.logo
+              ? `<div class="tbl-conn-card-logo"><img src="https://api.iconify.design/logos:${s.logo}.svg" alt=""/></div>`
+              : `<div class="tbl-conn-card-logo" style="background:${s.color};color:#fff;font-size:11px;font-weight:800;padding:0">${escapeHtml(s.name.slice(0,2).toUpperCase())}</div>`}
+            <div class="tbl-conn-card-body">
+              <div class="tbl-conn-card-name">${escapeHtml(s.name)}</div>
+              <div class="tbl-conn-card-meta">Excluded from this table &middot; still syncs to other tables</div>
+            </div>
+            <div class="tbl-conn-card-actions">
+              <button class="tbl-conn-action is-primary" onclick="restoreSourceToTable('${escapeHtml(t.name)}','${s.slug}')">
+                <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 2v8M2 6h8"/></svg>
+                Restore
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('')}
+    ` : ''}
+
+    <div style="margin-top:14px;padding:11px 13px;background:rgba(255,255,255,0.025);border:1px dashed var(--line);border-radius:9px;font-size:11px;color:var(--t2);line-height:1.5">
+      <b style="color:var(--t1)">Remove</b> stops including this source's data in this table only. The source itself keeps running for other tables. <b style="color:var(--t1)">Re-auth</b> refreshes credentials (useful when sync errors with auth failures). To fully disconnect a connection, use <a href="#/connections" style="color:var(--cyan);text-decoration:none">Connections</a>.
     </div>
   `;
 }
