@@ -1180,6 +1180,181 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
 
 
 
+
+/* ============ WIZARD MICRO-ANIMATIONS ============ */
+@media (prefers-reduced-motion: no-preference) {
+  /* Step body slide+fade on every paintWizard (innerHTML replace) */
+  .ob-modal-body > *{
+    animation: obStepIn 320ms cubic-bezier(.2, .8, .2, 1);
+  }
+  @keyframes obStepIn{
+    from{ opacity:0; transform:translateY(6px) }
+    to  { opacity:1; transform:translateY(0) }
+  }
+
+  /* Step header eyebrow + title stagger */
+  .ob-step-h .ob-step-eyebrow{ animation: obFadeUp 360ms cubic-bezier(.2,.8,.2,1) both }
+  .ob-step-h .ob-step-title  { animation: obFadeUp 420ms cubic-bezier(.2,.8,.2,1) 40ms both }
+  .ob-step-h .ob-step-desc   { animation: obFadeUp 460ms cubic-bezier(.2,.8,.2,1) 80ms both }
+  @keyframes obFadeUp{
+    from{ opacity:0; transform:translateY(8px) }
+    to  { opacity:1; transform:translateY(0) }
+  }
+
+  /* Cards stagger in (category + connector grids) */
+  .ob-cat-grid > .ob-cat-card,
+  .ob-conn-grid > .ob-conn-card,
+  .ob-sync-grid > .ob-sync-card{
+    animation: obCardIn 380ms cubic-bezier(.2,.8,.2,1) both;
+  }
+  .ob-cat-grid > .ob-cat-card:nth-child(1){ animation-delay: 40ms }
+  .ob-cat-grid > .ob-cat-card:nth-child(2){ animation-delay: 80ms }
+  .ob-cat-grid > .ob-cat-card:nth-child(3){ animation-delay: 120ms }
+  .ob-cat-grid > .ob-cat-card:nth-child(4){ animation-delay: 160ms }
+  .ob-cat-grid > .ob-cat-card:nth-child(5){ animation-delay: 200ms }
+  .ob-cat-grid > .ob-cat-card:nth-child(6){ animation-delay: 240ms }
+  .ob-cat-grid > .ob-cat-card:nth-child(7){ animation-delay: 280ms }
+  .ob-conn-grid > .ob-conn-card:nth-child(1){ animation-delay: 30ms }
+  .ob-conn-grid > .ob-conn-card:nth-child(2){ animation-delay: 60ms }
+  .ob-conn-grid > .ob-conn-card:nth-child(3){ animation-delay: 90ms }
+  .ob-conn-grid > .ob-conn-card:nth-child(4){ animation-delay: 120ms }
+  .ob-conn-grid > .ob-conn-card:nth-child(5){ animation-delay: 150ms }
+  .ob-conn-grid > .ob-conn-card:nth-child(6){ animation-delay: 180ms }
+  .ob-sync-grid > .ob-sync-card:nth-child(1){ animation-delay: 30ms }
+  .ob-sync-grid > .ob-sync-card:nth-child(2){ animation-delay: 70ms }
+  .ob-sync-grid > .ob-sync-card:nth-child(3){ animation-delay: 110ms }
+  .ob-sync-grid > .ob-sync-card:nth-child(4){ animation-delay: 150ms }
+  @keyframes obCardIn{
+    from{ opacity:0; transform:translateY(10px) scale(.98) }
+    to  { opacity:1; transform:translateY(0) scale(1) }
+  }
+
+  /* Card lift on hover (more pronounced than default) */
+  .ob-cat-card,
+  .ob-conn-card,
+  .ob-sync-card,
+  .ob-done-card{ will-change: transform }
+  .ob-conn-card:hover{ transform: translateY(-2px) scale(1.005) }
+
+  /* Selected check pulse on cards */
+  .ob-cat-card.is-selected .ob-cat-ic,
+  .ob-sync-card.is-selected .ob-sync-card-ic{
+    animation: obIcPop 320ms cubic-bezier(.2,.8,.2,1);
+  }
+  @keyframes obIcPop{
+    0%   { transform:scale(.6); opacity:.5 }
+    60%  { transform:scale(1.15); opacity:1 }
+    100% { transform:scale(1) }
+  }
+
+  /* Progress bar segments fill smoothly */
+  .ob-modal-progress-seg{ transition: background-color 260ms cubic-bezier(.2,.8,.2,1) }
+
+  /* Banners pulse on entrance (AI + quarantine + fresh) */
+  .ob-ai-banner,
+  .ob-q-banner,
+  .cn-fresh-banner{
+    animation: obBannerIn 480ms cubic-bezier(.2,.8,.2,1) both;
+  }
+  @keyframes obBannerIn{
+    0%   { opacity:0; transform:translateY(-4px) scale(.985) }
+    60%  { opacity:1; transform:translateY(0) scale(1.005) }
+    100% { opacity:1; transform:translateY(0) scale(1) }
+  }
+
+  /* Mapping rows stagger gently on entrance */
+  .ob-map-table-wrap .ob-map-row{ animation: obRowIn 240ms cubic-bezier(.2,.8,.2,1) both }
+  .ob-map-table-wrap .ob-map-row:nth-child(1){ animation-delay: 20ms }
+  .ob-map-table-wrap .ob-map-row:nth-child(2){ animation-delay: 40ms }
+  .ob-map-table-wrap .ob-map-row:nth-child(3){ animation-delay: 60ms }
+  .ob-map-table-wrap .ob-map-row:nth-child(4){ animation-delay: 80ms }
+  .ob-map-table-wrap .ob-map-row:nth-child(5){ animation-delay: 100ms }
+  .ob-map-table-wrap .ob-map-row:nth-child(6){ animation-delay: 120ms }
+  .ob-map-table-wrap .ob-map-row:nth-child(7){ animation-delay: 140ms }
+  .ob-map-table-wrap .ob-map-row:nth-child(8){ animation-delay: 160ms }
+  .ob-map-table-wrap .ob-map-row:nth-child(n+9){ animation-delay: 180ms }
+  @keyframes obRowIn{
+    from{ opacity:0; transform:translateX(-4px) }
+    to  { opacity:1; transform:translateX(0) }
+  }
+
+  /* Confidence pill subtle pulse on entrance */
+  .ob-map-conf{ animation: obConfPulse 720ms cubic-bezier(.2,.8,.2,1) both }
+  @keyframes obConfPulse{
+    0%   { transform:scale(.85); opacity:0 }
+    50%  { transform:scale(1.06); opacity:1 }
+    100% { transform:scale(1) }
+  }
+
+  /* Status indicators rotate-in */
+  .ob-auth-status,
+  .ob-auth-error,
+  .ob-parked-foot{
+    animation: obStatusIn 360ms cubic-bezier(.2,.8,.2,1);
+  }
+  @keyframes obStatusIn{
+    from{ opacity:0; transform:translateY(4px) }
+    to  { opacity:1; transform:translateY(0) }
+  }
+
+  /* Stat tiles in preview stagger */
+  .ob-preview-tiles > .ob-tile{ animation: obTileIn 380ms cubic-bezier(.2,.8,.2,1) both }
+  .ob-preview-tiles > .ob-tile:nth-child(1){ animation-delay: 40ms }
+  .ob-preview-tiles > .ob-tile:nth-child(2){ animation-delay: 80ms }
+  .ob-preview-tiles > .ob-tile:nth-child(3){ animation-delay: 120ms }
+  .ob-preview-tiles > .ob-tile:nth-child(4){ animation-delay: 160ms }
+  @keyframes obTileIn{
+    from{ opacity:0; transform:translateY(8px) scale(.97) }
+    to  { opacity:1; transform:translateY(0) scale(1) }
+  }
+
+  /* Empty state hero cards float */
+  .ob-empty-visual-card.c1{ animation: obFloat1 6s ease-in-out infinite }
+  .ob-empty-visual-card.c2{ animation: obFloat2 7s ease-in-out infinite }
+  .ob-empty-visual-card.c3{ animation: obFloat3 5.5s ease-in-out infinite }
+  @keyframes obFloat1{ 0%,100%{ transform:translateY(0) } 50%{ transform:translateY(-6px) } }
+  @keyframes obFloat2{ 0%,100%{ transform:translateY(0) } 50%{ transform:translateY(4px) } }
+  @keyframes obFloat3{ 0%,100%{ transform:translateY(0) } 50%{ transform:translateY(-3px) } }
+
+  /* Done step cards stagger */
+  .ob-done-cards > .ob-done-card{ animation: obCardIn 400ms cubic-bezier(.2,.8,.2,1) both }
+  .ob-done-cards > .ob-done-card:nth-child(1){ animation-delay: 120ms }
+  .ob-done-cards > .ob-done-card:nth-child(2){ animation-delay: 200ms }
+  .ob-done-cards > .ob-done-card:nth-child(3){ animation-delay: 280ms }
+
+  /* Done step hero icon bounce */
+  .ob-done-hero-ic{ animation: obCheckBounce 700ms cubic-bezier(.2,.9,.3,1.2) both }
+  @keyframes obCheckBounce{
+    0%   { transform:scale(.4); opacity:0 }
+    55%  { transform:scale(1.1); opacity:1 }
+    80%  { transform:scale(.96) }
+    100% { transform:scale(1) }
+  }
+
+  /* Footer Next button gentle scale on focus */
+  #obNext:active{ transform:scale(.98) }
+
+  /* Toast slide-in already exists; harden it */
+  .toast{ animation: obToastIn 320ms cubic-bezier(.2,.8,.2,1) }
+  @keyframes obToastIn{
+    from{ opacity:0; transform:translateY(8px) }
+    to  { opacity:1; transform:translateY(0) }
+  }
+}
+
+/* Respect prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .ob-modal-body > *,
+  .ob-cat-card, .ob-conn-card, .ob-sync-card, .ob-done-card,
+  .ob-ai-banner, .ob-q-banner, .cn-fresh-banner,
+  .ob-map-row, .ob-map-conf, .ob-auth-status, .ob-auth-error,
+  .ob-tile, .ob-empty-visual-card,
+  .ob-done-hero-ic, .toast{
+    animation: none !important;
+  }
+  .ob-modal-progress-seg{ transition: none !important }
+}
+
 /* ============ AUTH ERROR STATES ============ */
 .ob-auth-error{
   display:flex;align-items:flex-start;gap:11px;
