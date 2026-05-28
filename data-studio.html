@@ -1968,6 +1968,341 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
   font-size:12.5px;line-height:1.55;
 }
 
+
+/* ============ TABLES — PHASE 1 (split layout + sync panel) ============ */
+
+/* Library polish */
+.tbl-toolbar{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  margin-bottom:14px;padding:10px 14px;
+  background:rgba(255,255,255,0.02);
+  border:1px solid var(--line);border-radius:10px;
+}
+.tbl-search{
+  flex:1;min-width:220px;display:flex;align-items:center;gap:8px;
+  padding:7px 11px;background:#070e1c;border:1px solid var(--line);border-radius:8px;
+}
+.tbl-search svg{color:var(--t3);flex-shrink:0}
+.tbl-search input{
+  flex:1;background:transparent;border:none;outline:none;
+  color:var(--t1);font-family:inherit;font-size:12.5px;
+}
+.tbl-search input::placeholder{color:var(--t3)}
+.tbl-filter{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:7px 11px;background:transparent;border:1px solid var(--line);border-radius:8px;
+  color:var(--t2);font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;
+  transition:border-color .12s, color .12s;
+}
+.tbl-filter:hover{border-color:var(--line-strong);color:var(--t1)}
+.tbl-filter.is-active{background:rgba(16,185,129,0.08);border-color:rgba(16,185,129,0.40);color:var(--emerald)}
+.tbl-filter.is-error{background:rgba(239,68,68,0.10);border-color:rgba(239,68,68,0.40);color:#fca5a5}
+.tbl-filter.is-error.is-active{background:rgba(239,68,68,0.18);border-color:rgba(239,68,68,0.60)}
+.tbl-filter-badge{
+  font-size:10px;font-weight:800;padding:0 6px;border-radius:99px;
+  background:rgba(255,255,255,0.10);color:inherit;
+}
+
+/* Status dot on cards */
+.tbl-card{position:relative}
+.tbl-card.is-error{border-color:rgba(239,68,68,0.45)}
+.tbl-card.is-error:hover{border-color:rgba(239,68,68,0.65)}
+.tbl-card-status{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:10.5px;font-weight:700;
+  padding:2.5px 9px;border-radius:99px;
+}
+.tbl-card-status-dot{width:6px;height:6px;border-radius:50%}
+.tbl-card-status.is-connected{background:rgba(16,185,129,0.10);color:var(--green);border:1px solid rgba(16,185,129,0.32)}
+.tbl-card-status.is-connected .tbl-card-status-dot{background:var(--green)}
+.tbl-card-status.is-syncing{background:rgba(43,127,255,0.10);color:var(--blue);border:1px solid rgba(43,127,255,0.32)}
+.tbl-card-status.is-syncing .tbl-card-status-dot{background:var(--blue);animation:obSpin 1.2s linear infinite}
+.tbl-card-status.is-paused{background:rgba(245,158,11,0.10);color:var(--amber);border:1px solid rgba(245,158,11,0.32)}
+.tbl-card-status.is-paused .tbl-card-status-dot{background:var(--amber)}
+.tbl-card-status.is-error-st{background:rgba(239,68,68,0.10);color:#fca5a5;border:1px solid rgba(239,68,68,0.32)}
+.tbl-card-status.is-error-st .tbl-card-status-dot{background:#ef4444}
+.tbl-card-status.is-pending{background:rgba(255,255,255,0.04);color:var(--t3);border:1px solid var(--line)}
+.tbl-card-status.is-pending .tbl-card-status-dot{background:var(--t3)}
+
+/* Detail split layout */
+.tbl-split{
+  display:grid;grid-template-columns:minmax(0, 45%) minmax(0, 55%);gap:14px;
+  align-items:flex-start;
+}
+@media (max-width:1000px){.tbl-split{grid-template-columns:1fr}}
+
+/* Field list (left pane) */
+.tbl-fieldlist{
+  border:1px solid var(--line);border-radius:11px;overflow:hidden;
+  background:#0a1228;
+}
+.tbl-fieldlist-h{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:11px 14px;
+  background:rgba(255,255,255,0.025);
+  border-bottom:1px solid var(--line);
+}
+.tbl-fieldlist-t{
+  font-size:11.5px;font-weight:700;color:var(--t1);
+  display:flex;align-items:center;gap:7px;
+}
+.tbl-fieldlist-count{font-size:10.5px;font-weight:700;color:var(--t3);padding:1.5px 7px;border-radius:99px;background:rgba(255,255,255,0.05)}
+.tbl-fieldlist-add{
+  background:transparent;border:1px solid var(--line);
+  color:var(--t2);font-family:inherit;font-size:11px;font-weight:700;
+  padding:5px 10px;border-radius:7px;cursor:pointer;
+  transition:border-color .12s, color .12s;
+}
+.tbl-fieldlist-add:hover{border-color:var(--emerald);color:var(--emerald)}
+.tbl-fieldlist-body{max-height:560px;overflow-y:auto}
+.tbl-fieldlist-row{
+  display:grid;grid-template-columns:1.4fr auto auto 1fr;gap:11px;align-items:center;
+  padding:10px 14px;cursor:pointer;
+  border-bottom:1px solid rgba(255,255,255,0.04);
+  font-size:11.5px;transition:background .12s;
+}
+.tbl-fieldlist-row:last-child{border-bottom:none}
+.tbl-fieldlist-row:hover{background:rgba(255,255,255,0.02)}
+.tbl-fieldlist-row.is-selected{background:rgba(16,185,129,0.07);border-color:rgba(16,185,129,0.32)}
+.tbl-fieldlist-row.is-header{
+  background:rgba(255,255,255,0.02);
+  font-size:10px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--t3);
+  cursor:default;
+}
+.tbl-fieldlist-row.is-header:hover{background:rgba(255,255,255,0.02)}
+.tbl-field-name{
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  color:var(--t1);font-weight:600;font-size:12px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.tbl-field-type{
+  display:inline-flex;padding:1.5px 7px;border-radius:5px;
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  font-size:10px;font-weight:700;
+}
+.tbl-field-flags{display:flex;gap:3px;align-items:center;flex-wrap:wrap}
+.tbl-field-flag{
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  font-size:9px;font-weight:800;padding:1px 5px;border-radius:4px;letter-spacing:.04em;
+}
+.tbl-field-flag.f-pk{background:rgba(245,158,11,0.16);color:var(--amber);border:1px solid rgba(245,158,11,0.40)}
+.tbl-field-flag.f-ix{background:rgba(43,127,255,0.14);color:var(--blue);border:1px solid rgba(43,127,255,0.32)}
+.tbl-field-flag.f-nn{background:rgba(255,255,255,0.05);color:var(--t2);border:1px solid var(--line-strong)}
+.tbl-field-flag.f-v {background:rgba(16,185,129,0.14);color:var(--green);border:1px solid rgba(16,185,129,0.32)}
+.tbl-field-flag.f-t {background:rgba(255,255,255,0.06);color:var(--t2);border:1px solid var(--line-strong)}
+.tbl-field-flag.f-u {background:rgba(43,127,255,0.10);color:var(--blue);border:1px solid rgba(43,127,255,0.28)}
+.tbl-field-sample{
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  font-size:10.5px;color:var(--t3);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+
+/* Right rail */
+.tbl-rail{
+  border:1px solid var(--line);border-radius:11px;overflow:hidden;
+  background:#0a1228;
+  min-height:560px;display:flex;flex-direction:column;
+}
+.tbl-rail-tabs{
+  display:flex;align-items:center;
+  padding:8px 8px 0;gap:2px;
+  background:rgba(255,255,255,0.02);
+  border-bottom:1px solid var(--line);
+}
+.tbl-rail-tab{
+  background:transparent;border:none;cursor:pointer;
+  font-family:inherit;font-size:11px;font-weight:700;
+  color:var(--t3);padding:8px 12px;
+  border-radius:7px 7px 0 0;
+  transition:color .12s, background .12s;
+  display:inline-flex;align-items:center;gap:5px;position:relative;
+}
+.tbl-rail-tab:hover{color:var(--t1);background:rgba(255,255,255,0.03)}
+.tbl-rail-tab.is-active{color:var(--emerald);background:#0a1228}
+.tbl-rail-tab.is-active::after{
+  content:'';position:absolute;left:0;right:0;bottom:-1px;height:2px;background:var(--emerald);
+}
+.tbl-rail-tab-count{
+  font-size:9.5px;font-weight:800;
+  padding:0 5px;border-radius:99px;
+  background:rgba(255,255,255,0.06);color:inherit;
+}
+.tbl-rail-tab-err-dot{
+  width:6px;height:6px;border-radius:50%;background:#ef4444;
+  box-shadow:0 0 0 2px rgba(239,68,68,0.25);
+}
+.tbl-rail-body{flex:1;overflow-y:auto;padding:18px}
+
+/* Sync panel */
+.tbl-sync-banner{
+  display:flex;align-items:flex-start;gap:12px;
+  padding:12px 14px;margin-bottom:14px;
+  border-radius:10px;
+}
+.tbl-sync-banner.t-connected{background:rgba(16,185,129,0.07);border:1px solid rgba(16,185,129,0.32)}
+.tbl-sync-banner.t-syncing{background:rgba(43,127,255,0.07);border:1px solid rgba(43,127,255,0.32)}
+.tbl-sync-banner.t-paused{background:rgba(245,158,11,0.07);border:1px solid rgba(245,158,11,0.32)}
+.tbl-sync-banner.t-error{background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.36)}
+.tbl-sync-banner.t-pending{background:rgba(255,255,255,0.03);border:1px solid var(--line)}
+.tbl-sync-banner-ic{
+  width:30px;height:30px;border-radius:8px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+}
+.tbl-sync-banner.t-connected .tbl-sync-banner-ic{background:rgba(16,185,129,0.16);color:var(--green);border:1px solid rgba(16,185,129,0.32)}
+.tbl-sync-banner.t-syncing   .tbl-sync-banner-ic{background:rgba(43,127,255,0.16);color:var(--blue);border:1px solid rgba(43,127,255,0.32)}
+.tbl-sync-banner.t-paused    .tbl-sync-banner-ic{background:rgba(245,158,11,0.16);color:var(--amber);border:1px solid rgba(245,158,11,0.32)}
+.tbl-sync-banner.t-error     .tbl-sync-banner-ic{background:rgba(239,68,68,0.16);color:#fca5a5;border:1px solid rgba(239,68,68,0.36)}
+.tbl-sync-banner.t-pending   .tbl-sync-banner-ic{background:rgba(255,255,255,0.05);color:var(--t3);border:1px solid var(--line)}
+.tbl-sync-banner-t{font-size:12.5px;font-weight:700;color:var(--t1);line-height:1.3}
+.tbl-sync-banner-d{font-size:11px;color:var(--t2);margin-top:3px;line-height:1.45}
+
+.tbl-sync-err{
+  padding:11px 13px;margin-bottom:14px;
+  background:rgba(239,68,68,0.05);
+  border:1px solid rgba(239,68,68,0.32);
+  border-left:3px solid #ef4444;border-radius:9px;
+}
+.tbl-sync-err-t{font-size:12px;font-weight:700;color:#fca5a5;line-height:1.3}
+.tbl-sync-err-meta{
+  font-size:10.5px;color:var(--t3);margin-top:5px;
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+.tbl-sync-err-retry{font-size:10.5px;color:var(--t2);margin-top:5px;font-style:italic}
+
+.tbl-sync-actions{display:flex;gap:8px;margin-bottom:16px}
+.tbl-sync-action{
+  flex:1;
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  padding:8px 12px;border-radius:8px;
+  font-family:inherit;font-size:11.5px;font-weight:700;cursor:pointer;
+  transition:transform .12s, background .12s;
+}
+.tbl-sync-action.is-primary{background:linear-gradient(135deg, #10B981, #059669);color:#fff;border:none}
+.tbl-sync-action.is-primary:hover{transform:translateY(-1px)}
+.tbl-sync-action.is-secondary{background:transparent;color:var(--t2);border:1px solid var(--line-strong)}
+.tbl-sync-action.is-secondary:hover{border-color:var(--emerald);color:var(--emerald)}
+.tbl-sync-action.is-syncing{background:rgba(43,127,255,0.10);color:var(--blue);border:1px solid rgba(43,127,255,0.32);cursor:default}
+
+.tbl-sync-stats{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:16px;
+}
+.tbl-sync-stat{padding:10px 12px;background:rgba(255,255,255,0.025);border:1px solid var(--line);border-radius:9px}
+.tbl-sync-stat-l{font-size:9.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--t3);margin-bottom:4px}
+.tbl-sync-stat-v{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:14px;font-weight:700;color:var(--t1);line-height:1.1}
+
+.tbl-sync-section-l{font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--t3);margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
+.tbl-sync-section-edit{
+  background:transparent;border:none;color:var(--blue);cursor:pointer;
+  font-family:inherit;font-size:10px;font-weight:700;text-transform:none;letter-spacing:0;padding:0;
+}
+.tbl-sync-section-edit:hover{text-decoration:underline}
+
+.tbl-sync-cadence{
+  display:flex;align-items:center;gap:8px;padding:10px 12px;margin-bottom:14px;
+  background:rgba(255,255,255,0.02);border:1px solid var(--line);border-radius:9px;
+  font-size:12px;color:var(--t2);
+}
+.tbl-sync-cadence b{color:var(--t1);font-weight:700}
+.tbl-sync-incr{
+  padding:10px 12px;margin-bottom:14px;
+  background:rgba(255,255,255,0.02);border:1px solid var(--line);border-radius:9px;
+  font-size:11.5px;color:var(--t2);
+}
+.tbl-sync-incr b{color:var(--t1);font-weight:700}
+.tbl-sync-incr .mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--cyan)}
+
+.tbl-sync-history{
+  border:1px solid var(--line);border-radius:9px;overflow:hidden;
+}
+.tbl-sync-history-row{
+  display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;
+  padding:9px 12px;
+  border-bottom:1px solid rgba(255,255,255,0.04);
+  font-size:11.5px;
+}
+.tbl-sync-history-row:last-child{border-bottom:none}
+.tbl-sync-history-row.is-error{background:rgba(239,68,68,0.04)}
+.tbl-sync-history-ic{
+  width:18px;height:18px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:9px;font-weight:800;
+}
+.tbl-sync-history-ic.is-success{background:rgba(16,185,129,0.16);color:var(--green);border:1px solid rgba(16,185,129,0.32)}
+.tbl-sync-history-ic.is-error{background:rgba(239,68,68,0.18);color:#fca5a5;border:1px solid rgba(239,68,68,0.36)}
+.tbl-sync-history-body{min-width:0}
+.tbl-sync-history-line{color:var(--t1);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:10.5px}
+.tbl-sync-history-line .trigger{color:var(--t3);margin-right:6px}
+.tbl-sync-history-msg{color:var(--t2);font-size:10.5px;margin-top:2px;line-height:1.4}
+.tbl-sync-history-msg.is-err{color:#fca5a5}
+.tbl-sync-history-meta{font-size:10px;color:var(--t3);text-align:right;font-family:ui-monospace,monospace;flex-shrink:0}
+
+/* Multi-source banner (our extension) */
+.tbl-ms-banner{
+  display:flex;align-items:center;gap:11px;
+  padding:11px 13px;margin-bottom:14px;
+  background:linear-gradient(135deg, rgba(43,127,255,0.05), rgba(167,139,250,0.04));
+  border:1px solid rgba(43,127,255,0.28);
+  border-radius:10px;
+}
+.tbl-ms-banner-ic{
+  width:28px;height:28px;border-radius:7px;flex-shrink:0;
+  background:rgba(43,127,255,0.14);color:var(--blue);
+  border:1px solid rgba(43,127,255,0.32);
+  display:flex;align-items:center;justify-content:center;
+}
+.tbl-ms-banner-t{font-size:12px;font-weight:700;color:var(--t1);line-height:1.3}
+.tbl-ms-banner-d{font-size:10.5px;color:var(--t2);margin-top:2px;line-height:1.45}
+
+/* Per-source picker inside Sync tab (for multi-source tables) */
+.tbl-src-picker{
+  display:flex;align-items:center;gap:5px;flex-wrap:wrap;
+  padding:6px;margin-bottom:14px;
+  background:rgba(255,255,255,0.02);border:1px solid var(--line);border-radius:9px;
+}
+.tbl-src-pick{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:5px 10px;border-radius:6px;
+  background:transparent;border:1px solid transparent;
+  font-family:inherit;font-size:11.5px;font-weight:700;
+  color:var(--t3);cursor:pointer;
+  transition:background .12s, color .12s, border-color .12s;
+}
+.tbl-src-pick:hover{background:rgba(255,255,255,0.03);color:var(--t1)}
+.tbl-src-pick.is-active{background:rgba(16,185,129,0.10);color:var(--emerald);border-color:rgba(16,185,129,0.32)}
+.tbl-src-pick-logo{width:16px;height:16px;border-radius:4px;background:#fff;padding:1.5px;display:flex;align-items:center;justify-content:center}
+.tbl-src-pick-logo img{width:100%;height:100%;object-fit:contain}
+.tbl-src-pick-dot{width:6px;height:6px;border-radius:50%}
+.tbl-src-pick-dot.t-connected{background:var(--green)}
+.tbl-src-pick-dot.t-error    {background:#ef4444}
+.tbl-src-pick-dot.t-paused   {background:var(--amber)}
+.tbl-src-pick-dot.t-syncing  {background:var(--blue);animation:obSpin 1.2s linear infinite}
+
+/* Stub tab placeholder */
+.tbl-rail-placeholder{
+  padding:36px 18px;text-align:center;
+  border:1px dashed var(--line-strong);border-radius:11px;
+  background:rgba(255,255,255,0.015);
+}
+.tbl-rail-placeholder-ic{
+  width:48px;height:48px;border-radius:12px;margin:0 auto 12px;
+  background:rgba(255,255,255,0.04);border:1px solid var(--line);
+  color:var(--t3);display:flex;align-items:center;justify-content:center;
+}
+.tbl-rail-placeholder-t{font-size:13.5px;font-weight:700;color:var(--t2);margin-bottom:6px}
+.tbl-rail-placeholder-d{font-size:11.5px;color:var(--t3);line-height:1.5;max-width:280px;margin:0 auto}
+
+/* Field tab — Basics (read-only for Phase 1, full edit in Phase 2) */
+.tbl-fb-h{margin-bottom:14px}
+.tbl-fb-name{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:16px;font-weight:800;color:var(--t1);letter-spacing:-.01em}
+.tbl-fb-id{font-family:ui-monospace,monospace;font-size:10.5px;color:var(--t3);margin-top:3px}
+.tbl-fb-pills{display:flex;gap:5px;align-items:center;margin-top:7px;flex-wrap:wrap}
+.tbl-fb-row{padding:11px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
+.tbl-fb-row:last-child{border-bottom:none}
+.tbl-fb-l{font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--t3);margin-bottom:5px}
+.tbl-fb-v{font-size:12.5px;color:var(--t1);line-height:1.5}
+.tbl-fb-v.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--cyan)}
+.tbl-fb-v.muted{color:var(--t3);font-style:italic}
+
 </style>
 </head>
 <body>
@@ -2436,6 +2771,179 @@ function paintSsbActive() {
 // Aggregate all tables across DS_CONNECTIONS.targetTables into a flat list.
 // A single table name can be fed by multiple connections (e.g., 'customer'
 // from both HubSpot and Salesforce). We merge those into one logical table.
+
+
+/* ============ TABLES PHASE 1 — Sync state + helpers ============ */
+
+// Per-connection sync state. Seeded once, persists in-memory.
+// Each connection in DS_CONNECTIONS gets an _syncState if not already present.
+function ensureSyncState(conn) {
+  if (conn._syncState) return conn._syncState;
+  // Infer realistic status from existing health-like signals
+  let status = 'connected', lastError = null;
+  if (conn.slug === 'salesforce') {
+    status = 'error';
+    lastError = {
+      message: 'Auth failed: access token expired',
+      code: 'AUTH_401',
+      occurredAt: '14 min ago',
+      retryable: true
+    };
+  } else if (conn.slug === 'spreadsheet') {
+    status = 'paused';
+  }
+  conn._syncState = {
+    status: status,
+    lastSyncAt: conn.lastSync || '—',
+    nextSyncAt: status === 'paused' ? 'paused' : (status === 'error' ? 'retrying in 5 min' : 'in 1h'),
+    recordCount: parseRowCount(((conn.targetTables||[])[0]||{}).rows) || 0,
+    sizeBytes: 1842204 + Math.floor(Math.random()*10000000),
+    cadence: status === 'paused' ? 'manual' : (conn.slug === 'github' ? 'realtime' : 'hourly'),
+    incremental: true,
+    incrementalKey: (conn.slug === 'salesforce' ? 'LastModifiedDate' :
+                     conn.slug === 'snowflake' ? 'updated_at' :
+                     conn.slug === 'github' ? 'updated_at' :
+                     conn.slug === 'spreadsheet' ? null :
+                     'updated_at'),
+    lastError: lastError,
+    history: seedSyncHistory(conn.slug, status)
+  };
+  return conn._syncState;
+}
+
+function seedSyncHistory(slug, status) {
+  const hist = [];
+  const eventCount = 10;
+  for (let i = 0; i < eventCount; i++) {
+    const minutesAgo = i * (5 + Math.floor(Math.random()*15)) + 2;
+    const isLast = i === 0;
+    const isErrEvent = isLast && status === 'error';
+    hist.push({
+      id: 'sync_' + (50 - i),
+      ago: minutesAgo + ' min ago',
+      durationMs: 1200 + Math.floor(Math.random()*4000),
+      status: isErrEvent ? 'error' : (Math.random() < 0.04 ? 'partial' : 'success'),
+      recordsAdded: isErrEvent ? 0 : 3 + Math.floor(Math.random()*40),
+      recordsUpdated: isErrEvent ? 0 : 8 + Math.floor(Math.random()*120),
+      recordsDeleted: 0,
+      errorMessage: isErrEvent ? 'Auth failed: access token expired (AUTH_401)' : null,
+      trigger: i === eventCount - 1 ? 'initial' : (Math.random() < 0.12 ? 'manual' : 'scheduled')
+    });
+  }
+  return hist;
+}
+
+function formatBytes(n) {
+  if (!n) return '—';
+  if (n >= 1e9) return (n/1e9).toFixed(1) + ' GB';
+  if (n >= 1e6) return (n/1e6).toFixed(1) + ' MB';
+  if (n >= 1e3) return (n/1e3).toFixed(1) + ' KB';
+  return n + ' B';
+}
+function formatDuration(ms) {
+  if (ms < 1000) return ms + 'ms';
+  return (ms/1000).toFixed(1) + 's';
+}
+
+// Aggregate table status from per-source sync states
+function tableAggregateStatus(tbl) {
+  const states = tbl.sources.map(s => {
+    const conn = DS_CONNECTIONS[s.slug];
+    return conn ? ensureSyncState(conn).status : 'connected';
+  });
+  if (states.indexOf('error') !== -1) return 'error';
+  if (states.indexOf('syncing') !== -1) return 'syncing';
+  if (states.indexOf('paused') !== -1) return 'paused';
+  if (states.every(s => s === 'pending')) return 'pending';
+  return 'connected';
+}
+
+function statusLabel(st) {
+  return ({ connected:'Connected', syncing:'Syncing', paused:'Paused', error:'Sync error', pending:'Pending' })[st] || st;
+}
+
+// Table-level state (selected source for sync tab, selected field for field tab, etc)
+let tblRailTab = 'sync';        // default to Sync since it carries the most signal
+let tblSelectedField = null;    // index into the field list
+let tblSelectedSource = 0;      // index for multi-source picker in Sync tab
+let tblLibFilter = { search:'', filter:'all' /* all | errors | <source-slug> */ };
+
+function setTblRailTab(tab) {
+  tblRailTab = tab;
+  // Re-paint detail
+  const parts = parseRoute();
+  if (parts[0] === 'tables' && parts[1]) renderTableDetail(parts[1]);
+}
+function setTblField(idx) {
+  tblSelectedField = idx;
+  tblRailTab = 'field';
+  const parts = parseRoute();
+  if (parts[0] === 'tables' && parts[1]) renderTableDetail(parts[1]);
+}
+function setTblSource(idx) {
+  tblSelectedSource = idx;
+  const parts = parseRoute();
+  if (parts[0] === 'tables' && parts[1]) renderTableDetail(parts[1]);
+}
+
+function tblLibSetFilter(value) {
+  tblLibFilter.filter = value;
+  renderTables();
+}
+function tblLibSearchInput(value) {
+  tblLibFilter.search = (value || '').toLowerCase();
+  renderTables();
+}
+
+function triggerSyncNow(slug) {
+  const conn = DS_CONNECTIONS[slug];
+  if (!conn) return;
+  const s = ensureSyncState(conn);
+  s.status = 'syncing';
+  // Re-paint
+  const parts = parseRoute();
+  if (parts[0] === 'tables' && parts[1]) renderTableDetail(parts[1]);
+  toast(conn.name + ': sync started');
+  setTimeout(() => {
+    s.status = 'connected';
+    s.lastError = null;
+    s.lastSyncAt = 'just now';
+    s.history.unshift({
+      id: 'sync_' + (Math.floor(Math.random()*1000)),
+      ago: 'just now',
+      durationMs: 1500 + Math.floor(Math.random()*2500),
+      status: 'success',
+      recordsAdded: 2 + Math.floor(Math.random()*20),
+      recordsUpdated: 5 + Math.floor(Math.random()*60),
+      recordsDeleted: 0,
+      errorMessage: null,
+      trigger: 'manual'
+    });
+    if (s.history.length > 20) s.history.length = 20;
+    const parts2 = parseRoute();
+    if (parts2[0] === 'tables' && parts2[1]) renderTableDetail(parts2[1]);
+    toast(conn.name + ': sync complete');
+  }, 1800);
+}
+function pauseSync(slug) {
+  const conn = DS_CONNECTIONS[slug];
+  if (!conn) return;
+  ensureSyncState(conn).status = 'paused';
+  const parts = parseRoute();
+  if (parts[0] === 'tables' && parts[1]) renderTableDetail(parts[1]);
+  toast(conn.name + ': sync paused');
+}
+function resumeSync(slug) {
+  const conn = DS_CONNECTIONS[slug];
+  if (!conn) return;
+  const s = ensureSyncState(conn);
+  s.status = 'connected';
+  s.lastError = null;
+  const parts = parseRoute();
+  if (parts[0] === 'tables' && parts[1]) renderTableDetail(parts[1]);
+  toast(conn.name + ': sync resumed');
+}
+
 function getAllTables() {
   const list = Object.values(DS_CONNECTIONS);
   const byName = {};
@@ -2508,10 +3016,25 @@ function formatRowCount(n) {
 
 function renderTables() {
   const tables = getAllTables();
+  // Enrich each table with aggregate status from per-source sync state
+  tables.forEach(t => { t._status = tableAggregateStatus(t); });
+
   const totalTables = tables.length;
   const totalRows = tables.reduce((sum, t) => sum + t.rowsNumeric, 0);
-  const mappedCount = tables.filter(t => t.mapped).length;
-  const pendingCount = totalTables - mappedCount;
+  const errorCount = tables.filter(t => t._status === 'error').length;
+
+  // Build source-based filter chips (one per unique source)
+  const allSources = {};
+  tables.forEach(t => t.sources.forEach(s => { allSources[s.slug] = s; }));
+  const sourceList = Object.values(allSources);
+
+  const q = tblLibFilter.search;
+  const filtered = tables.filter(t => {
+    if (q && (t.name.toLowerCase().indexOf(q) || 0) === -1 && !t.sources.some(s => s.name.toLowerCase().indexOf(q) !== -1)) return false;
+    if (tblLibFilter.filter === 'all') return true;
+    if (tblLibFilter.filter === 'errors') return t._status === 'error';
+    return t.sources.some(s => s.slug === tblLibFilter.filter);
+  });
 
   $('content').innerHTML = `
     <div class="tbl-wrap">
@@ -2528,40 +3051,42 @@ function renderTables() {
         <div class="tbl-counts">
           <div class="tbl-count"><div class="tbl-count-v">${totalTables}</div><div class="tbl-count-l">Tables</div></div>
           <div class="tbl-count"><div class="tbl-count-v is-emerald">${formatRowCount(totalRows)}</div><div class="tbl-count-l">Total rows</div></div>
-          <div class="tbl-count"><div class="tbl-count-v">${mappedCount}</div><div class="tbl-count-l">Mapped</div></div>
-          ${pendingCount > 0 ? `<div class="tbl-count"><div class="tbl-count-v" style="color:var(--amber)">${pendingCount}</div><div class="tbl-count-l">Needs mapping</div></div>` : ''}
+          ${errorCount > 0 ? `<div class="tbl-count"><div class="tbl-count-v" style="color:#fca5a5">${errorCount}</div><div class="tbl-count-l">With errors</div></div>` : ''}
         </div>
       </header>
 
-      ${tables.length === 0 ? `
-        <div class="tbl-empty">No tables yet. Connect a source from the Connections page to create your first table.</div>
+      <div class="tbl-toolbar">
+        <label class="tbl-search">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="7" cy="7" r="5"/><path d="M14 14l-3-3"/></svg>
+          <input type="text" placeholder="Search tables or sources..." value="${escapeHtml(tblLibFilter.search)}" oninput="tblLibSearchInput(this.value)"/>
+        </label>
+        <button class="tbl-filter ${tblLibFilter.filter === 'all' ? 'is-active' : ''}" onclick="tblLibSetFilter('all')">All <span class="tbl-filter-badge">${totalTables}</span></button>
+        ${errorCount > 0 ? `<button class="tbl-filter is-error ${tblLibFilter.filter === 'errors' ? 'is-active' : ''}" onclick="tblLibSetFilter('errors')">Errors <span class="tbl-filter-badge">${errorCount}</span></button>` : ''}
+        ${sourceList.map(s => `<button class="tbl-filter ${tblLibFilter.filter === s.slug ? 'is-active' : ''}" onclick="tblLibSetFilter('${s.slug}')">${escapeHtml(s.name)}</button>`).join('')}
+      </div>
+
+      ${filtered.length === 0 ? `
+        <div class="tbl-empty">${tables.length === 0 ? 'No tables yet. Connect a source from the Connections page to create your first table.' : 'No tables match the current filters.'}</div>
       ` : `
         <div class="tbl-grid">
-          ${tables.map(t => `
-            <div class="tbl-card" onclick="navigate('tables/${encodeURIComponent(t.name)}')">
+          ${filtered.map(t => `
+            <div class="tbl-card ${t._status === 'error' ? 'is-error' : ''}" onclick="navigate('tables/${encodeURIComponent(t.name)}')">
               <div class="tbl-card-h">
                 <span class="tbl-card-ic">
                   <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="12" height="10" rx="1.2"/><path d="M2 6.5h12M2 9.5h12M5.5 3v10M10.5 3v10"/></svg>
                 </span>
-                <span class="tbl-card-source-count">${t.sources.length} source${t.sources.length === 1 ? '' : 's'}</span>
+                <span class="tbl-card-status is-${t._status === 'error' ? 'error-st' : t._status}">
+                  <span class="tbl-card-status-dot"></span>${statusLabel(t._status)}
+                </span>
               </div>
               <div class="tbl-card-name">${escapeHtml(t.name)}</div>
               <div class="tbl-card-stats">
-                <div><b style="color:var(--t1)"></b>
-                  <span class="tbl-card-stat-v">${t.totalColumns}</span>
-                  columns
-                </div>
-                <div><b style="color:var(--t1)"></b>
-                  <span class="tbl-card-stat-v">${escapeHtml(t.totalRowsLabel || formatRowCount(t.rowsNumeric))}</span>
-                  rows
-                </div>
-                <div><b style="color:var(--t1)"></b>
-                  <span class="tbl-card-stat-v">${escapeHtml(t.lastSync || '—')}</span>
-                  last sync
-                </div>
+                <div><span class="tbl-card-stat-v">${t.totalColumns}</span>columns</div>
+                <div><span class="tbl-card-stat-v">${escapeHtml(t.totalRowsLabel || formatRowCount(t.rowsNumeric))}</span>rows</div>
+                <div><span class="tbl-card-stat-v">${escapeHtml(t.lastSync || '—')}</span>last sync</div>
               </div>
               <div class="tbl-card-sources">
-                <span class="tbl-card-sources-l">Sources</span>
+                <span class="tbl-card-sources-l">${t.sources.length} source${t.sources.length === 1 ? '' : 's'}</span>
                 ${t.sources.map(s => s.logo
                   ? `<span class="tbl-card-source-logo" title="${escapeHtml(s.name)}"><img src="https://api.iconify.design/logos:${s.logo}.svg" alt="${escapeHtml(s.name)}" loading="lazy"/></span>`
                   : `<span class="tbl-card-source-logo" style="background:${s.color};color:#fff;font-size:8px;font-weight:800;padding:0" title="${escapeHtml(s.name)}">${escapeHtml(s.name.slice(0,2).toUpperCase())}</span>`
@@ -2591,31 +3116,51 @@ function renderTableDetail(tableName) {
     return;
   }
 
+  const aggStatus = tableAggregateStatus(t);
+
   // Aggregate columns across all sources (using fields from autoSamples)
   const allFields = [];
   const fieldsByName = {};
   t.sources.forEach(s => {
     (s.fields || []).forEach(f => {
-      // tgt looks like "customer.email" — strip the prefix
       const colName = (f.tgt || '').replace(/^[^.]+\./, '');
       if (!fieldsByName[colName]) {
+        const inferredType = inferTypeFromName(colName);
+        const isPk = (colName === 'id');
         fieldsByName[colName] = {
           name: colName,
-          type: inferTypeFromName(colName),
+          type: inferredType,
           sources: [],
-          nullable: !(colName === 'id' || colName.endsWith('_id'))
+          nullable: !(colName === 'id' || colName.endsWith('_id')),
+          isPrimaryKey: isPk,
+          isIndexed: isPk || colName.endsWith('_id'),
+          sampleValue: null,
+          description: null,
+          validations: [],
+          transformations: [],
+          usageCount: 0
         };
         allFields.push(fieldsByName[colName]);
       }
       fieldsByName[colName].sources.push({ slug: s.slug, name: s.name, logo: s.logo, color: s.color, srcField: f.src });
     });
   });
-  // If no autoSamples, synthesize placeholder columns from t.totalColumns
   if (allFields.length === 0) {
     for (let i = 1; i <= Math.min(t.totalColumns, 8); i++) {
-      allFields.push({ name: 'column_' + i, type: 'string', sources: t.sources.slice(0, 1), nullable: i > 1 });
+      allFields.push({ name: 'column_' + i, type: 'string', sources: t.sources.slice(0, 1), nullable: i > 1, isPrimaryKey:false, isIndexed:false, sampleValue:null, description:null, validations:[], transformations:[], usageCount:0 });
     }
   }
+
+  // Bounded selected field
+  if (tblSelectedField === null || tblSelectedField >= allFields.length) tblSelectedField = null;
+  // Bounded selected source
+  if (tblSelectedSource >= t.sources.length) tblSelectedSource = 0;
+
+  // Sync error indicator on the Sync tab
+  const hasErrSource = t.sources.some(s => {
+    const conn = DS_CONNECTIONS[s.slug];
+    return conn && ensureSyncState(conn).status === 'error';
+  });
 
   $('content').innerHTML = `
     <div class="tbl-wrap">
@@ -2632,6 +3177,7 @@ function renderTableDetail(tableName) {
           <div>
             <div class="tbl-detail-name">${escapeHtml(t.name)}</div>
             <div class="tbl-detail-meta">
+              <span class="tbl-card-status is-${aggStatus === 'error' ? 'error-st' : aggStatus}" style="margin-right:6px"><span class="tbl-card-status-dot"></span>${statusLabel(aggStatus)}</span>
               <span><b>${t.sources.length}</b> source${t.sources.length === 1 ? '' : 's'}</span>
               <span class="dot">·</span>
               <span><b>${allFields.length}</b> columns</span>
@@ -2639,97 +3185,363 @@ function renderTableDetail(tableName) {
               <span><b>${escapeHtml(t.totalRowsLabel || formatRowCount(t.rowsNumeric))}</b> rows</span>
               <span class="dot">·</span>
               <span>Last sync <b>${escapeHtml(t.lastSync || '—')}</b></span>
-              <span class="dot">·</span>
-              <span>Owner: <b>${escapeHtml(t.owner || 'Unassigned')}</b></span>
             </div>
           </div>
         </div>
         <div class="tbl-detail-actions">
-          <button class="btn btn-ghost btn-sm" onclick="toast('Schema versions — coming next sprint')">Schema versions</button>
-          <button class="btn btn-primary btn-sm" onclick="toast('Open in query editor — out of scope for prototype')">Query &rarr;</button>
+          <button class="btn btn-ghost btn-sm" onclick="toast('Query editor — out of scope for prototype')">Query &rarr;</button>
         </div>
       </header>
 
-      <div class="tbl-stats-strip">
-        <div class="tbl-stat-tile">
-          <div class="tbl-stat-tile-l">Columns</div>
-          <div class="tbl-stat-tile-v">${allFields.length}</div>
-          <div class="tbl-stat-tile-s">declared in schema</div>
+      ${t.sources.length > 1 ? `
+        <div class="tbl-ms-banner">
+          <span class="tbl-ms-banner-ic">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="3" cy="3" r="1.5"/><circle cx="13" cy="3" r="1.5"/><circle cx="3" cy="13" r="1.5"/><circle cx="13" cy="13" r="1.5"/><path d="M3 4.5v7M13 4.5v7M4.5 3h7M4.5 13h7"/></svg>
+          </span>
+          <div>
+            <div class="tbl-ms-banner-t">This is a multi-source table (extension of spec)</div>
+            <div class="tbl-ms-banner-d">${t.sources.length} connections feed this logical table. Schema is unified; sync state is tracked per-source. The Sync tab shows a source picker so you can inspect each one.</div>
+          </div>
         </div>
-        <div class="tbl-stat-tile">
-          <div class="tbl-stat-tile-l">Sources</div>
-          <div class="tbl-stat-tile-v">${t.sources.length}</div>
-          <div class="tbl-stat-tile-s">connections feeding this table</div>
-        </div>
-        <div class="tbl-stat-tile">
-          <div class="tbl-stat-tile-l">Rows</div>
-          <div class="tbl-stat-tile-v">${escapeHtml(t.totalRowsLabel || formatRowCount(t.rowsNumeric))}</div>
-          <div class="tbl-stat-tile-s">across all sources</div>
-        </div>
-        <div class="tbl-stat-tile">
-          <div class="tbl-stat-tile-l">Status</div>
-          <div class="tbl-stat-tile-v" style="color:${t.mapped ? 'var(--emerald)' : 'var(--amber)'}">${t.mapped ? 'Mapped' : 'Needs mapping'}</div>
-          <div class="tbl-stat-tile-s">${t.mapped ? 'All sources resolved' : 'One or more sources pending'}</div>
-        </div>
-      </div>
+      ` : ''}
 
-      <div class="tbl-section">
-        <div class="tbl-section-h">
-          <div class="tbl-section-t">
-            Schema <span class="tbl-section-t-count">${allFields.length} columns</span>
-          </div>
-        </div>
-        <div class="tbl-section-body">
-          <div class="tbl-cols-row is-header">
-            <span>Column</span>
-            <span>Type</span>
-            <span>Sources</span>
-            <span style="text-align:right">Nullable</span>
-          </div>
-          ${allFields.map(f => `
-            <div class="tbl-cols-row">
-              <span class="tbl-col-name">${escapeHtml(f.name)}</span>
-              <span><span class="tbl-col-type t-${f.type}">${escapeHtml(f.type)}</span></span>
-              <span class="tbl-col-source">
-                ${f.sources.map(s => s.logo
-                  ? `<span class="tbl-col-source-logo" title="${escapeHtml(s.name)} &middot; ${escapeHtml(s.srcField || '')}"><img src="https://api.iconify.design/logos:${s.logo}.svg" alt="${escapeHtml(s.name)}" loading="lazy"/></span>`
-                  : `<span class="tbl-col-source-logo" style="background:${s.color};color:#fff;font-size:7px;font-weight:800;padding:0" title="${escapeHtml(s.name)}">${escapeHtml(s.name.slice(0,2).toUpperCase())}</span>`
-                ).join('')}
-                <span>${f.sources.map(s => escapeHtml(s.srcField || s.name)).slice(0,1).join(', ')}${f.sources.length > 1 ? ' + ' + (f.sources.length - 1) + ' more' : ''}</span>
-              </span>
-              <span class="tbl-col-nullable" style="text-align:right">${f.nullable ? 'yes' : 'no'}</span>
+      <div class="tbl-split">
+        <!-- Left: field list -->
+        <div class="tbl-fieldlist">
+          <div class="tbl-fieldlist-h">
+            <div class="tbl-fieldlist-t">
+              Fields
+              <span class="tbl-fieldlist-count">${allFields.length}</span>
             </div>
-          `).join('')}
-        </div>
-      </div>
-
-      <div class="tbl-section">
-        <div class="tbl-section-h">
-          <div class="tbl-section-t">
-            Source connections <span class="tbl-section-t-count">${t.sources.length}</span>
+            <button class="tbl-fieldlist-add" onclick="toast('Add field — Phase 2')">+ Add field</button>
           </div>
-        </div>
-        <div class="tbl-section-body">
-          ${t.sources.map(s => `
-            <div class="tbl-src-row" onclick="navigate('connections/${s.slug}')">
-              ${s.logo
-                ? `<span class="tbl-src-logo"><img src="https://api.iconify.design/logos:${s.logo}.svg" alt="${escapeHtml(s.name)}" loading="lazy"/></span>`
-                : `<span class="tbl-src-logo" style="background:${s.color};color:#fff;font-size:11px;font-weight:800;padding:0;display:flex;align-items:center;justify-content:center">${escapeHtml(s.name.slice(0,2).toUpperCase())}</span>`}
-              <div>
-                <div class="tbl-src-name">${escapeHtml(s.name)}</div>
-                <div class="tbl-src-meta">Last sync ${escapeHtml(s.lastSync || '—')}</div>
+          <div class="tbl-fieldlist-body">
+            <div class="tbl-fieldlist-row is-header">
+              <span>Name</span>
+              <span>Type</span>
+              <span>Flags</span>
+              <span>Sample</span>
+            </div>
+            ${allFields.map((f, idx) => `
+              <div class="tbl-fieldlist-row ${tblSelectedField === idx ? 'is-selected' : ''}" onclick="setTblField(${idx})">
+                <span class="tbl-field-name">${escapeHtml(f.name)}</span>
+                <span><span class="tbl-field-type ob-type-pill t-${f.type}">${escapeHtml(f.type)}</span></span>
+                <span class="tbl-field-flags">
+                  ${f.isPrimaryKey ? '<span class="tbl-field-flag f-pk" title="Primary key">PK</span>' : ''}
+                  ${f.isIndexed && !f.isPrimaryKey ? '<span class="tbl-field-flag f-ix" title="Indexed">IX</span>' : ''}
+                  ${!f.nullable && !f.isPrimaryKey ? '<span class="tbl-field-flag f-nn" title="Not nullable">NN</span>' : ''}
+                  ${f.validations.length ? '<span class="tbl-field-flag f-v" title="Validation rules">V' + f.validations.length + '</span>' : ''}
+                  ${f.transformations.length ? '<span class="tbl-field-flag f-t" title="Transformations">T' + f.transformations.length + '</span>' : ''}
+                  ${f.usageCount ? '<span class="tbl-field-flag f-u" title="Used by template lines">U' + f.usageCount + '</span>' : ''}
+                </span>
+                <span class="tbl-field-sample">${escapeHtml(f.sampleValue || (f.sources[0] && f.sources[0].srcField) || '—')}</span>
               </div>
-              <div class="tbl-src-fields"><b>${s.columns}</b> columns &middot; <b>${escapeHtml(s.rows || '—')}</b> rows</div>
-              <span class="tbl-src-status ${s.mapped ? 'is-mapped' : 'is-pending'}">
-                <span class="tbl-src-status-dot"></span>${s.mapped ? 'Mapped' : 'Needs mapping'}
-              </span>
-            </div>
-          `).join('')}
+            `).join('')}
+          </div>
+        </div>
+
+        <!-- Right: tab rail -->
+        <div class="tbl-rail">
+          <div class="tbl-rail-tabs">
+            <button class="tbl-rail-tab ${tblRailTab === 'field' ? 'is-active' : ''}" onclick="setTblRailTab('field')">Field</button>
+            <button class="tbl-rail-tab ${tblRailTab === 'sync' ? 'is-active' : ''}" onclick="setTblRailTab('sync')">
+              Sync
+              ${hasErrSource ? '<span class="tbl-rail-tab-err-dot" title="A source is in error"></span>' : ''}
+            </button>
+            <button class="tbl-rail-tab ${tblRailTab === 'conn' ? 'is-active' : ''}" onclick="setTblRailTab('conn')">Conn</button>
+            <button class="tbl-rail-tab ${tblRailTab === 'used' ? 'is-active' : ''}" onclick="setTblRailTab('used')">Used by <span class="tbl-rail-tab-count">0</span></button>
+            <button class="tbl-rail-tab ${tblRailTab === 'ver' ? 'is-active' : ''}" onclick="setTblRailTab('ver')">Ver <span class="tbl-rail-tab-count">1</span></button>
+            <button class="tbl-rail-tab ${tblRailTab === 'set' ? 'is-active' : ''}" onclick="setTblRailTab('set')">Set</button>
+          </div>
+          <div class="tbl-rail-body">
+            ${renderTblRail(t, allFields, aggStatus)}
+          </div>
         </div>
       </div>
     </div>
   `;
 }
+
+function renderTblRail(t, fields, aggStatus) {
+  if (tblRailTab === 'sync')  return renderTblSyncTab(t);
+  if (tblRailTab === 'field') return renderTblFieldTab(fields);
+  if (tblRailTab === 'conn')  return renderTblConnTab(t);
+  if (tblRailTab === 'used')  return renderTblUsedTab(t);
+  if (tblRailTab === 'ver')   return renderTblVerTab(t);
+  if (tblRailTab === 'set')   return renderTblSetTab(t);
+  return '';
+}
+
+function renderTblSyncTab(t) {
+  const src = t.sources[tblSelectedSource];
+  if (!src) return '<div class="tbl-rail-placeholder"><div class="tbl-rail-placeholder-t">No source</div></div>';
+  const conn = DS_CONNECTIONS[src.slug];
+  if (!conn) return '<div class="tbl-rail-placeholder"><div class="tbl-rail-placeholder-t">Synthetic source</div><div class="tbl-rail-placeholder-d">This source was created via the wizard. Sync state isn\'t populated in the prototype yet.</div></div>';
+  const s = ensureSyncState(conn);
+
+  const bannerCopy = {
+    connected: { t: 'Healthy. Syncing on schedule.',         d: 'Last sync completed without errors. Records are flowing as expected.' },
+    syncing:   { t: 'Pull in progress.',                     d: 'A sync is running right now. Records are being fetched and applied.' },
+    paused:    { t: 'Sync paused by user. No new data.',     d: 'Scheduled syncs are off. Click Resume sync to restore the schedule.' },
+    error:     { t: 'Last sync failed. See details below.',  d: 'New records are not flowing. Action required to restore the connection.' },
+    pending:   { t: 'Connection not yet authenticated.',     d: 'Complete authentication to start receiving data.' }
+  }[s.status] || { t:'Unknown', d:'' };
+
+  return `
+    ${t.sources.length > 1 ? `
+      <div class="tbl-src-picker">
+        ${t.sources.map((sx, i) => {
+          const cn = DS_CONNECTIONS[sx.slug];
+          const st = cn ? ensureSyncState(cn).status : 'pending';
+          return `
+            <button class="tbl-src-pick ${i === tblSelectedSource ? 'is-active' : ''}" onclick="setTblSource(${i})">
+              ${sx.logo
+                ? `<span class="tbl-src-pick-logo"><img src="https://api.iconify.design/logos:${sx.logo}.svg" alt="${escapeHtml(sx.name)}"/></span>`
+                : `<span class="tbl-src-pick-logo" style="background:${sx.color};color:#fff;font-size:7px;font-weight:800;padding:0;display:flex;align-items:center;justify-content:center">${escapeHtml(sx.name.slice(0,2).toUpperCase())}</span>`}
+              <span>${escapeHtml(sx.name)}</span>
+              <span class="tbl-src-pick-dot t-${st === 'error' ? 'error' : st}"></span>
+            </button>
+          `;
+        }).join('')}
+      </div>
+    ` : ''}
+
+    <div class="tbl-sync-banner t-${s.status}">
+      <div class="tbl-sync-banner-ic">
+        ${s.status === 'connected' ? '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 8l4 4 6-8"/></svg>'
+        : s.status === 'syncing'  ? '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 8a6 6 0 11-6-6"/><path d="M14 2v4h-4"/></svg>'
+        : s.status === 'paused'   ? '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="6" y1="3" x2="6" y2="13"/><line x1="10" y1="3" x2="10" y2="13"/></svg>'
+        : s.status === 'error'    ? '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="8" cy="8" r="6"/><path d="M8 5v3M8 11h.01"/></svg>'
+        :                           '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="6"/></svg>'}
+      </div>
+      <div>
+        <div class="tbl-sync-banner-t">${escapeHtml(bannerCopy.t)}</div>
+        <div class="tbl-sync-banner-d">${escapeHtml(bannerCopy.d)}</div>
+      </div>
+    </div>
+
+    ${s.lastError ? `
+      <div class="tbl-sync-err">
+        <div class="tbl-sync-err-t">${escapeHtml(s.lastError.message)}</div>
+        <div class="tbl-sync-err-meta">${escapeHtml(s.lastError.code)} &middot; ${escapeHtml(s.lastError.occurredAt)}</div>
+        ${s.lastError.retryable ? '<div class="tbl-sync-err-retry">Retryable — click Sync now after fixing the credentials.</div>' : ''}
+      </div>
+    ` : ''}
+
+    <div class="tbl-sync-actions">
+      ${s.status === 'syncing' ? `
+        <div class="tbl-sync-action is-syncing">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="animation:obSpin 1s linear infinite"><path d="M14 8a6 6 0 11-6-6"/></svg>
+          Sync in progress&hellip;
+        </div>
+      ` : s.status === 'paused' ? `
+        <button class="tbl-sync-action is-primary" onclick="resumeSync('${src.slug}')">Resume sync</button>
+      ` : `
+        <button class="tbl-sync-action is-primary" onclick="triggerSyncNow('${src.slug}')">Sync now</button>
+        <button class="tbl-sync-action is-secondary" onclick="pauseSync('${src.slug}')">Pause</button>
+      `}
+    </div>
+
+    <div class="tbl-sync-stats">
+      <div class="tbl-sync-stat">
+        <div class="tbl-sync-stat-l">Records</div>
+        <div class="tbl-sync-stat-v">${formatRowCount(s.recordCount)}</div>
+      </div>
+      <div class="tbl-sync-stat">
+        <div class="tbl-sync-stat-l">Size</div>
+        <div class="tbl-sync-stat-v">${formatBytes(s.sizeBytes)}</div>
+      </div>
+      <div class="tbl-sync-stat">
+        <div class="tbl-sync-stat-l">Last sync</div>
+        <div class="tbl-sync-stat-v">${escapeHtml(s.lastSyncAt)}</div>
+      </div>
+      <div class="tbl-sync-stat">
+        <div class="tbl-sync-stat-l">Next sync</div>
+        <div class="tbl-sync-stat-v">${escapeHtml(s.nextSyncAt)}</div>
+      </div>
+    </div>
+
+    <div class="tbl-sync-section-l">
+      <span>Cadence</span>
+      <button class="tbl-sync-section-edit" onclick="toast('Edit cadence — Phase 2')">Edit</button>
+    </div>
+    <div class="tbl-sync-cadence">
+      Refresh <b>${escapeHtml(s.cadence)}</b>
+    </div>
+
+    ${s.incrementalKey ? `
+      <div class="tbl-sync-section-l"><span>Incremental sync</span></div>
+      <div class="tbl-sync-incr">
+        <b>On</b> &middot; tracked by <span class="mono">${escapeHtml(s.incrementalKey)}</span>
+      </div>
+    ` : `
+      <div class="tbl-sync-section-l"><span>Incremental sync</span></div>
+      <div class="tbl-sync-incr" style="color:var(--t3)">
+        Off — every sync is a full refresh.
+      </div>
+    `}
+
+    <div class="tbl-sync-section-l"><span>Recent sync history</span><span style="font-weight:500;color:var(--t3);text-transform:none;letter-spacing:0">${s.history.length} events</span></div>
+    <div class="tbl-sync-history">
+      ${s.history.slice(0, 10).map(ev => `
+        <div class="tbl-sync-history-row ${ev.status === 'error' ? 'is-error' : ''}">
+          <span class="tbl-sync-history-ic is-${ev.status === 'error' ? 'error' : 'success'}">${ev.status === 'error' ? '✕' : '✓'}</span>
+          <div class="tbl-sync-history-body">
+            <div class="tbl-sync-history-line">
+              <span class="trigger">${escapeHtml(ev.trigger)}</span>
+              ${ev.status === 'error' ? 'failed' : ('+' + ev.recordsAdded + ' new, ~' + ev.recordsUpdated + ' updated')}
+            </div>
+            ${ev.errorMessage ? `<div class="tbl-sync-history-msg is-err">${escapeHtml(ev.errorMessage)}</div>` : ''}
+          </div>
+          <div class="tbl-sync-history-meta">
+            ${escapeHtml(ev.ago)}<br/><span style="font-size:9px">${formatDuration(ev.durationMs)}</span>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function renderTblFieldTab(fields) {
+  if (tblSelectedField === null) {
+    return `
+      <div class="tbl-rail-placeholder">
+        <div class="tbl-rail-placeholder-ic">
+          <svg width="22" height="22" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="8" cy="8" r="6"/><path d="M8 5v3M8 11h.01"/></svg>
+        </div>
+        <div class="tbl-rail-placeholder-t">Pick a field</div>
+        <div class="tbl-rail-placeholder-d">Click any row in the field list on the left to inspect or edit its properties.</div>
+        <div style="margin-top:18px;padding-top:18px;border-top:1px solid var(--line);text-align:left">
+          <div style="font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--t3);margin-bottom:8px">Flag legend</div>
+          <div style="display:flex;flex-direction:column;gap:6px;font-size:11px;color:var(--t2)">
+            <div><span class="tbl-field-flag f-pk">PK</span> &nbsp; Primary key — unique, non-null</div>
+            <div><span class="tbl-field-flag f-ix">IX</span> &nbsp; Indexed for fast lookups</div>
+            <div><span class="tbl-field-flag f-nn">NN</span> &nbsp; Not nullable</div>
+            <div><span class="tbl-field-flag f-v">V<small>N</small></span> &nbsp; Has N validation rules</div>
+            <div><span class="tbl-field-flag f-t">T<small>N</small></span> &nbsp; Has N transformations</div>
+            <div><span class="tbl-field-flag f-u">U<small>N</small></span> &nbsp; Used by N template lines</div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+  const f = fields[tblSelectedField];
+  return `
+    <div class="tbl-fb-h">
+      <div class="tbl-fb-name">${escapeHtml(f.name)}</div>
+      <div class="tbl-fb-id">id: ${escapeHtml(f.name)}</div>
+      <div class="tbl-fb-pills">
+        <span class="tbl-field-type ob-type-pill t-${f.type}">${escapeHtml(f.type)}</span>
+        ${f.isPrimaryKey ? '<span class="tbl-field-flag f-pk">PK</span>' : ''}
+        ${f.isIndexed && !f.isPrimaryKey ? '<span class="tbl-field-flag f-ix">IX</span>' : ''}
+        ${!f.nullable && !f.isPrimaryKey ? '<span class="tbl-field-flag f-nn">NN</span>' : ''}
+      </div>
+    </div>
+
+    <div class="tbl-fb-row">
+      <div class="tbl-fb-l">Description</div>
+      <div class="tbl-fb-v muted">No description yet. Phase 2 will add inline editing.</div>
+    </div>
+
+    <div class="tbl-fb-row">
+      <div class="tbl-fb-l">Type</div>
+      <div class="tbl-fb-v">${escapeHtml(f.type)} &middot; <span style="color:var(--t3);font-size:11px">type editor lands in Phase 2</span></div>
+    </div>
+
+    <div class="tbl-fb-row">
+      <div class="tbl-fb-l">Flags</div>
+      <div class="tbl-fb-v">
+        Primary key: <b>${f.isPrimaryKey ? 'yes' : 'no'}</b><br/>
+        Indexed: <b>${f.isIndexed ? 'yes' : 'no'}</b><br/>
+        Nullable: <b>${f.nullable ? 'yes' : 'no'}</b>
+      </div>
+    </div>
+
+    <div class="tbl-fb-row">
+      <div class="tbl-fb-l">Sources</div>
+      <div class="tbl-fb-v">
+        ${f.sources.map(s => `<div style="display:flex;align-items:center;gap:7px;margin-bottom:4px">
+          ${s.logo
+            ? `<span class="tbl-src-pick-logo"><img src="https://api.iconify.design/logos:${s.logo}.svg" alt="${escapeHtml(s.name)}"/></span>`
+            : `<span class="tbl-src-pick-logo" style="background:${s.color};color:#fff;font-size:7px;font-weight:800;padding:0;display:flex;align-items:center;justify-content:center">${escapeHtml(s.name.slice(0,2).toUpperCase())}</span>`}
+          <span>${escapeHtml(s.name)} &middot; <span class="mono" style="color:var(--cyan)">${escapeHtml(s.srcField || '—')}</span></span>
+        </div>`).join('')}
+      </div>
+    </div>
+
+    <div class="tbl-fb-row">
+      <div class="tbl-fb-l">Sample value</div>
+      <div class="tbl-fb-v mono">${escapeHtml(f.sampleValue || '—')}</div>
+    </div>
+  `;
+}
+
+function renderTblConnTab(t) {
+  return `
+    <div style="font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--t3);margin-bottom:10px">Source connections</div>
+    ${t.sources.map(s => {
+      const conn = DS_CONNECTIONS[s.slug];
+      return `
+        <div style="display:flex;align-items:center;gap:12px;padding:12px;background:rgba(255,255,255,0.02);border:1px solid var(--line);border-radius:10px;margin-bottom:8px">
+          ${s.logo
+            ? `<div style="width:34px;height:34px;border-radius:8px;background:#fff;padding:5px;display:flex;align-items:center;justify-content:center"><img src="https://api.iconify.design/logos:${s.logo}.svg" alt=""/></div>`
+            : `<div style="width:34px;height:34px;border-radius:8px;background:${s.color};color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center">${escapeHtml(s.name.slice(0,2).toUpperCase())}</div>`}
+          <div style="flex:1;min-width:0">
+            <div style="font-size:12.5px;font-weight:700;color:var(--t1)">${escapeHtml(s.name)}</div>
+            <div style="font-size:10.5px;color:var(--t3);margin-top:2px">Source object: <span class="mono" style="color:var(--cyan)">${escapeHtml(t.name)}</span> &middot; Connected ${escapeHtml((conn && conn.activatedAt) || '—')}</div>
+          </div>
+          <a class="btn btn-ghost btn-sm" href="#/connections/${s.slug}" style="text-decoration:none">Open ↗</a>
+        </div>
+      `;
+    }).join('')}
+    <div style="margin-top:14px;padding:11px 13px;background:rgba(245,158,11,0.05);border:1px solid rgba(245,158,11,0.28);border-radius:9px;font-size:11px;color:var(--t2);line-height:1.5">
+      <b style="color:var(--t1)">Re-authenticate</b> — Phase 2 will add a per-source re-auth flow that routes back into the appropriate AuthScreen with the existing Table preserved.
+    </div>
+  `;
+}
+
+function renderTblUsedTab(t) {
+  return `
+    <div class="tbl-rail-placeholder">
+      <div class="tbl-rail-placeholder-ic">
+        <svg width="22" height="22" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="12" height="6" rx="1"/><rect x="2" y="10" width="6" height="4" rx="1"/><rect x="10" y="10" width="4" height="4" rx="1"/></svg>
+      </div>
+      <div class="tbl-rail-placeholder-t">No template lines reference this table</div>
+      <div class="tbl-rail-placeholder-d">Templates is a separate Data Studio surface that we haven&rsquo;t built yet. When a template line uses one of this table&rsquo;s fields, it&rsquo;ll appear here with the field, aggregation, and any filter context.</div>
+    </div>
+  `;
+}
+
+function renderTblVerTab(t) {
+  return `
+    <div style="font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--t3);margin-bottom:10px">Version history</div>
+    <div style="padding:13px 14px;background:rgba(16,185,129,0.05);border:1px solid rgba(16,185,129,0.32);border-left:3px solid var(--emerald);border-radius:9px;margin-bottom:10px">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:4px">
+        <div style="font-size:12.5px;font-weight:700;color:var(--t1)">Created Table Definition</div>
+        <span style="padding:2px 7px;background:rgba(16,185,129,0.16);color:var(--green);font-size:9.5px;font-weight:800;border-radius:99px;letter-spacing:.04em;text-transform:uppercase">Current</span>
+      </div>
+      <div style="font-size:10.5px;color:var(--t3);font-family:ui-monospace,monospace">v1 &middot; ${escapeHtml(t.owner || '—')} &middot; first detected</div>
+      <div style="font-size:11px;color:var(--t2);margin-top:5px">${t.totalColumns} fields &middot; cadence not yet set</div>
+    </div>
+    <div class="tbl-rail-placeholder" style="margin-top:14px">
+      <div class="tbl-rail-placeholder-t">No prior versions</div>
+      <div class="tbl-rail-placeholder-d">Every schema or sync-settings change creates a version. Phase 3 wires the auto-versioning + Restore action.</div>
+    </div>
+  `;
+}
+
+function renderTblSetTab(t) {
+  return `
+    <div class="tbl-rail-placeholder">
+      <div class="tbl-rail-placeholder-ic">
+        <svg width="22" height="22" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="2"/><path d="M8 1.5v2M8 12.5v2M1.5 8h2M12.5 8h2M3.4 3.4l1.4 1.4M11.2 11.2l1.4 1.4M3.4 12.6l1.4-1.4M11.2 4.8l1.4-1.4"/></svg>
+      </div>
+      <div class="tbl-rail-placeholder-t">No custom field definitions yet</div>
+      <div class="tbl-rail-placeholder-d">Define tenant-scoped properties (e.g. "Data steward", "Contains PII") that every field on this table can carry. Phase 3 adds the editor.</div>
+    </div>
+  `;
+}
+
 
 function inferTypeFromName(name) {
   const n = (name || '').toLowerCase();
