@@ -10796,26 +10796,82 @@ function _renderWorkspaceStep() {
 function _renderConnectStep() {
   const launched = tonbState.connect.launched;
   const mocked = tonbState.connect.mocked;
+  // Phase 2 — detect real wizard completion via obState.lastCompleted.
+  const lastCompleted = (typeof obState !== 'undefined' && obState && obState.lastCompleted) ? obState.lastCompleted : null;
+  // We only treat a completion as "this onboarding's connection" when the
+  // user has clicked Launch wizard inside this onboarding session.
+  const completedHere = launched && lastCompleted;
+
+  // Success state — wizard finished, real connection exists.
+  if (completedHere) {
+    return `
+      <div class="tonb-launch-row" style="background:rgba(16,185,129,0.06);border-color:rgba(16,185,129,0.32);">
+        <div class="tonb-launch-ic" style="background:linear-gradient(135deg, rgba(16,185,129,0.3), rgba(16,185,129,0.16));color:#34d39c;">
+          <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8" r="6.5"/><path d="M5 8.2l2 2 4-4.5"/></svg>
+        </div>
+        <div class="tonb-launch-l">
+          <div class="tonb-launch-title" style="color:#34d39c">Connected ${escapeHtml(lastCompleted.name || lastCompleted.vendor || 'source')}</div>
+          <div class="tonb-launch-sub">A new Table <code style="font-family:'SF Mono', ui-monospace, monospace;background:rgba(255,255,255,0.05);padding:1px 5px;border-radius:4px;color:var(--t1);">${escapeHtml(lastCompleted.object || 'data')}</code> is now in Data Studio with <b style="color:var(--t1)">${escapeHtml(String(lastCompleted.fieldsIncluded || 0))}</b> fields ready for templates.</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0;">
+          <button class="tonb-btn" onclick="openWizard()" title="Connect another source">+ Another</button>
+        </div>
+      </div>
+      <div class="tonb-mockdata" style="background:rgba(16,185,129,0.04);border-color:rgba(16,185,129,0.2);color:var(--t2);">
+        <b style="color:#34d39c">Ready for the next step</b>
+        Templates are waiting to be applied to the fields in <code style="font-family:'SF Mono', ui-monospace, monospace;background:rgba(255,255,255,0.05);padding:1px 5px;border-radius:4px;color:var(--t1);">${escapeHtml(lastCompleted.object || 'this Table')}</code>. Continue to Apply templates to see AI suggestions per field.
+      </div>
+    `;
+  }
+
+  // Launched but no completion yet — wizard was opened, user closed without finishing.
+  if (launched && !completedHere) {
+    return `
+      <div class="tonb-launch-row">
+        <div class="tonb-launch-ic">
+          <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8" r="2"/><circle cx="3" cy="3" r="1.3"/><circle cx="13" cy="3" r="1.3"/><circle cx="3" cy="13" r="1.3"/><circle cx="13" cy="13" r="1.3"/><path d="M4.1 4.1l2.5 2.5M11.9 4.1L9.4 6.6M4.1 11.9l2.5-2.5M11.9 11.9L9.4 9.4"/></svg>
+        </div>
+        <div class="tonb-launch-l">
+          <div class="tonb-launch-title">Wizard closed without finishing</div>
+          <div class="tonb-launch-sub">The Connect Data wizard was opened but you didn't reach the Done step. Reopen to continue from where you left off — your progress is saved.</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0;">
+          <button class="tonb-btn is-primary" onclick="setTonbConnectMode('launched');openWizard()">Reopen wizard →</button>
+        </div>
+      </div>
+      <div class="tonb-mockdata">
+        <b>Or continue with mock data</b>
+        Skip the connection and use Salesforce + Stripe + GitHub mock Tables instead.
+        <div style="margin-top:8px;display:flex;gap:8px;align-items:center;">
+          <button class="tonb-btn ${mocked ? 'is-primary' : ''}" onclick="setTonbConnectMode('mocked')">
+            ${mocked ? '<svg style="vertical-align:-1px;margin-right:5px" width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7"/></svg>Using mock data' : 'Continue with mock data'}
+          </button>
+          ${mocked ? '<span style="font-size:11px;color:var(--t3)">3 mock Tables · 6 fields ready for Apply templates</span>' : ''}
+        </div>
+      </div>
+    `;
+  }
+
+  // Default state — wizard never launched.
   return `
     <div class="tonb-launch-row">
       <div class="tonb-launch-ic">
-        <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="8" cy="8" r="2"/><circle cx="3" cy="3" r="1.3"/><circle cx="13" cy="3" r="1.3"/><circle cx="3" cy="13" r="1.3"/><circle cx="13" cy="13" r="1.3"/><path d="M4.1 4.1l2.5 2.5M11.9 4.1L9.4 6.6M4.1 11.9l2.5-2.5M11.9 11.9L9.4 9.4"/></svg>
+        <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8" r="2"/><circle cx="3" cy="3" r="1.3"/><circle cx="13" cy="3" r="1.3"/><circle cx="3" cy="13" r="1.3"/><circle cx="13" cy="13" r="1.3"/><path d="M4.1 4.1l2.5 2.5M11.9 4.1L9.4 6.6M4.1 11.9l2.5-2.5M11.9 11.9L9.4 9.4"/></svg>
       </div>
       <div class="tonb-launch-l">
         <div class="tonb-launch-title">Connect Data wizard — 6 sub-screens</div>
-        <div class="tonb-launch-sub">Category &middot; Connector &middot; Auth &middot; Preview &middot; Field mapping &middot; Sync schedule. The wizard already exists in Data Studio. <b style="color:var(--t1)">Phase 2 of this onboarding rebuild</b> will launch it inline; for now you can run it standalone or continue with mock data.</div>
+        <div class="tonb-launch-sub">Category &middot; Connector &middot; Auth &middot; Preview &middot; Field mapping &middot; Sync schedule. The wizard opens inline — you can close it with Esc and come back here anytime.</div>
       </div>
       <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0;">
-        <button class="tonb-btn is-primary" onclick="setTonbConnectMode('launched');location.hash='/connections'" title="Opens Data Studio Connections with the wizard available">
-          Open wizard →
+        <button class="tonb-btn is-primary" onclick="setTonbConnectMode('launched');openWizard()" title="Launches the Connect Data wizard on top of this screen">
+          Launch wizard →
         </button>
-        ${launched ? '<div style="font-size:10.5px;color:#34d39c;text-align:center">Marked as launched</div>' : ''}
       </div>
     </div>
 
     <div class="tonb-mockdata">
       <b>Or continue with mock data</b>
-      We’ll skip the actual connection and pretend you connected Salesforce + Stripe + GitHub. The next step (Apply templates) uses that mock data so you can see the full flow.
+      We'll skip the actual connection and pretend you connected Salesforce + Stripe + GitHub. The next step uses that mock data so you can see the full flow.
       <div style="margin-top:8px;display:flex;gap:8px;align-items:center;">
         <button class="tonb-btn ${mocked ? 'is-primary' : ''}" onclick="setTonbConnectMode('mocked')">
           ${mocked ? '<svg style="vertical-align:-1px;margin-right:5px" width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7"/></svg>Using mock data' : 'Continue with mock data'}
@@ -10827,11 +10883,17 @@ function _renderConnectStep() {
 }
 
 function _renderApplyStep() {
-  const rows = TONB_MOCK_TABLES.map(t => {
+  // Phase 2 — read real Tables + Templates when available.
+  const realRows = _tonbTablesForApply();
+  const useReal = realRows && realRows.length > 0;
+  const rows = useReal ? realRows : TONB_MOCK_TABLES;
+
+  const html = rows.map(t => {
     const key = t.tableName + '::' + t.fieldName;
     const decision = tonbState.apply[key];
     const conf = t.confidence;
     const confCls = conf >= 90 ? 'is-high' : conf >= 75 ? 'is-medium' : 'is-low';
+    const suggestedName = useReal ? t.suggestedName : t.suggested;
     let actions;
     if (decision === 'accept') {
       actions = `<button class="tonb-suggest-act is-status" disabled><svg style="vertical-align:-1px;margin-right:4px" width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7"/></svg>Accepted</button>
@@ -10839,7 +10901,7 @@ function _renderApplyStep() {
     } else if (decision === 'skip') {
       actions = `<button class="tonb-suggest-act is-status is-skipped" disabled>Skipped</button>
                  <button class="tonb-suggest-act" onclick="toggleTonbApply('${escapeHtml(key)}','skip')">Undo</button>`;
-    } else if (!t.suggested) {
+    } else if (!suggestedName) {
       actions = `<button class="tonb-suggest-act is-skip" disabled>No suggestion</button>`;
     } else {
       actions = `<button class="tonb-suggest-act is-accept" onclick="toggleTonbApply('${escapeHtml(key)}','accept')">Accept</button>
@@ -10852,8 +10914,8 @@ function _renderApplyStep() {
           <div class="tonb-suggest-field">${escapeHtml(t.fieldName)}</div>
         </div>
         <div class="tonb-suggest-r">
-          ${t.suggested
-            ? `<div class="tonb-suggest-tpl-name">Apply <b>${escapeHtml(t.suggested)}</b></div>
+          ${suggestedName
+            ? `<div class="tonb-suggest-tpl-name">Apply <b>${escapeHtml(suggestedName)}</b></div>
                <span class="tonb-suggest-conf ${confCls}">${conf}% confident</span>`
             : `<div class="tonb-suggest-tpl-name" style="color:var(--t3);font-style:italic">No suggestion — review in Templates later</div>`}
           <div class="tonb-suggest-actions">${actions}</div>
@@ -10864,13 +10926,16 @@ function _renderApplyStep() {
 
   const accepted = Object.values(tonbState.apply).filter(v => v === 'accept').length;
   const skipped = Object.values(tonbState.apply).filter(v => v === 'skip').length;
-  const pending = TONB_MOCK_TABLES.filter(t => t.suggested).length - accepted - skipped;
+  const pending = rows.filter(t => (useReal ? t.suggestedName : t.suggested)).length - accepted - skipped;
+  const sourceLabel = useReal
+    ? `Showing fields from <b>${escapeHtml(String(new Set(rows.map(r => r.tableName)).size))}</b> real Table${new Set(rows.map(r => r.tableName)).size === 1 ? '' : 's'}.`
+    : `Showing mock data (no real Tables connected yet — that's fine for the demo).`;
 
   return `
     <div style="font-size:12.5px;color:var(--t2);line-height:1.5;">
-      AI scanned the Tables connected in the previous step and matched their fields against your system rule packs. <b style="color:var(--t1)">Accept</b> applies the pack; <b style="color:var(--t1)">Skip</b> leaves the field in review (you can apply later from Templates).
+      ${sourceLabel} AI matched each field against your rule packs. <b style="color:var(--t1)">Accept</b> applies the pack to that Table×Field; <b style="color:var(--t1)">Skip</b> leaves it for later.
     </div>
-    <div class="tonb-suggest-list">${rows}</div>
+    <div class="tonb-suggest-list">${html}</div>
     <div style="display:flex;gap:14px;font-size:12px;color:var(--t2);padding-top:6px;border-top:1px solid rgba(255,255,255,0.05);">
       <span style="color:#34d39c">${accepted} accepted</span>
       <span style="color:var(--t3)">${skipped} skipped</span>
@@ -10878,6 +10943,110 @@ function _renderApplyStep() {
     </div>
   `;
 }
+
+/* ---------- Phase 2 helpers — real Tables × Templates suggestions ---------- */
+
+/* Build a list of Table×Field rows from the real Data Studio surface.
+   Returns null when there are no real Tables (so the apply step can
+   fall back to mock data). */
+function _tonbTablesForApply() {
+  try {
+    if (typeof getAllTables !== 'function') return null;
+    const tables = getAllTables();
+    if (!tables || tables.length === 0) return null;
+    const rows = [];
+    tables.forEach(t => {
+      const fieldSet = new Set();
+      (t.sources || []).forEach(s => {
+        (s.fields || []).forEach(f => {
+          if (f.tgt) {
+            const dot = f.tgt.indexOf('.');
+            if (dot > 0) fieldSet.add(f.tgt.substring(dot + 1));
+          }
+        });
+      });
+      Array.from(fieldSet).sort().forEach(fn => {
+        const sug = _suggestTemplateForField(fn);
+        rows.push({
+          tableName: t.name,
+          fieldName: fn,
+          suggestedTemplateId: sug.templateId,
+          suggestedName: sug.name,
+          confidence: sug.confidence,
+        });
+      });
+    });
+    return rows.length > 0 ? rows : null;
+  } catch(e) {
+    return null;
+  }
+}
+
+/* Field-name heuristic → suggested Template + confidence. */
+function _suggestTemplateForField(fieldName) {
+  const f = (fieldName || '').toLowerCase();
+  const tpls = (typeof tplLibrary !== 'undefined' && tplLibrary) ? tplLibrary : [];
+  function _byId(id) { return tpls.find(x => x.id === id); }
+
+  // Email patterns
+  if (/(^|_)e?mail($|_)|email_address/.test(f)) {
+    const t = _byId('tpl_email_quality');
+    if (t) return { templateId: t.id, name: t.name, confidence: 95 };
+  }
+  // Currency / financial
+  if (/amount|price|cost|fee|charge|total|revenue|spend|payment|salary|usd|eur|cents/.test(f)) {
+    const t = _byId('tpl_financial');
+    if (t) return { templateId: t.id, name: t.name, confidence: 88 };
+  }
+  // PII
+  if (/ssn|tax_id|credit|card|cvv|passport|driver_lic|national_id/.test(f)) {
+    const t = _byId('tpl_privacy');
+    if (t) return { templateId: t.id, name: t.name, confidence: 78 };
+  }
+  // Privacy-adjacent (lower confidence)
+  if (/last4|card_last|account_number|routing_number/.test(f)) {
+    const t = _byId('tpl_privacy');
+    if (t) return { templateId: t.id, name: t.name, confidence: 70 };
+  }
+  return { templateId: null, name: null, confidence: 0 };
+}
+
+/* Override toggleTonbApply: actually mutate tpl.appliedTo on accept,
+   and roll back on undo. Only when the row comes from real Tables. */
+const _origToggleTonbApply = toggleTonbApply;
+toggleTonbApply = function(key, decision) {
+  const prev = tonbState.apply[key];
+  // Persist the decision.
+  tonbState.apply[key] = (prev === decision) ? null : decision;
+  persistTonbState();
+
+  // If the row is from real Tables and the user accepted, push to appliedTo.
+  // If they undid an accept, pull from appliedTo.
+  const realRows = _tonbTablesForApply();
+  if (realRows) {
+    const [tableName, fieldName] = key.split('::');
+    const row = realRows.find(r => r.tableName === tableName && r.fieldName === fieldName);
+    if (row && row.suggestedTemplateId) {
+      const tpl = (typeof findTemplate === 'function') ? findTemplate(row.suggestedTemplateId) : null;
+      if (tpl) {
+        const exists = (tpl.appliedTo || []).some(a => a.tableName === tableName && a.fieldName === fieldName);
+        const next = tonbState.apply[key];
+        if (next === 'accept' && !exists) {
+          tpl.appliedTo = (tpl.appliedTo || []).concat([{ tableName, fieldName }]);
+          if (typeof upsertTemplate === 'function') upsertTemplate(tpl);
+          if (typeof _autoVersionTpl === 'function') _autoVersionTpl(tpl.id, 'Applied to ' + tableName + '.' + fieldName + ' from onboarding');
+          trackTpl('applied_from_onboarding', { templateId: tpl.id, tableName, fieldName });
+        } else if (next !== 'accept' && exists) {
+          tpl.appliedTo = (tpl.appliedTo || []).filter(a => !(a.tableName === tableName && a.fieldName === fieldName));
+          if (typeof upsertTemplate === 'function') upsertTemplate(tpl);
+          if (typeof _autoVersionTpl === 'function') _autoVersionTpl(tpl.id, 'Unapplied from ' + tableName + '.' + fieldName + ' from onboarding');
+        }
+      }
+    }
+  }
+
+  renderTenantOnboarding();
+};
 
 function _renderDoneStep() {
   const o = tonbState.org;
