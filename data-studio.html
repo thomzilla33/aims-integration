@@ -1870,13 +1870,71 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
   color:var(--emerald);margin-bottom:8px;
 }
 .tbl-h-eyebrow-dot{width:5px;height:5px;border-radius:50%;background:var(--emerald);box-shadow:0 0 0 3px rgba(16,185,129,0.18)}
-.tbl-h-title{font-size:24px;font-weight:800;color:var(--t1);letter-spacing:-.02em;line-height:1.18;margin-bottom:6px}
-.tbl-h-desc{font-size:13px;color:var(--t2);line-height:1.55;max-width:640px}
-.tbl-counts{display:flex;gap:8px;flex-shrink:0;flex-wrap:wrap}
-.tbl-count{padding:10px 14px;background:rgba(255,255,255,0.025);border:1px solid var(--line);border-radius:10px;min-width:96px}
+.tbl-h-eyebrow-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px}
+.tbl-h-time{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:11.5px;color:var(--t3);font-weight:500;
+}
+.tbl-h-time::before{
+  content:'';width:5px;height:5px;border-radius:50%;
+  background:#10b981;box-shadow:0 0 0 2px rgba(16,185,129,0.18);
+}
+.tbl-h-title{font-size:26px;font-weight:800;color:var(--t1);letter-spacing:-.02em;line-height:1.18;margin-bottom:6px}
+.tbl-h-desc{font-size:13px;color:var(--t2);line-height:1.55;max-width:640px;margin:0}
+
+.tbl-counts{display:flex;gap:10px;flex-shrink:0;flex-wrap:wrap;align-items:stretch}
+.tbl-count{
+  padding:10px 14px;
+  background:rgba(255,255,255,0.022);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:11px;
+  min-width:88px;
+  display:flex;flex-direction:column;gap:3px;align-items:flex-start;
+  transition:transform .15s,border-color .15s,background .15s;
+}
+.tbl-count.is-ok{
+  background:rgba(16,185,129,0.08);
+  border-color:rgba(16,185,129,0.28);
+}
+.tbl-count.is-rows{
+  background:rgba(56,189,248,0.08);
+  border-color:rgba(56,189,248,0.28);
+}
+.tbl-count.is-warn{
+  background:rgba(244,63,94,0.08);
+  border-color:rgba(244,63,94,0.34);
+}
+.tbl-count.is-idle{
+  background:rgba(148,163,184,0.06);
+  border-color:rgba(148,163,184,0.18);
+}
 .tbl-count-v{font-size:20px;font-weight:800;color:var(--t1);line-height:1;letter-spacing:-.01em}
-.tbl-count-v.is-emerald{color:var(--emerald)}
-.tbl-count-l{font-size:10.5px;font-weight:600;color:var(--t3);margin-top:5px;letter-spacing:.02em}
+.tbl-count-v.is-emerald{color:#34d39c}
+.tbl-count.is-ok    .tbl-count-v{color:var(--t1)}
+.tbl-count.is-rows  .tbl-count-v{color:#7ed3f7}
+.tbl-count.is-warn  .tbl-count-v{color:#ff7d7d}
+.tbl-count.is-idle  .tbl-count-v{color:var(--t3)}
+.tbl-count-l{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.06em}
+.tbl-count.is-ok    .tbl-count-l{color:#34d39c}
+.tbl-count.is-rows  .tbl-count-l{color:#7ed3f7}
+.tbl-count.is-warn  .tbl-count-l{color:#ff7d7d}
+
+.tbl-hero-cta{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:10px 16px;border-radius:10px;
+  background:linear-gradient(135deg,rgba(244,63,94,0.22),rgba(244,63,94,0.10));
+  border:1px solid rgba(244,63,94,0.42);
+  color:#ff7d7d;font-size:13px;font-weight:700;
+  font-family:inherit;cursor:pointer;
+  text-decoration:none;white-space:nowrap;
+  transition:all .15s ease;
+  align-self:stretch;
+}
+.tbl-hero-cta:hover{
+  background:linear-gradient(135deg,rgba(244,63,94,0.32),rgba(244,63,94,0.16));
+  border-color:rgba(244,63,94,0.62);
+  transform:translateY(-1px);
+}
 
 .tbl-grid{
   display:grid;grid-template-columns:repeat(auto-fill, minmax(300px, 1fr));gap:12px;
@@ -5822,14 +5880,30 @@ function renderTables() {
 
       <header class="tbl-h">
         <div class="tbl-h-l">
-          <div class="tbl-h-eyebrow"><span class="tbl-h-eyebrow-dot"></span>Data Studio &middot; Tables</div>
+          <div class="tbl-h-eyebrow-row">
+            <div class="tbl-h-eyebrow"><span class="tbl-h-eyebrow-dot"></span>Data Studio &middot; Tables</div>
+            <span class="tbl-h-time">${totalTables} table${totalTables===1?'':'s'} · ${formatRowCount(totalRows)} rows</span>
+          </div>
           <h1 class="tbl-h-title">All your data tables</h1>
-          <p class="tbl-h-desc">Tables are the canonical destinations for your data. A single table can be fed by multiple connections — <span class="mono" style="font-family:ui-monospace,monospace;color:var(--cyan)">customer</span> from HubSpot + Salesforce, or <span class="mono" style="font-family:ui-monospace,monospace;color:var(--cyan)">order</span> from Snowflake. Click any row to see its schema, source connections, and recent activity.</p>
+          <p class="tbl-h-desc">Canonical destinations for your data — one Table can be fed by multiple connections. Click any row to see its schema, sources, and recent activity.</p>
         </div>
         <div class="tbl-counts">
-          <div class="tbl-count"><div class="tbl-count-v">${totalTables}</div><div class="tbl-count-l">Tables</div></div>
-          <div class="tbl-count"><div class="tbl-count-v is-emerald">${formatRowCount(totalRows)}</div><div class="tbl-count-l">Total rows</div></div>
-          ${errorCount > 0 ? `<div class="tbl-count"><div class="tbl-count-v" style="color:#fca5a5">${errorCount}</div><div class="tbl-count-l">With errors</div></div>` : ''}
+          <div class="tbl-count is-ok">
+            <span class="tbl-count-v">${totalTables}</span>
+            <span class="tbl-count-l">Tables</span>
+          </div>
+          <div class="tbl-count is-rows">
+            <span class="tbl-count-v">${formatRowCount(totalRows)}</span>
+            <span class="tbl-count-l">Total rows</span>
+          </div>
+          ${errorCount > 0 ? `<div class="tbl-count is-warn">
+            <span class="tbl-count-v">${errorCount}</span>
+            <span class="tbl-count-l">Errors</span>
+          </div>
+          <button class="tbl-hero-cta" onclick="tblLibSetFilter('errors')" aria-label="Filter to tables with errors">
+            Resolve ${errorCount} error${errorCount===1?'':'s'}
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 8h10M9.5 4.5L13 8l-3.5 3.5"/></svg>
+          </button>` : ''}
         </div>
       </header>
 
