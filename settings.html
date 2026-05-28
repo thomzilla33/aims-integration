@@ -3793,6 +3793,91 @@ html.theme-light .theme-icon-moon{display:block}
 }
 .ws-foot b{color:var(--t2)}
 
+
+/* ============ OWNERSHIP (formal owner per integration) ============ */
+.owner-pill{
+  display:inline-flex;align-items:center;gap:9px;
+  padding:5px 10px 5px 5px;
+  background:rgba(255,255,255,0.03);
+  border:1px solid var(--line);
+  border-radius:99px;
+  font-family:inherit;cursor:pointer;
+  transition:border-color .12s, background .12s;
+}
+.owner-pill:hover{background:rgba(43,127,255,0.06);border-color:rgba(43,127,255,0.40)}
+.owner-pill.is-unassigned{border-style:dashed;color:var(--t3)}
+.owner-pill.is-unassigned:hover{color:var(--blue)}
+.owner-pill-avatar{
+  width:24px;height:24px;border-radius:50%;
+  color:#fff;font-size:10.5px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;letter-spacing:.02em;
+}
+.owner-pill-avatar-empty{
+  background:transparent;color:var(--t3);
+  border:1px dashed var(--line-strong);
+  font-size:12px;font-weight:600;
+}
+.owner-pill-label{display:flex;flex-direction:column;line-height:1.15;text-align:left}
+.owner-pill-l{font-size:9px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--t3)}
+.owner-pill-name{font-size:12px;font-weight:700;color:var(--t1)}
+.owner-pill.is-unassigned .owner-pill-name{color:var(--t2)}
+.owner-pill-caret{color:var(--t3);margin-left:3px;transition:transform .15s}
+.owner-pill[aria-expanded="true"] .owner-pill-caret{transform:rotate(180deg)}
+
+/* Reassign popover */
+.owner-picker-backdrop{
+  position:fixed;inset:0;z-index:240;
+  background:transparent;
+  display:none;
+}
+.owner-picker-backdrop.is-open{display:block}
+.owner-picker{
+  position:fixed;z-index:241;
+  width:300px;
+  background:#0c1428;
+  border:1px solid rgba(255,255,255,0.10);
+  border-radius:12px;
+  box-shadow:0 20px 48px -12px rgba(0,0,0,0.6), 0 0 0 1px rgba(43,127,255,0.10);
+  padding:8px 0;
+  display:none;
+  animation:ownerPickerIn .18s cubic-bezier(.2,.8,.2,1);
+}
+.owner-picker.is-open{display:block}
+@keyframes ownerPickerIn{
+  from{opacity:0;transform:translateY(-4px) scale(.98)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+.owner-picker-h{
+  padding:8px 14px 6px;
+  font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--t3);
+}
+.owner-picker-row{
+  display:flex;align-items:center;gap:11px;width:100%;
+  padding:9px 14px;
+  background:transparent;border:none;
+  text-align:left;cursor:pointer;
+  font-family:inherit;color:inherit;
+  transition:background .12s;
+}
+.owner-picker-row:hover{background:rgba(43,127,255,0.07)}
+.owner-picker-row.is-selected{background:rgba(43,127,255,0.10)}
+.owner-picker-avatar{
+  width:30px;height:30px;border-radius:50%;
+  color:#fff;font-size:11px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.owner-picker-avatar.is-empty{
+  background:transparent;border:1px dashed var(--line-strong);
+  color:var(--t3);font-size:14px;font-weight:600;
+}
+.owner-picker-body{flex:1;min-width:0}
+.owner-picker-name{font-size:12.5px;font-weight:700;color:var(--t1);line-height:1.2}
+.owner-picker-role{font-size:10.5px;color:var(--t3);margin-top:2px}
+.owner-picker-check{color:var(--blue);flex-shrink:0}
+.owner-picker-divider{height:1px;background:rgba(255,255,255,0.06);margin:6px 0}
+
 </style>
 </head>
 <body>
@@ -4151,6 +4236,11 @@ html.theme-light .theme-icon-moon{display:block}
 <div class="tour-popover" id="tourPopover"></div>
 
 <!-- Toasts -->
+
+<!-- Owner reassign popover (shared, positioned dynamically) -->
+<div class="owner-picker-backdrop" id="ownerPickerBackdrop" onclick="closeOwnerPicker()"></div>
+<div class="owner-picker" id="ownerPicker" role="dialog" aria-label="Transfer ownership"></div>
+
 <div class="toast-container" id="toasts"></div>
 
 <script>
@@ -5509,7 +5599,8 @@ function renderDistribution() {
                 const dist = getDistribution(i.slug);
                 const bucket = distStatusBucketOf(i);
                 const label = distStatusLabelOf(i);
-                const owner = i.connectedBy ? i.connectedBy.name : 'Unassigned';
+                const ownerObj = getOwner(i.slug);
+                const owner = ownerObj ? ownerObj.name : (i.connectedBy ? i.connectedBy.name : 'Unassigned');
                 return `
                   <tr>
                     <td>
@@ -5530,7 +5621,9 @@ function renderDistribution() {
                         <span class="dist-status-dot"></span>${escapeHtml(label)}
                       </span>
                     </td>
-                    <td class="dist-row-owner">${escapeHtml(owner)}</td>
+                    <td class="dist-row-owner">${ownerObj
+                      ? `<span style="display:inline-flex;align-items:center;gap:7px"><span class="owner-pill-avatar" style="background:${ownerObj.color};width:20px;height:20px;font-size:9px">${escapeHtml(ownerObj.initials)}</span>${escapeHtml(ownerObj.name)}</span>`
+                      : `<span style="color:var(--t3)">${escapeHtml(owner)}</span>`}</td>
                     ${DIST_SURFACES.map(s => {
                       const v = dist[s.id];
                       if (v === 'na') {
@@ -6383,6 +6476,172 @@ function detailWorkspaces(integ) {
   `;
 }
 
+
+
+/* ============ FORMAL OWNERSHIP ============ */
+const MOCK_OWNERS = [
+  { id:'tg', name:'Thomas González', initials:'TG', color:'#06B6D4', role:'Platform Lead',    dept:'Platform'    },
+  { id:'mg', name:'María González',  initials:'MG', color:'#A78BFA', role:'Sales Ops Lead',   dept:'Sales'       },
+  { id:'ct', name:'Carlos Tovar',    initials:'CT', color:'#10B981', role:'Eng Manager',      dept:'Engineering' },
+  { id:'sc', name:'Sarah Chen',      initials:'SC', color:'#FDC700', role:'Customer Success', dept:'CS'          },
+  { id:'ap', name:'Alex Park',       initials:'AP', color:'#EF4444', role:'Finance Ops',      dept:'Finance'     },
+  { id:'dp', name:'Diana Pérez',     initials:'DP', color:'#F472B6', role:'IT Security',      dept:'Security'    }
+];
+
+// Default integration owner by slug. Falls back to matching connectedBy.name when missing.
+const OWNER_DEFAULTS = {
+  'slack':       'mg', 'teams':     'ct', 'gsheets':   'tg', 'gmail':     'tg',
+  'gcal':        'tg', 'salesforce':'mg', 'hubspot':   'mg', 'snowflake': 'ct',
+  'github':      'ct', 'stripe':    'ap', 'zendesk':   'sc', 'mongodb':   'ct',
+  'notion':      'tg', 'airtable':  'mg', 'bigquery':  'ct', 'segment':   'mg',
+  'mixpanel':    'mg', 's3':        'ct', 'linear':    'ct', 'jira':      'ct'
+};
+
+let OWNER_OVERRIDES = (function(){
+  try {
+    const raw = localStorage.getItem('aims_owner_overrides');
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  return {};
+})();
+
+function persistOwnerOverrides() {
+  try { localStorage.setItem('aims_owner_overrides', JSON.stringify(OWNER_OVERRIDES)); } catch(e){}
+}
+
+function getOwner(slug) {
+  if (slug in OWNER_OVERRIDES) {
+    const id = OWNER_OVERRIDES[slug];
+    if (id === null) return null;  // explicit Unassigned
+    return MOCK_OWNERS.find(o => o.id === id) || null;
+  }
+  if (slug in OWNER_DEFAULTS) {
+    return MOCK_OWNERS.find(o => o.id === OWNER_DEFAULTS[slug]) || null;
+  }
+  // Fallback: match connectedBy.name when present
+  const integ = INTEGRATIONS.find(i => i.slug === slug);
+  if (integ && integ.connectedBy) {
+    const match = MOCK_OWNERS.find(o => o.name === integ.connectedBy.name);
+    if (match) return match;
+  }
+  return null;
+}
+
+function ownerPillHtml(slug) {
+  const owner = getOwner(slug);
+  if (!owner) {
+    return `
+      <button class="owner-pill is-unassigned" onclick="openOwnerPicker('${slug}', event)" aria-haspopup="dialog">
+        <span class="owner-pill-avatar owner-pill-avatar-empty">?</span>
+        <span class="owner-pill-label">
+          <span class="owner-pill-l">Owner</span>
+          <span class="owner-pill-name">Unassigned · assign</span>
+        </span>
+        <svg class="owner-pill-caret" width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 4.5l3 3 3-3"/></svg>
+      </button>
+    `;
+  }
+  return `
+    <button class="owner-pill" onclick="openOwnerPicker('${slug}', event)" aria-haspopup="dialog" title="Owned by ${escapeHtml(owner.name)} · ${escapeHtml(owner.role)}">
+      <span class="owner-pill-avatar" style="background:${owner.color}">${escapeHtml(owner.initials)}</span>
+      <span class="owner-pill-label">
+        <span class="owner-pill-l">Owner</span>
+        <span class="owner-pill-name">${escapeHtml(owner.name)}</span>
+      </span>
+      <svg class="owner-pill-caret" width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 4.5l3 3 3-3"/></svg>
+    </button>
+  `;
+}
+
+let _ownerPickerSlug = null;
+
+function openOwnerPicker(slug, evt) {
+  if (evt) { evt.preventDefault(); evt.stopPropagation(); }
+  _ownerPickerSlug = slug;
+  const current = getOwner(slug);
+  const picker = document.getElementById('ownerPicker');
+  const backdrop = document.getElementById('ownerPickerBackdrop');
+  picker.innerHTML = `
+    <div class="owner-picker-h">Transfer ownership</div>
+    ${MOCK_OWNERS.map(o => `
+      <button class="owner-picker-row ${current && current.id === o.id ? 'is-selected' : ''}" onclick="reassignOwner('${slug}','${o.id}')">
+        <span class="owner-picker-avatar" style="background:${o.color}">${escapeHtml(o.initials)}</span>
+        <span class="owner-picker-body">
+          <span class="owner-picker-name">${escapeHtml(o.name)}</span>
+          <span class="owner-picker-role">${escapeHtml(o.role)} · ${escapeHtml(o.dept)}</span>
+        </span>
+        ${current && current.id === o.id ? '<svg class="owner-picker-check" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 8l4 4 6-8"/></svg>' : ''}
+      </button>
+    `).join('')}
+    <div class="owner-picker-divider"></div>
+    <button class="owner-picker-row" onclick="reassignOwner('${slug}', null)">
+      <span class="owner-picker-avatar is-empty">—</span>
+      <span class="owner-picker-body">
+        <span class="owner-picker-name">Unassigned</span>
+        <span class="owner-picker-role">No formal owner</span>
+      </span>
+      ${current === null ? '<svg class="owner-picker-check" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 8l4 4 6-8"/></svg>' : ''}
+    </button>
+  `;
+  // Position the picker near the clicked pill
+  const btn = evt ? evt.currentTarget : null;
+  if (btn) {
+    const r = btn.getBoundingClientRect();
+    const popW = 300;
+    const popH = Math.min(420, MOCK_OWNERS.length * 50 + 80);
+    let top = r.bottom + 6;
+    let left = r.left;
+    // Clamp inside viewport
+    if (left + popW > window.innerWidth - 12) left = window.innerWidth - popW - 12;
+    if (left < 12) left = 12;
+    if (top + popH > window.innerHeight - 12) top = r.top - popH - 6;
+    picker.style.top = top + 'px';
+    picker.style.left = left + 'px';
+    btn.setAttribute('aria-expanded', 'true');
+  } else {
+    picker.style.top = '50%';
+    picker.style.left = '50%';
+    picker.style.transform = 'translate(-50%, -50%)';
+  }
+  backdrop.classList.add('is-open');
+  picker.classList.add('is-open');
+}
+
+function closeOwnerPicker() {
+  const picker = document.getElementById('ownerPicker');
+  const backdrop = document.getElementById('ownerPickerBackdrop');
+  if (picker) picker.classList.remove('is-open');
+  if (backdrop) backdrop.classList.remove('is-open');
+  document.querySelectorAll('.owner-pill[aria-expanded="true"]').forEach(el => el.setAttribute('aria-expanded', 'false'));
+  _ownerPickerSlug = null;
+}
+
+function reassignOwner(slug, ownerId) {
+  const integ = INTEGRATIONS.find(i => i.slug === slug);
+  const prev = getOwner(slug);
+  OWNER_OVERRIDES[slug] = ownerId;
+  persistOwnerOverrides();
+  const newOwner = ownerId ? MOCK_OWNERS.find(o => o.id === ownerId) : null;
+  const prevLabel = prev ? prev.name : 'Unassigned';
+  const newLabel = newOwner ? newOwner.name : 'Unassigned';
+  if (typeof toast === 'function' && integ) {
+    toast(integ.name + ' ownership: ' + prevLabel + ' → ' + newLabel);
+  }
+  closeOwnerPicker();
+  if (integ) paintDetail(integ);
+  // If currently on Distribution surface, re-render that too
+  if (location.hash.indexOf('distribution') !== -1 && typeof renderDistribution === 'function') {
+    renderDistribution();
+  }
+}
+
+// Close picker on ESC
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && document.getElementById('ownerPicker') && document.getElementById('ownerPicker').classList.contains('is-open')) {
+    closeOwnerPicker();
+  }
+});
+
 function renderDetail(slug) {
   const i = findIntegration(slug);
   if (!i) { renderNotFound(slug); return; }
@@ -6552,6 +6811,7 @@ function paintDetail(i) {
               <span class="sep">·</span><span>Connected by ${escapeHtml(i.connectedBy.name)} · ${escapeHtml(i.connectedAt)}</span>
               <span class="sep">·</span><span>${i.authMethods.includes('oauth')?'OAuth 2.0':i.authMethods[0]==='apikey'?'API key':'Service account'}</span>
             </div>
+            <div style="margin-top:10px">${ownerPillHtml(i.slug)}</div>
           ` : `
             <div class="detail-meta"><span>Not connected · ${i.authMethods.map(a=>a==='oauth'?'OAuth 2.0':a==='apikey'?'API key':'Service account').join(' · ')}</span></div>
           `}
