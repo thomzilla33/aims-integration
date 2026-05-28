@@ -2960,7 +2960,8 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
 
 
 /* ============================================================
-   TEMPLATES — Phase 1 (Library + Create + Detail shell)
+   TEMPLATES — Phase 1 v2 (Rule packs on Tables)
+   Library + Create + Detail shell
    ============================================================ */
 
 /* Page header */
@@ -6058,37 +6059,45 @@ function inferTypeFromName(name) {
 
 
 /* ============================================================
-   TEMPLATES — Phase 1 (state, helpers, renderers)
+   TEMPLATES — Phase 1 v2 (RE-ANCHORED to rule packs on Tables)
    ============================================================ */
 
-/* Industry presets (vocabulary swap — used in Phase 5; included now so seed
-   templates can reference them and so the create view header surfaces the
-   tenant's industry). */
-const INDUSTRY_PRESETS = {
-  generic:    { id:'generic',    label:'Generic',    groupNoun:'group',            lineNoun:'line' },
-  automotive: { id:'automotive', label:'Automotive', groupNoun:'department',       lineNoun:'line' },
-  retail:     { id:'retail',     label:'Retail',     groupNoun:'category',         lineNoun:'line item' },
-  restaurant: { id:'restaurant', label:'Restaurant', groupNoun:'category',         lineNoun:'line' },
-  finance:    { id:'finance',    label:'Finance',    groupNoun:'line of business', lineNoun:'metric' },
+/* Rule domains (replaces "industry presets" from the original spec).
+   Used for filtering + cosmetic tagging in the library. */
+const RULE_DOMAINS = {
+  contact:     { id:'contact',     label:'Contact data',       color:'blue',   icon:'people' },
+  financial:   { id:'financial',   label:'Financial values',   color:'green',  icon:'money' },
+  privacy:     { id:'privacy',     label:'Privacy & PII',      color:'red',    icon:'shield' },
+  identifiers: { id:'identifiers', label:'Identifiers',        color:'amber',  icon:'box' },
+  dates:       { id:'dates',       label:'Dates & timestamps', color:'purple', icon:'chart' },
+  general:     { id:'general',     label:'General',            color:'none',   icon:'star' },
 };
-let tplIndustry = 'generic';
 
-/* Reference vocabularies (used in Phase 3 inspectors; seeded here so the
-   data model is consistent). */
-const TPL_UNITS = [
-  { id:'currency', label:'Currency', sample:'$1,234.56' },
-  { id:'percent',  label:'Percent',  sample:'28.4%' },
-  { id:'count',    label:'Count',    sample:'1,250' },
-  { id:'ratio',    label:'Ratio',    sample:'2.4×' },
-  { id:'hours',    label:'Hours',    sample:'18h' },
-  { id:'days',     label:'Days',     sample:'7d' },
-  { id:'raw',      label:'Raw',      sample:'1234.567' },
+/* Rule classification vocabularies (used by Phase 3 inspectors;
+   seeded here so the data model is consistent). */
+const RULE_TYPES = [
+  { id:'validation',     label:'Validation',     hint:'Flags rows that fail. Severity decides whether they block ingest or just warn.' },
+  { id:'transformation', label:'Transformation', hint:'Rewrites the value in-place before storage (trim, lowercase, format, etc.).' },
+  { id:'enrichment',     label:'Enrichment',     hint:'Adds derived/looked-up fields alongside the original.' },
 ];
-const TPL_DIRECTIONS = [
-  { id:'higher_better', label:'Higher is better', hint:'Revenue, conversions, satisfaction.' },
-  { id:'lower_better',  label:'Lower is better',  hint:'Costs, defect rate, time-to-resolve.' },
-  { id:'neutral',       label:'Neutral',          hint:'Pure context — no inherent good/bad direction.' },
+const SEVERITY_LEVELS = [
+  { id:'error',   label:'Error',   hint:'Block rows that fail this check.' },
+  { id:'warning', label:'Warning', hint:'Let rows through but flag them.' },
+  { id:'info',    label:'Info',    hint:'Track occurrences, no UI flag.' },
 ];
+const APPLIES_TO_TYPES = [
+  { id:'any',      label:'Any field type' },
+  { id:'text',     label:'Text' },
+  { id:'email',    label:'Email' },
+  { id:'number',   label:'Number' },
+  { id:'currency', label:'Currency' },
+  { id:'date',     label:'Date / timestamp' },
+  { id:'boolean',  label:'Yes / no' },
+  { id:'url',      label:'URL' },
+  { id:'phone',    label:'Phone' },
+];
+
+/* Group colors + icons stay (visual chrome is the same). */
 const TPL_GROUP_COLORS = ['none','blue','green','amber','red','purple','gray'];
 const TPL_GROUP_COLOR_HEX = {
   none:'rgba(255,255,255,0.06)',
@@ -6100,16 +6109,6 @@ const TPL_GROUP_ICON_EMOJI = {
   none:'', money:'💰', chart:'📊', people:'👥', building:'🏢', box:'📦',
   wrench:'🔧', lightbulb:'💡', shield:'🛡️', rocket:'🚀', star:'⭐',
 };
-const TPL_AGGREGATIONS = [
-  { id:'sum',           label:'Sum' },
-  { id:'avg',           label:'Average' },
-  { id:'count',         label:'Count' },
-  { id:'count_distinct',label:'Count distinct' },
-  { id:'min',           label:'Minimum' },
-  { id:'max',           label:'Maximum' },
-  { id:'first',         label:'First' },
-  { id:'last',          label:'Last' },
-];
 const TPL_CFD_TYPES = [
   { id:'text',    label:'Text' },
   { id:'number',  label:'Number' },
@@ -6118,16 +6117,15 @@ const TPL_CFD_TYPES = [
 ];
 
 /* Default node factories. */
-function defaultLineProps() {
+function defaultRuleProps() {
   return {
-    formula: '',
     description: '',
-    unit: 'count',
-    direction: 'higher_better',
-    format: { decimals: 0, thousandsSeparator: true, abbreviate: false },
-    isKpi: false,
+    ruleType: 'validation',
+    severity: 'error',
+    appliesToFieldType: 'any',
+    expression: '',
+    isEnabled: true,
     tags: [],
-    sourceMapping: null,
     customProps: {},
   };
 }
@@ -6144,9 +6142,7 @@ function defaultGroupProps() {
 /* =========================
    Tree helpers (immutable)
    ========================= */
-function cloneTree(tree) {
-  return JSON.parse(JSON.stringify(tree || []));
-}
+function cloneTree(tree) { return JSON.parse(JSON.stringify(tree || [])); }
 function walkTree(tree, cb, parent) {
   (tree || []).forEach(node => {
     cb(node, parent);
@@ -6163,7 +6159,8 @@ function findNode(tree, id) {
   }
   return null;
 }
-function findNodePath(tree, id, path=[]) {
+function findNodePath(tree, id, path) {
+  path = path || [];
   for (const n of (tree || [])) {
     const here = path.concat([n.id]);
     if (n.id === id) return here;
@@ -6213,211 +6210,255 @@ function generateId(name, existingTree) {
   return candidate;
 }
 function countNodes(tree) {
-  let groups = 0, lines = 0, kpis = 0;
+  let groups = 0, rules = 0, enabledRules = 0;
   walkTree(tree || [], n => {
     if (n.kind === 'group') groups++;
-    else if (n.kind === 'line') {
-      lines++;
-      if (n.isKpi) kpis++;
+    else if (n.kind === 'rule') {
+      rules++;
+      if (n.isEnabled !== false) enabledRules++;
     }
   });
-  return { groups, lines, kpis };
+  return { groups, rules, enabledRules };
 }
 
 /* =========================
-   Formula helpers
+   Expression validator
+   Structural-only — doesn't execute. Recognises a friendly DSL:
+     value, function calls (lower, trim, matches, length, in, contains,
+     coalesce, replace, format, abs, round, floor, ceil, isEmpty,
+     startsWith, endsWith, upper, lower), comparison ops, logical ops,
+     string literals, regex literals, array literals, numeric literals.
    ========================= */
-function extractReferences(formula) {
-  if (!formula) return [];
-  // Matches snake_case identifiers, excluding numbers and supported functions.
-  const FN_NAMES = new Set(['abs','min','max','sum','avg','if','and','or','not','round','floor','ceil']);
-  const matches = String(formula).match(/[a-z_][a-z0-9_]*/gi) || [];
-  const seen = new Set();
+const RULE_FN_NAMES = new Set([
+  'value','isEmpty','matches','length','in','contains','startsWith','endsWith',
+  'lower','upper','trim','replace','format','coalesce','abs','round','floor','ceil',
+  'min','max','not','and','or','true','false','null','date','today','now',
+]);
+function extractExpressionRefs(expr) {
+  if (!expr) return [];
+  const matches = String(expr).match(/[a-zA-Z_][a-zA-Z0-9_]*/g) || [];
+  const unknown = [];
   matches.forEach(m => {
-    const lower = m.toLowerCase();
-    if (FN_NAMES.has(lower)) return;
-    seen.add(lower);
+    if (RULE_FN_NAMES.has(m)) return;
+    if (/^[0-9]/.test(m)) return;
+    if (unknown.indexOf(m) === -1) unknown.push(m);
   });
-  return Array.from(seen);
+  return unknown;
 }
-function validateFormula(formula, currentLineId, tree) {
+function validateExpression(expr) {
   const errors = [];
-  if (!formula || !formula.trim()) {
-    return { valid:true, errors:[], references:[] };
+  if (!expr || !expr.trim()) {
+    return { valid:true, errors:[], usesValue:false };
   }
-  // Balanced parens
-  let depth = 0;
-  for (const ch of formula) {
-    if (ch === '(') depth++;
-    else if (ch === ')') depth--;
-    if (depth < 0) { errors.push('Unbalanced parentheses (unexpected `)`).'); break; }
+  // Balanced parens/brackets
+  let par = 0, br = 0;
+  for (const ch of expr) {
+    if (ch === '(') par++;
+    else if (ch === ')') par--;
+    else if (ch === '[') br++;
+    else if (ch === ']') br--;
+    if (par < 0) { errors.push('Unbalanced `)`'); break; }
+    if (br < 0)  { errors.push('Unbalanced `]`'); break; }
   }
-  if (depth > 0) errors.push('Unbalanced parentheses (missing `)`).');
-  // References resolve to existing lines, no self-reference.
-  const refs = extractReferences(formula);
-  refs.forEach(r => {
-    if (r === currentLineId) {
-      errors.push('Self-reference: `' + r + '` cannot reference itself.');
-      return;
-    }
-    const target = findNode(tree, r);
-    if (!target) {
-      errors.push('Reference `' + r + '` does not match any line in this template.');
-    } else if (target.kind !== 'line') {
-      errors.push('Reference `' + r + '` is a group, not a line. Only lines can be referenced.');
-    }
-  });
-  return { valid: errors.length === 0, errors, references: refs };
+  if (par > 0) errors.push('Missing `)`');
+  if (br > 0)  errors.push('Missing `]`');
+  // Must reference `value` somewhere (otherwise rule doesn't see the field).
+  const usesValue = /\bvalue\b/.test(expr);
+  if (!usesValue) errors.push('Expression must reference `value` at least once.');
+  // Flag unknown identifiers (probably typos).
+  const unknown = extractExpressionRefs(expr);
+  if (unknown.length > 0) {
+    errors.push('Unknown reference(s): ' + unknown.map(u => '`'+u+'`').join(', ') + '. Did you mean a function or `value`?');
+  }
+  return { valid: errors.length === 0, errors, usesValue };
 }
-function findDependents(tree, targetId) {
-  const dependents = [];
-  walkTree(tree, n => {
-    if (n.kind !== 'line' || !n.formula) return;
-    const refs = extractReferences(n.formula);
-    if (refs.indexOf(targetId) !== -1) dependents.push(n);
-  });
-  return dependents;
-}
+/* Back-compat alias — the old name is still referenced in Phase 2+. */
+const validateFormula = validateExpression;
+const extractReferences = extractExpressionRefs;
+function findDependents() { return []; } // Rules don't reference each other.
 
 /* =========================
-   Seed templates
+   Seed templates (rule packs)
    ========================= */
-function _seedIndustryStandard() {
+function _seedEmailQuality() {
   return {
-    id: 'tpl_industry_standard',
-    name: 'Industry standard',
-    description: 'A neutral starting point with the structure most B2B teams use — revenue, cost, margin, and operating expense. Designed to slot into any business.',
-    industryId: 'generic',
+    id: 'tpl_email_quality',
+    name: 'Email & contact data quality',
+    description: 'Standard checks for email-bearing fields: format, normalization, disposable-domain filter. Apply to any Table field carrying user emails.',
+    domain: 'contact',
     source: 'system',
-    sourceLabel: 'System seed',
-    inUseBy: ['site_001', 'site_002', 'site_007'],
+    sourceLabel: 'System pack',
+    appliedTo: [
+      { tableName: 'Salesforce Contact', fieldName: 'Email' },
+      { tableName: 'HubSpot Contact',    fieldName: 'email' },
+    ],
     customFieldDefs: [
-      { id:'cfd_owner', name:'Owner', appliesTo:'line', type:'text', options:[] },
-      { id:'cfd_cadence', name:'Review cadence', appliesTo:'both', type:'select', options:['Weekly','Monthly','Quarterly'] },
+      { id:'cfd_owner', name:'Owner', appliesTo:'rule', type:'text', options:[] },
     ],
     versions: [],
     tree: [
-      { id:'revenue', name:'Revenue', kind:'group',
-        description:'All sources of incoming money.',
-        color:'green', icon:'money', collapsedByDefault:false, customProps:{cfd_cadence:'Monthly'},
+      { id:'format_checks', name:'Format checks', kind:'group',
+        description:'Reject malformed inputs at ingest.',
+        color:'blue', icon:'shield', collapsedByDefault:false, customProps:{},
         children:[
-          { id:'product_revenue', name:'Product revenue', kind:'line',
-            formula:'', description:'Revenue from product sales.',
-            unit:'currency', direction:'higher_better',
-            format:{decimals:0,thousandsSeparator:true,abbreviate:true},
-            isKpi:true, tags:['topline','monthly'],
-            sourceMapping:{ tableDefinitionId:'opportunity', fieldId:'Amount', aggregation:'sum' },
-            customProps:{cfd_owner:'Jane Smith'},
+          { id:'must_be_email', name:'Must be valid email format', kind:'rule',
+            description:'Reject values that do not match RFC 5322 (simplified).',
+            ruleType:'validation', severity:'error', appliesToFieldType:'email',
+            expression:"matches(value, /^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$/)",
+            isEnabled:true, tags:['standard'], customProps:{cfd_owner:'Data team'},
             children:[] },
-          { id:'service_revenue', name:'Service revenue', kind:'line',
-            formula:'', description:'Revenue from services and consulting.',
-            unit:'currency', direction:'higher_better',
-            format:{decimals:0,thousandsSeparator:true,abbreviate:true},
-            isKpi:false, tags:['monthly'], sourceMapping:null, customProps:{},
-            children:[] },
-          { id:'total_revenue', name:'Total revenue', kind:'line',
-            formula:'product_revenue + service_revenue', description:'Sum of all revenue lines.',
-            unit:'currency', direction:'higher_better',
-            format:{decimals:0,thousandsSeparator:true,abbreviate:true},
-            isKpi:true, tags:['topline'], sourceMapping:null, customProps:{},
+          { id:'must_not_be_empty', name:'Must not be empty', kind:'rule',
+            description:'Empty strings and nulls fail.',
+            ruleType:'validation', severity:'error', appliesToFieldType:'any',
+            expression:'not isEmpty(value)',
+            isEnabled:true, tags:[], customProps:{},
             children:[] },
         ]},
-      { id:'cogs', name:'Cost of goods sold', kind:'line',
-        formula:'', description:'Direct costs of delivering the product.',
-        unit:'currency', direction:'lower_better',
-        format:{decimals:0,thousandsSeparator:true,abbreviate:true},
-        isKpi:false, tags:[], sourceMapping:null, customProps:{},
-        children:[] },
-      { id:'gross_profit', name:'Gross profit', kind:'line',
-        formula:'total_revenue - cogs', description:'Revenue minus direct costs.',
-        unit:'currency', direction:'higher_better',
-        format:{decimals:0,thousandsSeparator:true,abbreviate:true},
-        isKpi:true, tags:['topline'], sourceMapping:null, customProps:{},
-        children:[] },
-      { id:'gross_margin', name:'Gross margin %', kind:'line',
-        formula:'gross_profit / total_revenue', description:'Gross profit as a % of revenue.',
-        unit:'percent', direction:'higher_better',
-        format:{decimals:1,thousandsSeparator:false,abbreviate:false},
-        isKpi:true, tags:['topline'], sourceMapping:null, customProps:{},
-        children:[] },
+      { id:'normalization', name:'Normalization', kind:'group',
+        description:'Rewrite the value before storage.',
+        color:'green', icon:'wrench', collapsedByDefault:false, customProps:{},
+        children:[
+          { id:'to_lowercase', name:'Normalize to lowercase', kind:'rule',
+            description:'Stores `Foo@Bar.com` as `foo@bar.com`.',
+            ruleType:'transformation', severity:'info', appliesToFieldType:'email',
+            expression:'lower(trim(value))',
+            isEnabled:true, tags:['standard'], customProps:{},
+            children:[] },
+        ]},
+      { id:'disposable_filter', name:'Disposable email filter', kind:'group',
+        description:'Block throwaway addresses (mailinator, guerrillamail, etc.).',
+        color:'amber', icon:'shield', collapsedByDefault:false, customProps:{},
+        children:[
+          { id:'block_disposable', name:'Block disposable domains', kind:'rule',
+            description:'Warn (not block) when address ends in a known disposable domain.',
+            ruleType:'validation', severity:'warning', appliesToFieldType:'email',
+            expression:"not (endsWith(value, '@mailinator.com') or endsWith(value, '@guerrillamail.com') or endsWith(value, '@tempmail.com'))",
+            isEnabled:true, tags:['hygiene'], customProps:{},
+            children:[] },
+        ]},
     ],
   };
 }
-function _seedRetailVariant() {
+function _seedFinancial() {
   return {
-    id: 'tpl_retail_variant',
-    name: 'Retail · Category breakdown',
-    description: 'Vertical-specific structure for retail: revenue and margin broken out by product category, with same-store comparison built in.',
-    industryId: 'retail',
+    id: 'tpl_financial',
+    name: 'Currency & financial values',
+    description: 'Range checks and formatting for monetary fields. Apply to amount/price/cost columns in any Table.',
+    domain: 'financial',
     source: 'system',
-    sourceLabel: 'Retail seed',
-    inUseBy: ['site_003'],
-    customFieldDefs: [
-      { id:'cfd_seasonal', name:'Seasonal', appliesTo:'line', type:'boolean', options:[] },
+    sourceLabel: 'System pack',
+    appliedTo: [
+      { tableName: 'Stripe Charge', fieldName: 'amount' },
     ],
-    versions: [],
-    tree: [
-      { id:'apparel', name:'Apparel', kind:'group',
-        description:'All clothing categories.',
-        color:'purple', icon:'box', collapsedByDefault:false, customProps:{},
-        children:[
-          { id:'apparel_revenue', name:'Apparel revenue', kind:'line',
-            formula:'', description:'', unit:'currency', direction:'higher_better',
-            format:{decimals:0,thousandsSeparator:true,abbreviate:true},
-            isKpi:true, tags:[], sourceMapping:null, customProps:{cfd_seasonal:true}, children:[] },
-          { id:'apparel_units', name:'Apparel units sold', kind:'line',
-            formula:'', description:'', unit:'count', direction:'higher_better',
-            format:{decimals:0,thousandsSeparator:true,abbreviate:false},
-            isKpi:false, tags:[], sourceMapping:null, customProps:{}, children:[] },
-        ]},
-      { id:'electronics', name:'Electronics', kind:'group',
-        description:'Consumer electronics + accessories.',
-        color:'blue', icon:'box', collapsedByDefault:false, customProps:{},
-        children:[
-          { id:'electronics_revenue', name:'Electronics revenue', kind:'line',
-            formula:'', description:'', unit:'currency', direction:'higher_better',
-            format:{decimals:0,thousandsSeparator:true,abbreviate:true},
-            isKpi:true, tags:[], sourceMapping:null, customProps:{cfd_seasonal:false}, children:[] },
-        ]},
-      { id:'total_revenue', name:'Total revenue', kind:'line',
-        formula:'apparel_revenue + electronics_revenue',
-        description:'Across all categories.',
-        unit:'currency', direction:'higher_better',
-        format:{decimals:0,thousandsSeparator:true,abbreviate:true},
-        isKpi:true, tags:['topline'], sourceMapping:null, customProps:{}, children:[] },
-    ],
-  };
-}
-function _seedNeutralStarter() {
-  return {
-    id: 'tpl_neutral_starter',
-    name: 'Neutral starter',
-    description: 'Minimal one-group skeleton you can flesh out from scratch. Comes with no industry assumptions.',
-    industryId: 'generic',
-    source: 'system',
-    sourceLabel: 'Minimal seed',
-    inUseBy: [],
     customFieldDefs: [],
     versions: [],
     tree: [
-      { id:'top_line', name:'Top line metrics', kind:'group',
-        description:'Your most important numbers.',
+      { id:'range_checks', name:'Range checks', kind:'group',
+        description:'Catch nonsense numbers before they reach reporting.',
+        color:'green', icon:'money', collapsedByDefault:false, customProps:{},
+        children:[
+          { id:'non_negative', name:'Must be non-negative', kind:'rule',
+            description:'Block negative amounts (refunds belong in a separate field).',
+            ruleType:'validation', severity:'error', appliesToFieldType:'currency',
+            expression:'value >= 0',
+            isEnabled:true, tags:['standard'], customProps:{},
+            children:[] },
+          { id:'reasonable_bound', name:'Must be under $1M (sanity check)', kind:'rule',
+            description:'Warn when a single value exceeds $1M — usually a unit error (cents vs dollars).',
+            ruleType:'validation', severity:'warning', appliesToFieldType:'currency',
+            expression:'value < 1000000',
+            isEnabled:true, tags:['sanity'], customProps:{},
+            children:[] },
+        ]},
+      { id:'formatting', name:'Formatting', kind:'group',
+        description:'Round and normalize before storage.',
+        color:'blue', icon:'wrench', collapsedByDefault:false, customProps:{},
+        children:[
+          { id:'round_two_decimals', name:'Round to 2 decimal places', kind:'rule',
+            description:'Stores values rounded to currency precision.',
+            ruleType:'transformation', severity:'info', appliesToFieldType:'currency',
+            expression:'round(value, 2)',
+            isEnabled:true, tags:[], customProps:{},
+            children:[] },
+        ]},
+    ],
+  };
+}
+function _seedPrivacy() {
+  return {
+    id: 'tpl_privacy',
+    name: 'PII & data privacy',
+    description: 'Detect and redact sensitive personal identifiers (SSN, credit card numbers). Apply to free-text fields that might leak PII.',
+    domain: 'privacy',
+    source: 'system',
+    sourceLabel: 'System pack',
+    appliedTo: [],
+    customFieldDefs: [
+      { id:'cfd_regulation', name:'Regulation', appliesTo:'rule', type:'select', options:['GDPR','CCPA','HIPAA','None'] },
+    ],
+    versions: [],
+    tree: [
+      { id:'detection', name:'Detection', kind:'group',
+        description:'Flag fields containing sensitive patterns.',
+        color:'red', icon:'shield', collapsedByDefault:false, customProps:{},
+        children:[
+          { id:'detect_ssn', name:'Detect SSN format', kind:'rule',
+            description:'Warns when the value matches a US SSN pattern (NNN-NN-NNNN).',
+            ruleType:'validation', severity:'warning', appliesToFieldType:'text',
+            expression:"not matches(value, /^\\d{3}-\\d{2}-\\d{4}$/)",
+            isEnabled:true, tags:['pii'], customProps:{cfd_regulation:'GDPR'},
+            children:[] },
+          { id:'detect_credit_card', name:'Detect credit card number', kind:'rule',
+            description:'Warns when the value looks like a 13-19 digit card number.',
+            ruleType:'validation', severity:'warning', appliesToFieldType:'text',
+            expression:"not matches(value, /^\\d{13,19}$/)",
+            isEnabled:true, tags:['pii'], customProps:{cfd_regulation:'GDPR'},
+            children:[] },
+        ]},
+      { id:'redaction', name:'Redaction', kind:'group',
+        description:'Rewrite sensitive substrings before storage.',
+        color:'purple', icon:'lightbulb', collapsedByDefault:false, customProps:{},
+        children:[
+          { id:'mask_middle', name:'Mask middle of long IDs', kind:'rule',
+            description:'Stores `4111********1234` instead of the full number.',
+            ruleType:'transformation', severity:'info', appliesToFieldType:'text',
+            expression:"replace(value, /(\\d{4})\\d{4,11}(\\d{4})/, '$1********$2')",
+            isEnabled:true, tags:['pii'], customProps:{cfd_regulation:'GDPR'},
+            children:[] },
+        ]},
+    ],
+  };
+}
+function _seedStarter() {
+  return {
+    id: 'tpl_starter',
+    name: 'Starter pack',
+    description: 'Empty skeleton with one group and one example rule. Clone it when you want to build a custom pack from a real-looking base.',
+    domain: 'general',
+    source: 'system',
+    sourceLabel: 'Minimal seed',
+    appliedTo: [],
+    customFieldDefs: [],
+    versions: [],
+    tree: [
+      { id:'example_group', name:'Example group', kind:'group',
+        description:'Replace with your rule family.',
         color:'none', icon:'star', collapsedByDefault:false, customProps:{},
         children:[
-          { id:'primary_kpi', name:'Primary KPI', kind:'line',
-            formula:'', description:'Replace with your most important metric.',
-            unit:'count', direction:'higher_better',
-            format:{decimals:0,thousandsSeparator:true,abbreviate:false},
-            isKpi:true, tags:[], sourceMapping:null, customProps:{}, children:[] },
+          { id:'example_rule', name:'Example rule', kind:'rule',
+            description:'Replace with your rule.',
+            ruleType:'validation', severity:'warning', appliesToFieldType:'any',
+            expression:'not isEmpty(value)',
+            isEnabled:true, tags:[], customProps:{},
+            children:[] },
         ]},
     ],
   };
 }
 
-/* Hydrate a seed template's versions array with realistic-looking history.
-   In production these come from real edits; for the prototype we backfill
-   so the Restore button has something to demonstrate. The snapshot field
-   on each entry equals the current tree (intentional — see spec §8). */
+/* Hydrate seed templates with placeholder version history so the Restore
+   button in Phase 4 has something to render. In production these come
+   from real edits. */
 function _hydrateSeedVersions(tpl) {
   if (tpl.versions && tpl.versions.length > 0) return tpl;
   const baseSnapshot = cloneTree(tpl.tree);
@@ -6426,9 +6467,9 @@ function _hydrateSeedVersions(tpl) {
   const day = 1000 * 60 * 60 * 24;
   const versions = [];
   if (tpl.source === 'system') {
-    versions.push({ id:'v3', label:'Current state', createdAt: now - day,        author:'System', snapshot:baseSnapshot, customFieldDefs:baseDefs });
-    versions.push({ id:'v2', label:'Added KPI flags',  createdAt: now - day * 5,  author:'System', snapshot:baseSnapshot, customFieldDefs:baseDefs });
-    versions.push({ id:'v1', label:'Initial seed',     createdAt: now - day * 14, author:'System', snapshot:baseSnapshot, customFieldDefs:baseDefs });
+    versions.push({ id:'v3', label:'Current state',     createdAt: now - day,       author:'System', snapshot:baseSnapshot, customFieldDefs:baseDefs });
+    versions.push({ id:'v2', label:'Tuned thresholds',  createdAt: now - day * 5,   author:'System', snapshot:baseSnapshot, customFieldDefs:baseDefs });
+    versions.push({ id:'v1', label:'Initial seed',      createdAt: now - day * 14,  author:'System', snapshot:baseSnapshot, customFieldDefs:baseDefs });
   } else {
     versions.push({ id:'v1', label:'Created template', createdAt: now, author:'You', snapshot:baseSnapshot, customFieldDefs:baseDefs });
   }
@@ -6437,8 +6478,9 @@ function _hydrateSeedVersions(tpl) {
 
 /* =========================
    Library state + persistence
+   Storage key bumped (v2) so the previous run's seeds get replaced.
    ========================= */
-const TPL_LIB_KEY = 'aims_ds_templates';
+const TPL_LIB_KEY = 'aims_ds_templates_v2';
 let tplLibrary = [];
 
 function loadTemplates() {
@@ -6452,20 +6494,18 @@ function loadTemplates() {
       }
     }
   } catch(e) {}
-  // First run — seed with the three standard templates.
   tplLibrary = [
-    _hydrateSeedVersions(_seedIndustryStandard()),
-    _hydrateSeedVersions(_seedRetailVariant()),
-    _hydrateSeedVersions(_seedNeutralStarter()),
+    _hydrateSeedVersions(_seedEmailQuality()),
+    _hydrateSeedVersions(_seedFinancial()),
+    _hydrateSeedVersions(_seedPrivacy()),
+    _hydrateSeedVersions(_seedStarter()),
   ];
   persistTemplates();
 }
 function persistTemplates() {
   try { localStorage.setItem(TPL_LIB_KEY, JSON.stringify(tplLibrary)); } catch(e) {}
 }
-function findTemplate(id) {
-  return tplLibrary.find(t => t.id === id) || null;
-}
+function findTemplate(id) { return tplLibrary.find(t => t.id === id) || null; }
 function upsertTemplate(tpl) {
   const idx = tplLibrary.findIndex(t => t.id === tpl.id);
   if (idx === -1) tplLibrary.push(tpl);
@@ -6477,29 +6517,23 @@ function deleteTemplate(id) {
   persistTemplates();
 }
 
-/* Initialise on script load — keep cheap. */
 loadTemplates();
 
 /* =========================
    Library filter state
    ========================= */
-let tplLibFilter = { search: '', filter: 'all' };
-function setTplLibSearch(v) {
-  tplLibFilter.search = (v || '').toLowerCase().trim();
-  renderTemplatesLibrary();
-}
+let tplLibFilter = { search: '', filter: 'all', domain: 'all' };
+function setTplLibSearch(v) { tplLibFilter.search = (v || '').toLowerCase().trim(); renderTemplatesLibrary(); }
 function clearTplLibSearch() {
   tplLibFilter.search = '';
   const input = document.getElementById('tplLibSearchInput');
   if (input) input.value = '';
   renderTemplatesLibrary();
 }
-function setTplLibFilter(v) {
-  tplLibFilter.filter = v;
-  renderTemplatesLibrary();
-}
+function setTplLibFilter(v) { tplLibFilter.filter = v; renderTemplatesLibrary(); }
+function setTplLibDomain(v) { tplLibFilter.domain = v; renderTemplatesLibrary(); }
 
-/* Telemetry stub — wraps the existing track() helper from onboarding. */
+/* Telemetry stub. */
 function trackTpl(event, payload) {
   if (typeof track === 'function') {
     try { track('tpl_' + event, payload || {}); } catch(e){}
@@ -6509,13 +6543,11 @@ function trackTpl(event, payload) {
 /* =========================
    Library view
    ========================= */
-function renderTemplates() {
-  // Delegated entry point — keeps render() compact.
-  renderTemplatesLibrary();
-}
+function renderTemplates() { renderTemplatesLibrary(); }
 function renderTemplatesLibrary() {
   const q = tplLibFilter.search;
   const f = tplLibFilter.filter;
+  const dom = tplLibFilter.domain;
 
   const counts = {
     all: tplLibrary.length,
@@ -6526,12 +6558,19 @@ function renderTemplatesLibrary() {
 
   const filtered = tplLibrary.filter(t => {
     if (f !== 'all' && t.source !== f) return false;
+    if (dom !== 'all' && t.domain !== dom) return false;
     if (q) {
       const hay = (t.name + ' ' + (t.description || '')).toLowerCase();
       if (hay.indexOf(q) === -1) return false;
     }
     return true;
   });
+
+  const domainPills = Object.values(RULE_DOMAINS).map(d => {
+    const n = tplLibrary.filter(t => t.domain === d.id).length;
+    if (n === 0 && d.id !== 'general') return '';
+    return `<button class="tpl-filter ${dom === d.id ? 'is-active' : ''}" onclick="setTplLibDomain('${d.id}')">${escapeHtml(d.label)}<span class="tpl-filter-badge">${n}</span></button>`;
+  }).join('');
 
   $('content').innerHTML = `
     <section class="surface">
@@ -6542,8 +6581,8 @@ function renderTemplatesLibrary() {
       <div class="tpl-page-h-row">
         <div>
           <div class="tpl-h-eyebrow"><span class="tpl-h-eyebrow-dot"></span>Data Studio · Templates</div>
-          <h1 class="tpl-h-title">Composite templates</h1>
-          <p class="tpl-h-sub">Reusable hierarchies of groups and lines that every site rolls up into. Edit one template, and every site bound to it gets the change.</p>
+          <h1 class="tpl-h-title">Validation &amp; transformation templates</h1>
+          <p class="tpl-h-sub">Reusable rule packs you apply to Table fields. Define a pack once — every field it's applied to inherits the rules. Edit the pack, every applied field updates.</p>
         </div>
         <button class="tpl-btn-new" onclick="openTemplateCreate()">
           <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 3.5v9M3.5 8h9"/></svg>
@@ -6569,46 +6608,55 @@ function renderTemplatesLibrary() {
         </div>
       </div>
 
+      ${domainPills ? `<div class="tpl-lib-toolbar" style="margin-top:-8px;">
+        <span style="font-size:11px;font-weight:600;letter-spacing:.05em;color:var(--t3);text-transform:uppercase;">Domain</span>
+        <div class="tpl-filter-pills">
+          <button class="tpl-filter ${dom === 'all' ? 'is-active' : ''}" onclick="setTplLibDomain('all')">All</button>
+          ${domainPills}
+        </div>
+      </div>` : ''}
+
       <div class="tpl-lib-grid">
         ${filtered.length === 0 ? `
           <div class="tpl-empty">
-            <div class="tpl-empty-title">${q || f !== 'all' ? 'No templates match your filters' : 'No templates yet'}</div>
-            <div class="tpl-empty-sub">${q || f !== 'all'
-              ? 'Try a different search term or clear the filter.'
-              : 'Create your first template to define the reporting structure for your tenant.'}</div>
+            <div class="tpl-empty-title">${q || f !== 'all' || dom !== 'all' ? 'No templates match your filters' : 'No templates yet'}</div>
+            <div class="tpl-empty-sub">${q || f !== 'all' || dom !== 'all'
+              ? 'Try a different search term or clear the filters.'
+              : 'Create your first rule pack to standardize validation across Tables.'}</div>
           </div>
         ` : filtered.map(renderTemplateCard).join('')}
       </div>
     </section>
   `;
-  trackTpl('library_viewed', { count: filtered.length, filter: f, hasSearch: !!q });
+  trackTpl('library_viewed', { count: filtered.length, filter: f, domain: dom, hasSearch: !!q });
 }
 
 function renderTemplateCard(tpl) {
   const stats = countNodes(tpl.tree || []);
-  const inUseCount = (tpl.inUseBy || []).length;
+  const appliedCount = (tpl.appliedTo || []).length;
   const cfdCount = (tpl.customFieldDefs || []).length;
-  const canDelete = tpl.source !== 'system' && inUseCount === 0;
+  const canDelete = tpl.source !== 'system' && appliedCount === 0;
   const versions = tpl.versions || [];
   const latestVersion = versions[0];
   const latestAuthor = latestVersion ? latestVersion.author : 'System';
   const latestTime = latestVersion ? formatTplRelative(latestVersion.createdAt) : '—';
+  const domainMeta = RULE_DOMAINS[tpl.domain] || RULE_DOMAINS.general;
 
   return `
     <article class="tpl-card" onclick="openTemplateDetail('${escapeHtml(tpl.id)}')">
       <div class="tpl-card-h">
         <div>
           <div class="tpl-card-name">${escapeHtml(tpl.name)}</div>
-          <div class="tpl-card-source-label">${escapeHtml(tpl.sourceLabel || tpl.source)}</div>
+          <div class="tpl-card-source-label">${escapeHtml(domainMeta.label)} · ${escapeHtml(tpl.sourceLabel || tpl.source)}</div>
         </div>
         <span class="tpl-card-source-pill is-${tpl.source}">${tpl.source}</span>
       </div>
       <div class="tpl-card-desc">${escapeHtml(tpl.description || '')}</div>
       <div class="tpl-card-stats">
         <div class="tpl-card-stat"><span class="tpl-card-stat-k">Groups</span><span class="tpl-card-stat-v">${stats.groups}</span></div>
-        <div class="tpl-card-stat"><span class="tpl-card-stat-k">Lines</span><span class="tpl-card-stat-v">${stats.lines}</span></div>
-        <div class="tpl-card-stat"><span class="tpl-card-stat-k">KPIs</span><span class="tpl-card-stat-v ${stats.kpis > 0 ? 'is-kpi' : ''}">${stats.kpis}</span></div>
-        <div class="tpl-card-stat"><span class="tpl-card-stat-k">Used by</span><span class="tpl-card-stat-v ${inUseCount === 0 ? 'is-unused' : ''}">${inUseCount === 0 ? 'Unused' : inUseCount + ' site' + (inUseCount === 1 ? '' : 's')}</span></div>
+        <div class="tpl-card-stat"><span class="tpl-card-stat-k">Rules</span><span class="tpl-card-stat-v">${stats.rules}</span></div>
+        <div class="tpl-card-stat"><span class="tpl-card-stat-k">Enabled</span><span class="tpl-card-stat-v ${stats.enabledRules === stats.rules && stats.rules > 0 ? 'is-kpi' : ''}">${stats.enabledRules} / ${stats.rules}</span></div>
+        <div class="tpl-card-stat"><span class="tpl-card-stat-k">Applied to</span><span class="tpl-card-stat-v ${appliedCount === 0 ? 'is-unused' : ''}">${appliedCount === 0 ? 'Not applied' : appliedCount + ' field' + (appliedCount === 1 ? '' : 's')}</span></div>
       </div>
       <div class="tpl-card-footer">
         <div class="tpl-card-footer-l">
@@ -6644,18 +6692,15 @@ function openTemplateDetail(id) {
   trackTpl('detail_opened', { templateId: id });
   location.hash = '/templates/' + encodeURIComponent(id);
 }
-function backToTemplatesLibrary() {
-  location.hash = '/templates';
-}
+function backToTemplatesLibrary() { location.hash = '/templates'; }
 
 function confirmDeleteTemplate(id) {
   const tpl = findTemplate(id);
   if (!tpl) return;
-  if ((tpl.inUseBy || []).length > 0) {
-    alert(tpl.name + ' is currently used by ' + tpl.inUseBy.length + ' site(s). Unbind those sites before deleting.');
+  if ((tpl.appliedTo || []).length > 0) {
+    alert(tpl.name + ' is currently applied to ' + tpl.appliedTo.length + ' field(s). Remove it from those fields before deleting.');
     return;
   }
-  // TODO Phase 5 — replace with proper modal.
   if (!confirm('Delete "' + tpl.name + '"? This cannot be undone.')) return;
   deleteTemplate(id);
   trackTpl('deleted', { templateId: id, source: tpl.source });
@@ -6665,10 +6710,10 @@ function confirmDeleteTemplate(id) {
 /* =========================
    Create view
    ========================= */
-let tplCreateState = { sourceId: null, name: '', description: '' };
+let tplCreateState = { sourceId: null, name: '', description: '', domain: 'general' };
 
 function openTemplateCreate() {
-  tplCreateState = { sourceId: null, name: '', description: '' };
+  tplCreateState = { sourceId: null, name: '', description: '', domain: 'general' };
   trackTpl('create_opened');
   location.hash = '/templates/new';
 }
@@ -6678,26 +6723,24 @@ function renderTemplateCreate() {
   const scratchSelected = tplCreateState.sourceId === '__scratch__';
   const nameTrim = (tplCreateState.name || '').trim();
   const canSubmit = !!tplCreateState.sourceId && nameTrim.length > 0;
-
-  // Mark the first system template as "Most popular" (purely cosmetic for now).
   const popularId = systemTemplates[0] ? systemTemplates[0].id : null;
 
-  const tileFor = (t, idx) => {
+  const tileFor = (t) => {
     const selected = tplCreateState.sourceId === t.id;
     const stats = countNodes(t.tree || []);
+    const domainMeta = RULE_DOMAINS[t.domain] || RULE_DOMAINS.general;
     return `
       <button class="tpl-create-tile ${selected ? 'is-selected' : ''}" onclick="selectCreateSource('${escapeHtml(t.id)}')">
         <div class="tpl-create-tile-h">
           <div class="tpl-create-tile-name">${escapeHtml(t.name)}</div>
           ${t.id === popularId
             ? `<span class="tpl-create-tile-badge is-popular">Most popular</span>`
-            : `<span class="tpl-create-tile-badge is-system">System</span>`}
+            : `<span class="tpl-create-tile-badge is-system">${escapeHtml(domainMeta.label)}</span>`}
         </div>
         <div class="tpl-create-tile-desc">${escapeHtml(t.description || '')}</div>
         <div class="tpl-create-tile-stats">
           <span>${stats.groups} group${stats.groups === 1 ? '' : 's'}</span>
-          <span>${stats.lines} line${stats.lines === 1 ? '' : 's'}</span>
-          ${stats.kpis > 0 ? `<span>${stats.kpis} KPI${stats.kpis === 1 ? '' : 's'}</span>` : ''}
+          <span>${stats.rules} rule${stats.rules === 1 ? '' : 's'}</span>
         </div>
       </button>
     `;
@@ -6709,10 +6752,14 @@ function renderTemplateCreate() {
         <div class="tpl-create-tile-name">Build from scratch</div>
         <span class="tpl-create-tile-badge is-power">Power user</span>
       </div>
-      <div class="tpl-create-tile-desc">Start with an empty tree. Add every group and line yourself. Best when no seed matches your structure.</div>
-      <div class="tpl-create-tile-stats"><span>0 groups · 0 lines</span></div>
+      <div class="tpl-create-tile-desc">Start with an empty tree. Add every group and rule yourself. Best when no system pack matches your domain.</div>
+      <div class="tpl-create-tile-stats"><span>0 groups · 0 rules</span></div>
     </button>
   `;
+
+  const domainOptions = Object.values(RULE_DOMAINS).map(d =>
+    `<option value="${d.id}" ${tplCreateState.domain === d.id ? 'selected' : ''}>${escapeHtml(d.label)}</option>`
+  ).join('');
 
   $('content').innerHTML = `
     <section class="surface">
@@ -6725,7 +6772,7 @@ function renderTemplateCreate() {
         <div>
           <div class="tpl-h-eyebrow"><span class="tpl-h-eyebrow-dot"></span>Data Studio · Templates</div>
           <h1 class="tpl-h-title">Create a new template</h1>
-          <p class="tpl-h-sub">Pick a starting point, then give it a name. You'll land in the editor ready to customize.</p>
+          <p class="tpl-h-sub">Pick a starting point, name it, set its domain. You'll land in the editor ready to customize.</p>
         </div>
       </div>
 
@@ -6734,7 +6781,7 @@ function renderTemplateCreate() {
           <div class="tpl-create-section-h">
             <div class="tpl-create-section-eyebrow">Step 1</div>
             <div class="tpl-create-section-title">Starting point</div>
-            <div class="tpl-create-section-sub">Cloning a system template copies its full structure (groups, lines, formulas, KPI flags, custom field defs) and marks the new template as <em>cloned</em>. From scratch starts with an empty tree.</div>
+            <div class="tpl-create-section-sub">Cloning a system pack copies its full structure (groups, rules, expressions, severities, custom field defs) and marks the new template as <em>cloned</em>. From scratch starts with an empty tree.</div>
           </div>
           <div class="tpl-create-grid">
             ${systemTemplates.map(tileFor).join('')}
@@ -6750,13 +6797,19 @@ function renderTemplateCreate() {
           <div class="tpl-create-fields-row">
             <div class="tpl-create-field">
               <label class="tpl-create-field-label">Template name<span class="tpl-create-field-req">*</span></label>
-              <input type="text" placeholder="e.g. Q1 2026 reporting structure"
+              <input type="text" placeholder="e.g. Stripe charge sanity checks"
                 value="${escapeHtml(tplCreateState.name)}"
                 oninput="updateCreateName(this.value)" />
             </div>
             <div class="tpl-create-field">
+              <label class="tpl-create-field-label">Domain</label>
+              <select onchange="updateCreateDomain(this.value)" style="width:100%;padding:9px 12px;border-radius:9px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);color:var(--t1);font-size:13px;font-family:inherit;outline:none;">
+                ${domainOptions}
+              </select>
+            </div>
+            <div class="tpl-create-field">
               <label class="tpl-create-field-label">Description <span style="color:var(--t3);font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></label>
-              <textarea placeholder="What does this template structure? Who uses it?"
+              <textarea placeholder="What does this pack check? Which Tables is it intended for?"
                 oninput="updateCreateDescription(this.value)">${escapeHtml(tplCreateState.description)}</textarea>
             </div>
           </div>
@@ -6775,20 +6828,20 @@ function renderTemplateCreate() {
 
 function selectCreateSource(id) {
   tplCreateState.sourceId = id;
-  // Suggest a name based on the source when blank.
   if (!tplCreateState.name) {
     if (id === '__scratch__') tplCreateState.name = '';
     else {
       const src = findTemplate(id);
-      if (src) tplCreateState.name = src.name + ' (copy)';
+      if (src) {
+        tplCreateState.name = src.name + ' (copy)';
+        tplCreateState.domain = src.domain || 'general';
+      }
     }
   }
   renderTemplateCreate();
 }
 function updateCreateName(v) {
   tplCreateState.name = v;
-  // Only re-render the submit button state — re-rendering the whole view
-  // would steal focus from the input. Lightweight DOM tweak instead.
   const btn = document.querySelector('.tpl-create-btn.is-primary');
   if (btn) {
     const ok = !!tplCreateState.sourceId && (v || '').trim().length > 0;
@@ -6796,6 +6849,7 @@ function updateCreateName(v) {
   }
 }
 function updateCreateDescription(v) { tplCreateState.description = v; }
+function updateCreateDomain(v) { tplCreateState.domain = v; }
 
 function submitCreateTemplate() {
   const sourceId = tplCreateState.sourceId;
@@ -6808,10 +6862,10 @@ function submitCreateTemplate() {
     newTpl = {
       id, name,
       description: tplCreateState.description || '',
-      industryId: tplIndustry,
+      domain: tplCreateState.domain || 'general',
       source: 'custom',
       sourceLabel: 'Built from scratch',
-      inUseBy: [],
+      appliedTo: [],
       customFieldDefs: [],
       versions: [],
       tree: [],
@@ -6822,16 +6876,15 @@ function submitCreateTemplate() {
     newTpl = {
       id, name,
       description: tplCreateState.description || src.description || '',
-      industryId: src.industryId || tplIndustry,
+      domain: tplCreateState.domain || src.domain || 'general',
       source: 'cloned',
       sourceLabel: 'Cloned from ' + src.name,
-      inUseBy: [],
+      appliedTo: [],
       customFieldDefs: JSON.parse(JSON.stringify(src.customFieldDefs || [])),
       versions: [],
       tree: cloneTree(src.tree),
     };
   }
-  // Seed first version.
   newTpl.versions = [{
     id: 'v1',
     label: 'Created template',
@@ -6846,8 +6899,7 @@ function submitCreateTemplate() {
 }
 
 /* =========================
-   Detail view — Phase 1 stub
-   (full editor lands in Phase 2)
+   Detail view — Phase 1 stub (real editor lands in Phase 2)
    ========================= */
 function renderTemplateDetail(rawId) {
   const id = decodeURIComponent(rawId || '');
@@ -6868,7 +6920,8 @@ function renderTemplateDetail(rawId) {
     return;
   }
   const stats = countNodes(tpl.tree || []);
-  const inUseCount = (tpl.inUseBy || []).length;
+  const appliedCount = (tpl.appliedTo || []).length;
+  const domainMeta = RULE_DOMAINS[tpl.domain] || RULE_DOMAINS.general;
 
   $('content').innerHTML = `
     <section class="surface">
@@ -6883,7 +6936,7 @@ function renderTemplateDetail(rawId) {
           <div class="tpl-detail-desc">${escapeHtml(tpl.description || '')}</div>
           <div class="tpl-detail-h-meta">
             <span class="tpl-card-source-pill is-${tpl.source}">${tpl.source}</span>
-            <span>${stats.groups} groups · ${stats.lines} lines · ${stats.kpis} KPIs · ${inUseCount} site${inUseCount === 1 ? '' : 's'}</span>
+            <span>${escapeHtml(domainMeta.label)} · ${stats.groups} groups · ${stats.rules} rules · applied to ${appliedCount} field${appliedCount === 1 ? '' : 's'}</span>
           </div>
         </div>
       </div>
@@ -6891,10 +6944,10 @@ function renderTemplateDetail(rawId) {
       <div class="tpl-detail-stub">
         <div class="tpl-detail-stub-title">Editor coming in Phase 2</div>
         <div class="tpl-detail-stub-sub">
-          The split-layout editor (tree on the left, tabbed inspector on the right) lands in the next phase.
+          The split-layout editor (rule tree on the left, tabbed inspector on the right) lands in the next phase.
           For now this surface confirms the template exists and the route works.
           <br/><br/>
-          <span style="color:var(--t3);font-size:12px">Template ID: <code>${escapeHtml(tpl.id)}</code> · Industry: ${escapeHtml(INDUSTRY_PRESETS[tpl.industryId] ? INDUSTRY_PRESETS[tpl.industryId].label : tpl.industryId)}</span>
+          <span style="color:var(--t3);font-size:12px">Template ID: <code>${escapeHtml(tpl.id)}</code></span>
         </div>
       </div>
     </section>
@@ -6930,7 +6983,7 @@ function render() {
     if (parts[1]) return renderTemplateDetail(parts[1]);
     return renderTemplates();
   }
-  if (parts[0] === 'onboarding')  return renderPlaceholder('Onboarding flow', 'Sebastian designed a setup flow for first-time Data Studio users.');
+  if (parts[0] === 'onboarding')  return renderPlaceholder('Onboarding flow', 'First-time Data Studio setup — connect a source, map fields, schedule a sync.');
 
   renderConnections();
 }
@@ -7456,7 +7509,7 @@ function renderPlaceholder(title, desc) {
       </div>
       <div class="ds-placeholder-t">${escapeHtml(title)}</div>
       <div class="ds-placeholder-d">${escapeHtml(desc)}</div>
-      <span class="ds-placeholder-meta">Coming soon · Sebastian is designing this surface</span>
+      <span class="ds-placeholder-meta">Coming soon</span>
     </div>
   `;
 }
