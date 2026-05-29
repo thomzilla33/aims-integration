@@ -10476,7 +10476,7 @@ const TOUR_STEPS = [
   },
   {
     title:'Simplified filter toolbar',
-    body:'Categories live on a single horizontal scroller. Other filters (capability, state, studio, source) sit on one chip rail with dot separators — no more verbose row labels.',
+    body:'Categories live on the horizontal scroller. Below it, a single chip rail groups <b>capability</b>, <b>state</b>, <b>studio</b> and <b>source</b> with dot separators — instead of four labeled rows.',
     route:'#/integrations',
     mode:'browse',
     target:'#catalogToolbar',
@@ -10647,7 +10647,10 @@ function paintTourStep() {
             targetEl.scrollIntoView({ behavior:'smooth', block:'start' });
           }
         }
-        setTimeout(() => {
+        // Position spotlight + popover. For scrollToTarget, wait longer to let
+        // smooth-scroll complete (browsers take 400-600ms depending on delta),
+        // then do a second adjustment 200ms later in case the scroll wasn't done.
+        const positionOverlay = () => {
           const rect = targetEl.getBoundingClientRect();
           const pad = 6;
           spotlight.style.left = (rect.left - pad) + 'px';
@@ -10656,28 +10659,33 @@ function paintTourStep() {
           spotlight.style.height = (rect.height + pad*2) + 'px';
           spotlight.classList.add('active');
 
-          // Position popover — prefer below target, fall back to right/above
+          // Position popover — prefer below target, fall back to above, then centered
           const popoverWidth = 360;
           const popoverHeight = popover.offsetHeight || 280;
           const margin = 16;
           let popLeft, popTop;
-          // Try below
           if (rect.bottom + popoverHeight + margin < window.innerHeight) {
             popTop = rect.bottom + 16;
             popLeft = Math.min(Math.max(rect.left, 16), window.innerWidth - popoverWidth - 16);
           } else if (rect.top - popoverHeight - margin > 0) {
-            // Above
             popTop = rect.top - popoverHeight - 16;
             popLeft = Math.min(Math.max(rect.left, 16), window.innerWidth - popoverWidth - 16);
           } else {
-            // Center on screen
             popTop = (window.innerHeight - popoverHeight) / 2;
             popLeft = (window.innerWidth - popoverWidth) / 2;
           }
           popover.style.left = popLeft + 'px';
           popover.style.top  = popTop + 'px';
           popover.classList.add('active');
-        }, step.scrollToTarget ? 350 : 50);
+        };
+        // First pass — after smooth-scroll should have settled
+        setTimeout(positionOverlay, step.scrollToTarget ? 700 : 50);
+        // Second pass — in case scroll took longer than expected (or browser
+        // animated differently). Cheap re-render, no flicker because the rect
+        // values will be identical when scroll has finished.
+        if (step.scrollToTarget) {
+          setTimeout(positionOverlay, 1100);
+        }
       } else {
         // Target not found — center the popover
         spotlight.classList.remove('active');
