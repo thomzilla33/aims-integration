@@ -9195,9 +9195,8 @@ function renderUsersHome(userId) {
     <div class="users-wrap">
       <header class="users-h">
         <div class="users-h-l">
-          <div class="users-h-eyebrow"><span class="users-h-eyebrow-dot"></span>Admin Studio · Users</div>
           <h1 class="users-h-title">Who reaches which integration instance</h1>
-          <p class="users-h-desc">Every person in your workspace, plus the integration instances they can use (directly granted or via a group). Click a row to see the full picture per user.</p>
+          <p class="users-h-desc">Every person in your workspace, plus the integration instances they can use (directly granted or via a group).</p>
         </div>
         <div class="users-h-counts">
           <div class="users-h-count"><div class="users-h-count-v">${MOCK_PEOPLE.length}</div><div class="users-h-count-l">People</div></div>
@@ -9357,9 +9356,8 @@ function renderDistribution() {
 
       <header class="dist-h">
         <div class="dist-h-l">
-          <div class="dist-h-eyebrow"><span class="dist-h-eyebrow-dot"></span>Admin Studio &middot; Distribution control</div>
           <h1 class="dist-h-title">Where each integration shows up</h1>
-          <p class="dist-h-desc">Control which downstream surfaces can use each connected integration. Toggling a cell updates availability across the whole workspace.</p>
+          <p class="dist-h-desc">Control which downstream surfaces can use each connected integration.</p>
         </div>
         <div class="dist-counts">
           <div class="dist-count"><div class="dist-count-v">${totalConn}</div><div class="dist-count-l">Connected</div></div>
@@ -9576,9 +9574,8 @@ function renderWidgetsLibrary() {
 
       <header class="wg-h">
         <div class="wg-h-l">
-          <div class="wg-h-eyebrow"><span class="wg-h-eyebrow-dot"></span>Admin Studio &middot; Widgets library</div>
           <h1 class="wg-h-title">Widget templates</h1>
-          <p class="wg-h-desc">Pre-built dashboards and cards that consume your connected integrations. Install the ones you already have — the rest stay greyed out until their required integrations are connected and exposed via <a href="#/distribution" style="color:var(--cyan);text-decoration:none">Distribution</a>.</p>
+          <p class="wg-h-desc">Pre-built dashboards and cards that consume your connected integrations. Greyed-out widgets need their integrations connected and exposed via <a href="#/distribution" style="color:var(--cyan);text-decoration:none">Distribution</a> first.</p>
         </div>
         <div class="wg-counts">
           <div class="wg-count"><div class="wg-count-v">${total}</div><div class="wg-count-l">Available</div></div>
@@ -9941,7 +9938,6 @@ function renderOperateHome() {
       <div class="op-hero-left">
         <div class="op-hero-eyebrow">
           <span class="op-mode-tag">Operate</span>
-          <span class="op-hero-sub">Status of your data infrastructure</span>
         </div>
         <h1 class="op-hero-title">${counts.needs_attention > 0
           ? `<span style="color:#fbbf24">${counts.needs_attention}</span> integration${counts.needs_attention===1?'':'s'} need your attention`
