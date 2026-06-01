@@ -2141,6 +2141,68 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
 .tbl-card{position:relative}
 .tbl-card.is-error{border-color:rgba(239,68,68,0.45)}
 .tbl-card.is-error:hover{border-color:rgba(239,68,68,0.65)}
+
+/* ============ PHASE B — Health monitoring ============ */
+@keyframes tblErrPulse{
+  0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.45); }
+  50%      { box-shadow: 0 0 0 6px rgba(239,68,68,0.0); }
+}
+.tbl-card-status.is-pulse .tbl-card-status-dot,
+.tbl-card-status.is-pulse{animation: tblErrPulse 1.6s ease-in-out infinite;}
+.tbl-card-status.is-pulse{position:relative;}
+
+.tbl-card-err{
+  display:inline-flex;align-items:center;gap:6px;
+  margin-top:4px;
+  font-size:11px;font-weight:600;
+  color:#fca5a5;
+  background:rgba(239,68,68,0.08);
+  border:1px solid rgba(239,68,68,0.28);
+  padding:3px 8px;border-radius:5px;
+}
+.tbl-card-err-dot{
+  width:5px;height:5px;border-radius:50%;background:#ef4444;
+  box-shadow:0 0 0 2px rgba(239,68,68,0.20);
+  animation: tblErrPulse 1.6s ease-in-out infinite;
+}
+
+.tbl-err-banner{
+  display:flex;align-items:center;gap:12px;
+  margin:14px 0 0;
+  padding:12px 14px;
+  background:rgba(239,68,68,0.06);
+  border:1px solid rgba(239,68,68,0.35);
+  border-left:3px solid #ef4444;
+  border-radius:10px;
+}
+.tbl-err-banner-ic{
+  width:28px;height:28px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;border-radius:7px;
+  background:rgba(239,68,68,0.14);color:#fca5a5;
+  animation: tblErrPulse 2.4s ease-in-out infinite;
+}
+.tbl-err-banner-l{flex:1;min-width:0;}
+.tbl-err-banner-t{font-size:13px;font-weight:700;color:#fca5a5;letter-spacing:-.005em;}
+.tbl-err-banner-d{font-size:12px;color:var(--t2);line-height:1.5;margin-top:2px;}
+.tbl-err-banner-cta{
+  flex-shrink:0;
+  background:rgba(239,68,68,0.12);
+  border:1px solid rgba(239,68,68,0.40);
+  color:#fca5a5;
+  padding:6px 12px;border-radius:6px;
+  font-size:12px;font-weight:600;cursor:pointer;
+  transition:.12s;
+}
+.tbl-err-banner-cta:hover{background:rgba(239,68,68,0.20);color:#fff;border-color:rgba(239,68,68,0.65);}
+
+/* ============ PHASE C — Mapping handoff card ============ */
+.ob-done-card.is-mapping:hover{
+  background:linear-gradient(135deg, rgba(16,185,129,0.24), rgba(16,185,129,0.10)) !important;
+  border-color:rgba(16,185,129,0.65) !important;
+  transform:translateY(-2px);
+}
+
+
 .tbl-card-status{
   display:inline-flex;align-items:center;gap:5px;
   font-size:10.5px;font-weight:700;
@@ -2225,6 +2287,170 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
 .tbl-field-flag.f-v {background:rgba(16,185,129,0.14);color:var(--green);border:1px solid rgba(16,185,129,0.32)}
 .tbl-field-flag.f-t {background:rgba(255,255,255,0.06);color:var(--t2);border:1px solid var(--line-strong)}
 .tbl-field-flag.f-u {background:rgba(43,127,255,0.10);color:var(--blue);border:1px solid rgba(43,127,255,0.28)}
+
+/* ============ PHASE A — Canonical Mapping ============ */
+.tbl-map{display:flex;flex-direction:column;gap:14px;padding:14px;}
+.tbl-map-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;}
+.tbl-map-head-eyebrow{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--t3);margin-bottom:3px;}
+.tbl-map-head-t{font-size:14px;font-weight:700;color:var(--t1);font-family:'SF Mono',ui-monospace,monospace;}
+.tbl-map-head-r{font-size:11px;color:var(--t3);}
+.tbl-map-head-stub{color:var(--amber);font-weight:600;}
+
+.tbl-map-canvas{display:flex;flex-direction:column;align-items:center;gap:0;}
+
+.tbl-map-node{
+  width:100%;
+  padding:10px 12px;
+  border-radius:10px;
+  border:1px solid var(--line-strong);
+  background:rgba(255,255,255,0.02);
+}
+.tbl-map-source{
+  border-color:rgba(6,182,212,0.45);
+  background:rgba(6,182,212,0.06);
+}
+.tbl-map-target{
+  border-color:rgba(16,185,129,0.50);
+  background:rgba(16,185,129,0.07);
+}
+.tbl-map-node-eyebrow{font-size:10px;font-weight:700;letter-spacing:.10em;text-transform:uppercase;color:var(--t3);margin-bottom:2px;}
+.tbl-map-source .tbl-map-node-eyebrow{color:var(--cyan);}
+.tbl-map-target .tbl-map-node-eyebrow{color:var(--emerald);}
+.tbl-map-node-name{font-family:'SF Mono',ui-monospace,monospace;font-size:13px;font-weight:600;color:var(--t1);}
+.tbl-map-node-sample{font-size:11px;color:var(--t3);margin-top:4px;}
+.tbl-map-node-sample span{font-family:'SF Mono',ui-monospace,monospace;color:var(--t2);}
+
+.tbl-map-op{border-color:var(--line-strong);background:rgba(255,255,255,0.02);}
+.tbl-map-op.is-stub{
+  border-style:dashed;
+  border-color:rgba(245,158,11,0.50);
+  background:rgba(245,158,11,0.04);
+}
+.tbl-map-op-row{display:flex;align-items:center;gap:8px;}
+.tbl-map-op-label{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;color:var(--t1);flex:1;min-width:0;}
+.tbl-map-op-fn{font-family:'SF Mono',ui-monospace,monospace;font-size:11px;color:var(--t3);font-weight:400;}
+.tbl-map-stub-chip{
+  display:inline-flex;align-items:center;
+  font-size:9px;font-weight:800;letter-spacing:.10em;
+  color:var(--amber);
+  background:rgba(245,158,11,0.12);
+  border:1px solid rgba(245,158,11,0.40);
+  padding:2px 6px;border-radius:6px;
+}
+.tbl-map-op-menu{display:flex;gap:2px;flex-shrink:0;}
+.tbl-map-op-mbtn{
+  width:22px;height:22px;
+  display:flex;align-items:center;justify-content:center;
+  background:transparent;border:1px solid transparent;border-radius:5px;
+  color:var(--t3);cursor:pointer;transition:.12s;
+}
+.tbl-map-op-mbtn:hover:not(:disabled){background:rgba(255,255,255,0.06);color:var(--t1);border-color:var(--line-strong);}
+.tbl-map-op-mbtn:disabled{opacity:.3;cursor:not-allowed;}
+.tbl-map-op-mbtn.is-rm:hover{color:#fca5a5;border-color:rgba(239,68,68,0.40);background:rgba(239,68,68,0.08);}
+.tbl-map-op-desc{font-size:11px;color:var(--t3);margin-top:4px;line-height:1.4;}
+
+.tbl-map-params{display:flex;flex-direction:column;gap:6px;margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.05);}
+.tbl-map-param{display:flex;flex-direction:column;gap:2px;}
+.tbl-map-param label{font-size:10px;font-weight:600;letter-spacing:.04em;color:var(--t3);text-transform:uppercase;}
+.tbl-map-param input{
+  background:rgba(0,0,0,0.30);border:1px solid var(--line-strong);border-radius:5px;
+  padding:5px 8px;font-size:12px;color:var(--t1);font-family:'SF Mono',ui-monospace,monospace;
+}
+.tbl-map-param input:focus{outline:none;border-color:var(--cyan);}
+
+.tbl-map-arrow{
+  width:14px;height:14px;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--t3);
+  padding:4px 0;
+}
+
+.tbl-map-add-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(255,255,255,0.03);
+  border:1px dashed var(--line-strong);
+  color:var(--t2);
+  padding:8px 14px;border-radius:8px;
+  font-size:12px;font-weight:600;
+  cursor:pointer;transition:.15s;
+}
+.tbl-map-add-btn:hover{background:rgba(6,182,212,0.06);border-color:rgba(6,182,212,0.40);color:var(--cyan);}
+.tbl-map-add-btn.is-open{background:rgba(6,182,212,0.08);border-color:var(--cyan);color:var(--cyan);border-style:solid;}
+
+.tbl-map-palette{
+  width:100%;
+  margin-top:6px;
+  background:rgba(255,255,255,0.02);
+  border:1px solid var(--line-strong);
+  border-radius:10px;
+  overflow:hidden;
+  animation:tblMapPalSlide .18s ease-out;
+}
+@keyframes tblMapPalSlide{from{opacity:0;transform:translateY(-4px);}to{opacity:1;transform:translateY(0);}}
+.tbl-map-palette-h{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 12px;
+  font-size:12px;font-weight:700;color:var(--t1);letter-spacing:-.005em;
+  border-bottom:1px solid var(--line);
+  background:rgba(255,255,255,0.02);
+}
+.tbl-map-palette-close{
+  width:22px;height:22px;
+  background:transparent;border:1px solid transparent;border-radius:5px;
+  color:var(--t3);cursor:pointer;font-size:18px;line-height:1;
+  display:flex;align-items:center;justify-content:center;
+}
+.tbl-map-palette-close:hover{background:rgba(255,255,255,0.06);color:var(--t1);border-color:var(--line-strong);}
+.tbl-map-palette-section{padding:10px 12px;}
+.tbl-map-palette-section + .tbl-map-palette-section{border-top:1px solid var(--line);}
+.tbl-map-palette-cat{font-size:10px;font-weight:800;letter-spacing:.10em;text-transform:uppercase;color:var(--t3);margin-bottom:8px;}
+.tbl-map-palette-cat.is-stub{color:var(--amber);}
+.tbl-map-palette-note{font-size:10.5px;color:var(--t3);margin-bottom:8px;font-style:italic;}
+.tbl-map-palette-list{display:flex;flex-direction:column;gap:4px;}
+.tbl-map-palette-item{
+  display:flex;align-items:center;gap:8px;
+  width:100%;
+  padding:8px 10px;
+  background:transparent;border:1px solid transparent;border-radius:7px;
+  cursor:pointer;text-align:left;transition:.12s;
+}
+.tbl-map-palette-item:hover{background:rgba(6,182,212,0.05);border-color:rgba(6,182,212,0.28);}
+.tbl-map-palette-item.is-stub:hover{background:rgba(245,158,11,0.05);border-color:rgba(245,158,11,0.32);}
+.tbl-map-palette-l{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0;}
+.tbl-map-palette-n{font-size:12.5px;font-weight:600;color:var(--t1);}
+.tbl-map-palette-d{font-size:10.5px;color:var(--t3);line-height:1.4;}
+
+.tbl-map-preview{
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:rgba(0,0,0,0.20);
+  padding:10px 12px;
+  display:flex;flex-direction:column;gap:6px;
+}
+.tbl-map-preview-h{
+  font-size:10px;font-weight:800;letter-spacing:.10em;text-transform:uppercase;color:var(--t3);
+  display:flex;align-items:center;gap:6px;
+}
+.tbl-map-preview-h::before{
+  content:'';width:6px;height:6px;border-radius:50%;
+  background:var(--emerald);box-shadow:0 0 0 3px rgba(16,185,129,0.18);
+}
+.tbl-map-preview-row{
+  display:grid;grid-template-columns:60px 1fr;gap:8px;align-items:baseline;
+}
+.tbl-map-preview-l{font-size:11px;color:var(--t3);font-weight:600;}
+.tbl-map-preview-v{
+  font-family:'SF Mono',ui-monospace,monospace;
+  font-size:12px;
+  color:var(--t2);
+  background:rgba(255,255,255,0.04);
+  padding:3px 7px;border-radius:5px;
+  border:1px solid var(--line);
+  word-break:break-all;
+}
+.tbl-map-preview-v.is-after{color:var(--emerald);background:rgba(16,185,129,0.06);border-color:rgba(16,185,129,0.30);}
+.tbl-map-preview-empty{color:var(--t3);font-style:italic;font-family:'Inter',sans-serif;}
+
 .tbl-field-sample{
   font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
   font-size:10.5px;color:var(--t3);
@@ -4278,6 +4504,82 @@ html.theme-light .tonb-exit-leave:hover{
 .tonb-done-stat{display:flex;flex-direction:column;align-items:center;gap:2px;}
 .tonb-done-stat-v{font-size:22px;font-weight:700;color:var(--t1);font-variant-numeric:tabular-nums;}
 .tonb-done-stat-k{font-size:10.5px;font-weight:600;letter-spacing:.08em;color:var(--t3);text-transform:uppercase;}
+
+/* ============ F6 — Done step v2 ============ */
+.tonb-summary{
+  border:1px solid var(--line);border-radius:10px;
+  background:rgba(255,255,255,0.02);
+  overflow:hidden;
+}
+.tonb-summary-h{
+  font-size:10px;font-weight:800;letter-spacing:.10em;text-transform:uppercase;
+  color:var(--t3);
+  padding:10px 14px;
+  border-bottom:1px solid var(--line);
+  background:rgba(255,255,255,0.02);
+}
+.tonb-summary-row{
+  display:flex;align-items:center;justify-content:space-between;gap:14px;
+  padding:10px 14px;
+  font-size:13px;
+  border-bottom:1px solid rgba(255,255,255,0.04);
+}
+.tonb-summary-row:last-child{border-bottom:none;}
+.tonb-summary-row-l{color:var(--t3);font-weight:500;}
+.tonb-summary-row-v{color:var(--t1);font-weight:600;text-align:right;display:inline-flex;align-items:center;gap:8px;}
+
+.tonb-summary-row.is-pending{
+  background:rgba(245,158,11,0.04);
+  cursor:pointer;
+}
+.tonb-summary-row.is-pending:hover{background:rgba(245,158,11,0.08);}
+.tonb-summary-row.is-pending .tonb-summary-row-v{color:var(--amber);}
+
+.tonb-summary-next{
+  display:inline-flex;align-items:center;
+  font-size:9px;font-weight:800;letter-spacing:.10em;
+  color:var(--amber);
+  background:rgba(245,158,11,0.14);
+  border:1px solid rgba(245,158,11,0.40);
+  padding:2px 6px;border-radius:5px;
+  margin-right:4px;
+}
+
+.tonb-summary-link{
+  color:var(--cyan);font-weight:600;font-size:11.5px;
+  cursor:pointer;text-decoration:none;
+}
+.tonb-summary-link:hover{text-decoration:underline;}
+
+.tonb-done-primary-cta{
+  display:flex;align-items:center;gap:14px;
+  width:100%;
+  padding:16px 18px;
+  background:linear-gradient(135deg, rgba(16,185,129,0.16), rgba(16,185,129,0.04));
+  border:1px solid rgba(16,185,129,0.45);
+  border-radius:12px;
+  cursor:pointer;
+  transition:.18s;
+  text-align:left;
+}
+.tonb-done-primary-cta:hover{
+  background:linear-gradient(135deg, rgba(16,185,129,0.24), rgba(16,185,129,0.10));
+  border-color:rgba(16,185,129,0.65);
+  transform:translateY(-2px);
+}
+.tonb-done-primary-cta-ic{
+  width:40px;height:40px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(16,185,129,0.22);color:var(--emerald);
+  border-radius:10px;
+}
+.tonb-done-primary-cta-l{flex:1;min-width:0;}
+.tonb-done-primary-cta-t{font-size:15px;font-weight:700;color:var(--emerald);letter-spacing:-.01em;}
+.tonb-done-primary-cta-d{font-size:12px;color:var(--t2);margin-top:3px;line-height:1.5;}
+.tonb-done-primary-cta-d code{font-family:ui-monospace,monospace;color:var(--t1);background:rgba(255,255,255,0.04);padding:1px 5px;border-radius:4px;}
+.tonb-done-primary-cta-arrow{font-size:20px;color:var(--emerald);flex-shrink:0;transition:.18s;}
+.tonb-done-primary-cta:hover .tonb-done-primary-cta-arrow{transform:translateX(2px);}
+
 .tonb-next-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;}
 .tonb-next-card{
   display:flex;flex-direction:column;gap:8px;
@@ -6286,15 +6588,20 @@ function renderTables() {
                 <span class="tbl-card-ic">
                   <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="12" height="10" rx="1.2"/><path d="M2 6.5h12M2 9.5h12M5.5 3v10M10.5 3v10"/></svg>
                 </span>
-                <span class="tbl-card-status is-${t._status === 'error' ? 'error-st' : t._status}">
+                <span class="tbl-card-status is-${t._status === 'error' ? 'error-st' : t._status}${t._status === 'error' ? ' is-pulse' : ''}">
                   ${statusIconSvg(t._status)}
                 </span>
               </div>
               <div class="tbl-card-name">${escapeHtml(t.name)}</div>
+              ${t._status === 'error' ? (function(){
+                const bad = t.sources.find(s => { const c = DS_CONNECTIONS[s.slug]; return c && ensureSyncState(c).status === 'error'; });
+                return bad ? `<div class="tbl-card-err"><span class="tbl-card-err-dot"></span>${escapeHtml(bad.name)} sync failed</div>` : '';
+              })() : ''}
               <div class="tbl-card-stats">
                 <div><span class="tbl-card-stat-v">${t.totalColumns}</span>columns</div>
                 <div><span class="tbl-card-stat-v">${escapeHtml(t.totalRowsLabel || formatRowCount(t.rowsNumeric))}</span>rows</div>
                 <div><span class="tbl-card-stat-v">${escapeHtml(t.lastSync || '—')}</span>last sync</div>
+                <div><span class="tbl-card-stat-v">${(function(){ try { return getTableUsage(t.name).length; } catch(e) { return 0; } })()}</span>used by</div>
               </div>
               <div class="tbl-card-sources">
                 <span class="tbl-card-sources-l">${t.sources.length} source${t.sources.length === 1 ? '' : 's'}</span>
@@ -6452,6 +6759,22 @@ function renderTableDetail(tableName) {
         </div>
       </header>
 
+      ${aggStatus === 'error' ? (function(){
+        const bad = t.sources.filter(s => { const c = DS_CONNECTIONS[s.slug]; return c && ensureSyncState(c).status === 'error'; });
+        const names = bad.map(s => s.name).join(', ');
+        return `
+        <div class="tbl-err-banner">
+          <span class="tbl-err-banner-ic">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="6.5"/><path d="M8 5v3.5M8 11h.01"/></svg>
+          </span>
+          <div class="tbl-err-banner-l">
+            <div class="tbl-err-banner-t">Sync failed${bad.length > 1 ? ` for ${bad.length} sources` : ''}</div>
+            <div class="tbl-err-banner-d">${escapeHtml(names)} stopped flowing into this table. Open the Sync tab to see the error message and retry.</div>
+          </div>
+          <button class="tbl-err-banner-cta" onclick="event.stopPropagation();setTblRailTab('sync')">Open Sync &rarr;</button>
+        </div>`;
+      })() : ''}
+
       ${t.sources.length > 1 ? `
         <div class="tbl-ms-banner">
           <span class="tbl-ms-banner-ic">
@@ -6512,6 +6835,7 @@ function renderTableDetail(tableName) {
         <div class="tbl-rail">
           <div class="tbl-rail-tabs">
             <button class="tbl-rail-tab ${tblRailTab === 'field' ? 'is-active' : ''}" onclick="setTblRailTab('field')">Field</button>
+            <button class="tbl-rail-tab ${tblRailTab === 'mapping' ? 'is-active' : ''}" onclick="setTblRailTab('mapping')">Mapping${(function(){const f=allFields[tblSelectedField];const n=(f&&f.transformations)?f.transformations.length:0;return n?` <span class="tbl-rail-tab-count">${n}</span>`:'';})()}</button>
             <button class="tbl-rail-tab ${tblRailTab === 'sync' ? 'is-active' : ''}" onclick="setTblRailTab('sync')">
               Sync
               ${hasErrSource ? '<span class="tbl-rail-tab-err-dot" title="A source is in error"></span>' : ''}
@@ -6531,12 +6855,13 @@ function renderTableDetail(tableName) {
 }
 
 function renderTblRail(t, fields, aggStatus) {
-  if (tblRailTab === 'sync')  return renderTblSyncTab(t);
-  if (tblRailTab === 'field') return renderTblFieldTab(fields);
-  if (tblRailTab === 'conn')  return renderTblConnTab(t);
-  if (tblRailTab === 'used')  return renderTblUsedTab(t);
-  if (tblRailTab === 'ver')   return renderTblVerTab(t);
-  if (tblRailTab === 'set')   return renderTblSetTab(t);
+  if (tblRailTab === 'sync')    return renderTblSyncTab(t);
+  if (tblRailTab === 'field')   return renderTblFieldTab(fields);
+  if (tblRailTab === 'mapping') return renderTblMappingTab(t, fields);
+  if (tblRailTab === 'conn')    return renderTblConnTab(t);
+  if (tblRailTab === 'used')    return renderTblUsedTab(t);
+  if (tblRailTab === 'ver')     return renderTblVerTab(t);
+  if (tblRailTab === 'set')     return renderTblSetTab(t);
   return '';
 }
 
@@ -7503,6 +7828,322 @@ function removeTransformation(tableName, fieldName, transformInstanceId) {
   ov.transformations = (ov.transformations || []).filter(x => x.id !== transformInstanceId);
   persistTableFieldOverrides();
   rerenderTableDetail();
+}
+
+
+/* ============================================================================
+   PHASE A — CANONICAL MAPPING
+   - TRANSFORM_CATALOG: 8 stable + 6 STUB operations
+   - renderTblMappingTab: vertical pipeline (source → ops → target) + preview
+   - tblMapAdd / tblMapMove / tblMapRemove: per-op actions
+   - tblMapTogglePalette: open the Add palette
+============================================================================ */
+
+const TRANSFORM_CATALOG = [
+  // ---- Stable (8) ----
+  { op:'trim',           label:'Trim whitespace',  desc:'Remove leading and trailing spaces.',          types:['string'],            stub:false },
+  { op:'lowercase',      label:'Lowercase',        desc:'Convert all characters to lowercase.',          types:['string'],            stub:false },
+  { op:'uppercase',      label:'Uppercase',        desc:'Convert all characters to uppercase.',          types:['string'],            stub:false },
+  { op:'round',          label:'Round',            desc:'Round a number to the nearest integer.',        types:['decimal','int'],     stub:false },
+  { op:'to_int',         label:'Cast to integer',  desc:'Parse the value as an integer.',                types:['string','decimal'],  stub:false },
+  { op:'to_decimal',     label:'Cast to decimal',  desc:'Parse the value as a decimal (2 places).',      types:['string','int'],      stub:false },
+  { op:'default_value',  label:'Default value',    desc:'Use a fallback when the value is empty.',       types:['string','int','decimal'], stub:false, params:[{key:'value', label:'Fallback'}] },
+  { op:'replace_null',   label:'Replace null',     desc:'Replace null with a literal value.',            types:['string','int','decimal'], stub:false, params:[{key:'value', label:'Replacement'}] },
+
+  // ---- Experimental · STUB (6) ----
+  { op:'concatenate',       label:'Concatenate',         desc:'Join a suffix to the value.',                       types:['string'],   stub:true,  params:[{key:'suffix', label:'Suffix'}] },
+  { op:'dictionary_lookup', label:'Dictionary lookup',   desc:'Map values via a key/value table.',                 types:['string'],   stub:true,  params:[{key:'table',  label:'Lookup table'}] },
+  { op:'regex_extract',     label:'Regex extract',       desc:'Extract the first capture group of a pattern.',     types:['string'],   stub:true,  params:[{key:'pattern',label:'Pattern'}] },
+  { op:'split_first_token', label:'Split first token',   desc:'Split by a separator and take the first part.',     types:['string'],   stub:true,  params:[{key:'sep',    label:'Separator'}] },
+  { op:'phone_to_e164',     label:'Phone to E.164',      desc:'Normalize a phone number to E.164 format.',         types:['string'],   stub:true },
+  { op:'date_parse',        label:'Parse date',          desc:'Parse a string to ISO-8601 (YYYY-MM-DD).',          types:['string'],   stub:true },
+];
+
+function getTransformOp(op) { return TRANSFORM_CATALOG.find(t => t.op === op) || null; }
+
+/* In-memory palette open state. Resets on tab switch. */
+let tblMapPaletteOpen = false;
+
+/* ---------- Pure-JS preview simulation ---------- */
+function transformPreview(steps, startValue) {
+  let v = startValue == null ? '' : String(startValue);
+  const trace = [{ label: 'Source', value: v }];
+  for (const step of (steps || [])) {
+    const op = getTransformOp(step.op);
+    if (!op) continue;
+    try {
+      switch (step.op) {
+        case 'trim':           v = v.trim(); break;
+        case 'lowercase':      v = v.toLowerCase(); break;
+        case 'uppercase':      v = v.toUpperCase(); break;
+        case 'round':          v = String(Math.round(parseFloat(v) || 0)); break;
+        case 'to_int':         v = String(parseInt(v, 10) || 0); break;
+        case 'to_decimal':     v = (parseFloat(v) || 0).toFixed(2); break;
+        case 'default_value':  v = v && v.length ? v : (step.params && step.params.value || '—'); break;
+        case 'replace_null':   v = (v === '' || v === 'null') ? (step.params && step.params.value || '—') : v; break;
+        case 'concatenate':    v = v + ((step.params && step.params.suffix) || ''); break;
+        case 'dictionary_lookup': {
+          // simple deterministic stub — show alias map effect
+          const tbl = (step.params && step.params.table) || 'email_aliases';
+          v = v + ' (via ' + tbl + ')';
+          break;
+        }
+        case 'regex_extract':  v = v.split(/[^a-zA-Z0-9]/)[0] || v; break;
+        case 'split_first_token': v = v.split((step.params && step.params.sep) || ' ')[0]; break;
+        case 'phone_to_e164':  v = '+1' + v.replace(/\D/g,'').slice(-10); break;
+        case 'date_parse': {
+          const d = new Date(v); v = isNaN(d.getTime()) ? '(unparseable)' : d.toISOString().slice(0,10); break;
+        }
+      }
+    } catch(e) {
+      v = '(error)';
+    }
+    trace.push({ label: op.label, value: v, stub: !!op.stub });
+  }
+  return { final: v, trace };
+}
+
+/* ---------- Actions: add / move / remove a step in current field's chain ---------- */
+function _tblMappingCurrent() {
+  const parts = parseRoute();
+  if (parts[0] !== 'tables' || !parts[1]) return null;
+  const tableName = decodeURIComponent(parts[1]);
+  const t = getAllTables().find(x => x.name === tableName);
+  if (!t || tblSelectedField === null) return null;
+  // Mirror the field enrichment in renderTableDetail so we mutate the right place.
+  // For prototype simplicity we attach transformations onto the table-scoped field
+  // override (CUSTOM_FIELDS) so the change persists across renders.
+  return { t, tableName };
+}
+
+function tblMapAdd(opKey) {
+  const ctx = _tblMappingCurrent(); if (!ctx) return;
+  const op = getTransformOp(opKey); if (!op) return;
+  ensureFieldOverride(ctx.tableName, tblSelectedFieldName());
+  const ov = getFieldOverride(ctx.tableName, tblSelectedFieldName());
+  ov.transformations = ov.transformations || [];
+  const step = { op: opKey };
+  if (op.params) { step.params = {}; op.params.forEach(p => { step.params[p.key] = ''; }); }
+  ov.transformations.push(step);
+  persistFieldOverrides();
+  tblMapPaletteOpen = false;
+  renderTableDetail(ctx.tableName);
+}
+function tblMapMove(idx, dir) {
+  const ctx = _tblMappingCurrent(); if (!ctx) return;
+  const ov = getFieldOverride(ctx.tableName, tblSelectedFieldName());
+  if (!ov || !ov.transformations) return;
+  const arr = ov.transformations;
+  const j = idx + dir;
+  if (j < 0 || j >= arr.length) return;
+  [arr[idx], arr[j]] = [arr[j], arr[idx]];
+  persistFieldOverrides();
+  renderTableDetail(ctx.tableName);
+}
+function tblMapRemove(idx) {
+  const ctx = _tblMappingCurrent(); if (!ctx) return;
+  const ov = getFieldOverride(ctx.tableName, tblSelectedFieldName());
+  if (!ov || !ov.transformations) return;
+  ov.transformations.splice(idx, 1);
+  persistFieldOverrides();
+  renderTableDetail(ctx.tableName);
+}
+function tblMapEditParam(idx, key, value) {
+  const ctx = _tblMappingCurrent(); if (!ctx) return;
+  const ov = getFieldOverride(ctx.tableName, tblSelectedFieldName());
+  if (!ov || !ov.transformations || !ov.transformations[idx]) return;
+  ov.transformations[idx].params = ov.transformations[idx].params || {};
+  ov.transformations[idx].params[key] = value;
+  persistFieldOverrides();
+  // No re-render — we don't want to lose focus on the input. Update preview via DOM.
+  const previewEl = document.getElementById('tbl-map-preview');
+  if (previewEl) {
+    const sampleEl = document.getElementById('tbl-map-sample');
+    const sample = sampleEl ? sampleEl.dataset.sample : '';
+    const result = transformPreview(ov.transformations, sample);
+    previewEl.textContent = result.final;
+  }
+}
+function tblMapTogglePalette() {
+  tblMapPaletteOpen = !tblMapPaletteOpen;
+  const ctx = _tblMappingCurrent(); if (!ctx) return;
+  renderTableDetail(ctx.tableName);
+}
+
+function tblSelectedFieldName() {
+  // Read the currently selected field's display name from the DOM-rendered list.
+  // The detail render already bounded tblSelectedField against the visible list,
+  // so we re-derive from the same field source-of-truth used there.
+  const parts = parseRoute();
+  if (parts[0] !== 'tables' || !parts[1]) return null;
+  const tableName = decodeURIComponent(parts[1]);
+  const t = getAllTables().find(x => x.name === tableName);
+  if (!t || tblSelectedField === null) return null;
+  // Rebuild allFields the same way renderTableDetail does. We only need names here.
+  const cf = (CUSTOM_FIELDS && CUSTOM_FIELDS[tableName]) || [];
+  const baseLen = (t.fields || []).length;
+  const idx = tblSelectedField;
+  if (idx < baseLen) {
+    const f = t.fields[idx];
+    return f.name;
+  }
+  const m = cf[idx - baseLen];
+  return m ? m.name : null;
+}
+
+/* ---------- Field-override helpers (mapping-aware) ---------- */
+// CUSTOM_FIELDS is the existing per-table custom-field store. Re-use the same
+// shape so transformations follow the field through schema versioning.
+if (typeof FIELD_OVERRIDES === 'undefined') { window.FIELD_OVERRIDES = {}; }
+function persistFieldOverrides() {
+  try { localStorage.setItem('aims_ds_field_overrides_v1', JSON.stringify(window.FIELD_OVERRIDES)); } catch(e) {}
+}
+function loadFieldOverrides() {
+  try {
+    const raw = localStorage.getItem('aims_ds_field_overrides_v1');
+    if (raw) window.FIELD_OVERRIDES = JSON.parse(raw) || {};
+  } catch(e) { window.FIELD_OVERRIDES = {}; }
+}
+function ensureFieldOverride(tableName, fieldName) {
+  if (!window.FIELD_OVERRIDES[tableName]) window.FIELD_OVERRIDES[tableName] = {};
+  if (!window.FIELD_OVERRIDES[tableName][fieldName]) window.FIELD_OVERRIDES[tableName][fieldName] = { transformations: [] };
+  if (!window.FIELD_OVERRIDES[tableName][fieldName].transformations) window.FIELD_OVERRIDES[tableName][fieldName].transformations = [];
+}
+function getFieldOverride(tableName, fieldName) {
+  return (window.FIELD_OVERRIDES[tableName] && window.FIELD_OVERRIDES[tableName][fieldName]) || null;
+}
+// Init at first script load
+loadFieldOverrides();
+
+/* ---------- Main render ---------- */
+function renderTblMappingTab(t, fields) {
+  if (tblSelectedField === null) {
+    return `
+      <div class="tbl-rail-placeholder">
+        <div class="tbl-rail-placeholder-ic">
+          <svg width="22" height="22" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4l5 0M3 8l3 0M3 12l5 0M13 4l-3 4 3 4"/></svg>
+        </div>
+        <div class="tbl-rail-placeholder-t">Pick a field to map</div>
+        <div class="tbl-rail-placeholder-d">Mapping defines how a source field is transformed into its canonical form. Pick any field on the left to view or edit its pipeline.</div>
+      </div>
+    `;
+  }
+
+  const f = fields[tblSelectedField];
+  const displayName = f.displayName || f.name;
+  const sourceName = (f.sources && f.sources[0] && f.sources[0].srcField) || f.name;
+  const sourceConn = (f.sources && f.sources[0] && f.sources[0].slug) || (t.sources[0] && t.sources[0].slug) || 'source';
+
+  // Read transformations from override store first, fall back to field's own array.
+  const ov = getFieldOverride(t.name, f.name);
+  const steps = (ov && ov.transformations) ? ov.transformations : (f.transformations || []);
+  const sample = f.sampleValue || sourceName;
+  const result = transformPreview(steps, sample);
+  const hasStub = steps.some(s => { const o = getTransformOp(s.op); return o && o.stub; });
+
+  const stepHtml = steps.map((step, i) => {
+    const op = getTransformOp(step.op);
+    if (!op) return '';
+    const params = (op.params || []).map(p => `
+      <div class="tbl-map-param">
+        <label>${escapeHtml(p.label)}</label>
+        <input type="text" value="${escapeHtml((step.params && step.params[p.key]) || '')}" placeholder="${escapeHtml(p.label)}…" oninput="tblMapEditParam(${i}, '${escapeHtml(p.key)}', this.value)"/>
+      </div>`).join('');
+    return `
+      <div class="tbl-map-arrow"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 2v10M3 8l4 4 4-4"/></svg></div>
+      <div class="tbl-map-node tbl-map-op${op.stub ? ' is-stub' : ''}" data-idx="${i}">
+        <div class="tbl-map-op-row">
+          <span class="tbl-map-op-label">${escapeHtml(op.label)}<code class="tbl-map-op-fn">${escapeHtml(step.op)}()</code></span>
+          ${op.stub ? '<span class="tbl-map-stub-chip" title="Experimental — behavior may change">STUB</span>' : ''}
+          <div class="tbl-map-op-menu">
+            <button class="tbl-map-op-mbtn" onclick="tblMapMove(${i}, -1)" ${i === 0 ? 'disabled' : ''} aria-label="Move up" title="Move up"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2 7l4-4 4 4"/></svg></button>
+            <button class="tbl-map-op-mbtn" onclick="tblMapMove(${i}, 1)" ${i === steps.length - 1 ? 'disabled' : ''} aria-label="Move down" title="Move down"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2 5l4 4 4-4"/></svg></button>
+            <button class="tbl-map-op-mbtn is-rm" onclick="tblMapRemove(${i})" aria-label="Remove" title="Remove"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2 2l8 8M10 2l-8 8"/></svg></button>
+          </div>
+        </div>
+        ${params ? `<div class="tbl-map-params">${params}</div>` : ''}
+        <div class="tbl-map-op-desc">${escapeHtml(op.desc)}</div>
+      </div>`;
+  }).join('');
+
+  // Build palette
+  const stable = TRANSFORM_CATALOG.filter(o => !o.stub);
+  const stubs  = TRANSFORM_CATALOG.filter(o =>  o.stub);
+  const paletteRow = (o) => `
+    <button class="tbl-map-palette-item${o.stub ? ' is-stub' : ''}" onclick="tblMapAdd('${escapeHtml(o.op)}')">
+      <span class="tbl-map-palette-l">
+        <span class="tbl-map-palette-n">${escapeHtml(o.label)}</span>
+        <span class="tbl-map-palette-d">${escapeHtml(o.desc)}</span>
+      </span>
+      ${o.stub ? '<span class="tbl-map-stub-chip">STUB</span>' : ''}
+    </button>`;
+  const palette = tblMapPaletteOpen ? `
+    <div class="tbl-map-palette">
+      <div class="tbl-map-palette-h">
+        <span>Add a transformation</span>
+        <button class="tbl-map-palette-close" onclick="tblMapTogglePalette()" aria-label="Close">×</button>
+      </div>
+      <div class="tbl-map-palette-section">
+        <div class="tbl-map-palette-cat">Stable · 8</div>
+        <div class="tbl-map-palette-list">${stable.map(paletteRow).join('')}</div>
+      </div>
+      <div class="tbl-map-palette-section">
+        <div class="tbl-map-palette-cat is-stub">Experimental · STUB · 6</div>
+        <div class="tbl-map-palette-note">Behavior may change in future releases. Review when upgrading.</div>
+        <div class="tbl-map-palette-list">${stubs.map(paletteRow).join('')}</div>
+      </div>
+    </div>
+  ` : '';
+
+  return `
+    <div class="tbl-map">
+      <div class="tbl-map-head">
+        <div class="tbl-map-head-l">
+          <div class="tbl-map-head-eyebrow">Pipeline</div>
+          <div class="tbl-map-head-t">${escapeHtml(displayName)}</div>
+        </div>
+        <div class="tbl-map-head-r">
+          ${steps.length} step${steps.length === 1 ? '' : 's'}${hasStub ? ' <span class="tbl-map-head-stub">·  contains STUB</span>' : ''}
+        </div>
+      </div>
+
+      <div class="tbl-map-canvas">
+        <div class="tbl-map-node tbl-map-source">
+          <div class="tbl-map-node-eyebrow">SOURCE · ${escapeHtml(sourceConn)}</div>
+          <div class="tbl-map-node-name">${escapeHtml(sourceName)}</div>
+          <div class="tbl-map-node-sample">sample: <span id="tbl-map-sample" data-sample="${escapeHtml(sample)}">${escapeHtml(sample)}</span></div>
+        </div>
+
+        ${stepHtml}
+
+        <div class="tbl-map-arrow"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 2v10M3 8l4 4 4-4"/></svg></div>
+        <button class="tbl-map-add-btn ${tblMapPaletteOpen ? 'is-open' : ''}" onclick="tblMapTogglePalette()">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 2v8M2 6h8"/></svg>
+          Add transformation
+        </button>
+
+        ${palette}
+
+        <div class="tbl-map-arrow"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 2v10M3 8l4 4 4-4"/></svg></div>
+        <div class="tbl-map-node tbl-map-target">
+          <div class="tbl-map-node-eyebrow">TARGET · canonical</div>
+          <div class="tbl-map-node-name">${escapeHtml(displayName)}</div>
+        </div>
+      </div>
+
+      <div class="tbl-map-preview">
+        <div class="tbl-map-preview-h">Live preview</div>
+        <div class="tbl-map-preview-row">
+          <span class="tbl-map-preview-l">Before</span>
+          <code class="tbl-map-preview-v">${escapeHtml(sample) || '<em class="tbl-map-preview-empty">(empty)</em>'}</code>
+        </div>
+        <div class="tbl-map-preview-row">
+          <span class="tbl-map-preview-l">After</span>
+          <code class="tbl-map-preview-v is-after" id="tbl-map-preview">${escapeHtml(result.final) || '<em class="tbl-map-preview-empty">(empty)</em>'}</code>
+        </div>
+      </div>
+    </div>
+  `;
 }
 
 function renderTblFieldTab(fields) {
@@ -12545,54 +13186,104 @@ toggleTonbApply = function(key, decision) {
 function _renderDoneStep() {
   const o = tonbState.org;
   const w = tonbState.siteProfile;
-  const accepted = Object.values(tonbState.apply).filter(v => v === 'accept').length;
-  const skipped = Object.values(tonbState.apply).filter(v => v === 'skip').length;
-  const starter = TONB_STARTERS.find(s => s.id === tonbState.starter);
-  const grouping = TONB_GROUPING.find(g => g.id === tonbState.grouping.mode);
+  const sitePlural = vocab('site.plural');
+  const siteSingle = vocab('site.single');
+  const isAddSite = tonbState.flow === 'add_site';
 
-  // Mark completed once we land on Done.
+  // Resolve template + peer rules labels from v2 state.
+  const tplKey = tonbState.template && tonbState.template.source;
+  const tplLabel = (function(){
+    const map = { industry_standard:'Industry standard', category_variant:'Category variant', neutral:'Neutral / generic', scratch:'From scratch' };
+    return map[tplKey] || 'Not picked';
+  })();
+  const peerPrimary = (tonbState.peerRules && tonbState.peerRules.primary) || null;
+  const peerSecondary = (tonbState.peerRules && tonbState.peerRules.secondary) || [];
+
+  // Source name from the wizard if launched, else mocked label.
+  const sourceLabel = (typeof obState !== 'undefined' && obState && obState.lastCompleted && obState.lastCompleted.name)
+    ? obState.lastCompleted.name
+    : (tonbState.connect.mocked ? 'Mock data (Salesforce + Stripe + GitHub)' : 'Not connected yet');
+  const sourceObject = (typeof obState !== 'undefined' && obState && obState.lastCompleted && obState.lastCompleted.object) || null;
+  const mappingPending = !!sourceObject; // any real source needs canonical mapping in Data Studio
+
+  // Mark completed once.
   if (!tonbState.completedAt) {
     tonbState.completedAt = Date.now();
     persistTonbState();
     trackTonb('completed', {
       flow: tonbState.flow,
       industry: o.industry, size: o.size,
-      starter: tonbState.starter, grouping: tonbState.grouping.mode,
-      acceptedCount: accepted, skippedCount: skipped,
+      template: tplKey, peerPrimary: peerPrimary,
     });
   }
+
+  // Helper: one summary row, with optional `pending` flag (NEXT badge + amber).
+  const row = (label, value, opts) => {
+    opts = opts || {};
+    const pending = !!opts.pending;
+    const onclick = opts.onclick ? ` onclick="${opts.onclick}"` : '';
+    const cls = pending ? 'tonb-summary-row is-pending' : 'tonb-summary-row';
+    return `<div class="${cls}"${onclick}>
+      <span class="tonb-summary-row-l">${escapeHtml(label)}</span>
+      <span class="tonb-summary-row-v">${pending ? '<span class="tonb-summary-next">NEXT</span>' : ''}${value}</span>
+    </div>`;
+  };
+
+  // Add-site flow has a simpler summary; first_run shows the full setup.
+  const summaryRows = isAddSite
+    ? [
+        row(`${cap(siteSingle)} name`, escapeHtml(w.name || '—')),
+        row('Region',         escapeHtml(w.region || '—')),
+        row('Source system ID', escapeHtml(w.sourceSystemId || '—')),
+        row('Data source',    escapeHtml(sourceLabel)),
+        mappingPending ? row('Account mapping', `Pending  <a class="tonb-summary-link" onclick="event.stopPropagation();tblRailTab='mapping';tblSelectedField=0;location.hash='/tables/${encodeURIComponent(sourceObject)}'">open →</a>`, { pending:true, onclick:`tblRailTab='mapping';tblSelectedField=0;location.hash='/tables/${encodeURIComponent(sourceObject)}'` }) : ''
+      ]
+    : [
+        row('Organization',     escapeHtml(o.name || '—')),
+        row('Industry',         escapeHtml(o.industry || '—')),
+        row('Template',         escapeHtml(tplLabel)),
+        row('Peer comparison',  peerPrimary ? `by <b>${escapeHtml(peerPrimary)}</b>${peerSecondary.length ? ` <span style="color:var(--t3)">+${peerSecondary.length} filters</span>` : ''}` : '—'),
+        row(`First ${siteSingle}`, escapeHtml(w.name || '—')),
+        row('Data source',      escapeHtml(sourceLabel)),
+        mappingPending ? row('Account mapping', `Pending  <a class="tonb-summary-link" onclick="event.stopPropagation();tblRailTab='mapping';tblSelectedField=0;location.hash='/tables/${encodeURIComponent(sourceObject)}'">open →</a>`, { pending:true, onclick:`tblRailTab='mapping';tblSelectedField=0;location.hash='/tables/${encodeURIComponent(sourceObject)}'` }) : ''
+      ];
+
+  function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
 
   return `
     <div class="tonb-done-hero">
       <div class="tonb-done-emoji" aria-hidden="true"><svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" stroke="rgba(16,185,129,0.45)" stroke-width="1.4"/><path d="M7.5 12.5l3 3 6-6.5" stroke="#34d39c" stroke-width="2"/></svg></div>
-      <div class="tonb-done-title">${tonbState.flow === 'add_site' ? 'Workspace ready' : 'Tenant ready'}</div>
-      <div class="tonb-done-sub">${tonbState.flow === 'add_site'
-        ? '<b style="color:var(--t1)">' + escapeHtml(w.name || 'Your workspace') + '</b> is set up. Add another, or jump into Data Studio.'
-        : '<b style="color:var(--t1)">' + escapeHtml(o.name || 'Your organization') + '</b> is configured. ' + (starter ? 'Pre-applied: <b>' + escapeHtml(starter.name) + '</b>. ' : '') + 'You can jump into any Studio now.'}</div>
+      <div class="tonb-done-title">${isAddSite ? `${cap(siteSingle)} added` : 'You&rsquo;re all set'}</div>
+      <div class="tonb-done-sub">${isAddSite
+        ? `<b style="color:var(--t1)">${escapeHtml(w.name || `Your ${siteSingle}`)}</b> is set up. ${mappingPending ? `One thing left: map its source fields to your canonical schema.` : 'You can add another or jump into Data Studio.'}`
+        : `<b style="color:var(--t1)">${escapeHtml(o.name || 'Your organization')}</b> is configured. ${mappingPending ? `One thing left: map your source fields to the canonical schema.` : 'You can jump into any Studio now.'}`}</div>
     </div>
 
-    <div class="tonb-done-stats">
-      <div class="tonb-done-stat"><span class="tonb-done-stat-v">1</span><span class="tonb-done-stat-k">workspace</span></div>
-      <div class="tonb-done-stat"><span class="tonb-done-stat-v">${tonbState.connect.mocked || tonbState.connect.launched ? (tonbState.connect.mocked ? 3 : 1) : 0}</span><span class="tonb-done-stat-k">tables</span></div>
-      <div class="tonb-done-stat"><span class="tonb-done-stat-v" style="color:#34d39c">${accepted}</span><span class="tonb-done-stat-k">templates applied</span></div>
-      <div class="tonb-done-stat"><span class="tonb-done-stat-v">${grouping && grouping.id !== 'flat' ? (tonbState.grouping.tags || []).length : 0}</span><span class="tonb-done-stat-k">groups defined</span></div>
+    <div class="tonb-summary">
+      <div class="tonb-summary-h">Setup summary</div>
+      ${summaryRows.filter(Boolean).join('')}
     </div>
+
+    ${mappingPending ? `
+    <button class="tonb-done-primary-cta" onclick="tblRailTab='mapping';tblSelectedField=0;location.hash='/tables/${encodeURIComponent(sourceObject)}'">
+      <div class="tonb-done-primary-cta-ic">
+        <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4l5 0M3 8l3 0M3 12l5 0M13 4l-3 4 3 4"/></svg>
+      </div>
+      <div class="tonb-done-primary-cta-l">
+        <div class="tonb-done-primary-cta-t">Map your fields in Data Studio</div>
+        <div class="tonb-done-primary-cta-d">Open <code>${escapeHtml(sourceObject)}</code> and translate each ${escapeHtml(sourceLabel)} field into your canonical model. Then templates apply automatically.</div>
+      </div>
+      <div class="tonb-done-primary-cta-arrow">→</div>
+    </button>
+    ` : ''}
 
     <div class="tonb-next-grid">
-      <button class="tonb-next-card" onclick="tonbStart('add_site')">
-        <div class="tonb-next-card-h">
-          <span class="tonb-next-card-name">Add another workspace</span>
-          <span class="tonb-next-card-arrow">→</span>
-        </div>
-        <div class="tonb-next-card-desc">4-step flow per workspace. Reuses your tenant setup.</div>
-      </button>
-
       <button class="tonb-next-card" onclick="location.hash='/connections'">
         <div class="tonb-next-card-h">
           <span class="tonb-next-card-name">Open Data Studio</span>
           <span class="tonb-next-card-arrow">→</span>
         </div>
-        <div class="tonb-next-card-desc">See your Connections, Tables, and rule pack Templates.</div>
+        <div class="tonb-next-card-desc">Connections, Tables, Templates, Field mappings, Schema versions.</div>
       </button>
 
       <a class="tonb-next-card" href="settings.html" style="text-decoration:none;color:inherit">
@@ -12600,15 +13291,24 @@ function _renderDoneStep() {
           <span class="tonb-next-card-name">Open Admin Studio</span>
           <span class="tonb-next-card-arrow">→</span>
         </div>
-        <div class="tonb-next-card-desc">Distribution, Ownership, Publish workflow. Where governance lives.</div>
+        <div class="tonb-next-card-desc">Distribution, Ownership, Publish workflow.</div>
       </a>
+
+      ${isAddSite ? '' : `
+      <button class="tonb-next-card" onclick="tonbStart('add_site')">
+        <div class="tonb-next-card-h">
+          <span class="tonb-next-card-name">Add another ${escapeHtml(siteSingle)}</span>
+          <span class="tonb-next-card-arrow">→</span>
+        </div>
+        <div class="tonb-next-card-desc">3-step flow per ${escapeHtml(siteSingle)}. Reuses your tenant setup.</div>
+      </button>`}
 
       <button class="tonb-next-card" disabled title="Coming soon">
         <div class="tonb-next-card-h">
           <span class="tonb-next-card-name">Invite your team</span>
           <span class="tonb-next-card-arrow">→</span>
         </div>
-        <div class="tonb-next-card-desc">Send invites for the contacts and owners you named above.</div>
+        <div class="tonb-next-card-desc">Send invites for the contacts you named above.</div>
       </button>
     </div>
 
@@ -15329,6 +16029,14 @@ function renderStep_done() {
         <div class="ob-done-card-d">You launched this wizard from the tenant onboarding. Back to where you were — step 6 of 8, with the connected source ready to apply templates.</div>
         <div class="ob-done-card-cta">Back to onboarding &rarr;</div>
       </button>` : ''}
+      <button class="ob-done-card is-mapping" onclick="obFinishAndGo('mapping')" style="${(typeof tonbState !== 'undefined' && tonbState && tonbState.connect && tonbState.connect.launched && tonbState.started && !tonbState.completedAt) ? '' : 'grid-column:1 / -1;'} background:linear-gradient(135deg, rgba(16,185,129,0.18), rgba(16,185,129,0.05)); border-color:rgba(16,185,129,0.45);">
+        <div class="ob-done-card-ic" style="background:rgba(16,185,129,0.22);color:var(--emerald);">
+          <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4l5 0M3 8l3 0M3 12l5 0M13 4l-3 4 3 4"/></svg>
+        </div>
+        <div class="ob-done-card-t" style="color:var(--emerald)">Map fields to your canonical schema</div>
+        <div class="ob-done-card-d">Open <span style="font-family:ui-monospace,monospace;color:var(--t1)">${escapeHtml(sample.object)}</span> in Data Studio and translate each ${escapeHtml(cn.name)} field into your canonical model. Add transformations like <span style="font-family:ui-monospace,monospace;color:var(--t2)">trim</span>, <span style="font-family:ui-monospace,monospace;color:var(--t2)">lowercase</span>, or a dictionary lookup.</div>
+        <div class="ob-done-card-cta" style="color:var(--emerald)">Open Data Studio &rarr;</div>
+      </button>
       <button class="ob-done-card is-primary" onclick="obFinishAndGo('agent')">
         <div class="ob-done-card-ic">
           <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="1.5" y="4.5" width="4" height="3" rx=".8"/><rect x="6.5" y="1.5" width="4" height="3" rx=".8"/><rect x="6.5" y="7.5" width="4" height="3" rx=".8"/><path d="M5.5 6h1M5.5 3H6a.5.5 0 01.5.5v1" stroke-linecap="round"/></svg>
@@ -15441,6 +16149,18 @@ function obFinishAndGo(action) {
     // renders the success state automatically. The user clicks Continue
     // there to advance to step 7 (Apply templates).
     setTimeout(() => { location.hash = '/onboarding'; }, 200);
+  } else if (action === 'mapping') {
+    // Phase C: land on the new table's Mapping tab in Data Studio.
+    const obj = (obState.lastCompleted && obState.lastCompleted.object) || (cn && obSampleFor(cn.slug).object);
+    if (obj) {
+      tblRailTab = 'mapping';
+      tblSelectedField = 0;
+      toast('Opening canonical mapping for ' + obj + '…');
+      setTimeout(() => { location.hash = '/tables/' + encodeURIComponent(obj); }, 200);
+    } else {
+      // Defensive fallback — open the library.
+      setTimeout(() => { location.hash = '/tables'; }, 200);
+    }
   } else if (action === 'agent') {
     toast('Opening Agent Studio · Tools…');
     setTimeout(() => { window.location.href = 'agent-tools.html'; }, 350);
@@ -15680,9 +16400,24 @@ const DS_TOUR_STEPS = [
   },
   {
     title: 'Where your data lives — Tables',
-    body: '<b>What it does:</b> each connection produces Tables — structured rows your agents can query. <b>Input:</b> click a Table card to see its schema, sync state, and applied validations. <b>Output:</b> a per-Table inspector with tabs for Sync, Conn, Used by, Versions, and Custom fields.',
+    body: '<b>What it does:</b> each connection produces Tables — structured rows your agents can query. Library cards show health (red pulse + reason chip on errors) and a <b>Used by N</b> rollup of downstream template lines. <b>Input:</b> click a card to see its split layout. <b>Output:</b> a per-Table inspector with 7 tabs: Field, <b>Mapping</b>, Sync, Conn, Used by, Versions, and Custom fields.',
     setup: () => { location.hash = '/tables'; },
     target: '.tbl-grid',
+    scrollToTarget: true
+  },
+  {
+    title: 'Canonical Mapping — the v2 centerpiece',
+    body: '<b>What it does:</b> translates each raw source field into your canonical schema via a visual transformation pipeline. <b>Input:</b> pick a field on the left, then chain operations (trim, lowercase, dictionary lookup, etc.) from a 14-op catalog. <b>Output:</b> Source → Ops → Target visualised end-to-end with a live before/after preview. Experimental ops carry an amber <b>STUB</b> badge so you know what is stable vs. provisional.',
+    setup: () => {
+      const tables = (typeof getAllTables === 'function') ? getAllTables() : [];
+      const first = tables[0];
+      if (first) {
+        tblRailTab = 'mapping';
+        tblSelectedField = 0;
+        location.hash = '/tables/' + encodeURIComponent(first.name);
+      }
+    },
+    target: '.tbl-map',
     scrollToTarget: true
   },
   {
@@ -15708,14 +16443,14 @@ const DS_TOUR_STEPS = [
   },
   {
     title: 'Tenant onboarding — the welcome flow',
-    body: '<b>What it does:</b> the 8-step flow a fresh tenant sees on first run. <b>Phase 1</b> (Welcome \u2192 Organization \u2192 Starter setup \u2192 Workspace grouping) sets up the tenant identity. <b>Phase 2</b> (Workspace profile \u2192 Connect data \u2192 Apply templates) configures the first workspace. <b>Phase 3</b> wraps with a Done summary. <b>Try it:</b> clear <code>aims_ds_tenant_onboarding_v1</code> in localStorage and refresh.',
+    body: '<b>What it does:</b> the 7-step flow a fresh tenant sees on first run. <b>Phase 1 — Tenant</b> (Welcome \u2192 Organization \u2192 Composite template \u2192 Peer comparison rules). <b>Phase 2 — Site</b> (Site profile \u2192 Connect data). <b>Phase 3 — Done</b> (summary with primary CTA <b>Map your fields in Data Studio</b>). Industry vocabulary swaps every term (store / branch / restaurant / plant) based on the picked preset. <b>Try it:</b> clear <code>aims_ds_tenant_onboarding_v1</code> in localStorage and refresh.',
     setup: () => { location.hash = '/onboarding'; },
     target: '.tonb-h-eyebrow',
     scrollToTarget: true
   },
   {
     title: 'That is the flow — and the surfaces around it',
-    body: 'You just walked the data-connection wizard plus the four surfaces that surround it (Tables, Templates, Field mappings, Schema versions) and the tenant onboarding. Use <b>Reset to first time setup</b> in the sidebar to replay from the empty state, or <b>Show errors</b> to see the failure paths. Specs at <code>docs/OnboardingFlow.md</code> and <code>docs/DEMO.md</code>.',
+    body: 'You just walked the data-connection wizard plus the surfaces around it: <b>Tables</b> with the new <b>Canonical Mapping</b> pipeline (14 ops, 8 stable + 6 STUB), <b>Templates</b>, <b>Field mappings</b>, <b>Schema versions</b>, and the 7-step tenant onboarding with industry vocabulary. Health signals (pulsing dots, error banners, <b>Used by N</b>) make data infrastructure status evident at a glance. Use <b>Reset to first time setup</b> in the sidebar to replay from empty, or <b>Show errors</b> to see failure paths. Specs at <code>docs/OnboardingFlow.md</code> and <code>docs/DEMO.md</code>.',
   }
 ];
 

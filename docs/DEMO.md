@@ -803,3 +803,50 @@ End result: every surface in the prototype touched in 12 minutes.
 Tables, Templates, Tenant onboarding, Field Mappings, Schema Versions,
 shell alignment, 12 view improvements, iconography normalization, and
 the admin default mode fix.*
+
+
+---
+
+## 21. v2 Tables — Canonical Mapping core
+
+After the May 2026 brief from Edgardo, Tables evolved from a data viewer into the active transformation + monitoring core of Data Studio.
+
+### Three views
+
+- **Library** — card grid with health pulse, error reason chip, and a `Used by N` rollup that signals downstream impact before a user touches a Table.
+- **Detail (split layout)** — left field list, right rail with 7 inspector tabs: Field · **Mapping** · Sync · Conn · Used by · Versions · Custom fields.
+- **Creation flow** — the existing Connect Data wizard (Category → Connector → Auth → Preview → Mapping → Sync), 6 sub-screens, with 27 connectors across 7 categories and 5 auth variants.
+
+### Canonical Mapping (the centerpiece, tab slot 2)
+
+A vertical pipeline that translates a raw source field into the canonical schema:
+
+```
+SOURCE  →  trim()  →  lowercase()  →  dictionary_lookup() [STUB]  →  TARGET
+(cyan)                                                              (emerald)
+```
+
+- **14-op transformation catalog**: 8 stable (`trim`, `lowercase`, `uppercase`, `round`, `to_int`, `to_decimal`, `default_value`, `replace_null`) and 6 experimental STUB ops (`concatenate`, `dictionary_lookup`, `regex_extract`, `split_first_token`, `phone_to_e164`, `date_parse`).
+- **STUB badges** on experimental ops use amber dashed border + amber chip — so a user knows what is stable vs. provisional. STUB ops still preview, just with a warning that behavior may change.
+- **Per-op controls**: ⋮ menu with Move up / Move down / Delete. Inline parameter inputs for ops that need a value (lookup table, regex pattern, fallback).
+- **Live before/after preview row** under the canvas — updates as parameters are edited without re-rendering, so input focus is preserved.
+- **Add palette** — inline sheet grouped Stable / Experimental, with descriptions per op.
+
+### Health monitoring made evident
+
+Per the brief: *"la salud de los datos debe ser evidente."*
+
+- **Library cards**: pulsing red dot on errored tables, plus an inline `● Stripe sync failed` reason chip naming the failing source.
+- **Detail page error banner**: appears above the split layout when any source is in error state, naming the failing sources and offering a one-click `Open Sync →` CTA.
+- **Used by N** rollup as the 4th library-card stat — uses `getTableUsage(tableObject)` to count template lines that reference the Table's fields.
+
+### Data flow change — mapping moves out of onboarding
+
+The brief explicitly stated: mapping no longer happens in initial onboarding. After the Connect Data wizard finishes, the user lands on the new Mapping tab of the freshly-created Table.
+
+- Wizard Done screen gets a new primary card: **"Map your fields to your canonical schema"** with emerald accent and full-width treatment (or secondary placement if launched from inside tenant onboarding, to preserve the onboarding flow).
+- `obFinishAndGo('mapping')` sets `tblRailTab='mapping'`, `tblSelectedField=0`, and navigates to `/tables/<object>` so the user lands looking at the first field's pipeline, not an empty placeholder.
+
+### Tenant onboarding Done step v2
+
+The final onboarding step now surfaces an **`Account mapping · Pending`** summary row with an amber `NEXT` badge, plus a full-width emerald primary CTA pointing to Data Studio. This makes the data-flow handoff impossible to miss while letting the user celebrate the completed setup.
