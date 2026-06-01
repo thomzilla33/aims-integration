@@ -2516,6 +2516,342 @@ html.theme-light .cap-readonly-tag{
   background:#F1F5F9; border-color:var(--line); color:var(--t3);
 }
 
+/* ── Requests inbox — Gmail/Linear-style (post-Edgardo polish) ── */
+.inbox-wrap{padding:22px 32px 24px; max-width:1280px; margin:0 auto}
+
+.inbox-head{
+  display:flex; align-items:center; gap:14px;
+  margin-bottom:14px;
+}
+.inbox-head-l{display:flex; align-items:baseline; gap:10px; flex:1; min-width:0; flex-wrap:wrap}
+.inbox-title{
+  font-size:22px; font-weight:800;
+  color:var(--t1); letter-spacing:-0.015em;
+  margin:0;
+}
+.inbox-count{
+  font-size:12.5px; color:var(--t3);
+}
+.inbox-count b{font-weight:700}
+.inbox-new-btn{
+  display:inline-flex; align-items:center; gap:6px;
+  padding:8px 13px;
+  background:rgba(126,211,247,0.10);
+  border:1px solid rgba(126,211,247,0.32);
+  color:#7ed3f7;
+  border-radius:8px;
+  font-family:inherit; font-size:12.5px; font-weight:600;
+  cursor:pointer;
+  transition:background .12s, border-color .12s;
+}
+.inbox-new-btn:hover{
+  background:rgba(126,211,247,0.16);
+  border-color:rgba(126,211,247,0.50);
+}
+html.theme-light .inbox-new-btn{background:rgba(56,189,248,0.06); color:#0284c7; border-color:rgba(56,189,248,0.32)}
+html.theme-light .inbox-new-btn:hover{background:rgba(56,189,248,0.10); border-color:rgba(56,189,248,0.45)}
+
+.inbox-toolbar{
+  display:flex; align-items:center; gap:14px;
+  margin-bottom:10px;
+  flex-wrap:wrap;
+}
+.inbox-tabs{display:flex; gap:4px; flex-wrap:wrap}
+.inbox-tab{
+  display:inline-flex; align-items:center; gap:7px;
+  padding:7px 11px;
+  border-radius:7px;
+  background:transparent;
+  border:1px solid transparent;
+  color:var(--t2);
+  font-family:inherit; font-size:12px; font-weight:600;
+  cursor:pointer;
+  transition:background .12s, border-color .12s, color .12s;
+}
+.inbox-tab:hover{background:rgba(255,255,255,0.03); color:var(--t1)}
+.inbox-tab.is-active{
+  background:rgba(255,255,255,0.05);
+  border-color:rgba(255,255,255,0.10);
+  color:var(--t1);
+}
+html.theme-light .inbox-tab{color:var(--t2)}
+html.theme-light .inbox-tab:hover{background:var(--hover); color:var(--t1)}
+html.theme-light .inbox-tab.is-active{background:#FFFFFF; border-color:var(--line); color:var(--t1)}
+.inbox-tab-count{
+  display:inline-flex; align-items:center; justify-content:center;
+  min-width:18px; padding:1px 6px;
+  border-radius:99px;
+  background:rgba(255,255,255,0.06);
+  color:var(--t3);
+  font-size:10.5px; font-weight:700;
+  font-variant-numeric:tabular-nums;
+}
+.inbox-tab-count.is-warn{background:rgba(251,191,36,0.16); color:#fbbf24}
+.inbox-tab-count.is-purple{background:rgba(167,139,250,0.16); color:#cda5ff}
+.inbox-tab-count.is-cyan{background:rgba(126,211,247,0.16); color:#7ed3f7}
+.inbox-tab-count.is-ok{background:rgba(16,185,129,0.16); color:#34d39c}
+.inbox-tab-count.is-bad{background:rgba(239,68,68,0.16); color:#ff7d7d}
+html.theme-light .inbox-tab-count{background:#F1F5F9; color:var(--t3)}
+
+.inbox-search{
+  flex:1; min-width:220px; max-width:380px;
+  display:flex; align-items:center; gap:8px;
+  padding:7px 10px;
+  background:rgba(255,255,255,0.022);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:8px;
+  color:var(--t3);
+}
+.inbox-search:focus-within{border-color:rgba(126,211,247,0.40); background:rgba(126,211,247,0.04)}
+.inbox-search input{
+  flex:1;
+  background:transparent; border:none; outline:none;
+  color:var(--t1); font-family:inherit; font-size:12.5px;
+}
+.inbox-search input::placeholder{color:var(--t3)}
+.inbox-search-kbd{
+  font-family:'SF Mono','Menlo',monospace;
+  font-size:10.5px;
+  color:var(--t3);
+  padding:1px 5px;
+  border-radius:4px;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.10);
+}
+html.theme-light .inbox-search{background:#FFFFFF; border-color:var(--line)}
+html.theme-light .inbox-search-kbd{background:#F1F5F9; border-color:var(--line); color:var(--t3)}
+
+.inbox-bulkbar{
+  display:flex; align-items:center; gap:10px;
+  padding:8px 12px;
+  margin-bottom:8px;
+  background:rgba(126,211,247,0.06);
+  border:1px solid rgba(126,211,247,0.28);
+  border-radius:9px;
+  animation:bulkbarSlide .15s ease-out;
+}
+@keyframes bulkbarSlide{from{transform:translateY(-4px); opacity:0} to{transform:translateY(0); opacity:1}}
+.inbox-bulkbar-count{font-size:12px; color:var(--t1)}
+.inbox-bulkbar-btn{
+  padding:5px 11px;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.12);
+  color:var(--t1);
+  border-radius:6px;
+  font-family:inherit; font-size:11.5px; font-weight:600;
+  cursor:pointer;
+  transition:background .12s, border-color .12s;
+}
+.inbox-bulkbar-btn:hover{background:rgba(255,255,255,0.08); border-color:rgba(255,255,255,0.22)}
+.inbox-bulkbar-clear{
+  background:transparent; border:none; color:var(--t3);
+  font-family:inherit; font-size:11.5px; cursor:pointer;
+}
+.inbox-bulkbar-clear:hover{color:var(--t1)}
+html.theme-light .inbox-bulkbar{background:rgba(56,189,248,0.06); border-color:rgba(56,189,248,0.32)}
+html.theme-light .inbox-bulkbar-btn{background:#FFFFFF; border-color:var(--line)}
+html.theme-light .inbox-bulkbar-btn:hover{background:var(--hover); border-color:var(--line-strong)}
+
+.inbox-list{
+  background:rgba(255,255,255,0.012);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:11px;
+  overflow:hidden;
+}
+html.theme-light .inbox-list{background:#FFFFFF; border-color:var(--line)}
+.inbox-list-h{
+  display:grid;
+  grid-template-columns:28px 168px minmax(0, 1fr) 180px 130px 80px;
+  align-items:center;
+  gap:14px;
+  padding:9px 14px;
+  background:rgba(255,255,255,0.018);
+  border-bottom:1px solid rgba(255,255,255,0.06);
+}
+html.theme-light .inbox-list-h{background:rgba(15,23,42,0.012); border-bottom-color:var(--line)}
+.inbox-list-h-check{display:flex; align-items:center; justify-content:center}
+.inbox-list-h-l{
+  font-size:10.5px; font-weight:700;
+  text-transform:uppercase; letter-spacing:.06em;
+  color:var(--t3);
+}
+.inbox-list-h-action{text-align:right}
+
+.inbox-row{
+  display:grid;
+  grid-template-columns:28px 168px minmax(0, 1fr) 180px 130px 80px;
+  align-items:center;
+  gap:14px;
+  padding:10px 14px;
+  border-bottom:1px solid rgba(255,255,255,0.05);
+  cursor:pointer;
+  transition:background .12s;
+  position:relative;
+}
+.inbox-row:last-child{border-bottom:none}
+.inbox-row:hover{background:rgba(126,211,247,0.04)}
+html.theme-light .inbox-row:hover{background:rgba(56,189,248,0.04)}
+html.theme-light .inbox-row{border-bottom-color:var(--line)}
+.inbox-row.is-selected{background:rgba(126,211,247,0.08)}
+html.theme-light .inbox-row.is-selected{background:rgba(56,189,248,0.06)}
+.inbox-row.is-pending::before{
+  content:''; position:absolute; left:0; top:6px; bottom:6px;
+  width:3px; border-radius:0 2px 2px 0;
+  background:#fbbf24;
+}
+
+.inbox-row-check{display:flex; align-items:center; justify-content:center}
+.inbox-row-check input,
+.inbox-list-h-check input{
+  width:14px; height:14px; cursor:pointer;
+  accent-color:#7ed3f7;
+}
+
+.inbox-row-status{display:flex; flex-direction:column; gap:4px; align-items:flex-start; min-width:0}
+.inbox-row-status .req-status-chip{
+  display:inline-flex; align-items:center; gap:5px;
+  padding:2px 9px;
+  border-radius:99px;
+  font-size:10.5px; font-weight:700;
+  letter-spacing:.02em;
+  border:1px solid transparent;
+  white-space:nowrap;
+}
+.inbox-row-status .req-status-dot{
+  width:6px; height:6px; border-radius:50%;
+  flex-shrink:0;
+}
+.inbox-prio{
+  display:inline-flex; align-items:center;
+  padding:1px 6px;
+  border-radius:99px;
+  background:rgba(239,68,68,0.12);
+  color:#ff7d7d;
+  border:1px solid rgba(239,68,68,0.32);
+  font-size:9.5px; font-weight:800;
+  letter-spacing:.06em;
+}
+html.theme-light .inbox-prio{background:rgba(239,68,68,0.08); color:#dc2626; border-color:rgba(239,68,68,0.32)}
+
+.inbox-row-main{min-width:0; display:flex; flex-direction:column; gap:2px}
+.inbox-row-title{
+  font-size:13px; font-weight:700;
+  color:var(--t1);
+  letter-spacing:-0.005em;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.inbox-row-preview{
+  font-size:12px; color:var(--t2);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  line-height:1.45;
+}
+.inbox-row-tags{
+  display:flex; gap:6px; align-items:center;
+  font-size:10.5px; color:var(--t3);
+  margin-top:1px;
+}
+.inbox-tag{
+  display:inline-flex; align-items:center;
+  padding:0 6px;
+  border-radius:4px;
+  background:rgba(255,255,255,0.04);
+  font-size:10px; font-weight:700;
+  letter-spacing:.02em;
+}
+.inbox-tag.is-warn{background:rgba(251,191,36,0.10); color:#fbbf24; border:1px solid rgba(251,191,36,0.24)}
+html.theme-light .inbox-tag.is-warn{background:rgba(251,191,36,0.08); color:#b45309; border-color:rgba(251,191,36,0.30)}
+
+.inbox-row-requester{display:flex; align-items:center; gap:9px; min-width:0}
+.inbox-row-requester .who-avatar{width:26px; height:26px; font-size:10.5px; flex-shrink:0}
+.inbox-row-requester-text{min-width:0}
+.inbox-row-requester-name{
+  font-size:12px; font-weight:600; color:var(--t1);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.inbox-row-requester-age{
+  font-size:10.5px; color:var(--t3); margin-top:1px;
+}
+
+.inbox-row-quote{text-align:right; min-width:0}
+.inbox-row-quote-amt{
+  font-size:13px; font-weight:700; color:var(--t1);
+  letter-spacing:-0.01em;
+  font-variant-numeric:tabular-nums;
+}
+.inbox-row-quote-eta{font-size:10.5px; color:var(--t3); margin-top:1px}
+.inbox-row-quote-pending{font-size:11px; color:var(--t3); font-style:italic}
+
+.inbox-row-action{
+  display:flex; align-items:center; justify-content:flex-end; gap:4px;
+}
+.inbox-quick-actions{
+  display:flex; align-items:center; gap:2px;
+  margin-right:4px;
+  opacity:0;
+  transition:opacity .15s;
+}
+.inbox-row:hover .inbox-quick-actions{opacity:1}
+.inbox-row.is-selected .inbox-quick-actions{opacity:1}
+.inbox-quick-act{
+  width:24px; height:24px;
+  display:flex; align-items:center; justify-content:center;
+  background:transparent;
+  border:1px solid transparent;
+  border-radius:6px;
+  color:var(--t3);
+  cursor:pointer;
+  transition:background .12s, color .12s, border-color .12s;
+}
+.inbox-quick-act:hover{
+  background:rgba(255,255,255,0.06);
+  border-color:rgba(255,255,255,0.12);
+  color:var(--t1);
+}
+html.theme-light .inbox-quick-act:hover{background:var(--hover); border-color:var(--line)}
+.inbox-quick-act[title="Approve"]:hover,
+.inbox-quick-act[title="Approve quote"]:hover{color:#34d39c; background:rgba(16,185,129,0.10); border-color:rgba(16,185,129,0.32)}
+.inbox-quick-act[title="Reject"]:hover{color:#ff7d7d; background:rgba(239,68,68,0.10); border-color:rgba(239,68,68,0.32)}
+
+.inbox-open{
+  width:26px; height:26px;
+  display:flex; align-items:center; justify-content:center;
+  background:transparent;
+  border:1px solid rgba(255,255,255,0.10);
+  border-radius:6px;
+  color:var(--t3);
+  cursor:pointer;
+  transition:background .12s, color .12s, border-color .12s;
+}
+.inbox-open:hover{
+  background:rgba(126,211,247,0.10);
+  border-color:rgba(126,211,247,0.32);
+  color:#7ed3f7;
+}
+html.theme-light .inbox-open{border-color:var(--line)}
+html.theme-light .inbox-open:hover{background:rgba(56,189,248,0.08); color:#0284c7; border-color:rgba(56,189,248,0.32)}
+
+.inbox-empty{
+  padding:48px 24px;
+  text-align:center;
+}
+.inbox-empty-t{font-size:14px; font-weight:700; color:var(--t1); margin-bottom:4px}
+.inbox-empty-d{font-size:12.5px; color:var(--t3)}
+
+@media (max-width:1080px){
+  .inbox-list-h, .inbox-row{
+    grid-template-columns:28px 140px minmax(0, 1fr) 140px 100px 60px;
+    gap:10px;
+  }
+}
+@media (max-width:860px){
+  .inbox-list-h{display:none}
+  .inbox-row{
+    grid-template-columns:28px minmax(0, 1fr) 60px;
+    gap:10px;
+  }
+  .inbox-row-status, .inbox-row-requester, .inbox-row-quote{display:none}
+}
+
 /* ── Users cross-instance view (Sprint C — Edgardo Batch 3c) ── */
 .users-wrap{padding:24px 32px 60px; max-width:1200px}
 .users-h{
@@ -8433,124 +8769,206 @@ function submitRequest() {
   renderRequestForm();
 }
 
+// Inbox UI state — bucket filter, search, bulk select
+const inboxState = { filter: 'all', search: '', selected: new Set() };
+
+function setInboxFilter(f) { inboxState.filter = f; renderRequestsInbox(); }
+function setInboxSearch(v) { inboxState.search = v; renderRequestsInbox(); setTimeout(()=>{ const el = document.getElementById('inboxSearchInput'); if (el) { el.focus(); el.setSelectionRange(v.length, v.length); }}, 0); }
+function toggleInboxSelectAll(checked) {
+  const ids = _filteredRequests().map(r => r.id);
+  if (checked) ids.forEach(id => inboxState.selected.add(id));
+  else ids.forEach(id => inboxState.selected.delete(id));
+  renderRequestsInbox();
+}
+
+function toggleInboxRow(id, ev) {
+  if (ev) ev.stopPropagation();
+  if (inboxState.selected.has(id)) inboxState.selected.delete(id);
+  else inboxState.selected.add(id);
+  renderRequestsInbox();
+}
+function clearInboxSelection() { inboxState.selected.clear(); renderRequestsInbox(); }
+function inboxBulkAction(action) {
+  const n = inboxState.selected.size;
+  toast(`${action}: ${n} request${n===1?'':'s'} — flow coming soon`);
+  inboxState.selected.clear();
+  renderRequestsInbox();
+}
+
+function inboxQuickAction(id, action, ev) {
+  if (ev) ev.stopPropagation();
+  const r = REQUESTS.find(x => x.id === id);
+  toast(`${action} · ${r?.integration || ''} — flow coming soon`);
+}
+
+function _inboxBucket(status) {
+  if (status === 'pending_review' || status === 'in_review') return 'pending';
+  return status;
+}
+
+function _filteredRequests() {
+  const q = (inboxState.search||'').toLowerCase();
+  return REQUESTS.filter(r => {
+    if (inboxState.filter !== 'all' && _inboxBucket(r.status) !== inboxState.filter) return false;
+    if (q) {
+      const hay = `${r.integration} ${r.vendor} ${r.requester?.name||''} ${r.requester?.dept||''} ${r.businessIntent||''} ${(r.actionTypes||[]).join(' ')}`.toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+}
+
 function renderRequestsInbox() {
   const counts = {
-    pending_review: REQUESTS.filter(r => r.status==='pending_review').length,
-    in_review: REQUESTS.filter(r => r.status==='in_review').length,
-    quoted: REQUESTS.filter(r => r.status==='quoted').length,
-    in_progress: REQUESTS.filter(r => r.status==='in_progress').length,
-    done: REQUESTS.filter(r => r.status==='done').length,
-    rejected: REQUESTS.filter(r => r.status==='rejected').length
+    all: REQUESTS.length,
+    pending: REQUESTS.filter(r => _inboxBucket(r.status) === 'pending').length,
+    quoted: REQUESTS.filter(r => r.status === 'quoted').length,
+    in_progress: REQUESTS.filter(r => r.status === 'in_progress').length,
+    done: REQUESTS.filter(r => r.status === 'done').length,
+    rejected: REQUESTS.filter(r => r.status === 'rejected').length
   };
-  const activeCount = counts.pending_review + counts.in_review;
+  const filtered = _filteredRequests();
+  const selectedCount = inboxState.selected.size;
+  const allFilteredIds = filtered.map(r => r.id);
+  const allSelected = allFilteredIds.length > 0 && allFilteredIds.every(id => inboxState.selected.has(id));
+
+  const tab = (label, key, count, accent) => `
+    <button class="inbox-tab ${inboxState.filter===key?'is-active':''}" type="button" onclick="setInboxFilter('${key}')">
+      <span>${escapeHtml(label)}</span>
+      ${count !== null ? `<span class="inbox-tab-count ${accent||''}">${count}</span>` : ''}
+    </button>
+  `;
 
   $('content').innerHTML = `
-    <div class="breadcrumb">
-      <span class="crumb-current">Requests</span>
-    </div>
-    <section class="op-hero">
-      <div class="op-hero-left">
-        <div class="op-hero-eyebrow">
-          <span class="op-mode-tag">Inbox</span>
-          <span class="op-hero-sub">Integration requests from your workspace</span>
+    <div class="breadcrumb"><a href="#/integrations">Integrations</a><span class="crumb-sep">›</span><span class="crumb-current">Requests</span></div>
+
+    <section class="inbox-wrap">
+      <header class="inbox-head">
+        <div class="inbox-head-l">
+          <h1 class="inbox-title">Requests</h1>
+          <span class="inbox-count">${REQUESTS.length} total${counts.pending > 0 ? ` · <b style="color:#fbbf24">${counts.pending} waiting on you</b>` : ''}</span>
         </div>
-        <h1 class="op-hero-title">${activeCount > 0 ? `<span style="color:#fbbf24">${activeCount}</span> request${activeCount===1?'':'s'} waiting on you` : 'No pending requests'}</h1>
-        <span class="op-hero-time">${REQUESTS.length} total request${REQUESTS.length===1?'':'s'} · ${counts.done} delivered</span>
-        <p class="op-hero-desc">Review, scope, quote and approve integration requests — the AIMS managed services team picks up everything that passes admin review.</p>
+        <button class="inbox-new-btn" type="button" onclick="openRequestModal()">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M6 2v8M2 6h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          New request
+        </button>
+      </header>
+
+      <div class="inbox-toolbar">
+        <div class="inbox-tabs">
+          ${tab('All',         'all',         counts.all,         '')}
+          ${tab('Pending',     'pending',     counts.pending,     'is-warn')}
+          ${tab('Quoted',      'quoted',      counts.quoted,      'is-purple')}
+          ${tab('In progress', 'in_progress', counts.in_progress, 'is-cyan')}
+          ${tab('Delivered',   'done',        counts.done,        'is-ok')}
+          ${counts.rejected > 0 ? tab('Rejected', 'rejected', counts.rejected, 'is-bad') : ''}
+        </div>
+        <label class="inbox-search">
+          <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><circle cx="6" cy="6" r="4"/><path d="M9.5 9.5L12 12" stroke-linecap="round"/></svg>
+          <input id="inboxSearchInput" type="text" placeholder="Search vendor, requester, scope…" value="${escapeHtml(inboxState.search||'')}" oninput="setInboxSearch(this.value)"/>
+          <kbd class="inbox-search-kbd">⌘K</kbd>
+        </label>
       </div>
-      <div class="op-hero-right">
-        <div class="op-kpi ${counts.pending_review > 0 ? 'is-warn' : 'is-idle'}">
-          <div class="op-kpi-n" style="color:${counts.pending_review > 0 ? '#fbbf24' : 'var(--t3)'}">${counts.pending_review}</div>
-          <div class="op-kpi-l">Pending</div>
+
+      ${selectedCount > 0 ? `
+        <div class="inbox-bulkbar">
+          <span class="inbox-bulkbar-count"><strong>${selectedCount}</strong> selected</span>
+          <button class="inbox-bulkbar-btn" type="button" onclick="inboxBulkAction('Approve')">Approve</button>
+          <button class="inbox-bulkbar-btn" type="button" onclick="inboxBulkAction('Reject')">Reject</button>
+          <button class="inbox-bulkbar-btn" type="button" onclick="inboxBulkAction('Reassign')">Reassign</button>
+          <span style="flex:1"></span>
+          <button class="inbox-bulkbar-clear" type="button" onclick="clearInboxSelection()">Clear</button>
         </div>
-        <div class="op-kpi" style="background:rgba(168,85,247,0.08);border-color:rgba(168,85,247,0.28)">
-          <div class="op-kpi-n" style="color:#cda5ff">${counts.quoted}</div>
-          <div class="op-kpi-l" style="color:#cda5ff">Quoted</div>
+      ` : ''}
+
+      <div class="inbox-list" role="list">
+        <div class="inbox-list-h">
+          <label class="inbox-list-h-check">
+            <input type="checkbox" ${allSelected?'checked':''} onchange="toggleInboxSelectAll(this.checked)"/>
+          </label>
+          <span class="inbox-list-h-l">Status</span>
+          <span class="inbox-list-h-l inbox-list-h-vendor">Request</span>
+          <span class="inbox-list-h-l">Requester</span>
+          <span class="inbox-list-h-l inbox-list-h-meta">Quote / ETA</span>
+          <span class="inbox-list-h-l inbox-list-h-action"></span>
         </div>
-        <div class="op-kpi" style="background:rgba(56,189,248,0.08);border-color:rgba(56,189,248,0.28)">
-          <div class="op-kpi-n" style="color:#7ed3f7">${counts.in_progress}</div>
-          <div class="op-kpi-l" style="color:#7ed3f7">In progress</div>
-        </div>
-        <div class="op-kpi is-ok">
-          <div class="op-kpi-n" style="color:#34d39c">${counts.done}</div>
-          <div class="op-kpi-l">Delivered</div>
-        </div>
-        ${counts.pending_review > 0
-          ? `<button class="op-hero-cta" onclick="toast('Filter coming soon')" aria-label="Jump to pending requests">
-              Review ${counts.pending_review} pending
-              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 8h10M9.5 4.5L13 8l-3.5 3.5"/></svg>
-             </button>`
-          : `<a class="op-hero-cta" href="javascript:void(0)" onclick="openRequestModal()" style="background:linear-gradient(135deg,rgba(56,189,248,0.22),rgba(56,189,248,0.10));border-color:rgba(56,189,248,0.42);color:#7ed3f7" aria-label="Submit a new request">
-              + New request
-             </a>`}
+        ${filtered.length === 0 ? `
+          <div class="inbox-empty">
+            <div class="inbox-empty-t">${inboxState.search ? 'No requests match your search' : 'No requests in this view'}</div>
+            <div class="inbox-empty-d">${inboxState.search ? 'Try a different vendor, requester, or scope.' : 'Switch tabs or submit a new request to populate this inbox.'}</div>
+          </div>
+        ` : filtered.map(requestRowHTML).join('')}
       </div>
     </section>
-
-    <div class="op-tabs" role="tablist">
-      <button class="op-tab active" onclick="toast('Filter coming soon')"><span>All</span><span class="op-tab-count op-tab-count-neutral">${REQUESTS.length}</span></button>
-      <button class="op-tab" onclick="toast('Filter coming soon')"><span>Pending</span><span class="op-tab-count op-tab-count-warn">${counts.pending_review}</span></button>
-      <button class="op-tab" onclick="toast('Filter coming soon')"><span>Quoted</span><span class="op-tab-count op-tab-count-neutral">${counts.quoted}</span></button>
-      <button class="op-tab" onclick="toast('Filter coming soon')"><span>In progress</span><span class="op-tab-count op-tab-count-neutral">${counts.in_progress}</span></button>
-      <button class="op-tab" onclick="toast('Filter coming soon')"><span>Done</span><span class="op-tab-count op-tab-count-ok">${counts.done}</span></button>
-      <span style="flex:1"></span>
-    </div>
-
-    <div class="req-list">
-      ${REQUESTS.map(requestRowHTML).join('')}
-    </div>
   `;
 }
 
 function requestRowHTML(r) {
   const meta = REQUEST_STATUS_META[r.status] || REQUEST_STATUS_META.pending_review;
-  const actionLabel = {
-    pending_review: 'Review',
-    in_review: 'Open review',
-    quoted: 'Approve quote',
-    in_progress: 'Track progress',
-    done: 'View delivery',
-    rejected: 'View notes'
-  }[r.status] || 'Open';
+  const isSelected = inboxState.selected.has(r.id);
+  const isPending = r.status === 'pending_review' || r.status === 'in_review';
+  const quickActions = isPending
+    ? `<button class="inbox-quick-act" type="button" title="Approve" onclick="inboxQuickAction('${r.id}','Approve', event)"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.5l2.5 2.5 4.5-5"/></svg></button>
+       <button class="inbox-quick-act" type="button" title="Reject" onclick="inboxQuickAction('${r.id}','Reject', event)"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M3 3l6 6M9 3l-6 6"/></svg></button>
+       <button class="inbox-quick-act" type="button" title="Assign" onclick="inboxQuickAction('${r.id}','Assign', event)"><svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="7" cy="5" r="2"/><path d="M3 12c0-2 1.8-3.5 4-3.5s4 1.5 4 3.5" stroke-linecap="round"/></svg></button>`
+    : r.status === 'quoted'
+      ? `<button class="inbox-quick-act" type="button" title="Approve quote" onclick="inboxQuickAction('${r.id}','Approve quote', event)"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.5l2.5 2.5 4.5-5"/></svg></button>
+         <button class="inbox-quick-act" type="button" title="Reject" onclick="inboxQuickAction('${r.id}','Reject', event)"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M3 3l6 6M9 3l-6 6"/></svg></button>`
+      : '';
+
+  const preview = (r.businessIntent || '').replace(/\s+/g, ' ').trim();
   return `
-    <div class="req-row" onclick="toast('Detail panel — coming soon. The full thread + form summary lives here.')">
-      <div class="req-row-status">
+    <div class="inbox-row ${isSelected?'is-selected':''} ${isPending?'is-pending':''}" role="listitem" onclick="toast('Detail panel — coming soon. Full request thread + form summary opens here.')">
+      <label class="inbox-row-check" onclick="event.stopPropagation()">
+        <input type="checkbox" ${isSelected?'checked':''} onchange="toggleInboxRow('${r.id}')"/>
+      </label>
+      <div class="inbox-row-status">
         <span class="req-status-chip" style="background:${meta.bg};color:${meta.color};border-color:${meta.border}">
           <span class="req-status-dot" style="background:${meta.color}"></span>${meta.label}
         </span>
-        ${r.priority === 'high' ? '<span class="req-priority-tag">High priority</span>' : ''}
+        ${r.priority === 'high' ? '<span class="inbox-prio">HIGH</span>' : ''}
       </div>
-      <div class="req-row-main">
-        <div class="req-row-name">${escapeHtml(r.integration)}</div>
-        <div class="req-row-sub">${escapeHtml(r.businessIntent.slice(0, 130))}${r.businessIntent.length>130?'…':''}</div>
-        <div class="req-row-meta">
-          <span>${escapeHtml(r.vendor)}</span>
-          <span class="op-dot">·</span>
-          <span>${r.actionTypes.join(' + ')}</span>
-          ${r.hasPII?'<span class="op-dot">·</span><span style="color:var(--amber)">PII</span>':''}
-          ${r.hasFinancial?'<span class="op-dot">·</span><span style="color:var(--amber)">Financial</span>':''}
+      <div class="inbox-row-main">
+        <div class="inbox-row-title">${escapeHtml(r.integration)}</div>
+        <div class="inbox-row-preview">${escapeHtml(preview.slice(0, 110))}${preview.length>110?'…':''}</div>
+        <div class="inbox-row-tags">
+          <span>${escapeHtml((r.actionTypes||[]).join(' + '))}</span>
+          ${r.hasPII?'<span class="inbox-tag is-warn">PII</span>':''}
+          ${r.hasFinancial?'<span class="inbox-tag is-warn">Financial</span>':''}
         </div>
       </div>
-      <div class="req-row-owner">
-        <span class="op-row-avatar" title="Requested by ${escapeHtml(r.requester.name)}">${escapeHtml(r.requester.initials)}</span>
-        <div class="req-row-owner-text">
-          <div>${escapeHtml(r.requester.name)}</div>
-          <div class="req-row-owner-sub">${escapeHtml(r.requester.dept)} · ${escapeHtml(r.age)}</div>
+      <div class="inbox-row-requester">
+        <span class="who-avatar" style="background:#2B7FFF">${escapeHtml(r.requester.initials)}</span>
+        <div class="inbox-row-requester-text">
+          <div class="inbox-row-requester-name">${escapeHtml(r.requester.name)}</div>
+          <div class="inbox-row-requester-age">${escapeHtml(r.age)}</div>
         </div>
       </div>
-      <div class="req-row-quote">
+      <div class="inbox-row-quote">
         ${r.quote ? `
-          <div class="req-quote">
-            <div class="req-quote-amt">$${r.quote.amount.toLocaleString()}</div>
-            <div class="req-quote-eta">${r.quote.etaWeeks}w ETA</div>
-          </div>
-        ` : `<div class="req-quote-pending">Awaiting quote</div>`}
+          <div class="inbox-row-quote-amt">$${r.quote.amount.toLocaleString()}</div>
+          <div class="inbox-row-quote-eta">${r.quote.etaWeeks}w ETA</div>
+        ` : r.status === 'rejected'
+            ? `<div class="inbox-row-quote-pending">Closed</div>`
+            : `<div class="inbox-row-quote-pending">Awaiting quote</div>`}
       </div>
-      <div class="req-row-action">
-        <button class="op-cta op-cta-${r.status==='pending_review'?'warn':r.status==='done'?'ok':'neutral'}" onclick="event.stopPropagation();toast('${actionLabel} — flow coming soon')">${actionLabel}<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M4 2l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <div class="inbox-row-action">
+        <div class="inbox-quick-actions">${quickActions}</div>
+        <button class="inbox-open" type="button" onclick="event.stopPropagation();toast('Open ${escapeHtml(r.integration).replace(/'/g,'')} detail — flow coming soon')" aria-label="Open ${escapeHtml(r.integration)} detail">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2l4 4-4 4"/></svg>
+        </button>
       </div>
     </div>
   `;
 }
+
+// ⌘K opens inbox search when on the Requests route
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'k' && (e.metaKey || e.ctrlKey) && location.hash.startsWith('#/requests')) {
+    const el = document.getElementById('inboxSearchInput');
+    if (el) { e.preventDefault(); el.focus(); el.select(); }
+  }
+});
 
 
 
