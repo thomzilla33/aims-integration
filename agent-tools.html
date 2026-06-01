@@ -135,6 +135,10 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
 .breadcrumb a:hover{color:var(--t1)}
 .crumb-sep{color:var(--t3)}
 .crumb-current{color:var(--t1); font-weight:500}
+/* Hide single-segment breadcrumbs (just the current page, no parent link) —
+   they duplicate the eyebrow chip below them. Multi-segment breadcrumbs
+   (with a parent <a>) still render normally. */
+.breadcrumb:not(:has(a)){display:none}
 
 /* Hero */
 .ag-hero{

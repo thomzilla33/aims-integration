@@ -151,6 +151,10 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
 .breadcrumb a:hover{color:var(--t1)}
 .crumb-sep{color:var(--t3)}
 .crumb-current{color:var(--t1); font-weight:500}
+/* Hide single-segment breadcrumbs (just the current page, no parent link) —
+   they duplicate the eyebrow chip below them. Multi-segment breadcrumbs
+   (with a parent <a>) still render normally. */
+.breadcrumb:not(:has(a)){display:none}
 
 /* ── Hero (Connections list page) ── */
 .ds-hero{
@@ -3777,6 +3781,142 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
 .tonb-progress-seg.is-current{background:linear-gradient(90deg, var(--cyan), rgba(56,189,248,0.55));
   box-shadow:0 0 0 1px rgba(56,189,248,0.4), 0 0 12px rgba(56,189,248,0.34);}
 .tonb-progress-seg.is-phase-break{flex:0 0 18px;background:transparent;}
+
+/* Exit affordance — top-right of header */
+.tonb-h-r{display:inline-flex; align-items:center; gap:10px; flex-shrink:0;}
+.tonb-exit-btn{
+  display:inline-flex; align-items:center; gap:6px;
+  padding:5px 10px; border-radius:7px;
+  background:transparent;
+  border:1px solid rgba(255,255,255,0.08);
+  color:var(--t3); font-family:inherit;
+  font-size:11.5px; font-weight:600; cursor:pointer;
+  transition:border-color .12s, color .12s, background .12s;
+}
+.tonb-exit-btn:hover{
+  border-color:rgba(255,125,125,0.40);
+  color:#ffa6a6;
+  background:rgba(239,68,68,0.06);
+}
+.tonb-exit-btn:focus-visible{
+  outline:2px solid rgba(56,189,248,0.5); outline-offset:2px;
+}
+html.theme-light .tonb-exit-btn{
+  border-color:var(--line); color:var(--t3);
+}
+html.theme-light .tonb-exit-btn:hover{
+  border-color:rgba(239,68,68,0.35); color:#dc2626; background:rgba(239,68,68,0.04);
+}
+
+/* Exit confirmation modal */
+.tonb-exit-overlay{
+  position:fixed; inset:0; z-index:280;
+  background:rgba(2,8,21,0.62);
+  backdrop-filter:blur(6px) saturate(140%);
+  -webkit-backdrop-filter:blur(6px) saturate(140%);
+  display:flex; align-items:center; justify-content:center;
+  padding:24px;
+  opacity:0; pointer-events:none;
+  transition:opacity .2s ease;
+}
+.tonb-exit-overlay.is-open{opacity:1; pointer-events:all}
+.tonb-exit-modal{
+  width:100%; max-width:440px;
+  background:linear-gradient(180deg, #131c33 0%, #0c1428 100%);
+  border:1px solid rgba(255,255,255,0.10);
+  border-radius:14px;
+  box-shadow:0 32px 80px -20px rgba(0,0,0,0.7),
+             0 0 0 1px rgba(239,68,68,0.04);
+  display:flex; flex-direction:column;
+  transform:translateY(8px) scale(.985);
+  transition:transform .22s cubic-bezier(.18,.84,.34,1.1);
+  overflow:hidden;
+}
+.tonb-exit-overlay.is-open .tonb-exit-modal{transform:translateY(0) scale(1)}
+html.theme-light .tonb-exit-overlay{background:rgba(15,23,42,0.42)}
+html.theme-light .tonb-exit-modal{
+  background:#FFFFFF; border:1px solid var(--line);
+  box-shadow:0 28px 64px -16px rgba(15,23,42,0.18);
+}
+
+.tonb-exit-h{
+  display:flex; align-items:flex-start; gap:12px;
+  padding:20px 22px 14px;
+}
+.tonb-exit-ic{
+  width:36px; height:36px; flex-shrink:0;
+  border-radius:9px;
+  background:rgba(251,191,36,0.10);
+  border:1px solid rgba(251,191,36,0.28);
+  color:#fbbf24;
+  display:flex; align-items:center; justify-content:center;
+}
+.tonb-exit-h-text{flex:1; min-width:0; padding-top:2px;}
+.tonb-exit-title{
+  font-size:15px; font-weight:700; color:var(--t1);
+  margin:0 0 4px; letter-spacing:-0.005em;
+}
+.tonb-exit-sub{
+  font-size:12.5px; color:var(--t2); line-height:1.55;
+  margin:0;
+}
+.tonb-exit-body{
+  padding:0 22px 4px;
+}
+.tonb-exit-list{
+  display:flex; flex-direction:column; gap:7px;
+  margin:6px 0 4px; padding:0; list-style:none;
+}
+.tonb-exit-list li{
+  display:flex; align-items:flex-start; gap:8px;
+  font-size:12px; color:var(--t2); line-height:1.5;
+}
+.tonb-exit-list li svg{
+  flex-shrink:0; margin-top:2px; color:#34d39c;
+}
+.tonb-exit-f{
+  display:flex; gap:8px; justify-content:flex-end;
+  padding:14px 22px 18px;
+}
+.tonb-exit-stay{
+  padding:8px 14px;
+  background:transparent;
+  border:1px solid rgba(255,255,255,0.12);
+  color:var(--t1); font-family:inherit;
+  font-size:12.5px; font-weight:600;
+  border-radius:8px; cursor:pointer;
+  transition:border-color .12s, background .12s;
+}
+.tonb-exit-stay:hover{
+  border-color:rgba(255,255,255,0.22);
+  background:rgba(255,255,255,0.03);
+}
+.tonb-exit-leave{
+  padding:8px 14px;
+  background:rgba(239,68,68,0.10);
+  border:1px solid rgba(239,68,68,0.40);
+  color:#ffa6a6; font-family:inherit;
+  font-size:12.5px; font-weight:700;
+  border-radius:8px; cursor:pointer;
+  transition:background .12s, border-color .12s, color .12s;
+}
+.tonb-exit-leave:hover{
+  background:rgba(239,68,68,0.18);
+  border-color:rgba(239,68,68,0.55);
+  color:#ffc4c4;
+}
+html.theme-light .tonb-exit-stay{
+  border-color:var(--line); color:var(--t1); background:#FFFFFF;
+}
+html.theme-light .tonb-exit-stay:hover{
+  border-color:var(--line-strong); background:var(--hover);
+}
+html.theme-light .tonb-exit-leave{
+  background:rgba(239,68,68,0.06); color:#dc2626; border-color:rgba(239,68,68,0.32);
+}
+html.theme-light .tonb-exit-leave:hover{
+  background:rgba(239,68,68,0.10); color:#b91c1c;
+}
 
 /* Phase chip — sits above the step title */
 .tonb-phase-chip{
@@ -11081,6 +11221,82 @@ function skipTenantOnboarding() {
   location.hash = '/connections';
 }
 
+/* ──────────────────────────────────────────────────────────
+   Exit onboarding — recovery path from inside the wizard.
+   Confirms before leaving so progress isn't lost by accident.
+   ────────────────────────────────────────────────────────── */
+function ensureTonbExitModal() {
+  if (document.getElementById('tonbExitOverlay')) return;
+  const html = `
+    <div class="tonb-exit-overlay" id="tonbExitOverlay" onclick="closeTonbExitConfirm(event)" role="presentation">
+      <div class="tonb-exit-modal" role="dialog" aria-labelledby="tonbExitTitle" aria-modal="true" onclick="event.stopPropagation()">
+        <div class="tonb-exit-h">
+          <div class="tonb-exit-ic" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
+          </div>
+          <div class="tonb-exit-h-text">
+            <h3 class="tonb-exit-title" id="tonbExitTitle">Leave onboarding?</h3>
+            <p class="tonb-exit-sub">You can come back any time — we'll save where you are.</p>
+          </div>
+        </div>
+        <div class="tonb-exit-body">
+          <ul class="tonb-exit-list">
+            <li><svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2.5 6.5l2.5 2.5 4.5-5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg> Your progress on this step stays saved.</li>
+            <li><svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2.5 6.5l2.5 2.5 4.5-5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg> Resume from the sidebar (<b>Onboarding</b>) when you're ready.</li>
+            <li><svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2.5 6.5l2.5 2.5 4.5-5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg> You'll land on Connections to explore on your own.</li>
+          </ul>
+        </div>
+        <div class="tonb-exit-f">
+          <button class="tonb-exit-stay" type="button" onclick="closeTonbExitConfirm()" id="tonbExitStay">Stay in onboarding</button>
+          <button class="tonb-exit-leave" type="button" onclick="confirmTonbExit()">Leave for now</button>
+        </div>
+      </div>
+    </div>
+  `;
+  const wrap = document.createElement('div');
+  wrap.innerHTML = html;
+  while (wrap.firstChild) document.body.appendChild(wrap.firstChild);
+}
+
+function openTonbExitConfirm() {
+  ensureTonbExitModal();
+  // Persist whatever the user typed so far before showing the dialog
+  try { persistTonbState(); } catch(e) {}
+  requestAnimationFrame(() => {
+    document.getElementById('tonbExitOverlay')?.classList.add('is-open');
+    document.getElementById('tonbExitStay')?.focus();
+  });
+  document.body.style.overflow = 'hidden';
+  trackTonb('exit_dialog_open', { at: _currentStep()?.id });
+}
+
+function closeTonbExitConfirm(e) {
+  // If invoked from an overlay click, e is a MouseEvent — only close
+  // when the overlay itself (not the modal) was the target.
+  if (e && e.target && e.target.id !== 'tonbExitOverlay') return;
+  document.getElementById('tonbExitOverlay')?.classList.remove('is-open');
+  document.body.style.overflow = '';
+  trackTonb('exit_dialog_dismiss', { at: _currentStep()?.id });
+}
+
+function confirmTonbExit() {
+  trackTonb('exit_confirmed', { at: _currentStep()?.id, idx: tonbState.stepIdx });
+  document.getElementById('tonbExitOverlay')?.classList.remove('is-open');
+  document.body.style.overflow = '';
+  // Reuse the existing skip flow — preserves draft data, sets skipped=true,
+  // navigates to /connections (the safe "explore on your own" surface).
+  skipTenantOnboarding();
+}
+
+// ESC closes the dialog (treated as Stay)
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Escape') return;
+  const ov = document.getElementById('tonbExitOverlay');
+  if (ov && ov.classList.contains('is-open')) {
+    closeTonbExitConfirm();
+  }
+});
+
 function _stepIdsForFlow() {
   if (tonbState.flow === 'add_workspace') {
     // workspace → connect → apply → done
@@ -11283,7 +11499,13 @@ function renderTenantOnboarding() {
       <div class="tonb-h">
         <div class="tonb-h-eyebrow-row">
           <div class="tonb-h-eyebrow"><span class="tonb-h-eyebrow-dot"></span>AIMS-OS · Onboarding</div>
-          <div class="tonb-h-step-pill">Step ${idx + 1} of ${total} · ${escapeHtml(step.title)}</div>
+          <div class="tonb-h-r">
+            <div class="tonb-h-step-pill">Step ${idx + 1} of ${total} · ${escapeHtml(step.title)}</div>
+            <button class="tonb-exit-btn" type="button" onclick="openTonbExitConfirm()" aria-label="Exit onboarding">
+              <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M9 3V2H2v10h7v-1M5.5 7h7M9.5 4.5L12 7l-2.5 2.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Exit
+            </button>
+          </div>
         </div>
         <div class="tonb-progress">${progress}</div>
       </div>
