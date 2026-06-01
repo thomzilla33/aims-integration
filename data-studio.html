@@ -11840,8 +11840,15 @@ function _onTonbTagKey(ev) {
     ev.target.value = '';
   }
 }
+function updateTonbSiteProfile(field, value) {
+  if (!tonbState.siteProfile) tonbState.siteProfile = {};
+  tonbState.siteProfile[field] = value;
+  persistTonbState();
+}
+/* Back-compat alias — old call sites still work. */
 function updateTonbWorkspace(field, value) {
-  tonbState.workspace[field] = value;
+  if (!tonbState.siteProfile) tonbState.siteProfile = {};
+  tonbState.siteProfile[field] = value;
   if (tonbState.errors) {
     const keys = { name:'wsName', tag:'wsTag', ownerName:'wsOwnerName', ownerEmail:'wsOwnerEmail' };
     if (keys[field] && tonbState.errors[keys[field]]) delete tonbState.errors[keys[field]];
@@ -11885,8 +11892,8 @@ function renderTenantOnboarding() {
   const total = ids.length;
   const idx = tonbState.stepIdx;
   const phase = step.phase;
-  const phaseLabel = phase === 1 ? 'Phase 1 · Tenant setup'
-                    : phase === 2 ? 'Phase 2 · Per workspace'
+  const phaseLabel = phase === 1 ? 'Phase 1 · Tenant'
+                    : phase === 2 ? `Phase 2 · ${vocab('site.capitalSingle')}`
                     : 'Phase 3 · Done';
 
   // Build progress segments — one per step in the active flow.
@@ -12220,51 +12227,93 @@ function _renderPeerRulesStep() {
 }
 
 function _renderSiteProfileStep() {
-  const w = tonbState.workspace;
+  const w = tonbState.siteProfile;
   const errs = tonbState.errors || {};
-  const mode = tonbState.grouping.mode;
-  const tags = tonbState.grouping.tags || [];
-  const showTagPicker = mode && mode !== 'flat';
-  const tagOptions = tags.map(t => `<option value="${escapeHtml(t)}" ${w.tag === t ? 'selected' : ''}>${escapeHtml(t)}</option>`).join('');
+  const ind = getIndustry(tonbState.industryId);
+  const siteSingle = ind.site.capitalSingle;        // e.g. "Store" / "Branch" / "Site"
+  const sitePlural = ind.site.plural;
+  const categories = ind.sampleCategories || ['Other'];
+  const sizes = ind.sizeLabels || [];
+  const dmsName = ind.dms || 'your source system';
+  const dmsHint = ind.dmsHint || '';
+  const sourcePlaceholder = ind.id === 'automotive' ? 'e.g. CDK-4421'
+    : ind.id === 'restaurant' ? 'e.g. TOAST-LOC-018'
+    : ind.id === 'retail' ? 'e.g. SQ-STORE-22'
+    : ind.id === 'finance' ? 'e.g. BR-NYC-014'
+    : ind.id === 'manufacturing' ? 'e.g. SAP-PLANT-007'
+    : ind.id === 'healthcare' ? 'e.g. EPIC-FAC-031'
+    : 'e.g. SITE-001';
+
+  const catOptions = categories.map(cat =>
+    `<option value="${escapeHtml(cat)}" ${w.primaryCategory === cat ? 'selected' : ''}>${escapeHtml(cat)}</option>`
+  ).join('');
+  const sizeOptions = sizes.map(s =>
+    `<option value="${escapeHtml(s)}" ${w.size === s ? 'selected' : ''}>${escapeHtml(s)}</option>`
+  ).join('');
+  const regionOptions = ['Region A','Region B','Region C','Region D'].map(r =>
+    `<option value="${escapeHtml(r)}" ${w.region === r ? 'selected' : ''}>${escapeHtml(r)}</option>`
+  ).join('');
+
   return `
     <div class="tonb-fields">
       <div class="tonb-field is-wide">
-        <label class="tonb-field-label">Workspace name<span class="tonb-field-req">*</span></label>
-        <input type="text" placeholder="e.g. Sales Operations" value="${escapeHtml(w.name)}" oninput="updateTonbWorkspace('name', this.value)" />
-        <div class="tonb-field-hint">A short, recognisable name. You’ll see it in the topbar and in every Studio.</div>
-        ${errs.wsName ? `<div class="tonb-field-err">${escapeHtml(errs.wsName)}</div>` : ''}
+        <label class="tonb-field-label">${escapeHtml(siteSingle)} name<span class="tonb-field-req">*</span></label>
+        <input type="text" placeholder="${escapeHtml(ind.id === 'automotive' ? 'e.g. Main Street Ford' : ind.id === 'restaurant' ? 'e.g. Soho Location' : ind.id === 'finance' ? 'e.g. Midtown Branch' : 'e.g. Main Street Location')}" value="${escapeHtml(w.name||'')}" oninput="updateTonbSiteProfile('name', this.value)" />
+        <div class="tonb-field-hint">What people call this ${escapeHtml(ind.site.single)}. You'll see it in dashboards and on the ${escapeHtml(sitePlural)} list.</div>
+        ${errs.siteName ? `<div class="tonb-field-err">${escapeHtml(errs.siteName)}</div>` : ''}
       </div>
 
-      ${showTagPicker ? `
       <div class="tonb-field">
-        <label class="tonb-field-label">Group<span class="tonb-field-req">*</span></label>
-        <select onchange="updateTonbWorkspace('tag', this.value);renderTenantOnboarding()">
-          <option value="" ${w.tag ? '' : 'selected'}>Pick a group…</option>
-          ${tagOptions}
+        <label class="tonb-field-label">${escapeHtml(siteSingle)} ID<span class="tonb-field-opt">(optional)</span></label>
+        <input type="text" placeholder="e.g. MS-001" value="${escapeHtml(w.siteId||'')}" oninput="updateTonbSiteProfile('siteId', this.value)" />
+        <div class="tonb-field-hint">Your internal code, if you keep one. Preserved on the AIMS-OS side.</div>
+      </div>
+
+      <div class="tonb-field">
+        <label class="tonb-field-label">${escapeHtml(ind.primaryCategoryLabel || 'Primary category')}<span class="tonb-field-req">*</span></label>
+        <select onchange="updateTonbSiteProfile('primaryCategory', this.value)">
+          <option value="" ${w.primaryCategory ? '' : 'selected'}>Pick one…</option>
+          ${catOptions}
         </select>
-        ${errs.wsTag ? `<div class="tonb-field-err">${escapeHtml(errs.wsTag)}</div>` : ''}
+        ${errs.siteCategory ? `<div class="tonb-field-err">${escapeHtml(errs.siteCategory)}</div>` : ''}
       </div>
 
       <div class="tonb-field">
         <label class="tonb-field-label">Region<span class="tonb-field-opt">(optional)</span></label>
-        <input type="text" placeholder="e.g. EMEA, North America…" value="${escapeHtml(w.region)}" oninput="updateTonbWorkspace('region', this.value)" />
+        <select onchange="updateTonbSiteProfile('region', this.value)">
+          <option value="" ${w.region ? '' : 'selected'}>Pick one…</option>
+          ${regionOptions}
+        </select>
+        <div class="tonb-field-hint">Used for the peer-comparison "by region" filter on the dashboard.</div>
       </div>
-      ` : `
+
+      ${sizes.length ? `
+      <div class="tonb-field">
+        <label class="tonb-field-label">Size category<span class="tonb-field-opt">(optional)</span></label>
+        <select onchange="updateTonbSiteProfile('size', this.value)">
+          <option value="" ${w.size ? '' : 'selected'}>Pick one…</option>
+          ${sizeOptions}
+        </select>
+      </div>` : ''}
+
       <div class="tonb-field is-wide">
-        <label class="tonb-field-label">Region<span class="tonb-field-opt">(optional)</span></label>
-        <input type="text" placeholder="e.g. EMEA, North America…" value="${escapeHtml(w.region)}" oninput="updateTonbWorkspace('region', this.value)" />
-      </div>`}
-
-      <div class="tonb-field">
-        <label class="tonb-field-label">Workspace owner name<span class="tonb-field-req">*</span></label>
-        <input type="text" placeholder="María González" value="${escapeHtml(w.ownerName)}" oninput="updateTonbWorkspace('ownerName', this.value)" />
-        ${errs.wsOwnerName ? `<div class="tonb-field-err">${escapeHtml(errs.wsOwnerName)}</div>` : ''}
+        <label class="tonb-field-label">Source system ID<span class="tonb-field-req">*</span></label>
+        <input type="text" placeholder="${escapeHtml(sourcePlaceholder)}" value="${escapeHtml(w.sourceSystemId||'')}" oninput="updateTonbSiteProfile('sourceSystemId', this.value)" />
+        <div class="tonb-field-hint">The ${escapeHtml(ind.site.single)}'s identifier in ${escapeHtml(dmsName)}. ${escapeHtml(dmsHint)} <a href="#" onclick="if(typeof toast==='function')toast('Tutorial — coming soon');return false;" style="color:#7ed3f7;text-decoration:none">Where do I find this?</a></div>
+        ${errs.sourceSystemId ? `<div class="tonb-field-err">${escapeHtml(errs.sourceSystemId)}</div>` : ''}
       </div>
 
       <div class="tonb-field">
-        <label class="tonb-field-label">Owner email<span class="tonb-field-req">*</span></label>
-        <input type="email" placeholder="maria@example.com" value="${escapeHtml(w.ownerEmail)}" oninput="updateTonbWorkspace('ownerEmail', this.value)" />
-        ${errs.wsOwnerEmail ? `<div class="tonb-field-err">${escapeHtml(errs.wsOwnerEmail)}</div>` : ''}
+        <label class="tonb-field-label">Primary ${escapeHtml(ind.site.single)} contact<span class="tonb-field-req">*</span></label>
+        <input type="text" placeholder="e.g. Alex Park" value="${escapeHtml(w.primaryContact||'')}" oninput="updateTonbSiteProfile('primaryContact', this.value)" />
+        <div class="tonb-field-hint">The ${escapeHtml(ind.operator || 'operator')} at this ${escapeHtml(ind.site.single)}. Receives alerts about this ${escapeHtml(ind.site.single)} only.</div>
+        ${errs.primaryContact ? `<div class="tonb-field-err">${escapeHtml(errs.primaryContact)}</div>` : ''}
+      </div>
+
+      <div class="tonb-field">
+        <label class="tonb-field-label">Contact email<span class="tonb-field-req">*</span></label>
+        <input type="email" placeholder="alex@example.com" value="${escapeHtml(w.contactEmail||'')}" oninput="updateTonbSiteProfile('contactEmail', this.value)" />
+        ${errs.contactEmailSite ? `<div class="tonb-field-err">${escapeHtml(errs.contactEmailSite)}</div>` : ''}
       </div>
     </div>
   `;
@@ -12527,7 +12576,7 @@ toggleTonbApply = function(key, decision) {
 
 function _renderDoneStep() {
   const o = tonbState.org;
-  const w = tonbState.workspace;
+  const w = tonbState.siteProfile;
   const accepted = Object.values(tonbState.apply).filter(v => v === 'accept').length;
   const skipped = Object.values(tonbState.apply).filter(v => v === 'skip').length;
   const starter = TONB_STARTERS.find(s => s.id === tonbState.starter);
