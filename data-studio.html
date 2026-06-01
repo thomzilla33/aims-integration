@@ -3782,6 +3782,28 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
   box-shadow:0 0 0 1px rgba(56,189,248,0.4), 0 0 12px rgba(56,189,248,0.34);}
 .tonb-progress-seg.is-phase-break{flex:0 0 18px;background:transparent;}
 
+/* Demo sidebar industry picker (F1) */
+.ssb-demo-industry{
+  display:flex; flex-direction:column; gap:5px;
+  margin-bottom:6px;
+}
+.ssb-demo-industry-l{
+  font-size:10px; font-weight:700;
+  color:var(--t3);
+  text-transform:uppercase; letter-spacing:.06em;
+}
+.ssb-demo-industry-s{
+  width:100%; padding:6px 8px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.10);
+  border-radius:6px;
+  color:var(--t1); font-family:inherit; font-size:11.5px;
+  cursor:pointer;
+}
+.ssb-demo-industry-s:focus{outline:none; border-color:rgba(126,211,247,0.40); background:rgba(126,211,247,0.04)}
+html.theme-light .ssb-demo-industry-s{background:#FFFFFF; border-color:var(--line); color:var(--t1)}
+
+
 /* Exit affordance — top-right of header */
 .tonb-h-r{display:inline-flex; align-items:center; gap:10px; flex-shrink:0;}
 .tonb-exit-btn{
@@ -5412,6 +5434,20 @@ html.theme-light .notif-bell-dot{border-color:#FFFFFF}
     </div>
     <div class="ssb-demo">
       <div class="ssb-demo-l">Demo controls</div>
+      <div class="ssb-demo-industry" id="ssbDemoIndustry">
+        <span class="ssb-demo-industry-l">Industry preset</span>
+        <select class="ssb-demo-industry-s" id="ssbIndustrySelect" onchange="setDemoIndustry(this.value)" title="Industry preset swaps vocabulary across onboarding">
+          <option value="generic">Generic</option>
+          <option value="automotive">Automotive · Dealers</option>
+          <option value="retail">Retail · Multi-store</option>
+          <option value="restaurant">Restaurants</option>
+          <option value="finance">Finance · Banks</option>
+          <option value="manufacturing">Manufacturing</option>
+          <option value="healthcare">Healthcare</option>
+          <option value="professional_services">Professional services</option>
+          <option value="education">Education</option>
+        </select>
+      </div>
       <button class="ssb-demo-tour" onclick="startDsTour()" title="Walk through the onboarding flow">
         <svg class="ssb-demo-tour-ic" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="6.5"/><path d="M5.5 7l2.5 2.5L11 5.5"/></svg>
         Take the guided tour
@@ -11070,16 +11106,145 @@ function renderTemplateDetail(rawId) {
 
 const TONB_STORAGE_KEY = 'aims_ds_tenant_onboarding_v1';
 
-/* Step metadata. id matches phase numbering from the spec. */
+/* ════════════════════════════════════════════════════════════════
+   F1 — Industry presets (OnboardingFlow.md v2)
+   Vocabulary swap across the flow without changing logic. Active
+   preset is selected from the demo sidebar; production reads it
+   from the tenant record (set during signup).
+   ════════════════════════════════════════════════════════════════ */
+const INDUSTRIES = {
+  generic: {
+    id:'generic', label:'Generic / Multi-vertical',
+    description:'Industry-neutral defaults. Use when the tenant doesn\'t fit a vertical or you want the cleanest copy.',
+    site:{ single:'site', plural:'sites', capitalSingle:'Site', capitalPlural:'Sites' },
+    org:{ single:'organization', plural:'organizations', capitalSingle:'Organization' },
+    role:'VP of Operations', operator:'site manager', operatorRole:'Regional Manager',
+    dms:'your source system', dmsHint:'CRM, ERP, POS, or whatever feeds your data',
+    dimensions:['region','size','category'],
+    primaryCategoryLabel:'Primary category',
+    sizeLabels:['Small (1-5 sites)','Medium (6-15 sites)','Large (16-50 sites)','Enterprise (50+ sites)'],
+    sampleCategories:['Retail','Services','Manufacturing','Finance','Healthcare','Education','Other']
+  },
+  automotive: {
+    id:'automotive', label:'Automotive · Dealer groups',
+    description:'Multi-store dealer groups rolling up to a corporate composite. CDK, Reynolds, dealer.com.',
+    site:{ single:'store', plural:'stores', capitalSingle:'Store', capitalPlural:'Stores' },
+    org:{ single:'group', plural:'groups', capitalSingle:'Dealer Group' },
+    role:'Dealer Principal', operator:'general manager', operatorRole:'Group Controller',
+    dms:'CDK / Reynolds & Reynolds', dmsHint:'Your DMS — CDK Global, Reynolds & Reynolds, Dealertrack, etc.',
+    dimensions:['brand','region','size'],
+    primaryCategoryLabel:'Primary brand',
+    sizeLabels:['Small (1-3 stores)','Medium (4-10 stores)','Large (11-30 stores)','Enterprise (30+ stores)'],
+    sampleCategories:['Ford','Toyota','Honda','Chevrolet','Nissan','Hyundai','Stellantis','BMW','Mercedes-Benz','Multi-brand','Other']
+  },
+  retail: {
+    id:'retail', label:'Retail · Multi-store',
+    description:'Brick-and-mortar retailers with multiple stores feeding into a chain-level dashboard.',
+    site:{ single:'store', plural:'stores', capitalSingle:'Store', capitalPlural:'Stores' },
+    org:{ single:'chain', plural:'chains', capitalSingle:'Chain' },
+    role:'VP of Retail', operator:'store manager', operatorRole:'District Manager',
+    dms:'your POS system', dmsHint:'Shopify POS, Square, Lightspeed, NCR, or your custom POS',
+    dimensions:['region','format','size'],
+    primaryCategoryLabel:'Primary category',
+    sizeLabels:['Boutique (1-5 stores)','Regional (6-20 stores)','National (21-100 stores)','Enterprise (100+)'],
+    sampleCategories:['Apparel','Grocery','Home goods','Electronics','Specialty','Pharmacy','Multi-category','Other']
+  },
+  restaurant: {
+    id:'restaurant', label:'Restaurants · Multi-location',
+    description:'Restaurant groups, QSR, casual dining. Toast, Square, Lavu, or custom POS.',
+    site:{ single:'location', plural:'locations', capitalSingle:'Location', capitalPlural:'Locations' },
+    org:{ single:'group', plural:'groups', capitalSingle:'Restaurant Group' },
+    role:'COO', operator:'general manager', operatorRole:'Operations Director',
+    dms:'your POS', dmsHint:'Toast, Square for Restaurants, Lavu, Lightspeed, or custom POS',
+    dimensions:['concept','region','size'],
+    primaryCategoryLabel:'Primary concept',
+    sizeLabels:['Single concept (1-3 locations)','Multi-unit (4-15)','Regional (16-50)','Enterprise (50+)'],
+    sampleCategories:['Quick service','Fast casual','Casual dining','Fine dining','Coffee / café','Pizza','Multi-concept','Other']
+  },
+  finance: {
+    id:'finance', label:'Finance · Community banks / credit unions',
+    description:'Community banks and credit unions rolling up branches to the institution.',
+    site:{ single:'branch', plural:'branches', capitalSingle:'Branch', capitalPlural:'Branches' },
+    org:{ single:'institution', plural:'institutions', capitalSingle:'Institution' },
+    role:'CFO', operator:'branch manager', operatorRole:'Regional VP',
+    dms:'your core banking system', dmsHint:'Jack Henry, Fiserv, FIS, or another core banking platform',
+    dimensions:['region','assets','size'],
+    primaryCategoryLabel:'Institution type',
+    sizeLabels:['Small (1-5 branches)','Mid-size (6-25 branches)','Large (26-100 branches)','National (100+)'],
+    sampleCategories:['Community bank','Credit union','Regional bank','National bank','Online-first','Other']
+  },
+  manufacturing: {
+    id:'manufacturing', label:'Manufacturing · Multi-plant',
+    description:'Manufacturers rolling up multiple plants to a corporate composite. SAP / Oracle / Infor.',
+    site:{ single:'plant', plural:'plants', capitalSingle:'Plant', capitalPlural:'Plants' },
+    org:{ single:'company', plural:'companies', capitalSingle:'Manufacturer' },
+    role:'VP of Operations', operator:'plant manager', operatorRole:'Regional Operations Manager',
+    dms:'your MES / ERP', dmsHint:'SAP, Oracle, Infor, or similar manufacturing system',
+    dimensions:['product line','region','plant size'],
+    primaryCategoryLabel:'Primary product line',
+    sizeLabels:['Small (< 200 employees)','Medium (200-500)','Large (500-2,000)','Enterprise (2,000+)'],
+    sampleCategories:['Electronics','Automotive parts','Industrial equipment','Consumer goods','Pharmaceuticals','Food & beverage','Aerospace','Other']
+  },
+  healthcare: {
+    id:'healthcare', label:'Healthcare · Multi-facility',
+    description:'Hospital systems, ambulatory networks, or clinic groups feeding clinical + operational data.',
+    site:{ single:'facility', plural:'facilities', capitalSingle:'Facility', capitalPlural:'Facilities' },
+    org:{ single:'health system', plural:'health systems', capitalSingle:'Health System' },
+    role:'COO / Chief of Operations', operator:'facility administrator', operatorRole:'Regional Director',
+    dms:'your EHR', dmsHint:'Epic, Cerner, Meditech, athenahealth, or another EHR system',
+    dimensions:['care level','region','specialty'],
+    primaryCategoryLabel:'Primary facility type',
+    sizeLabels:['Clinic (1-5 sites)','Mid-size (6-25 sites)','Health system (26-100)','IDN (100+)'],
+    sampleCategories:['Acute care','Ambulatory','Specialty clinic','Urgent care','Long-term care','Mental health','Multi-specialty','Other']
+  },
+  professional_services: {
+    id:'professional_services', label:'Professional services',
+    description:'Law firms, consultancies, agencies — multi-office practices rolling up billable / utilization data.',
+    site:{ single:'office', plural:'offices', capitalSingle:'Office', capitalPlural:'Offices' },
+    org:{ single:'firm', plural:'firms', capitalSingle:'Firm' },
+    role:'Managing Partner', operator:'office managing partner', operatorRole:'Regional Practice Lead',
+    dms:'your practice management system', dmsHint:'Clio, NetDocuments, Aderant, Elite, or similar',
+    dimensions:['practice area','region','size'],
+    primaryCategoryLabel:'Primary practice area',
+    sizeLabels:['Boutique (1-3 offices)','Regional (4-10 offices)','National (11-30)','Global (30+)'],
+    sampleCategories:['Law','Accounting','Management consulting','Marketing / advertising','Architecture / engineering','IT services','Multi-disciplinary','Other']
+  },
+  education: {
+    id:'education', label:'Education · Multi-campus',
+    description:'Universities, K-12 districts, or training organizations with multiple campuses.',
+    site:{ single:'campus', plural:'campuses', capitalSingle:'Campus', capitalPlural:'Campuses' },
+    org:{ single:'institution', plural:'institutions', capitalSingle:'Institution' },
+    role:'VP of Operations', operator:'campus dean / principal', operatorRole:'District Superintendent',
+    dms:'your SIS', dmsHint:'Banner, Workday Student, PowerSchool, Infinite Campus, or similar',
+    dimensions:['program','region','size'],
+    primaryCategoryLabel:'Primary education level',
+    sizeLabels:['Single campus','Multi-campus (2-5)','District (6-25)','University system (25+)'],
+    sampleCategories:['K-12 district','Community college','Four-year university','Graduate school','Training / certification','Multi-level','Other']
+  }
+};
+
+function getIndustry(id) {
+  return INDUSTRIES[id] || INDUSTRIES.generic;
+}
+/* Quick vocab lookup. Example: vocab('site.plural') => 'stores' */
+function vocab(path) {
+  const ind = getIndustry(tonbState?.industryId);
+  const parts = path.split('.');
+  let v = ind;
+  for (const p of parts) { if (v && p in v) v = v[p]; else return path; }
+  return v;
+}
+
+/* Step metadata — v2 spec (May 2026). 7 steps. Account mapping removed
+   from linear flow (lives in Data Studio now per Edgardo's decision). */
 const TONB_STEPS = [
-  { id:'welcome',    phase:1, title:'Welcome to AIMS-OS',          eyebrow:'Tenant setup' },
-  { id:'org',        phase:1, title:'Your organization',           eyebrow:'Tenant setup' },
-  { id:'starter',    phase:1, title:'Starter setup',               eyebrow:'Tenant setup' },
-  { id:'grouping',   phase:1, title:'Workspace grouping',          eyebrow:'Tenant setup' },
-  { id:'workspace',  phase:2, title:'Workspace profile',           eyebrow:'Per workspace' },
-  { id:'connect',    phase:2, title:'Connect data',                eyebrow:'Per workspace' },
-  { id:'apply',      phase:2, title:'Apply templates',             eyebrow:'Per workspace' },
-  { id:'done',       phase:3, title:'You’re all set',         eyebrow:'Done' },
+  { id:'welcome',      phase:1, title:'Welcome',              eyebrow:'Tenant' },
+  { id:'org',          phase:1, title:'Your organization',    eyebrow:'Tenant' },
+  { id:'template',     phase:1, title:'Composite template',   eyebrow:'Tenant' },
+  { id:'peer_rules',   phase:1, title:'Peer comparison rules',eyebrow:'Tenant' },
+  { id:'site_profile', phase:2, title:'Site profile',         eyebrow:'Site' },
+  { id:'connect',      phase:2, title:'Connect data',         eyebrow:'Site' },
+  { id:'done',         phase:3, title:'You’re all set',  eyebrow:'Done' },
 ];
 
 const TONB_STARTERS = [
@@ -11161,37 +11326,76 @@ const TONB_MOCK_TABLES = [
 function _defaultTonbState() {
   return {
     started: false,
-    flow: 'first_run',  // 'first_run' | 'add_workspace'
+    flow: 'first_run',                   // 'first_run' | 'add_site'
     stepIdx: 0,
     completedAt: null,
-    skipped: false,        // F1 — set to true via "Skip onboarding" CTA
+    skipped: false,                      // landing skip CTA
+    industryId: 'generic',               // F1 — drives vocabulary swap
     org: {
-      name: '', industry: '', size: '',
+      name: '', primaryCategory: '', size: '',
       contactName: '', contactRole: '', contactEmail: '',
     },
-    starter: null,                       // 'data_quality' | 'governance' | 'agentic' | 'minimal'
-    grouping: { mode: null, tags: [] },  // mode: 'department' | 'region' | 'function' | 'flat'
-    workspace: {
-      name: '', tag: '', region: '',
-      ownerName: '', ownerEmail: '',
+    template: { source: null },          // 'industry_standard' | 'category_variant' | 'neutral' | 'scratch'
+    peerRules: { primary: null, secondary: [] },
+    siteProfile: {
+      name: '', primaryCategory: '', region: '', size: '',
+      siteId: '', sourceSystemId: '',
+      primaryContact: '', contactEmail: ''
     },
     connect: { launched: false, mocked: false },
-    apply: {},                           // keyed by `tableName::fieldName` → 'accept' | 'skip'
-    workspaces: [],                      // populated on each completed workspace flow
+    sites: [],                           // populated on each completed site flow
     errors: {},
   };
 }
 let tonbState = _defaultTonbState();
 
+function syncIndustrySelect() {
+  const el = document.getElementById('ssbIndustrySelect');
+  if (el && tonbState?.industryId) el.value = tonbState.industryId;
+}
 function loadTonbState() {
   try {
     const raw = localStorage.getItem(TONB_STORAGE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
+      // v1 → v2 key migration. Read old keys if present.
+      if (parsed.starter && !parsed.template) parsed.template = { source: parsed.starter };
+      if (parsed.grouping && !parsed.peerRules) parsed.peerRules = { primary: parsed.grouping.mode, secondary: [] };
+      if (parsed.workspace && !parsed.siteProfile) {
+        const w = parsed.workspace;
+        parsed.siteProfile = {
+          name: w.name || '', primaryCategory: '', region: w.region || '', size: '',
+          siteId: '', sourceSystemId: '',
+          primaryContact: w.ownerName || '', contactEmail: w.ownerEmail || ''
+        };
+      }
+      if (parsed.workspaces && !parsed.sites) parsed.sites = parsed.workspaces;
+      // Normalise: industryId may be missing on old payloads
+      if (!parsed.industryId) parsed.industryId = 'generic';
+      // Step migration: 'workspace' → 'site_profile', 'starter' → 'template',
+      //                 'grouping' → 'peer_rules', 'apply' → 'done'
+      const stepMigrate = { workspace:'site_profile', starter:'template', grouping:'peer_rules', apply:'done' };
+      // (stepIdx is regenerated from the new TONB_STEPS array — old stale idx OK)
       tonbState = Object.assign(_defaultTonbState(), parsed);
+      // Clamp stepIdx into the current ids array
+      const ids = _stepIdsForFlow();
+      if (tonbState.stepIdx >= ids.length) tonbState.stepIdx = Math.max(0, ids.length - 1);
     }
   } catch(e) { tonbState = _defaultTonbState(); }
 }
+function setDemoIndustry(id) {
+  if (!INDUSTRIES[id]) id = 'generic';
+  tonbState.industryId = id;
+  persistTonbState();
+  // Re-paint whichever surface is showing onboarding (or anywhere vocab() is used)
+  if (typeof renderTenantOnboarding === 'function' && location.hash.startsWith('#/onboarding')) {
+    renderTenantOnboarding();
+  }
+  // Keep the select element in sync (avoid stale UI when called programmatically)
+  setTimeout(syncIndustrySelect, 0);
+  if (typeof toast === 'function') toast(`Industry preset: ${INDUSTRIES[id].label}`);
+}
+
 function persistTonbState() {
   try { localStorage.setItem(TONB_STORAGE_KEY, JSON.stringify(tonbState)); } catch(e) {}
 }
@@ -11200,7 +11404,9 @@ function resetTonbState() {
   persistTonbState();
   if (typeof trackTonb === 'function') trackTonb('reset');
 }
+
 loadTonbState();
+setTimeout(syncIndustrySelect, 0);
 
 /* ---------- Telemetry ---------- */
 function trackTonb(event, payload) {
@@ -11298,9 +11504,9 @@ document.addEventListener('keydown', (e) => {
 });
 
 function _stepIdsForFlow() {
-  if (tonbState.flow === 'add_workspace') {
+  if (tonbState.flow === 'add_site') {
     // workspace → connect → apply → done
-    return ['workspace','connect','apply','done'];
+    return ['site_profile','connect','done'];
   }
   return TONB_STEPS.map(s => s.id);
 }
@@ -11362,28 +11568,23 @@ function _validateStep(stepId) {
   if (stepId === 'org') {
     const o = tonbState.org;
     if (!o.name || o.name.trim().length < 2) e.orgName = 'Required.';
-    if (!o.industry) e.orgIndustry = 'Pick one.';
+    if (!o.primaryCategory) e.orgCategory = 'Pick one.';
     if (!o.size) e.orgSize = 'Pick one.';
     if (!o.contactName || o.contactName.trim().length < 2) e.contactName = 'Required.';
-    if (!o.contactRole) e.contactRole = 'Pick one.';
-    if (!o.contactEmail || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(o.contactEmail)) e.contactEmail = 'Use a valid email format.';
-  } else if (stepId === 'starter') {
-    if (!tonbState.starter) e.starter = 'Pick a setup style.';
-  } else if (stepId === 'grouping') {
-    if (!tonbState.grouping.mode) e.grouping = 'Pick a grouping mode.';
-    // Tags are optional for 'flat'
-    if (tonbState.grouping.mode && tonbState.grouping.mode !== 'flat'
-        && (!tonbState.grouping.tags || tonbState.grouping.tags.length === 0)) {
-      e.groupingTags = 'Add at least one group label.';
-    }
-  } else if (stepId === 'workspace') {
-    const w = tonbState.workspace;
-    if (!w.name || w.name.trim().length < 2) e.wsName = 'Required.';
-    if (tonbState.grouping.mode && tonbState.grouping.mode !== 'flat' && !w.tag) e.wsTag = 'Pick a group.';
-    if (!w.ownerName || w.ownerName.trim().length < 2) e.wsOwnerName = 'Required.';
-    if (!w.ownerEmail || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(w.ownerEmail)) e.wsOwnerEmail = 'Use a valid email format.';
+    if (!o.contactEmail || !/^\S+@\S+$/.test(o.contactEmail.trim())) e.contactEmail = 'Need a valid email.';
+  } else if (stepId === 'template') {
+    if (!tonbState.template.source) e.template = 'Pick a composite template.';
+  } else if (stepId === 'peer_rules') {
+    if (!tonbState.peerRules.primary) e.peerRules = 'Pick the primary peer dimension.';
+  } else if (stepId === 'site_profile') {
+    const w = tonbState.siteProfile;
+    if (!w.name || w.name.trim().length < 2) e.siteName = 'Required.';
+    if (!w.primaryCategory) e.siteCategory = 'Pick one.';
+    if (!w.sourceSystemId) e.sourceSystemId = 'Required — the site\'s ID in your source system.';
+    if (!w.primaryContact || w.primaryContact.trim().length < 2) e.primaryContact = 'Required.';
+    if (!w.contactEmail || !/^\S+@\S+$/.test(w.contactEmail.trim())) e.contactEmailSite = 'Need a valid email.';
   }
-  return e;
+  return Object.keys(e).length ? e : null;
 }
 
 /* ---------- Field updates ---------- */
@@ -11555,14 +11756,14 @@ function renderTonbLanding() {
 
       <div style="display:flex;flex-direction:column;gap:8px;">
         <h1 class="tonb-step-title">First-time setup</h1>
-        <p class="tonb-step-sub">An 8-step guided flow to bring your tenant from empty to running. About 12 minutes if you have your data-source credentials ready.</p>
+        <p class="tonb-step-sub">A 7-step guided flow to bring your tenant from empty to running. About 18 minutes if you have your data-source credentials ready.</p>
       </div>
 
       <div class="tonb-card">
         <div class="tonb-welcome-h">
           <div class="tonb-welcome-emoji" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.5 5.5L19 10l-5.5 1.5L12 17l-1.5-5.5L5 10l5.5-1.5L12 3z"/><path d="M19 16l.7 2.3L22 19l-2.3.7L19 22l-.7-2.3L16 19l2.3-.7L19 16zM6 4l.7 2.3L9 7l-2.3.7L6 10l-.7-2.3L3 7l2.3-.7L6 4z"/></svg></div>
           <div style="font-size:14px;color:var(--t1);font-weight:600;">You’re about to set up an AIMS-OS tenant.</div>
-          <div style="font-size:13px;color:var(--t2);line-height:1.55;">First-time setup has 8 steps in 3 phases. The add-a-workspace flow later is just 4 steps. We persist progress — you can leave and come back anytime.</div>
+          <div style="font-size:13px;color:var(--t2);line-height:1.55;">First-time setup has 7 steps in 3 phases. The add-a-${vocab('site.single')} flow later is just 3 steps. We persist progress — you can leave and come back anytime.</div>
         </div>
 
         <div class="tonb-foot">
@@ -11570,7 +11771,7 @@ function renderTonbLanding() {
           <div class="tonb-foot-r">
             ${hasResume ? `<button class="tonb-btn" onclick="tonbStart('first_run')">Restart</button><button class="tonb-btn is-primary" onclick="tonbState.started=true;persistTonbState();renderTenantOnboarding()">Resume →</button>` : `
             <button class="tonb-btn is-ghost" onclick="skipTenantOnboarding()" title="Skip the guided setup and explore Data Studio on your own. You can come back via the sidebar.">Skip — I'll explore on my own</button>
-            <button class="tonb-btn" onclick="tonbStart('add_workspace')">I'm just adding a workspace</button>
+            <button class="tonb-btn" onclick="tonbStart('add_site')">I'm just adding a ${vocab('site.single')}</button>
             <button class="tonb-btn is-primary" onclick="tonbStart('first_run')">Start first-time setup →</button>`}
           </div>
         </div>
@@ -11595,8 +11796,8 @@ function _stepSubtitle(id) {
 }
 
 function _canSkip(id) {
-  // Skippable: welcome (just info), connect (placeholder), apply (defer decisions)
-  return id === 'welcome' || id === 'connect' || id === 'apply';
+  // Connect data can be skipped (resume later); other steps gate progress.
+  return id === 'welcome' || id === 'connect';
 }
 
 function _renderPrimaryBtn(id) {
@@ -11605,7 +11806,7 @@ function _renderPrimaryBtn(id) {
   const err = _validateStep(id);
   const disabled = err && Object.keys(err).length > 0 ? 'disabled' : '';
   const label = id === 'welcome' ? 'Get started →'
-              : id === 'apply' ? 'Finish setup →'
+              : id === 'connect' && tonbState.flow === 'add_site' ? 'Finish setup →'
               : 'Continue →';
   return `<button id="tonbPrimaryBtn" class="tonb-btn is-primary" ${disabled} onclick="tonbNext()">${label}</button>`;
 }
@@ -11613,13 +11814,12 @@ function _renderPrimaryBtn(id) {
 /* ---------- Step bodies ---------- */
 function _renderStepBody(id) {
   switch (id) {
-    case 'welcome':   return _renderWelcomeStep();
-    case 'org':       return _renderOrgStep();
-    case 'starter':   return _renderStarterStep();
-    case 'grouping':  return _renderGroupingStep();
-    case 'workspace': return _renderWorkspaceStep();
-    case 'connect':   return _renderConnectStep();
-    case 'apply':     return _renderApplyStep();
+    case 'welcome':      return _renderWelcomeStep();
+    case 'org':          return _renderOrgStep();
+    case 'template':     return _renderTemplateStep();
+    case 'peer_rules':   return _renderPeerRulesStep();
+    case 'site_profile': return _renderSiteProfileStep();
+    case 'connect':      return _renderConnectStep();
     case 'done':      return _renderDoneStep();
     default:          return '<div>Unknown step.</div>';
   }
@@ -11722,7 +11922,7 @@ function _renderOrgStep() {
   `;
 }
 
-function _renderStarterStep() {
+function _renderTemplateStep() {
   const cur = tonbState.starter;
   const tiles = TONB_STARTERS.map((s, i) => {
     const icon = s.icon === 'shield' ? '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 1.5L2.5 3.5v4c0 4 2.5 6.5 5.5 7.5 3-1 5.5-3.5 5.5-7.5v-4L8 1.5z" stroke-linejoin="round"/><path d="M5.5 8l2 2 3-3.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'
@@ -11748,7 +11948,7 @@ function _renderStarterStep() {
   `;
 }
 
-function _renderGroupingStep() {
+function _renderPeerRulesStep() {
   const cur = tonbState.grouping.mode;
   const tiles = TONB_GROUPING.map(g => `
     <button class="tonb-tile ${cur === g.id ? 'is-selected' : ''}" onclick="selectTonbGrouping('${g.id}')">
@@ -11783,7 +11983,7 @@ function _renderGroupingStep() {
   `;
 }
 
-function _renderWorkspaceStep() {
+function _renderSiteProfileStep() {
   const w = tonbState.workspace;
   const errs = tonbState.errors || {};
   const mode = tonbState.grouping.mode;
@@ -12112,8 +12312,8 @@ function _renderDoneStep() {
   return `
     <div class="tonb-done-hero">
       <div class="tonb-done-emoji" aria-hidden="true"><svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" stroke="rgba(16,185,129,0.45)" stroke-width="1.4"/><path d="M7.5 12.5l3 3 6-6.5" stroke="#34d39c" stroke-width="2"/></svg></div>
-      <div class="tonb-done-title">${tonbState.flow === 'add_workspace' ? 'Workspace ready' : 'Tenant ready'}</div>
-      <div class="tonb-done-sub">${tonbState.flow === 'add_workspace'
+      <div class="tonb-done-title">${tonbState.flow === 'add_site' ? 'Workspace ready' : 'Tenant ready'}</div>
+      <div class="tonb-done-sub">${tonbState.flow === 'add_site'
         ? '<b style="color:var(--t1)">' + escapeHtml(w.name || 'Your workspace') + '</b> is set up. Add another, or jump into Data Studio.'
         : '<b style="color:var(--t1)">' + escapeHtml(o.name || 'Your organization') + '</b> is configured. ' + (starter ? 'Pre-applied: <b>' + escapeHtml(starter.name) + '</b>. ' : '') + 'You can jump into any Studio now.'}</div>
     </div>
@@ -12126,7 +12326,7 @@ function _renderDoneStep() {
     </div>
 
     <div class="tonb-next-grid">
-      <button class="tonb-next-card" onclick="tonbStart('add_workspace')">
+      <button class="tonb-next-card" onclick="tonbStart('add_site')">
         <div class="tonb-next-card-h">
           <span class="tonb-next-card-name">Add another workspace</span>
           <span class="tonb-next-card-arrow">→</span>
