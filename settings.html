@@ -12244,24 +12244,52 @@ function instanceAuditHTML(i, inst) {
 }
 
 function detailOverview(i) {
-  // Sprint C — Edgardo: prominent instance count banner at top of Overview
-  const _instCount = i.connected ? instancesOf(i.slug).length : 0;
-  const _instBanner = _instCount === 0 ? '' : `
-    <div class="inst-count-banner">
-      <div class="inst-count-banner-l">
-        <span class="inst-count-banner-ic" aria-hidden="true">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="6" rx="1.5"/><rect x="3" y="14" width="18" height="6" rx="1.5"/><circle cx="7" cy="7" r=".7" fill="currentColor"/><circle cx="7" cy="17" r=".7" fill="currentColor"/></svg>
-        </span>
-        <div class="inst-count-banner-text">
-          <div class="inst-count-banner-t"><span class="inst-count-banner-n">${_instCount}</span> ${_instCount === 1 ? 'instance' : 'instances'} of ${escapeHtml(i.name)} connected</div>
-          <div class="inst-count-banner-d">Each instance is one account or environment with its own credentials, capabilities and access list.</div>
+  // Sprint C + Sprint F — Edgardo: consolidate Instances summary into the
+  // rich widget (stats + list + Manage all). Renders at the top of Overview
+  // when there are instances; replaces the slim "1 instance connected" banner.
+  const _instSummary = (() => {
+    const instances = i.connected ? instancesOf(i.slug) : [];
+    if (instances.length === 0) return '';
+    const needsAttention = instances.filter(x => (STATUS_META[x.status]||{}).bucket === 'needs_attention').length;
+    const capsActive = instances.reduce((s, x) => s + (x.activeCaps?.tool?.length||0) + (x.activeCaps?.data_sync?.length||0) + (x.activeCaps?.mcp?.length||0), 0);
+    return `
+      <section class="ov-widget">
+        <header class="ov-widget-h">
+          <h3 class="ov-widget-title">Instances</h3>
+          <a href="#" onclick="setDetailTab('${i.slug}','instances');return false" style="font-size:11.5px;color:#7ed3f7;text-decoration:none;font-weight:600">Manage all →</a>
+        </header>
+        <div class="ov-widget-body">
+          <div class="inst-summary">
+            <div class="inst-summary-stat">
+              <span class="inst-summary-n">${instances.length}</span>
+              <span class="inst-summary-k">Connected</span>
+            </div>
+            <div class="inst-summary-stat ${needsAttention > 0 ? 'is-warn' : ''}">
+              <span class="inst-summary-n">${needsAttention}</span>
+              <span class="inst-summary-k">Need attention</span>
+            </div>
+            <div class="inst-summary-stat">
+              <span class="inst-summary-n">${capsActive}</span>
+              <span class="inst-summary-k">Capabilities active</span>
+            </div>
+          </div>
+          <div class="inst-summary-list">
+            ${instances.slice(0, 3).map(inst => {
+              const status = STATUS_META[inst.status] || STATUS_META.fully_configured;
+              return `<a class="inst-summary-row" href="#/integrations/${i.slug}/instances/${inst.id}">
+                <span class="inst-summary-row-dot ${status.cls}"></span>
+                <span class="inst-summary-row-name">${escapeHtml(inst.name)}</span>
+                <span class="inst-summary-row-meta">${escapeHtml(status.label)} · last run ${escapeHtml(inst.lastRun||'—')}</span>
+              </a>`;
+            }).join('')}
+            ${instances.length > 3 ? `<a class="inst-summary-more" href="#" onclick="setDetailTab('${i.slug}','instances');return false">View ${instances.length - 3} more →</a>` : ''}
+          </div>
         </div>
-      </div>
-      <a class="inst-count-banner-cta" href="#" onclick="setDetailTab('${i.slug}','instances');return false">View all instances →</a>
-    </div>
-  `;
+      </section>
+    `;
+  })();
   return `
-    ${_instBanner}
+    ${_instSummary}
     ${i.connected ? usedInHTML(i) : ''}
     <div class="ov-cols">
       <div class="ov-main">
@@ -12326,46 +12354,7 @@ function detailOverview(i) {
           </section>
         ` : ''}
 
-        ${(() => {
-          const instances = instancesOf(i.slug);
-          if (instances.length === 0) return '';
-          const needsAttention = instances.filter(x => (STATUS_META[x.status]||{}).bucket === 'needs_attention').length;
-          return `
-            <section class="ov-widget">
-              <header class="ov-widget-h">
-                <h3 class="ov-widget-title">Instances</h3>
-                <a href="#" onclick="setDetailTab('${i.slug}','instances');return false" style="font-size:11.5px;color:#7ed3f7;text-decoration:none;font-weight:600">Manage all →</a>
-              </header>
-              <div class="ov-widget-body">
-                <div class="inst-summary">
-                  <div class="inst-summary-stat">
-                    <span class="inst-summary-n">${instances.length}</span>
-                    <span class="inst-summary-k">Connected</span>
-                  </div>
-                  <div class="inst-summary-stat ${needsAttention > 0 ? 'is-warn' : ''}">
-                    <span class="inst-summary-n">${needsAttention}</span>
-                    <span class="inst-summary-k">Need attention</span>
-                  </div>
-                  <div class="inst-summary-stat">
-                    <span class="inst-summary-n">${instances.reduce((s, x) => s + (x.activeCaps?.tool?.length||0) + (x.activeCaps?.data_sync?.length||0) + (x.activeCaps?.mcp?.length||0), 0)}</span>
-                    <span class="inst-summary-k">Capabilities active</span>
-                  </div>
-                </div>
-                <div class="inst-summary-list">
-                  ${instances.slice(0, 3).map(inst => {
-                    const status = STATUS_META[inst.status] || STATUS_META.fully_configured;
-                    return `<a class="inst-summary-row" href="#/integrations/${i.slug}/instances/${inst.id}">
-                      <span class="inst-summary-row-dot ${status.cls}"></span>
-                      <span class="inst-summary-row-name">${escapeHtml(inst.name)}</span>
-                      <span class="inst-summary-row-meta">${escapeHtml(status.label)} · last run ${escapeHtml(inst.lastRun||'—')}</span>
-                    </a>`;
-                  }).join('')}
-                  ${instances.length > 3 ? `<a class="inst-summary-more" href="#" onclick="setDetailTab('${i.slug}','instances');return false">View ${instances.length - 3} more →</a>` : ''}
-                </div>
-              </div>
-            </section>
-          `;
-        })()}
+        ${/* Instances summary moved to top of Overview (above the cols grid). */ ''}
       </div>
 
       <aside class="ov-side">
