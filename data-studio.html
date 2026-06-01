@@ -12411,7 +12411,11 @@ function updateTonbOrg(field, value) {
   _updatePrimaryBtnEnabled();
 }
 function selectTonbStarter(id) {
-  tonbState.starter = id;
+  // F1 v2 rename: state lives in tonbState.template.source (not tonbState.starter).
+  // The validator + _renderDoneStep read template.source. Keep the function name
+  // for backwards-compatibility with the existing click handlers.
+  if (!tonbState.template) tonbState.template = { source: null };
+  tonbState.template.source = id;
   tonbState.errors = {};
   persistTonbState();
   trackTonb('starter_selected', { starter: id });
@@ -12738,7 +12742,8 @@ function _renderOrgStep() {
 }
 
 function _renderTemplateStep() {
-  const cur = tonbState.starter;
+  // F1 v2: state shape is tonbState.template.source.
+  const cur = (tonbState.template && tonbState.template.source) || null;
   const tiles = TONB_STARTERS.map((s, i) => {
     const icon = s.icon === 'shield' ? '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 1.5L2.5 3.5v4c0 4 2.5 6.5 5.5 7.5 3-1 5.5-3.5 5.5-7.5v-4L8 1.5z" stroke-linejoin="round"/><path d="M5.5 8l2 2 3-3.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'
               : s.icon === 'gavel' ? '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 14h10M5 11l5-5M9 4l3 3-2 2-3-3 2-2zM4 9l3 3"/></svg>'
@@ -13191,10 +13196,11 @@ function _renderDoneStep() {
   const isAddSite = tonbState.flow === 'add_site';
 
   // Resolve template + peer rules labels from v2 state.
+  // Reuse the TONB_STARTERS catalog as the source of truth for labels.
   const tplKey = tonbState.template && tonbState.template.source;
   const tplLabel = (function(){
-    const map = { industry_standard:'Industry standard', category_variant:'Category variant', neutral:'Neutral / generic', scratch:'From scratch' };
-    return map[tplKey] || 'Not picked';
+    const s = (typeof TONB_STARTERS !== 'undefined') ? TONB_STARTERS.find(x => x.id === tplKey) : null;
+    return s ? s.name : 'Not picked';
   })();
   const peerPrimary = (tonbState.peerRules && tonbState.peerRules.primary) || null;
   const peerSecondary = (tonbState.peerRules && tonbState.peerRules.secondary) || [];
