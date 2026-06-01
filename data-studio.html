@@ -3782,6 +3782,163 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
   box-shadow:0 0 0 1px rgba(56,189,248,0.4), 0 0 12px rgba(56,189,248,0.34);}
 .tonb-progress-seg.is-phase-break{flex:0 0 18px;background:transparent;}
 
+/* ── Peer rules step (F3) — primary + secondary + live preview ── */
+.peer-section{
+  margin-bottom:18px;
+  background:rgba(255,255,255,0.012);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:12px;
+  padding:16px 18px;
+}
+html.theme-light .peer-section{background:#FFFFFF; border-color:var(--line)}
+.peer-section-h{margin-bottom:12px}
+.peer-section-n{
+  display:inline-flex; align-items:center;
+  padding:2px 8px;
+  border-radius:99px;
+  background:rgba(126,211,247,0.10);
+  border:1px solid rgba(126,211,247,0.32);
+  color:#7ed3f7;
+  font-size:10px; font-weight:700;
+  text-transform:uppercase; letter-spacing:.06em;
+  margin-bottom:6px;
+}
+.peer-section-n.is-optional{
+  background:rgba(255,255,255,0.04);
+  border-color:rgba(255,255,255,0.10);
+  color:var(--t3);
+}
+html.theme-light .peer-section-n{background:rgba(56,189,248,0.08); color:#0284c7; border-color:rgba(56,189,248,0.32)}
+html.theme-light .peer-section-n.is-optional{background:#F1F5F9; border-color:var(--line); color:var(--t3)}
+.peer-section-t{
+  font-size:14px; font-weight:700; color:var(--t1);
+  letter-spacing:-0.005em; margin:0 0 4px;
+}
+.peer-section-d{
+  font-size:12px; color:var(--t2);
+  line-height:1.5; margin:0;
+}
+
+.peer-dim-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+  gap:9px;
+}
+.peer-dim-btn{
+  display:flex; align-items:flex-start; gap:11px;
+  padding:13px 14px;
+  background:rgba(255,255,255,0.022);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:10px;
+  color:var(--t1); font-family:inherit; text-align:left;
+  cursor:pointer;
+  transition:background .12s, border-color .12s;
+}
+.peer-dim-btn:hover{border-color:rgba(255,255,255,0.18); background:rgba(255,255,255,0.04)}
+.peer-dim-btn.is-on{
+  background:rgba(16,185,129,0.06);
+  border-color:rgba(16,185,129,0.42);
+}
+html.theme-light .peer-dim-btn{background:#FFFFFF; border-color:var(--line)}
+html.theme-light .peer-dim-btn:hover{border-color:var(--line-strong); background:var(--hover)}
+html.theme-light .peer-dim-btn.is-on{background:rgba(16,185,129,0.06); border-color:rgba(16,185,129,0.38)}
+.peer-dim-radio{
+  flex-shrink:0;
+  width:16px; height:16px; margin-top:1px;
+  border-radius:50%;
+  border:1.6px solid rgba(255,255,255,0.20);
+  background:transparent;
+  display:flex; align-items:center; justify-content:center;
+}
+.peer-dim-btn.is-on .peer-dim-radio{border-color:#10b981}
+.peer-dim-radio-dot{
+  width:8px; height:8px; border-radius:50%; background:#10b981;
+}
+html.theme-light .peer-dim-radio{border-color:#CBD5E1}
+.peer-dim-text{display:flex; flex-direction:column; gap:3px; min-width:0}
+.peer-dim-name{
+  font-size:13px; font-weight:700; color:var(--t1);
+  letter-spacing:-0.005em;
+}
+.peer-dim-desc{font-size:11.5px; color:var(--t2); line-height:1.45}
+
+.peer-sec-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));
+  gap:7px;
+}
+.peer-sec-btn{
+  display:flex; align-items:center; gap:10px;
+  padding:9px 11px;
+  background:rgba(255,255,255,0.022);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:8px;
+  color:var(--t1); font-family:inherit; text-align:left;
+  cursor:pointer;
+  transition:background .12s, border-color .12s;
+}
+.peer-sec-btn:hover:not(.is-disabled){border-color:rgba(255,255,255,0.18); background:rgba(255,255,255,0.04)}
+.peer-sec-btn.is-on{
+  background:rgba(126,211,247,0.06);
+  border-color:rgba(126,211,247,0.32);
+}
+.peer-sec-btn.is-disabled{opacity:.5; cursor:not-allowed}
+html.theme-light .peer-sec-btn{background:#FFFFFF; border-color:var(--line)}
+html.theme-light .peer-sec-btn.is-on{background:rgba(56,189,248,0.05); border-color:rgba(56,189,248,0.32)}
+.peer-sec-check{
+  flex-shrink:0;
+  width:16px; height:16px;
+  border-radius:4px;
+  border:1.5px solid rgba(255,255,255,0.20);
+  background:transparent;
+  display:flex; align-items:center; justify-content:center;
+}
+.peer-sec-btn.is-on .peer-sec-check{
+  background:#7ed3f7; border-color:#7ed3f7;
+}
+html.theme-light .peer-sec-check{border-color:#CBD5E1; background:#FFFFFF}
+.peer-sec-text{display:flex; flex-direction:column; gap:1px; min-width:0}
+.peer-sec-name{
+  font-size:12.5px; font-weight:600; color:var(--t1);
+}
+.peer-sec-disabled{font-size:10.5px; color:var(--t3); font-style:italic}
+
+.peer-preview{
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  padding:14px 16px;
+  background:linear-gradient(180deg, rgba(126,211,247,0.06), rgba(126,211,247,0.02));
+  border:1px solid rgba(126,211,247,0.24);
+  border-radius:11px;
+}
+html.theme-light .peer-preview{
+  background:linear-gradient(180deg, rgba(56,189,248,0.05), rgba(56,189,248,0.02));
+  border-color:rgba(56,189,248,0.28);
+}
+.peer-preview-l{display:flex; align-items:center; gap:11px; flex:1; min-width:0; flex-wrap:wrap}
+.peer-preview-tag{
+  display:inline-flex; align-items:center;
+  padding:2px 8px;
+  border-radius:99px;
+  background:rgba(126,211,247,0.16);
+  color:#7ed3f7;
+  border:1px solid rgba(126,211,247,0.34);
+  font-size:10px; font-weight:700;
+  text-transform:uppercase; letter-spacing:.06em;
+  flex-shrink:0;
+}
+html.theme-light .peer-preview-tag{background:rgba(56,189,248,0.08); color:#0284c7; border-color:rgba(56,189,248,0.32)}
+.peer-preview-text{
+  font-size:13px; color:var(--t1); line-height:1.55;
+  flex:1; min-width:0;
+}
+.peer-preview-text b{color:#7ed3f7; font-weight:700}
+html.theme-light .peer-preview-text b{color:#0284c7}
+.peer-preview-r{
+  display:inline-flex; align-items:center; gap:5px;
+  font-size:11px; color:var(--t3);
+  flex-shrink:0;
+}
+
 /* Demo sidebar industry picker (F1) */
 .ssb-demo-industry{
   display:flex; flex-direction:column; gap:5px;
@@ -11235,6 +11392,51 @@ function vocab(path) {
   return v;
 }
 
+/* Tooltip / help text for the peer-comparison dimensions. Falls back to
+   a generic sentence when a dimension is not explicitly listed. */
+const DIMENSION_DESCRIPTIONS = {
+  brand:          'Group {sites} that sell the same brand (e.g. all Ford {sites}, all Toyota {sites}).',
+  region:         'Group {sites} by geography (Region A vs Region B vs Region C).',
+  size:           'Group {sites} by size class (small vs medium vs large).',
+  category:       'Group {sites} by primary category (e.g. apparel vs grocery vs electronics).',
+  format:         'Group {sites} by store format (flagship vs neighborhood vs outlet).',
+  concept:        'Group {locations} by concept (e.g. quick service vs casual dining vs fine dining).',
+  assets:         'Group {branches} by asset size (under $500M vs $500M-$2B vs $2B+).',
+  'product line': 'Group {plants} by product line (e.g. electronics vs automotive parts).',
+  'plant size':   'Group {plants} by employee count (small vs medium vs large).',
+  'care level':   'Group {facilities} by care level (acute vs ambulatory vs long-term care).',
+  specialty:      'Group {facilities} by clinical specialty.',
+  'practice area':'Group {offices} by primary practice area (litigation vs corporate vs IP).',
+  program:        'Group {campuses} by program type (undergraduate vs graduate vs continuing ed).'
+};
+function dimensionDescription(dim) {
+  const tpl = DIMENSION_DESCRIPTIONS[dim] || `Group ${vocab('site.plural')} by ${dim}.`;
+  const sp = vocab('site.plural');
+  // Global replace — any {sites}/{locations}/{branches}/{plants}/{facilities}/{offices}/{campuses}
+  // placeholder maps to the active industry's plural site noun.
+  return tpl.replace(/\{(sites|locations|branches|plants|facilities|offices|campuses)\}/g, sp);
+}
+
+/* Peer rules handlers — required primary picker + optional secondary toggle. */
+function setPeerPrimary(dim) {
+  if (!tonbState.peerRules) tonbState.peerRules = { primary: null, secondary: [] };
+  tonbState.peerRules.primary = dim;
+  // A dimension can't be both primary and secondary — yank it from secondary if present
+  tonbState.peerRules.secondary = (tonbState.peerRules.secondary || []).filter(d => d !== dim);
+  persistTonbState();
+  renderTenantOnboarding();
+}
+function togglePeerSecondary(dim) {
+  if (!tonbState.peerRules) tonbState.peerRules = { primary: null, secondary: [] };
+  if (!tonbState.peerRules.secondary) tonbState.peerRules.secondary = [];
+  const idx = tonbState.peerRules.secondary.indexOf(dim);
+  if (idx >= 0) tonbState.peerRules.secondary.splice(idx, 1);
+  else tonbState.peerRules.secondary.push(dim);
+  persistTonbState();
+  renderTenantOnboarding();
+}
+
+
 /* Step metadata — v2 spec (May 2026). 7 steps. Account mapping removed
    from linear flow (lives in Data Studio now per Edgardo's decision). */
 const TONB_STEPS = [
@@ -11949,37 +12151,71 @@ function _renderTemplateStep() {
 }
 
 function _renderPeerRulesStep() {
-  const cur = tonbState.grouping.mode;
-  const tiles = TONB_GROUPING.map(g => `
-    <button class="tonb-tile ${cur === g.id ? 'is-selected' : ''}" onclick="selectTonbGrouping('${g.id}')">
-      <div class="tonb-tile-name">${escapeHtml(g.name)}</div>
-      <div class="tonb-tile-desc">${escapeHtml(g.desc)}</div>
-    </button>
-  `).join('');
-
-  const showTags = cur && cur !== 'flat';
-  const tags = (tonbState.grouping.tags || []).map(t => `
-    <span class="tonb-tag">${escapeHtml(t)}<button class="tonb-tag-rm" onclick="removeTonbGroupingTag('${escapeHtml(t)}')" aria-label="Remove ${escapeHtml(t)}">
-      <svg width="9" height="9" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 3l10 10M13 3L3 13"/></svg>
-    </button></span>
-  `).join('');
-
+  const dims = getIndustry(tonbState.industryId).dimensions || ['region','size','category'];
+  const peer = tonbState.peerRules || { primary: null, secondary: [] };
   const errs = tonbState.errors || {};
 
-  return `
-    <div class="tonb-picker-grid">${tiles}</div>
-    ${errs.grouping ? `<div class="tonb-field-err">${escapeHtml(errs.grouping)}</div>` : ''}
+  const primaryBtn = (dim) => `
+    <button class="peer-dim-btn ${peer.primary === dim ? 'is-on' : ''}" type="button" onclick="setPeerPrimary('${dim.replace(/'/g,"\\'")}')">
+      <span class="peer-dim-radio">${peer.primary === dim ? '<span class="peer-dim-radio-dot"></span>' : ''}</span>
+      <span class="peer-dim-text">
+        <span class="peer-dim-name">By ${escapeHtml(dim)}</span>
+        <span class="peer-dim-desc">${escapeHtml(dimensionDescription(dim))}</span>
+      </span>
+    </button>
+  `;
 
-    ${showTags ? `
-    <div class="tonb-field is-wide">
-      <label class="tonb-field-label">Group labels<span class="tonb-field-opt">(edit, remove, or add your own)</span></label>
-      <div class="tonb-tags">
-        ${tags}
-        <input class="tonb-tags-input" type="text" placeholder="Type and press Enter…" onkeydown="_onTonbTagKey(event)" />
+  const secondaryRow = (dim) => {
+    const disabled = peer.primary === dim;
+    const on = (peer.secondary || []).indexOf(dim) >= 0;
+    return `
+      <button class="peer-sec-btn ${on ? 'is-on' : ''} ${disabled ? 'is-disabled' : ''}" type="button" ${disabled ? 'disabled' : ''} onclick="togglePeerSecondary('${dim.replace(/'/g,"\\'")}')">
+        <span class="peer-sec-check">${on ? '<svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-6" stroke="#031b14" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>' : ''}</span>
+        <span class="peer-sec-text">
+          <span class="peer-sec-name">By ${escapeHtml(dim)}</span>
+          ${disabled ? '<span class="peer-sec-disabled">Already the primary</span>' : ''}
+        </span>
+      </button>
+    `;
+  };
+
+  // Live preview sentence
+  const sitePl = vocab('site.plural');
+  const secondaryLabels = (peer.secondary || []).filter(d => d !== peer.primary);
+  const previewSentence = peer.primary
+    ? `Compare to all ${escapeHtml(sitePl)} by <b>${escapeHtml(peer.primary)}</b>${secondaryLabels.length ? `, with optional filters for <b>${secondaryLabels.map(escapeHtml).join('</b>, <b>')}</b>` : ''}.`
+    : `Pick a primary dimension below — the dashboard will say something like "<i>Compare to all ${escapeHtml(sitePl)} by ${escapeHtml(dims[0])}</i>".`;
+
+  return `
+    <section class="peer-section">
+      <header class="peer-section-h">
+        <span class="peer-section-n">Primary</span>
+        <h3 class="peer-section-t">How should ${escapeHtml(sitePl)} be compared by default?</h3>
+        <p class="peer-section-d">This becomes the default peer comparison on the dashboard. Pick one — required.</p>
+      </header>
+      <div class="peer-dim-grid">${dims.map(primaryBtn).join('')}</div>
+      ${errs.peerRules ? `<div class="tonb-field-err" style="margin-top:10px">${escapeHtml(errs.peerRules)}</div>` : ''}
+    </section>
+
+    <section class="peer-section">
+      <header class="peer-section-h">
+        <span class="peer-section-n is-optional">Optional</span>
+        <h3 class="peer-section-t">Additional filters</h3>
+        <p class="peer-section-d">Dashboard users can flip these on as secondary filters. Toggle any you want exposed.</p>
+      </header>
+      <div class="peer-sec-grid">${dims.map(secondaryRow).join('')}</div>
+    </section>
+
+    <section class="peer-preview">
+      <div class="peer-preview-l">
+        <span class="peer-preview-tag">Dashboard preview</span>
+        <span class="peer-preview-text">${previewSentence}</span>
       </div>
-      <div class="tonb-field-hint">These become workspace tags. Workspaces in the same group can share rule packs and dashboards.</div>
-      ${errs.groupingTags ? `<div class="tonb-field-err">${escapeHtml(errs.groupingTags)}</div>` : ''}
-    </div>` : ''}
+      <div class="peer-preview-r">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 13h2l3-9 4 18 3-9h6"/></svg>
+        <span>Updates live as you toggle.</span>
+      </div>
+    </section>
   `;
 }
 
