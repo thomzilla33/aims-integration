@@ -5666,6 +5666,62 @@ html.theme-light .tonb-exit-leave:hover{
 }
 
 /* KPI strip */
+
+/* ============ FM filter tabs — count + label, color-tinted, click-filters ============ */
+.fm-filtertabs{
+  display:flex; align-items:stretch; gap:4px;
+  border-bottom:1px solid var(--line);
+  margin: 0 0 16px;
+  overflow-x:auto;
+}
+.fm-tab{
+  display:flex; flex-direction:column; align-items:flex-start; gap:2px;
+  min-width:96px;
+  padding: 10px 16px 12px;
+  background:transparent; border:none;
+  border-bottom: 2px solid transparent;
+  color:var(--t2);
+  font-family:inherit;
+  cursor:pointer;
+  transition: all .15s ease;
+  text-align:left;
+  flex-shrink:0;
+}
+.fm-tab:hover{background:rgba(255,255,255,0.025); color:var(--t1);}
+.fm-tab-n{
+  font-size:20px; font-weight:700; line-height:1.1;
+  color:var(--t1);
+  font-variant-numeric:tabular-nums;
+  letter-spacing:-0.01em;
+}
+.fm-tab-l{
+  font-size:11px; font-weight:600; letter-spacing:.04em;
+  text-transform:uppercase;
+  color:var(--t3);
+}
+.fm-tab.is-active{background:rgba(255,255,255,0.02);}
+.fm-tab.is-active .fm-tab-n{font-weight:800;}
+.fm-tab.is-active .fm-tab-l{color:var(--t2);}
+
+/* Color tinting per kind — active state inherits the color */
+.fm-tab[data-kind="ok"].is-active   {border-bottom-color:var(--emerald);}
+.fm-tab[data-kind="ok"].is-active .fm-tab-n   {color:#34d39c;}
+.fm-tab[data-kind="ok"].is-active .fm-tab-l   {color:#34d39c;}
+
+.fm-tab[data-kind="warn"].is-active {border-bottom-color:var(--amber);}
+.fm-tab[data-kind="warn"].is-active .fm-tab-n {color:#fbbf24;}
+.fm-tab[data-kind="warn"].is-active .fm-tab-l {color:#fbbf24;}
+
+.fm-tab[data-kind="idle"].is-active {border-bottom-color:var(--t3);}
+.fm-tab[data-kind="idle"].is-active .fm-tab-n {color:var(--t2);}
+
+.fm-tab[data-kind="default"].is-active   {border-bottom-color:var(--cyan);}
+.fm-tab[data-kind="default"].is-active .fm-tab-n   {color:#7ed3f7;}
+.fm-tab[data-kind="default"].is-active .fm-tab-l   {color:#7ed3f7;}
+
+/* Counts of 0 fade — gentle "nothing here" signal without disabling click */
+.fm-tab .fm-tab-n:not(:empty)[data-zero]{opacity:.5;}
+
 .fm-kpi-strip{
   display:grid;grid-template-columns:repeat(auto-fit, minmax(140px, 1fr));gap:10px;
   margin-bottom:4px;
@@ -13893,12 +13949,27 @@ function renderFieldMappings() {
         </div>
       </section>
 
-      <div class="fm-kpi-strip">
-        <div class="fm-kpi"><span class="fm-kpi-v">${counts.all}</span><span class="fm-kpi-k">Total fields</span></div>
-        <div class="fm-kpi is-auto"><span class="fm-kpi-v">${counts.auto}</span><span class="fm-kpi-k">Auto-mapped</span></div>
-        <div class="fm-kpi is-review${counts.review > 0 ? ' is-clickable' : ''}" ${counts.review > 0 ? `onclick="setFmStatus('review')" role="button" tabindex="0" title="Filter to fields needing review"` : ''}><span class="fm-kpi-v">${counts.review}</span><span class="fm-kpi-k">Needs review${counts.review > 0 ? ' →' : ''}</span></div>
-        <div class="fm-kpi is-resolved"><span class="fm-kpi-v">${counts.accepted}</span><span class="fm-kpi-k">You've resolved</span></div>
-        <div class="fm-kpi is-skipped"><span class="fm-kpi-v">${counts.skipped}</span><span class="fm-kpi-k">Skipped</span></div>
+      <div class="fm-filtertabs" role="tablist">
+        <button class="fm-tab ${filt === 'all' ? 'is-active' : ''}" data-kind="default" role="tab" aria-selected="${filt === 'all'}" onclick="setFmStatus('all')">
+          <span class="fm-tab-n">${counts.all}</span>
+          <span class="fm-tab-l">All</span>
+        </button>
+        <button class="fm-tab ${filt === 'auto' ? 'is-active' : ''}" data-kind="ok" role="tab" aria-selected="${filt === 'auto'}" onclick="setFmStatus('auto')">
+          <span class="fm-tab-n">${counts.auto}</span>
+          <span class="fm-tab-l">Auto-mapped</span>
+        </button>
+        <button class="fm-tab ${filt === 'review' ? 'is-active' : ''}" data-kind="warn" role="tab" aria-selected="${filt === 'review'}" onclick="setFmStatus('review')">
+          <span class="fm-tab-n">${counts.review}</span>
+          <span class="fm-tab-l">Needs review</span>
+        </button>
+        <button class="fm-tab ${filt === 'accepted' ? 'is-active' : ''}" data-kind="ok" role="tab" aria-selected="${filt === 'accepted'}" onclick="setFmStatus('accepted')">
+          <span class="fm-tab-n">${counts.accepted}</span>
+          <span class="fm-tab-l">Resolved</span>
+        </button>
+        <button class="fm-tab ${filt === 'skipped' ? 'is-active' : ''}" data-kind="idle" role="tab" aria-selected="${filt === 'skipped'}" onclick="setFmStatus('skipped')">
+          <span class="fm-tab-n">${counts.skipped}</span>
+          <span class="fm-tab-l">Skipped</span>
+        </button>
       </div>
 
       <div class="fm-toolbar">
@@ -13910,13 +13981,6 @@ function renderFieldMappings() {
           ${q ? `<button class="fm-search-clear" onclick="clearFmSearch()" aria-label="Clear search">
             <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M3 3l10 10M13 3L3 13"/></svg>
           </button>` : ''}
-        </div>
-        <div class="fm-filter-pills">
-          <button class="fm-filter ${filt === 'all' ? 'is-active' : ''}" onclick="setFmStatus('all')">All<span class="fm-filter-badge">${counts.all}</span></button>
-          <button class="fm-filter ${filt === 'auto' ? 'is-active' : ''}" onclick="setFmStatus('auto')">Auto-mapped<span class="fm-filter-badge">${counts.auto}</span></button>
-          <button class="fm-filter is-warn ${filt === 'review' ? 'is-active' : ''}" onclick="setFmStatus('review')">Needs review<span class="fm-filter-badge">${counts.review}</span></button>
-          <button class="fm-filter ${filt === 'accepted' ? 'is-active' : ''}" onclick="setFmStatus('accepted')">Resolved<span class="fm-filter-badge">${counts.accepted}</span></button>
-          <button class="fm-filter ${filt === 'skipped' ? 'is-active' : ''}" onclick="setFmStatus('skipped')">Skipped<span class="fm-filter-badge">${counts.skipped}</span></button>
         </div>
       </div>
 
