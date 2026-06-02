@@ -13949,27 +13949,12 @@ function renderFieldMappings() {
         </div>
       </section>
 
-      <div class="fm-filtertabs" role="tablist">
-        <button class="fm-tab ${filt === 'all' ? 'is-active' : ''}" data-kind="default" role="tab" aria-selected="${filt === 'all'}" onclick="setFmStatus('all')">
-          <span class="fm-tab-n">${counts.all}</span>
-          <span class="fm-tab-l">All</span>
-        </button>
-        <button class="fm-tab ${filt === 'auto' ? 'is-active' : ''}" data-kind="ok" role="tab" aria-selected="${filt === 'auto'}" onclick="setFmStatus('auto')">
-          <span class="fm-tab-n">${counts.auto}</span>
-          <span class="fm-tab-l">Auto-mapped</span>
-        </button>
-        <button class="fm-tab ${filt === 'review' ? 'is-active' : ''}" data-kind="warn" role="tab" aria-selected="${filt === 'review'}" onclick="setFmStatus('review')">
-          <span class="fm-tab-n">${counts.review}</span>
-          <span class="fm-tab-l">Needs review</span>
-        </button>
-        <button class="fm-tab ${filt === 'accepted' ? 'is-active' : ''}" data-kind="ok" role="tab" aria-selected="${filt === 'accepted'}" onclick="setFmStatus('accepted')">
-          <span class="fm-tab-n">${counts.accepted}</span>
-          <span class="fm-tab-l">Resolved</span>
-        </button>
-        <button class="fm-tab ${filt === 'skipped' ? 'is-active' : ''}" data-kind="idle" role="tab" aria-selected="${filt === 'skipped'}" onclick="setFmStatus('skipped')">
-          <span class="fm-tab-n">${counts.skipped}</span>
-          <span class="fm-tab-l">Skipped</span>
-        </button>
+      <div class="fm-kpi-strip">
+        <div class="fm-kpi"><span class="fm-kpi-v">${counts.all}</span><span class="fm-kpi-k">Total fields</span></div>
+        <div class="fm-kpi is-auto"><span class="fm-kpi-v">${counts.auto}</span><span class="fm-kpi-k">Auto-mapped</span></div>
+        <div class="fm-kpi is-review"><span class="fm-kpi-v">${counts.review}</span><span class="fm-kpi-k">Needs review</span></div>
+        <div class="fm-kpi is-resolved"><span class="fm-kpi-v">${counts.accepted}</span><span class="fm-kpi-k">You've resolved</span></div>
+        <div class="fm-kpi is-skipped"><span class="fm-kpi-v">${counts.skipped}</span><span class="fm-kpi-k">Skipped</span></div>
       </div>
 
       <div class="fm-toolbar">
@@ -13981,6 +13966,13 @@ function renderFieldMappings() {
           ${q ? `<button class="fm-search-clear" onclick="clearFmSearch()" aria-label="Clear search">
             <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M3 3l10 10M13 3L3 13"/></svg>
           </button>` : ''}
+        </div>
+        <div class="fm-filter-pills">
+          <button class="fm-filter ${filt === 'all' ? 'is-active' : ''}" onclick="setFmStatus('all')">All<span class="fm-filter-badge">${counts.all}</span></button>
+          <button class="fm-filter ${filt === 'auto' ? 'is-active' : ''}" onclick="setFmStatus('auto')">Auto-mapped<span class="fm-filter-badge">${counts.auto}</span></button>
+          <button class="fm-filter is-warn ${filt === 'review' ? 'is-active' : ''}" onclick="setFmStatus('review')">Needs review<span class="fm-filter-badge">${counts.review}</span></button>
+          <button class="fm-filter ${filt === 'accepted' ? 'is-active' : ''}" onclick="setFmStatus('accepted')">Resolved<span class="fm-filter-badge">${counts.accepted}</span></button>
+          <button class="fm-filter ${filt === 'skipped' ? 'is-active' : ''}" onclick="setFmStatus('skipped')">Skipped<span class="fm-filter-badge">${counts.skipped}</span></button>
         </div>
       </div>
 
