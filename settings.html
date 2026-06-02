@@ -13361,7 +13361,7 @@ function paintDrawer() {
 
   if (s.step === 0) {
     body = `
-      <div class="drawer-step-h">Step 1 of 5 · Name your instance</div>
+      <div class="drawer-step-h">Step 1 of 4 · Name your instance</div>
       <div class="drawer-step-title">Name and describe this ${escapeHtml(i.name)} instance</div>
       <p style="font-size:12px;color:var(--t2);margin-bottom:14px;line-height:1.55">
         You can activate ${escapeHtml(i.name)} multiple times — for example one for production, one for dev, one for analytics. Each <strong style="color:var(--t1)">instance</strong> has its own credentials, status, and audit log.
@@ -13442,7 +13442,7 @@ function paintDrawer() {
     };
 
     body = `
-      <div class="drawer-step-h">Step 2 of 5 · Authentication method</div>
+      <div class="drawer-step-h">Step 2 of 4 · Authentication method</div>
       <div class="drawer-step-title">Choose how to connect to ${escapeHtml(i.name)}</div>
       <p style="font-size:11.5px;color:var(--t3);margin-bottom:14px;line-height:1.55">
         ${escapeHtml(i.name)} declares ${i.authMethods.length} authentication method${i.authMethods.length===1?'':'s'}. The provider — not AIMS-OS — defines what's available.
@@ -13457,7 +13457,7 @@ function paintDrawer() {
   else if (s.step === 2) {
     if (s.authMethod==='oauth') {
       body = `
-        <div class="drawer-step-h">Step 3 of 5 · OAuth 2.0</div>
+        <div class="drawer-step-h">Step 3 of 4 · OAuth 2.0</div>
         <div class="drawer-step-title">Authorize with ${escapeHtml(i.name)}</div>
         ${authPatternHero(i, 'oauth')}
         ${s.authenticated ? `
@@ -13480,7 +13480,7 @@ function paintDrawer() {
     }
     else if (s.authMethod==='apikey') {
       body = `
-        <div class="drawer-step-h">Step 3 of 5 · API token</div>
+        <div class="drawer-step-h">Step 3 of 4 · API token</div>
         <div class="drawer-step-title">Paste your ${escapeHtml(i.name)} token</div>
         ${authPatternHero(i, 'apikey')}
         <div class="field-group">
@@ -13502,7 +13502,7 @@ function paintDrawer() {
     }
     else if (s.authMethod==='service') {
       body = `
-        <div class="drawer-step-h">Step 3 of 5 · Service account</div>
+        <div class="drawer-step-h">Step 3 of 4 · Service account</div>
         <div class="drawer-step-title">Upload your service account key</div>
         ${authPatternHero(i, 'service')}
         <div class="field-group">
@@ -13522,7 +13522,7 @@ function paintDrawer() {
     else if (s.authMethod==='basic') {
       // Engineering brief §9 — Username/password → token
       body = `
-        <div class="drawer-step-h">Step 3 of 5 · Username + password</div>
+        <div class="drawer-step-h">Step 3 of 4 · Username + password</div>
         <div class="drawer-step-title">Provide credentials for ${escapeHtml(i.name)}</div>
         ${authPatternHero(i, 'basic')}
         <div class="field-group">
@@ -13546,7 +13546,7 @@ function paintDrawer() {
     else if (s.authMethod==='per_user') {
       // Engineering brief §9 — Per-user authentication
       body = `
-        <div class="drawer-step-h">Step 3 of 5 · Per-user authentication</div>
+        <div class="drawer-step-h">Step 3 of 4 · Per-user authentication</div>
         <div class="drawer-step-title">Each user will sign in individually</div>
         ${authPatternHero(i, 'per_user')}
         <div class="connected-panel" style="background:rgba(43,127,255,0.06);border-color:rgba(43,127,255,0.20);color:var(--accent);margin:0">
@@ -13568,7 +13568,7 @@ function paintDrawer() {
       // Engineering brief §13.6 — "Design for the ugliest provider"
       const steps = AUTH_PATTERNS.manual.schema.steps;
       body = `
-        <div class="drawer-step-h">Step 3 of 5 · Manual setup</div>
+        <div class="drawer-step-h">Step 3 of 4 · Manual setup</div>
         <div class="drawer-step-title">Multi-step setup for ${escapeHtml(i.name)}</div>
         ${authPatternHero(i, 'manual')}
         <a href="${AUTH_PATTERNS.manual.schema.video}" style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--cyan);text-decoration:none;margin-bottom:14px" onclick="event.preventDefault();toast('Video walkthrough — coming soon')">
@@ -13602,31 +13602,6 @@ function paintDrawer() {
   }
 
   else if (s.step === 3) {
-    body = `
-      <div class="drawer-step-h">Step 4 of 5 · Choose capabilities</div>
-      <div class="drawer-step-title">What can ${escapeHtml(i.name)} do for you?</div>
-      <p style="font-size:12px;color:var(--t2);margin-bottom:14px;line-height:1.55">
-        Activate only what you need. You can change this later from the instance's <strong>Capabilities</strong> tab. Anything turned off here cannot be used by any agent in your tenant.
-      </p>
-      ${normalizeCaps(i.capabilities||[]).map(c => {
-        const meta = CAP_META[c];
-        return `
-          <div class="auth-card" style="margin-bottom:8px; cursor:default">
-            <div class="auth-card-h" style="margin-bottom:6px">
-              <span class="cap-chip cap-${meta.cls}">${meta.icon}<span>${meta.label}</span></span>
-              <span style="font-size:11px;color:var(--t2);flex:1">${escapeHtml(meta.desc)}</span>
-              <div class="toggle on" onclick="toast('${meta.label} enabled for this instance')"></div>
-            </div>
-            ${c==='mcp' ? `<div style="font-size:11px;color:var(--cyan);background:rgba(6,182,212,0.04);padding:8px 10px;border-radius:6px;border:1px solid rgba(6,182,212,0.20);margin-top:6px"><strong>ℹ Granular activation:</strong> After connecting, you'll see all tools this MCP exposes and activate them individually.</div>` : ''}
-            ${c==='data_sync' ? `<div style="font-size:11px;color:var(--green);background:rgba(5,223,114,0.04);padding:8px 10px;border-radius:6px;border:1px solid rgba(5,223,114,0.20);margin-top:6px"><strong>ℹ Helix mapping required:</strong> Activating Data Sync opens the pipe. Customer needs to verify field mapping in Helix Data Studio for data to actually flow.</div>` : ''}
-          </div>
-        `;
-      }).join('')}
-    `;
-    footer = `<button class="btn btn-ghost btn-sm" onclick="drawerPrev()">← Back</button><button class="btn btn-primary btn-sm" onclick="drawerNext()">Continue →</button>`;
-  }
-
-  else if (s.step === 4) {
     // Sprint D — Step 5 of 5 · Confirm. Studios scope + Field mapping
     // removed per Edgardo: scoping happens on the instance Access tab, and
     // mapping lives in Data Studio.
@@ -13639,7 +13614,7 @@ function paintDrawer() {
     const modeLabel = s.authMode === 'aims_managed' ? 'AIMS-managed' : 'BYOK';
     const capList = (i.capabilities || []).map(k => (CAP_META[k] || {}).label || k).filter(Boolean).join(', ');
     body = `
-      <div class="drawer-step-h">Step 5 of 5 · Confirm</div>
+      <div class="drawer-step-h">Step 4 of 4 · Confirm</div>
       <div class="drawer-step-title">Review and connect</div>
       <div class="confirm-summary">
         Instance name: <strong>${escapeHtml(s.instanceName)}</strong>${s.instanceDesc?` <span style="color:var(--t3)">· ${escapeHtml(s.instanceDesc)}</span>`:''}<br>
@@ -13651,10 +13626,11 @@ function paintDrawer() {
     footer = `<button class="btn btn-ghost btn-sm" onclick="drawerPrev()">← Back</button><button class="btn btn-primary" onclick="finalizeConnect()">Connect ${escapeHtml(i.name)} →</button>`;
   }
 
-  else if (s.step === 5 || s.step === 6) {
-    // Sprint D — legacy step keys 5+6 now redirect to the consolidated
-    // Confirm. Stale state from old sessions ends up here safely.
-    state.drawerState.step = 4;
+  else if (s.step === 4 || s.step === 5 || s.step === 6) {
+    // Legacy step keys (capabilities removed in May 2026, plus older 5+6)
+    // funnel here and forward to the current Confirm step. Stale state from
+    // any session lands safely.
+    state.drawerState.step = 3;
     return paintDrawer();
   }
 
