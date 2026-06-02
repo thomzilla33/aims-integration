@@ -13621,7 +13621,9 @@ function paintDrawer() {
         Authentication: <strong>${escapeHtml(methodLabel)}</strong> · <strong>${escapeHtml(modeLabel)}</strong>${s.displayName?` · "${escapeHtml(s.displayName)}"`:''}<br>
         Capabilities enabled: <strong>${i.capabilities.length}</strong>${capList?` <span style="color:var(--t3)">(${escapeHtml(capList)})</span>`:''}
       </div>
-      <p style="font-size:12px;color:var(--t2);line-height:1.55">After connecting, you'll land on the new instance detail. Per-instance access (who and which workspaces) is configured there — and any Data Sync field mapping happens in <a href="data-studio.html#/mappings" style="color:var(--cyan);text-decoration:none">Data Studio</a>.</p>
+      <p style="font-size:12px;color:var(--t2);line-height:1.55">${(i.capabilities||[]).map(c=>String(c).toLowerCase()).some(c=>c==='data_sync'||c==='datasync')
+        ? `After connecting, we'll take you to <a href="data-studio.html#/connections" style="color:var(--cyan);text-decoration:none">Data Studio</a> to map this connection's fields. Per-instance access (who can use it) is configured later from the instance's Access tab.`
+        : `After connecting, you'll land on the new instance detail. Per-instance access (who and which workspaces) is configured there.`}</p>
     `;
     footer = `<button class="btn btn-ghost btn-sm" onclick="drawerPrev()">← Back</button><button class="btn btn-primary" onclick="finalizeConnect()">Connect ${escapeHtml(i.name)} →</button>`;
   }
@@ -13679,8 +13681,7 @@ function finalizeConnect(){
   // error. Per-instance access lives on the Access tab now.
   i.studios = i.studios || { governance:true, agentic:true, workforce:true };
   i.allowPersonal = !!s.allowPersonal;
-  // Sprint D — Edgardo: "cuando termine, te redirijo a la instancia".
-  // Create a real instance in PROVIDER_INSTANCES and redirect to its detail.
+  // Create a real instance in PROVIDER_INSTANCES.
   const instId = `${i.slug}-${Date.now().toString(36)}`;
   const newInst = {
     id: instId,
@@ -13701,8 +13702,19 @@ function finalizeConnect(){
     PROVIDER_INSTANCES[i.slug].push(newInst);
   }
   closeDrawer();
-  toast(`${s.instanceName} connected ✓ — manage access on the new instance`, 'success');
-  navigate(`#/integrations/${i.slug}/instances/${instId}`);
+  // Smart redirect:
+  //   - Data Sync in capabilities  → Data Studio (the user needs to map fields)
+  //   - Tool/MCP only              → instance detail in Admin Studio (no DS context)
+  // This matches the connect-flow handoff from the Data Studio wizard (Phase C).
+  const caps = (i.capabilities || []).map(c => String(c).toLowerCase());
+  const hasDataSync = caps.includes('data_sync') || caps.includes('datasync') || caps.includes('data sync');
+  if (hasDataSync) {
+    toast(`${s.instanceName} connected ✓ — taking you to Data Studio to map fields`, 'success');
+    setTimeout(() => { window.location.href = `data-studio.html#/connections/${encodeURIComponent(i.slug)}`; }, 350);
+  } else {
+    toast(`${s.instanceName} connected ✓ — manage access on the new instance`, 'success');
+    navigate(`#/integrations/${i.slug}/instances/${instId}`);
+  }
 }
 
 /* ====================== AUDIT (full) ====================== */
