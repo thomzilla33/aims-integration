@@ -2852,6 +2852,21 @@ html.theme-light .inbox-open:hover{background:rgba(56,189,248,0.08); color:#0284
   .inbox-row-status, .inbox-row-requester, .inbox-row-quote{display:none}
 }
 
+.ws-kpi-strip{
+  display:grid;grid-template-columns:repeat(auto-fit, minmax(160px, 1fr));gap:10px;
+  margin-bottom:14px;
+}
+.ws-kpi{
+  background:linear-gradient(180deg, rgba(255,255,255,0.034), rgba(255,255,255,0.014));
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:12px;padding:12px 14px;
+  display:flex;flex-direction:column;gap:3px;
+}
+.ws-kpi-v{font-size:22px;font-weight:700;color:var(--t1);font-variant-numeric:tabular-nums;letter-spacing:-0.01em;}
+.ws-kpi-k{font-size:10.5px;font-weight:600;letter-spacing:.08em;color:var(--t3);text-transform:uppercase;}
+.ws-kpi.is-members{background:rgba(16,185,129,0.08);border-color:rgba(16,185,129,0.28);}
+.ws-kpi.is-members .ws-kpi-v,.ws-kpi.is-members .ws-kpi-k{color:#34d39c;}
+
 /* ============================================================================
    .ws-* — Workspaces surface (list cards + detail tabs + cross-link rows)
 ============================================================================ */
@@ -9346,18 +9361,17 @@ function renderWorkspaces() {
         <span class="crumb-current">Workspaces</span>
       </div>
 
-      <section class="hero" data-tone="info">
+      <section class="hero">
         <div class="hero-main">
           <h1 class="hero-title">Workspaces</h1>
           <p class="hero-desc">Teams in your tenant. Each workspace owns its own set of exposed integrations, members, and activity scope.</p>
         </div>
-        <aside class="hero-aside">
-          <div class="hero-kpis">
-            <div class="hero-kpi" data-kind="info"><span class="hero-kpi-n">${MOCK_WORKSPACES.length}</span><span class="hero-kpi-l">Workspaces</span></div>
-            <div class="hero-kpi" data-kind="ok"><span class="hero-kpi-n">${totalMembers}</span><span class="hero-kpi-l">Members</span></div>
-          </div>
-        </aside>
       </section>
+
+      <div class="ws-kpi-strip">
+        <div class="ws-kpi"><span class="ws-kpi-v">${MOCK_WORKSPACES.length}</span><span class="ws-kpi-k">Workspaces</span></div>
+        <div class="ws-kpi is-members"><span class="ws-kpi-v">${totalMembers}</span><span class="ws-kpi-k">Members</span></div>
+      </div>
 
       <div class="toolbar">
         <label class="toolbar-search">

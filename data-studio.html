@@ -2383,6 +2383,30 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
 
 /* ============ TABLES — PHASE 1 (split layout + sync panel) ============ */
 
+/* ── Shared stats-strip pattern across DS surfaces ──────────────── */
+.ds-kpi-strip, .tpl-kpi-strip{
+  display:grid;grid-template-columns:repeat(auto-fit, minmax(160px, 1fr));gap:10px;
+  margin-bottom:14px;
+}
+.ds-kpi, .tpl-kpi{
+  background:linear-gradient(180deg, rgba(255,255,255,0.034), rgba(255,255,255,0.014));
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:12px;padding:12px 14px;
+  display:flex;flex-direction:column;gap:3px;
+}
+.ds-kpi-v, .tpl-kpi-v{font-size:22px;font-weight:700;color:var(--t1);font-variant-numeric:tabular-nums;letter-spacing:-0.01em;}
+.ds-kpi-k, .tpl-kpi-k{font-size:10.5px;font-weight:600;letter-spacing:.08em;color:var(--t3);text-transform:uppercase;}
+.ds-kpi.is-ok{background:rgba(16,185,129,0.08);border-color:rgba(16,185,129,0.28);}
+.ds-kpi.is-ok .ds-kpi-v,.ds-kpi.is-ok .ds-kpi-k{color:#34d39c;}
+.ds-kpi.is-warn{background:rgba(245,158,11,0.08);border-color:rgba(245,158,11,0.34);}
+.ds-kpi.is-warn .ds-kpi-v,.ds-kpi.is-warn .ds-kpi-k{color:#fbbf24;}
+.tpl-kpi.is-applied{background:rgba(16,185,129,0.08);border-color:rgba(16,185,129,0.28);}
+.tpl-kpi.is-applied .tpl-kpi-v,.tpl-kpi.is-applied .tpl-kpi-k{color:#34d39c;}
+.tpl-kpi.is-custom{background:rgba(56,189,248,0.08);border-color:rgba(56,189,248,0.28);}
+.tpl-kpi.is-custom .tpl-kpi-v,.tpl-kpi.is-custom .tpl-kpi-k{color:#7ed3f7;}
+.tpl-kpi.is-unapplied{background:rgba(245,158,11,0.08);border-color:rgba(245,158,11,0.34);}
+.tpl-kpi.is-unapplied .tpl-kpi-v,.tpl-kpi.is-unapplied .tpl-kpi-k{color:#fbbf24;}
+
 /* Library polish */
 /* Stats strip — informational, read-only KPIs */
 .tbl-kpi-strip{
@@ -3822,6 +3846,24 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
 .tpl-filter.is-active .tpl-filter-badge{background:rgba(56,189,248,0.26);color:var(--t1);}
 
 /* + New button (uses tbl-btn-new vibe but cyan for Templates) */
+.tpl-new-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:7px 12px;
+  background:linear-gradient(135deg, rgba(56,189,248,0.22), rgba(56,189,248,0.10));
+  border:1px solid rgba(56,189,248,0.45);
+  border-radius:8px;
+  color:#7ed3f7;
+  font-family:inherit;font-size:12px;font-weight:700;
+  cursor:pointer;white-space:nowrap;
+  margin-left:auto;
+  transition: all .15s ease;
+}
+.tpl-new-btn:hover{
+  background:linear-gradient(135deg, rgba(56,189,248,0.32), rgba(56,189,248,0.16));
+  border-color:rgba(56,189,248,0.65);
+  transform:translateY(-1px);
+}
+
 .tpl-btn-new{
   display:inline-flex;align-items:center;gap:6px;
   padding:8px 14px;border-radius:9px;
@@ -9942,36 +9984,22 @@ function renderTemplatesLibrary() {
         <span class="crumb-current">Templates</span>
       </div>
 
-      <section class="hero" data-tone="info">
+      <section class="hero">
         <div class="hero-main">
-          ${(function(){
-            const latest = tplLibrary.reduce((a, t) => {
-              const v = (t.versions || [])[0];
-              if (!v) return a;
-              if (!a || (v.createdAt && v.createdAt > a)) return v.createdAt;
-              return a;
-            }, null);
-            return '';
-          })()}
           <h1 class="hero-title">Validation &amp; transformation templates</h1>
           <p class="hero-desc">Reusable rule packs applied to Table fields. Define once, every applied field inherits the rules.</p>
         </div>
-        <aside class="hero-aside">
-          <div class="hero-kpis">
-            <div class="hero-kpi" data-kind="info"><span class="hero-kpi-n">${counts.all}</span><span class="hero-kpi-l">Packs</span></div>
-            <div class="hero-kpi" data-kind="ok"><span class="hero-kpi-n">${tplLibrary.reduce((sum, t) => sum + (t.appliedTo || []).length, 0)}</span><span class="hero-kpi-l">Applied</span></div>
-            <div class="hero-kpi" data-kind="idle"><span class="hero-kpi-n">${counts.cloned + counts.custom}</span><span class="hero-kpi-l">Custom</span></div>
-            ${(function(){
-              const unapplied = tplLibrary.filter(t => (t.appliedTo || []).length === 0 && t.source !== 'system').length;
-              return unapplied > 0 ? `<div class="hero-kpi" data-kind="warn"><span class="hero-kpi-n">${unapplied}</span><span class="hero-kpi-l">Unapplied</span></div>` : '';
-            })()}
-          </div>
-          <button class="hero-cta" onclick="openTemplateCreate()">
-            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9"/></svg>
-            New template
-          </button>
-        </aside>
       </section>
+
+      <div class="tpl-kpi-strip">
+        <div class="tpl-kpi"><span class="tpl-kpi-v">${counts.all}</span><span class="tpl-kpi-k">Packs</span></div>
+        <div class="tpl-kpi is-applied"><span class="tpl-kpi-v">${tplLibrary.reduce((sum, t) => sum + (t.appliedTo || []).length, 0)}</span><span class="tpl-kpi-k">Applied</span></div>
+        <div class="tpl-kpi is-custom"><span class="tpl-kpi-v">${counts.cloned + counts.custom}</span><span class="tpl-kpi-k">Custom</span></div>
+        ${(function(){
+          const unapplied = tplLibrary.filter(t => (t.appliedTo || []).length === 0 && t.source !== 'system').length;
+          return unapplied > 0 ? `<div class="tpl-kpi is-unapplied"><span class="tpl-kpi-v">${unapplied}</span><span class="tpl-kpi-k">Unapplied</span></div>` : '';
+        })()}
+      </div>
 
       <div class="tpl-lib-toolbar">
         <div class="tpl-lib-search">
@@ -9989,6 +10017,10 @@ function renderTemplatesLibrary() {
           <button class="tpl-filter ${f === 'cloned' ? 'is-active' : ''}" onclick="setTplLibFilter('cloned')">Cloned<span class="tpl-filter-badge">${counts.cloned}</span></button>
           <button class="tpl-filter ${f === 'custom' ? 'is-active' : ''}" onclick="setTplLibFilter('custom')">Custom<span class="tpl-filter-badge">${counts.custom}</span></button>
         </div>
+        <button class="tpl-new-btn" onclick="openTemplateCreate()" aria-label="Create a new template">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9"/></svg>
+          New template
+        </button>
       </div>
 
       ${domainPills ? `<div class="tpl-lib-toolbar" style="margin-top:-8px;">
@@ -14456,27 +14488,18 @@ function renderConnections() {
       <span class="crumb-current">Connections</span>
     </div>
 
-    <section class="hero" data-tone="${pending.length > 0 ? 'warn' : 'info'}">
+    <section class="hero">
       <div class="hero-main">
-        <h1 class="hero-title">${pending.length > 0 ? `<span class="hero-emphasis">${pending.length}</span> connection${pending.length===1?'':'s'} need mapping` : 'Every connection is mapped and flowing'}</h1>
-        <p class="hero-desc">Connections from <a href="settings.html">Admin Studio</a> with Data Sync enabled.</p>
+        <h1 class="hero-title">Connections</h1>
+        <p class="hero-desc">Connections from <a href="settings.html">Admin Studio</a> with Data Sync enabled. Map their events into your Tables here.</p>
       </div>
-      <aside class="hero-aside">
-        <div class="hero-kpis">
-          <div class="hero-kpi" data-kind="ok"><span class="hero-kpi-n">${mapped.length}</span><span class="hero-kpi-l">Mapped</span></div>
-          <div class="hero-kpi" data-kind="${pending.length > 0 ? 'warn' : 'idle'}"><span class="hero-kpi-n">${pending.length}</span><span class="hero-kpi-l">Pending</span></div>
-        </div>
-        ${pending.length > 0
-          ? `<button class="hero-cta" onclick="document.querySelector('.ds-grid')?.scrollIntoView({behavior:'smooth',block:'start'})" aria-label="Jump to connections needing mapping">
-              Resolve ${pending.length} mapping${pending.length===1?'':'s'}
-              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 8h10M9.5 4.5L13 8l-3.5 3.5"/></svg>
-             </button>`
-          : `<a class="hero-cta" href="settings.html#/integrations" aria-label="Connect a new source in Admin Studio">
-              Connect new source
-              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 8h10M9.5 4.5L13 8l-3.5 3.5"/></svg>
-             </a>`}
-      </aside>
     </section>
+
+    <div class="ds-kpi-strip">
+      <div class="ds-kpi"><span class="ds-kpi-v">${list.length}</span><span class="ds-kpi-k">Active</span></div>
+      <div class="ds-kpi is-ok"><span class="ds-kpi-v">${mapped.length}</span><span class="ds-kpi-k">Mapped</span></div>
+      ${pending.length > 0 ? `<div class="ds-kpi is-warn"><span class="ds-kpi-v">${pending.length}</span><span class="ds-kpi-k">Pending</span></div>` : ''}
+    </div>
 
     <div class="ds-section">
       <div class="ds-section-h">
