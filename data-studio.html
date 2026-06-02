@@ -2566,6 +2566,46 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
 .tbl-field-flag.f-t {background:rgba(255,255,255,0.06);color:var(--t2);border:1px solid var(--line-strong)}
 .tbl-field-flag.f-u {background:rgba(43,127,255,0.10);color:var(--blue);border:1px solid rgba(43,127,255,0.28)}
 
+
+/* ============ Spec v2 — STUB banner + canonical name editor ============ */
+.tbl-map-stub-banner{
+  display:flex; align-items:center; gap:12px;
+  margin:0 0 14px;
+  padding:10px 12px;
+  background:rgba(245,158,11,0.06);
+  border:1px solid rgba(245,158,11,0.36);
+  border-left:3px solid var(--amber);
+  border-radius:10px;
+}
+.tbl-map-stub-banner-ic{
+  width:26px; height:26px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center; border-radius:6px;
+  background:rgba(245,158,11,0.14); color:var(--amber);
+}
+.tbl-map-stub-banner-l{flex:1; min-width:0;}
+.tbl-map-stub-banner-t{font-size:12.5px; font-weight:700; color:var(--amber); letter-spacing:-0.005em;}
+.tbl-map-stub-banner-d{font-size:11.5px; color:var(--t2); margin-top:2px; line-height:1.45;}
+
+.tbl-map-target-input{
+  width:100%;
+  background:transparent;
+  border:1px solid rgba(16,185,129,0.30);
+  border-radius:6px;
+  padding:5px 8px;
+  font-family:'SF Mono', ui-monospace, monospace;
+  font-size:13px; font-weight:600;
+  color:var(--emerald);
+  outline:none;
+  transition: border-color .12s, background .12s;
+}
+.tbl-map-target-input:focus{
+  border-color:var(--emerald);
+  background:rgba(16,185,129,0.06);
+}
+.tbl-map-target-hint{
+  font-size:10.5px; color:var(--t3); margin-top:4px;
+  font-family:'SF Mono', ui-monospace, monospace;
+}
 /* ============ PHASE A — Canonical Mapping ============ */
 .tbl-map{display:flex;flex-direction:column;gap:14px;padding:14px;}
 .tbl-map-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;}
@@ -6835,7 +6875,10 @@ function renderTables() {
           ${errorCount > 0 ? `<button class="hero-cta" onclick="tblLibSetFilter('errors')" aria-label="Filter to tables with errors">
             Resolve ${errorCount} error${errorCount===1?'':'s'}
             <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 8h10M9.5 4.5L13 8l-3.5 3.5"/></svg>
-          </button>` : ''}
+          </button>` : `<button class="hero-cta" data-tone="ok" onclick="if(typeof openWizard==='function'){openWizard()}else{location.hash='/connections'}" aria-label="Create a new table by connecting a source">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg>
+            New Table
+          </button>`}
         </aside>
       </section>
 
@@ -8219,6 +8262,21 @@ function tblMapRemove(idx) {
   persistFieldOverrides();
   renderTableDetail(ctx.tableName);
 }
+function tblMapSetCanonicalName(value) {
+  const ctx = _tblMappingCurrent(); if (!ctx) return;
+  // Sanitise to snake_case shape: lowercase, replace runs of non-alphanum
+  // with single underscores, trim leading/trailing underscores.
+  const sanitised = String(value || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '');
+  ensureFieldOverride(ctx.tableName, tblSelectedFieldName());
+  const ov = getFieldOverride(ctx.tableName, tblSelectedFieldName());
+  ov.canonicalName = sanitised || null;
+  persistFieldOverrides();
+  // Don't re-render — preserve cursor position. Update the hint subtitle if needed.
+}
+
 function tblMapEditParam(idx, key, value) {
   const ctx = _tblMappingCurrent(); if (!ctx) return;
   const ov = getFieldOverride(ctx.tableName, tblSelectedFieldName());
@@ -8366,8 +8424,25 @@ function renderTblMappingTab(t, fields) {
     </div>
   ` : '';
 
+  // Canonical target name — defaults to the field's current displayName;
+  // user can edit to enforce snake_case. Saved to the same override store
+  // as transformations so it persists across sessions.
+  const ovForName = getFieldOverride(t.name, f.name);
+  const canonicalName = (ovForName && ovForName.canonicalName) || displayName;
+
   return `
     <div class="tbl-map">
+      ${hasStub ? `
+      <div class="tbl-map-stub-banner">
+        <span class="tbl-map-stub-banner-ic">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="8" r="6.5"/><path d="M8 5v3.5M8 11h.01"/></svg>
+        </span>
+        <div class="tbl-map-stub-banner-l">
+          <div class="tbl-map-stub-banner-t">This pipeline uses experimental operations</div>
+          <div class="tbl-map-stub-banner-d">Steps marked <span class="tbl-map-stub-chip" style="vertical-align:1px">STUB</span> are provisional. The data team will finalise them in a later release — behavior may change.</div>
+        </div>
+      </div>
+      ` : ''}
       <div class="tbl-map-head">
         <div class="tbl-map-head-l">
           <div class="tbl-map-head-eyebrow">Pipeline</div>
@@ -8397,8 +8472,9 @@ function renderTblMappingTab(t, fields) {
 
         <div class="tbl-map-arrow"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 2v10M3 8l4 4 4-4"/></svg></div>
         <div class="tbl-map-node tbl-map-target">
-          <div class="tbl-map-node-eyebrow">TARGET · canonical</div>
-          <div class="tbl-map-node-name">${escapeHtml(displayName)}</div>
+          <div class="tbl-map-node-eyebrow">TARGET &middot; canonical</div>
+          <input class="tbl-map-target-input" type="text" value="${escapeHtml(canonicalName)}" placeholder="snake_case_field_name" oninput="tblMapSetCanonicalName(this.value)" spellcheck="false" />
+          <div class="tbl-map-target-hint">snake_case · letters, numbers, underscores</div>
         </div>
       </div>
 
