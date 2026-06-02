@@ -6684,33 +6684,26 @@ function renderTables() {
         <span class="crumb-current">Tables</span>
       </div>
 
-      <header class="tbl-h">
-        <div class="tbl-h-l">
-          <div class="tbl-h-eyebrow-row" style="margin-bottom:8px">
-            <span class="tbl-h-time">${totalTables} table${totalTables===1?'':'s'} · ${formatRowCount(totalRows)} rows</span>
+      <section class="hero" data-tone="${errorCount > 0 ? 'warn' : 'default'}">
+        <div class="hero-main">
+          <div class="hero-eyebrow">
+            <span class="hero-meta">${totalTables} table${totalTables===1?'':'s'} · ${formatRowCount(totalRows)} rows</span>
           </div>
-          <h1 class="tbl-h-title">All your data tables</h1>
-          <p class="tbl-h-desc">One Table can be fed by multiple connections.</p>
+          <h1 class="hero-title">${errorCount > 0 ? `<span class="hero-emphasis">${errorCount}</span> table${errorCount===1?'':'s'} need attention` : 'All your data tables'}</h1>
+          <p class="hero-desc">One Table can be fed by multiple connections.</p>
         </div>
-        <div class="tbl-counts">
-          <div class="tbl-count is-ok">
-            <span class="tbl-count-v">${totalTables}</span>
-            <span class="tbl-count-l">Tables</span>
+        <aside class="hero-aside">
+          <div class="hero-kpis">
+            <div class="hero-kpi" data-kind="ok"><span class="hero-kpi-n">${totalTables}</span><span class="hero-kpi-l">Tables</span></div>
+            <div class="hero-kpi" data-kind="info"><span class="hero-kpi-n">${formatRowCount(totalRows)}</span><span class="hero-kpi-l">Total rows</span></div>
+            ${errorCount > 0 ? `<div class="hero-kpi" data-kind="warn"><span class="hero-kpi-n">${errorCount}</span><span class="hero-kpi-l">Errors</span></div>` : ''}
           </div>
-          <div class="tbl-count is-rows">
-            <span class="tbl-count-v">${formatRowCount(totalRows)}</span>
-            <span class="tbl-count-l">Total rows</span>
-          </div>
-          ${errorCount > 0 ? `<div class="tbl-count is-warn">
-            <span class="tbl-count-v">${errorCount}</span>
-            <span class="tbl-count-l">Errors</span>
-          </div>
-          <button class="tbl-hero-cta" onclick="tblLibSetFilter('errors')" aria-label="Filter to tables with errors">
+          ${errorCount > 0 ? `<button class="hero-cta" onclick="tblLibSetFilter('errors')" aria-label="Filter to tables with errors">
             Resolve ${errorCount} error${errorCount===1?'':'s'}
             <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 8h10M9.5 4.5L13 8l-3.5 3.5"/></svg>
           </button>` : ''}
-        </div>
-      </header>
+        </aside>
+      </section>
 
       <div class="tbl-toolbar">
         <label class="tbl-search">
@@ -9623,48 +9616,36 @@ function renderTemplatesLibrary() {
         <span class="crumb-current">Templates</span>
       </div>
 
-      <div class="tpl-page-h-row">
-        <div>
-          <div class="tpl-h-eyebrow-row" style="margin-bottom:8px">
+      <section class="hero" data-tone="info">
+        <div class="hero-main">
+          ${(function(){
+            const latest = tplLibrary.reduce((a, t) => {
+              const v = (t.versions || [])[0];
+              if (!v) return a;
+              if (!a || (v.createdAt && v.createdAt > a)) return v.createdAt;
+              return a;
+            }, null);
+            return latest ? `<div class="hero-eyebrow"><span class="hero-meta">Last edit ${escapeHtml(formatTplRelative(latest))}</span></div>` : '';
+          })()}
+          <h1 class="hero-title">Validation &amp; transformation templates</h1>
+          <p class="hero-desc">Reusable rule packs applied to Table fields. Define once, every applied field inherits the rules.</p>
+        </div>
+        <aside class="hero-aside">
+          <div class="hero-kpis">
+            <div class="hero-kpi" data-kind="info"><span class="hero-kpi-n">${counts.all}</span><span class="hero-kpi-l">Packs</span></div>
+            <div class="hero-kpi" data-kind="ok"><span class="hero-kpi-n">${tplLibrary.reduce((sum, t) => sum + (t.appliedTo || []).length, 0)}</span><span class="hero-kpi-l">Applied</span></div>
+            <div class="hero-kpi" data-kind="idle"><span class="hero-kpi-n">${counts.cloned + counts.custom}</span><span class="hero-kpi-l">Custom</span></div>
             ${(function(){
-              const latest = tplLibrary.reduce((a, t) => {
-                const v = (t.versions || [])[0];
-                if (!v) return a;
-                if (!a || (v.createdAt && v.createdAt > a)) return v.createdAt;
-                return a;
-              }, null);
-              return latest ? `<span class="tpl-h-time">Last edit ${escapeHtml(formatTplRelative(latest))}</span>` : '';
+              const unapplied = tplLibrary.filter(t => (t.appliedTo || []).length === 0 && t.source !== 'system').length;
+              return unapplied > 0 ? `<div class="hero-kpi" data-kind="warn"><span class="hero-kpi-n">${unapplied}</span><span class="hero-kpi-l">Unapplied</span></div>` : '';
             })()}
           </div>
-          <h1 class="tpl-h-title">Validation &amp; transformation templates</h1>
-          <p class="tpl-h-sub">Reusable rule packs applied to Table fields — define once, every applied field inherits the rules.</p>
-        </div>
-        <div class="tpl-h-stats">
-          <div class="tpl-h-kpi is-primary">
-            <span class="tpl-h-kpi-n">${counts.all}</span>
-            <span class="tpl-h-kpi-l">Packs</span>
-          </div>
-          <div class="tpl-h-kpi is-applied">
-            <span class="tpl-h-kpi-n">${tplLibrary.reduce((sum, t) => sum + (t.appliedTo || []).length, 0)}</span>
-            <span class="tpl-h-kpi-l">Applied</span>
-          </div>
-          <div class="tpl-h-kpi is-custom">
-            <span class="tpl-h-kpi-n">${counts.cloned + counts.custom}</span>
-            <span class="tpl-h-kpi-l">Custom</span>
-          </div>
-          ${(function(){
-            const unapplied = tplLibrary.filter(t => (t.appliedTo || []).length === 0 && t.source !== 'system').length;
-            return unapplied > 0 ? `<div class="tpl-h-kpi is-unapplied">
-              <span class="tpl-h-kpi-n">${unapplied}</span>
-              <span class="tpl-h-kpi-l">Unapplied</span>
-            </div>` : '';
-          })()}
-          <button class="tpl-btn-new" onclick="openTemplateCreate()" style="align-self:stretch;">
+          <button class="hero-cta" onclick="openTemplateCreate()">
             <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9"/></svg>
             New template
           </button>
-        </div>
-      </div>
+        </aside>
+      </section>
 
       <div class="tpl-lib-toolbar">
         <div class="tpl-lib-search">
@@ -13671,19 +13652,21 @@ function renderFieldMappings() {
         <span class="crumb-current">Field mappings</span>
       </div>
 
-      <div class="fm-page-row">
-        <div>
-          <div class="fm-h-eyebrow-row" style="margin-bottom:8px">
-            <span class="fm-h-time">${counts.all} field${counts.all===1?'':'s'} · ${counts.review} need review</span>
+      <section class="hero" data-tone="${counts.review > 0 ? 'warn' : 'default'}">
+        <div class="hero-main">
+          <div class="hero-eyebrow">
+            <span class="hero-meta">${counts.all} field${counts.all===1?'':'s'} · ${counts.review} need review</span>
           </div>
-          <h1 class="fm-h-title">Cross-connection field mappings</h1>
-          <p class="fm-h-sub">Auto-mapped fields go through silently. Custom ones wait here for a decision.</p>
+          <h1 class="hero-title">${counts.review > 0 ? `<span class="hero-emphasis">${counts.review}</span> field${counts.review===1?'':'s'} need review` : 'Cross-connection field mappings'}</h1>
+          <p class="hero-desc">Auto-mapped fields go through silently. Custom ones wait here for a decision.</p>
         </div>
-        ${counts.review > 0 ? `<button class="fm-hero-cta" onclick="setFmStatus('review')" aria-label="Filter to fields needing review">
-          Resolve ${counts.review} field${counts.review===1?'':'s'}
-          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 8h10M9.5 4.5L13 8l-3.5 3.5"/></svg>
-        </button>` : ''}
-      </div>
+        ${counts.review > 0 ? `<aside class="hero-aside">
+          <button class="hero-cta" onclick="setFmStatus('review')" aria-label="Filter to fields needing review">
+            Resolve ${counts.review} field${counts.review===1?'':'s'}
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 8h10M9.5 4.5L13 8l-3.5 3.5"/></svg>
+          </button>
+        </aside>` : ''}
+      </section>
 
       <div class="fm-kpi-strip">
         <div class="fm-kpi"><span class="fm-kpi-v">${counts.all}</span><span class="fm-kpi-k">Total fields</span></div>
@@ -13994,13 +13977,15 @@ function renderSchemaVersions() {
         <span class="crumb-current">Schema versions</span>
       </div>
 
-      <div>
-        <div class="sv-h-eyebrow-row" style="margin-bottom:8px">
-          <span class="sv-h-time">${timeline.length} version${timeline.length===1?'':'s'} captured</span>
+      <section class="hero">
+        <div class="hero-main">
+          <div class="hero-eyebrow">
+            <span class="hero-meta">${timeline.length} version${timeline.length===1?'':'s'} captured</span>
+          </div>
+          <h1 class="hero-title">Schema change history</h1>
+          <p class="hero-desc">Every edit captures a version.</p>
         </div>
-        <h1 class="sv-h-title">Schema change history</h1>
-        <p class="sv-h-sub">Every edit captures a version. Browse the timeline, then jump to any Table to inspect or restore.</p>
-      </div>
+      </section>
 
       <div class="sv-kpi-strip">
         <div class="sv-kpi"><span class="sv-kpi-v">${timeline.length}</span><span class="sv-kpi-k">Total versions</span></div>
