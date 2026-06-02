@@ -2384,6 +2384,45 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
 /* ============ TABLES — PHASE 1 (split layout + sync panel) ============ */
 
 /* Library polish */
+/* Stats strip — informational, read-only KPIs */
+.tbl-kpi-strip{
+  display:grid;grid-template-columns:repeat(auto-fit, minmax(160px, 1fr));gap:10px;
+  margin-bottom:14px;
+}
+.tbl-kpi{
+  background:linear-gradient(180deg, rgba(255,255,255,0.034), rgba(255,255,255,0.014));
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:12px;padding:12px 14px;
+  display:flex;flex-direction:column;gap:3px;
+}
+.tbl-kpi-v{font-size:22px;font-weight:700;color:var(--t1);font-variant-numeric:tabular-nums;letter-spacing:-0.01em;}
+.tbl-kpi-k{font-size:10.5px;font-weight:600;letter-spacing:.08em;color:var(--t3);text-transform:uppercase;}
+.tbl-kpi.is-rows{background:rgba(56,189,248,0.08);border-color:rgba(56,189,248,0.28);}
+.tbl-kpi.is-rows .tbl-kpi-v,.tbl-kpi.is-rows .tbl-kpi-k{color:#7ed3f7;}
+.tbl-kpi.is-errors{background:rgba(239,68,68,0.08);border-color:rgba(239,68,68,0.32);}
+.tbl-kpi.is-errors .tbl-kpi-v,.tbl-kpi.is-errors .tbl-kpi-k{color:#fca5a5;}
+
+/* "+ New Table" compact CTA in toolbar */
+.tbl-new-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:7px 12px;
+  background:linear-gradient(135deg, rgba(16,185,129,0.22), rgba(16,185,129,0.10));
+  border:1px solid rgba(16,185,129,0.45);
+  border-radius:8px;
+  color:var(--emerald);
+  font-family:inherit;font-size:12px;font-weight:700;
+  cursor:pointer;white-space:nowrap;
+  margin-left:auto;
+  transition: all .15s ease;
+}
+.tbl-new-btn:hover{
+  background:linear-gradient(135deg, rgba(16,185,129,0.32), rgba(16,185,129,0.16));
+  border-color:rgba(16,185,129,0.65);
+  transform:translateY(-1px);
+}
+
+.tbl-filter-pills{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+
 .tbl-toolbar{
   display:flex;align-items:center;gap:10px;flex-wrap:wrap;
   margin-bottom:14px;padding:10px 14px;
@@ -6940,36 +6979,33 @@ function renderTables() {
         <span class="crumb-current">Tables</span>
       </div>
 
-      <section class="hero" data-tone="${errorCount > 0 ? 'warn' : 'default'}">
+      <section class="hero">
         <div class="hero-main">
-          <h1 class="hero-title">${errorCount > 0 ? `<span class="hero-emphasis">${errorCount}</span> table${errorCount===1?'':'s'} need attention` : 'All your data tables'}</h1>
+          <h1 class="hero-title">All your data tables</h1>
           <p class="hero-desc">One Table can be fed by multiple connections.</p>
         </div>
-        <aside class="hero-aside">
-          <div class="hero-kpis">
-            <div class="hero-kpi" data-kind="ok"><span class="hero-kpi-n">${totalTables}</span><span class="hero-kpi-l">Tables</span></div>
-            <div class="hero-kpi" data-kind="info"><span class="hero-kpi-n">${formatRowCount(totalRows)}</span><span class="hero-kpi-l">Total rows</span></div>
-            ${errorCount > 0 ? `<div class="hero-kpi" data-kind="warn"><span class="hero-kpi-n">${errorCount}</span><span class="hero-kpi-l">Errors</span></div>` : ''}
-          </div>
-          <button class="hero-cta" data-tone="ok" onclick="if(typeof openWizard==='function'){openWizard()}else{location.hash='/connections'}" aria-label="Create a new table by connecting a source">
-            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg>
-            New Table
-          </button>
-          ${errorCount > 0 ? `<button class="hero-cta-secondary" onclick="tblLibSetFilter('errors')" aria-label="Filter to tables with errors">
-            <span class="hero-cta-secondary-dot"></span>
-            Resolve ${errorCount} error${errorCount===1?'':'s'} &rarr;
-          </button>` : ''}
-        </aside>
       </section>
+
+      <div class="tbl-kpi-strip">
+        <div class="tbl-kpi"><span class="tbl-kpi-v">${totalTables}</span><span class="tbl-kpi-k">Tables</span></div>
+        <div class="tbl-kpi is-rows"><span class="tbl-kpi-v">${formatRowCount(totalRows)}</span><span class="tbl-kpi-k">Total rows</span></div>
+        ${errorCount > 0 ? `<div class="tbl-kpi is-errors"><span class="tbl-kpi-v">${errorCount}</span><span class="tbl-kpi-k">Errors</span></div>` : ''}
+      </div>
 
       <div class="tbl-toolbar">
         <label class="tbl-search">
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="7" cy="7" r="5"/><path d="M14 14l-3-3"/></svg>
           <input type="text" placeholder="Search tables or sources..." value="${escapeHtml(tblLibFilter.search)}" oninput="tblLibSearchInput(this.value)"/>
         </label>
-        <button class="tbl-filter ${tblLibFilter.filter === 'all' ? 'is-active' : ''}" onclick="tblLibSetFilter('all')">All <span class="tbl-filter-badge">${totalTables}</span></button>
-        ${errorCount > 0 ? `<button class="tbl-filter is-error ${tblLibFilter.filter === 'errors' ? 'is-active' : ''}" onclick="tblLibSetFilter('errors')">Errors <span class="tbl-filter-badge">${errorCount}</span></button>` : ''}
-        ${sourceList.map(s => `<button class="tbl-filter ${tblLibFilter.filter === s.slug ? 'is-active' : ''}" onclick="tblLibSetFilter('${s.slug}')">${escapeHtml(s.name)}</button>`).join('')}
+        <div class="tbl-filter-pills">
+          <button class="tbl-filter ${tblLibFilter.filter === 'all' ? 'is-active' : ''}" onclick="tblLibSetFilter('all')">All <span class="tbl-filter-badge">${totalTables}</span></button>
+          ${errorCount > 0 ? `<button class="tbl-filter is-error ${tblLibFilter.filter === 'errors' ? 'is-active' : ''}" onclick="tblLibSetFilter('errors')">Errors <span class="tbl-filter-badge">${errorCount}</span></button>` : ''}
+          ${sourceList.map(s => `<button class="tbl-filter ${tblLibFilter.filter === s.slug ? 'is-active' : ''}" onclick="tblLibSetFilter('${s.slug}')">${escapeHtml(s.name)}</button>`).join('')}
+        </div>
+        <button class="tbl-new-btn" onclick="if(typeof openWizard==='function'){openWizard()}else{location.hash='/connections'}" aria-label="Create a new table by connecting a source">
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg>
+          New Table
+        </button>
       </div>
 
       ${filtered.length === 0 ? `
