@@ -5683,6 +5683,8 @@ html.theme-light .tonb-exit-leave:hover{
 .fm-kpi.is-auto .fm-kpi-v,.fm-kpi.is-auto .fm-kpi-k{color:#34d39c;}
 .fm-kpi.is-review{background:rgba(245,158,11,0.08);border-color:rgba(245,158,11,0.34);}
 .fm-kpi.is-review .fm-kpi-v,.fm-kpi.is-review .fm-kpi-k{color:#fbbf24;}
+.fm-kpi.is-clickable{cursor:pointer;transition:all .15s ease;}
+.fm-kpi.is-clickable:hover{background:rgba(245,158,11,0.16);border-color:rgba(245,158,11,0.55);transform:translateY(-1px);}
 .fm-kpi.is-resolved{background:rgba(56,189,248,0.08);border-color:rgba(56,189,248,0.28);}
 .fm-kpi.is-resolved .fm-kpi-v,.fm-kpi.is-resolved .fm-kpi-k{color:#7ed3f7;}
 .fm-kpi.is-skipped{background:rgba(148,163,184,0.06);border-color:rgba(148,163,184,0.18);}
@@ -13884,23 +13886,17 @@ function renderFieldMappings() {
         <span class="crumb-current">Field mappings</span>
       </div>
 
-      <section class="hero" data-tone="${counts.review > 0 ? 'warn' : 'default'}">
+      <section class="hero">
         <div class="hero-main">
-          <h1 class="hero-title">${counts.review > 0 ? `<span class="hero-emphasis">${counts.review}</span> field${counts.review===1?'':'s'} need review` : 'Cross-connection field mappings'}</h1>
+          <h1 class="hero-title">Cross-connection field mappings</h1>
           <p class="hero-desc">Auto-mapped fields go through silently. Custom ones wait here for a decision.</p>
         </div>
-        ${counts.review > 0 ? `<aside class="hero-aside">
-          <button class="hero-cta" onclick="setFmStatus('review')" aria-label="Filter to fields needing review">
-            Resolve ${counts.review} field${counts.review===1?'':'s'}
-            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 8h10M9.5 4.5L13 8l-3.5 3.5"/></svg>
-          </button>
-        </aside>` : ''}
       </section>
 
       <div class="fm-kpi-strip">
         <div class="fm-kpi"><span class="fm-kpi-v">${counts.all}</span><span class="fm-kpi-k">Total fields</span></div>
         <div class="fm-kpi is-auto"><span class="fm-kpi-v">${counts.auto}</span><span class="fm-kpi-k">Auto-mapped</span></div>
-        <div class="fm-kpi is-review"><span class="fm-kpi-v">${counts.review}</span><span class="fm-kpi-k">Needs review</span></div>
+        <div class="fm-kpi is-review${counts.review > 0 ? ' is-clickable' : ''}" ${counts.review > 0 ? `onclick="setFmStatus('review')" role="button" tabindex="0" title="Filter to fields needing review"` : ''}><span class="fm-kpi-v">${counts.review}</span><span class="fm-kpi-k">Needs review${counts.review > 0 ? ' →' : ''}</span></div>
         <div class="fm-kpi is-resolved"><span class="fm-kpi-v">${counts.accepted}</span><span class="fm-kpi-k">You've resolved</span></div>
         <div class="fm-kpi is-skipped"><span class="fm-kpi-v">${counts.skipped}</span><span class="fm-kpi-k">Skipped</span></div>
       </div>
