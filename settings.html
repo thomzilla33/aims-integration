@@ -2852,6 +2852,94 @@ html.theme-light .inbox-open:hover{background:rgba(56,189,248,0.08); color:#0284
   .inbox-row-status, .inbox-row-requester, .inbox-row-quote{display:none}
 }
 
+/* ============================================================================
+   .ws-* — Workspaces surface (list cards + detail tabs + cross-link rows)
+============================================================================ */
+.ws-grid{
+  display:grid;grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));gap:14px;
+}
+.ws-card{
+  display:flex;flex-direction:column;gap:8px;
+  padding:14px 16px;
+  background:rgba(255,255,255,0.02);
+  border:1px solid var(--line);
+  border-radius:11px;
+  cursor:pointer;
+  transition: all .15s ease;
+}
+.ws-card:hover{
+  border-color:rgba(56,189,248,0.45);
+  background:rgba(56,189,248,0.04);
+  transform: translateY(-2px);
+}
+.ws-card-h{display:flex;align-items:center;gap:8px;}
+.ws-card-color{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.ws-card-name{font-size:14px;font-weight:700;color:var(--t1);}
+.ws-card-desc{font-size:12px;color:var(--t2);line-height:1.45;}
+.ws-card-stats{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--t3);}
+.ws-card-stats b{color:var(--t1);font-weight:700;}
+.ws-card-foot{
+  display:flex;align-items:center;justify-content:space-between;
+  padding-top:8px;border-top:1px solid rgba(255,255,255,0.05);
+  margin-top:auto;
+}
+.ws-card-owner{font-size:11px;color:var(--t3);}
+.ws-card-owner b{color:var(--t2);font-weight:600;}
+.ws-card-arrow{color:var(--t3);font-size:14px;transition:transform .15s;}
+.ws-card:hover .ws-card-arrow{transform:translateX(2px);color:var(--cyan);}
+
+.ws-tabs{
+  display:flex;align-items:center;gap:4px;
+  border-bottom:1px solid var(--line);
+  margin: 0 0 14px;
+}
+.ws-tab{
+  display:inline-flex;align-items:center;gap:6px;
+  padding: 9px 14px;
+  background:transparent;border:none;border-bottom:2px solid transparent;
+  color:var(--t3);
+  font-size:12.5px;font-weight:600;font-family:inherit;
+  cursor:pointer;
+  transition:.12s;
+}
+.ws-tab:hover{color:var(--t1);}
+.ws-tab.is-active{color:var(--cyan);border-bottom-color:var(--cyan);}
+.ws-tab-count{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-width:18px;height:18px;padding:0 5px;
+  font-size:10.5px;font-weight:700;
+  background:rgba(255,255,255,0.06);
+  color:var(--t2);
+  border-radius:9px;
+}
+.ws-tab.is-active .ws-tab-count{background:rgba(56,189,248,0.18);color:#7ed3f7;}
+
+.ws-list{display:flex;flex-direction:column;gap:6px;}
+.ws-list-row{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 12px;
+  background:rgba(255,255,255,0.02);
+  border:1px solid var(--line);
+  border-radius:9px;
+  cursor:pointer;
+  transition: border-color .12s, background .12s;
+}
+.ws-list-row:hover{border-color:var(--line-strong);background:rgba(255,255,255,0.04);}
+.ws-list-avatar{
+  width:32px;height:32px;flex-shrink:0;
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:800;color:#fff;
+  background:var(--grad);
+}
+.ws-list-l{flex:1;min-width:0;}
+.ws-list-name{font-size:13px;font-weight:600;color:var(--t1);}
+.ws-list-meta{font-size:11.5px;color:var(--t3);margin-top:1px;}
+.ws-list-action{
+  font-size:11.5px;color:var(--cyan);font-weight:600;
+  text-decoration:none;flex-shrink:0;
+}
+
 /* ── Users cross-instance view (Sprint C — Edgardo Batch 3c) ── */
 .users-wrap{padding:24px 32px 60px; max-width:1200px}
 .users-h{
