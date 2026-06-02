@@ -12381,9 +12381,11 @@ function _validateStep(stepId) {
   if (stepId === 'org') {
     const o = tonbState.org;
     if (!o.name || o.name.trim().length < 2) e.orgName = 'Required.';
-    if (!o.primaryCategory) e.orgCategory = 'Pick one.';
+    // Render binds to o.industry, not o.primaryCategory. Validator must match.
+    if (!o.industry) e.orgIndustry = 'Pick one.';
     if (!o.size) e.orgSize = 'Pick one.';
     if (!o.contactName || o.contactName.trim().length < 2) e.contactName = 'Required.';
+    if (!o.contactRole) e.contactRole = 'Pick one.';
     if (!o.contactEmail || !/^\S+@\S+$/.test(o.contactEmail.trim())) e.contactEmail = 'Need a valid email.';
   } else if (stepId === 'template') {
     if (!tonbState.template.source) e.template = 'Pick a composite template.';
