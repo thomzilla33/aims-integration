@@ -14143,14 +14143,12 @@ function renderConnections() {
           <span class="hero-meta">Updated just now</span>
         </div>
         <h1 class="hero-title">${pending.length > 0 ? `<span class="hero-emphasis">${pending.length}</span> connection${pending.length===1?'':'s'} need mapping` : 'Every connection is mapped and flowing'}</h1>
-        <p class="hero-desc">Integrations authenticated in <a href="settings.html">Admin Studio</a> with Data Sync enabled. Map their events into your Tables here.</p>
+        <p class="hero-desc">Connections from <a href="settings.html">Admin Studio</a> with Data Sync enabled.</p>
       </div>
       <aside class="hero-aside">
         <div class="hero-kpis">
           <div class="hero-kpi" data-kind="ok"><span class="hero-kpi-n">${mapped.length}</span><span class="hero-kpi-l">Mapped</span></div>
           <div class="hero-kpi" data-kind="${pending.length > 0 ? 'warn' : 'idle'}"><span class="hero-kpi-n">${pending.length}</span><span class="hero-kpi-l">Pending</span></div>
-          <div class="hero-kpi" data-kind="info"><span class="hero-kpi-n">${totalEvents.toLocaleString()}</span><span class="hero-kpi-l">Events/hr</span></div>
-          <div class="hero-kpi" data-kind="idle"><span class="hero-kpi-n">${availableCount}</span><span class="hero-kpi-l">Available</span></div>
         </div>
         ${pending.length > 0
           ? `<button class="hero-cta" onclick="document.querySelector('.ds-grid')?.scrollIntoView({behavior:'smooth',block:'start'})" aria-label="Jump to connections needing mapping">
@@ -14168,7 +14166,7 @@ function renderConnections() {
       <div class="ds-section-h">
         <div>
           <div class="ds-section-title">Active connections <span style="font-size:11px;font-weight:600;color:var(--t3);margin-left:6px">${list.length}</span></div>
-          <div class="ds-section-sub">Click any connection to review or edit its field mapping</div>
+          <div class="ds-section-sub">${availableCount} more available to connect in Admin Studio</div>
         </div>
         <a class="btn btn-ghost btn-sm" href="settings.html#/integrations">Connect new in Admin Studio ↗</a>
       </div>
