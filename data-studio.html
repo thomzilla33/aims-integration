@@ -294,6 +294,117 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
   .hero-kpis{grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));}
 }
 
+
+/* ============================================================================
+   .toolbar — shared primitive for search + filter rows across surfaces.
+   Slots: toolbar-search (left, flex:1) + toolbar-filters (right, pill row).
+============================================================================ */
+.toolbar{
+  display:flex; align-items:center; gap:12px;
+  padding:12px 0 18px;
+  flex-wrap:wrap;
+}
+.toolbar-search{
+  flex:1 1 280px;
+  display:flex; align-items:center; gap:8px;
+  height:36px;
+  padding:0 12px;
+  background:rgba(255,255,255,0.03);
+  border:1px solid var(--line);
+  border-radius:9px;
+  transition: border-color .15s, background .15s;
+}
+.toolbar-search:focus-within{
+  border-color:rgba(56,189,248,0.40);
+  background:rgba(56,189,248,0.04);
+}
+.toolbar-search-ico{color:var(--t3); flex-shrink:0;}
+.toolbar-search input{
+  flex:1; min-width:0;
+  border:none; background:transparent;
+  color:var(--t1);
+  font-size:13px; font-family:inherit;
+  outline:none;
+}
+.toolbar-search input::placeholder{color:var(--t3);}
+.toolbar-search-clear{
+  width:20px; height:20px;
+  display:flex; align-items:center; justify-content:center;
+  background:transparent; border:none;
+  color:var(--t3);
+  cursor:pointer; border-radius:4px;
+  flex-shrink:0;
+}
+.toolbar-search-clear:hover{background:rgba(255,255,255,0.06); color:var(--t1);}
+
+.toolbar-filters{
+  display:flex; align-items:center; gap:6px;
+  flex-wrap:wrap;
+}
+.toolbar-filter{
+  display:inline-flex; align-items:center; gap:6px;
+  height:32px; padding:0 12px;
+  background:transparent;
+  border:1px solid var(--line);
+  border-radius:7px;
+  color:var(--t2);
+  font-size:12.5px; font-weight:600; font-family:inherit;
+  cursor:pointer;
+  white-space:nowrap;
+  transition: all .12s;
+}
+.toolbar-filter:hover{
+  border-color:var(--line-strong);
+  background:rgba(255,255,255,0.03);
+  color:var(--t1);
+}
+.toolbar-filter.is-active{
+  background:rgba(255,255,255,0.06);
+  border-color:rgba(255,255,255,0.18);
+  color:var(--t1);
+}
+.toolbar-filter[data-tone="ok"].is-active{
+  background:rgba(16,185,129,0.10);
+  border-color:rgba(16,185,129,0.40);
+  color:#34d39c;
+}
+.toolbar-filter[data-tone="warn"].is-active{
+  background:rgba(245,158,11,0.10);
+  border-color:rgba(245,158,11,0.40);
+  color:#fbbf24;
+}
+.toolbar-filter[data-tone="info"].is-active{
+  background:rgba(56,189,248,0.10);
+  border-color:rgba(56,189,248,0.40);
+  color:#7ed3f7;
+}
+.toolbar-filter-count{
+  display:inline-flex; align-items:center; justify-content:center;
+  min-width:18px; height:18px; padding:0 5px;
+  background:rgba(255,255,255,0.06);
+  border-radius:9px;
+  font-size:10.5px; font-weight:700;
+  color:var(--t2);
+}
+.toolbar-filter.is-active .toolbar-filter-count{
+  background:rgba(255,255,255,0.14);
+  color:var(--t1);
+}
+.toolbar-filter[data-tone="ok"].is-active .toolbar-filter-count{background:rgba(16,185,129,0.20); color:#34d39c;}
+.toolbar-filter[data-tone="warn"].is-active .toolbar-filter-count{background:rgba(245,158,11,0.22); color:#fbbf24;}
+.toolbar-filter[data-tone="info"].is-active .toolbar-filter-count{background:rgba(56,189,248,0.22); color:#7ed3f7;}
+
+/* Empty state for filtered-down lists */
+.toolbar-empty{
+  padding:32px 24px;
+  text-align:center;
+  color:var(--t3);
+  font-size:13px;
+  border:1px dashed var(--line);
+  border-radius:10px;
+}
+.toolbar-empty strong{color:var(--t2); font-weight:600;}
+
 .ds-hero{
   display:flex; gap:32px; align-items:flex-start; justify-content:space-between;
   padding:28px 32px 24px;
@@ -14093,6 +14204,27 @@ function render() {
 
 /* ====================== CONNECTIONS LIST ====================== */
 
+
+/* ---- Connections toolbar state ---- */
+let dsToolbar = { search: '', filter: 'all' };
+function dsSetSearch(v) {
+  dsToolbar.search = (v || '').toLowerCase().trim();
+  renderConnections();
+  // Re-focus the input + restore cursor position after re-render.
+  setTimeout(() => {
+    const el = document.getElementById('dsSearchInput');
+    if (el) { el.focus(); el.setSelectionRange(el.value.length, el.value.length); }
+  }, 0);
+}
+function dsClearSearch() {
+  dsToolbar.search = '';
+  renderConnections();
+}
+function dsSetFilter(f) {
+  dsToolbar.filter = f;
+  renderConnections();
+}
+
 function renderConnections() {
   // Defensive: render() should have caught this, but keep the guard.
   if (typeof isOnboardingPending === 'function' && isOnboardingPending()) {
@@ -14152,8 +14284,32 @@ function renderConnections() {
         <a class="btn btn-ghost btn-sm" href="settings.html#/integrations">Connect new in Admin Studio ↗</a>
       </div>
 
-      <div class="ds-grid">
-        ${list.map(c => `
+      <div class="toolbar">
+        <label class="toolbar-search">
+          <svg class="toolbar-search-ico" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/></svg>
+          <input id="dsSearchInput" type="text" placeholder="Search by connection or vendor..." value="${escapeHtml(dsToolbar.search)}" oninput="dsSetSearch(this.value)" />
+          ${dsToolbar.search ? `<button class="toolbar-search-clear" onclick="dsClearSearch()" aria-label="Clear search"><svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 3l10 10M13 3L3 13"/></svg></button>` : ''}
+        </label>
+        <div class="toolbar-filters">
+          <button class="toolbar-filter ${dsToolbar.filter === 'all' ? 'is-active' : ''}" onclick="dsSetFilter('all')">All <span class="toolbar-filter-count">${list.length}</span></button>
+          <button class="toolbar-filter ${dsToolbar.filter === 'mapped' ? 'is-active' : ''}" data-tone="ok" onclick="dsSetFilter('mapped')">Mapped <span class="toolbar-filter-count">${mapped.length}</span></button>
+          ${pending.length > 0 ? `<button class="toolbar-filter ${dsToolbar.filter === 'pending' ? 'is-active' : ''}" data-tone="warn" onclick="dsSetFilter('pending')">Pending <span class="toolbar-filter-count">${pending.length}</span></button>` : ''}
+        </div>
+      </div>
+
+      ${(function(){
+        const q = dsToolbar.search;
+        const filtered = list.filter(c => {
+          if (dsToolbar.filter === 'mapped' && !c.mapped) return false;
+          if (dsToolbar.filter === 'pending' && c.mapped) return false;
+          if (!q) return true;
+          return (c.name || '').toLowerCase().includes(q) || (c.vendor || '').toLowerCase().includes(q);
+        });
+        if (filtered.length === 0) {
+          const what = q ? `<strong>${escapeHtml(q)}</strong>` : `the <strong>${escapeHtml(dsToolbar.filter)}</strong> filter`;
+          return `<div class="toolbar-empty">No connections match ${what}.${q ? ' <button class="btn btn-ghost btn-sm" onclick="dsClearSearch()" style="margin-left:6px">Clear search</button>' : ''}</div>`;
+        }
+        return `<div class="ds-grid">${filtered.map(c => `
           <div class="ds-card ${c.mapped ? '' : 'is-pending'}" onclick="navigate('connections/${c.slug}')">
             <span class="ds-card-status ${c.mapped ? 'is-mapped' : 'is-pending'}">
               ${c.mapped ? `<svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:1px"><path d="M2 6l3 3 5-7"/></svg>` : `<svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="margin-right:1px"><circle cx="6" cy="6" r="4.5"/><path d="M6 4v2.5M6 8.2h.01"/></svg>`}${c.mapped ? 'Mapped' : 'Needs mapping'}
@@ -14178,8 +14334,8 @@ function renderConnections() {
               ${c.mapped ? 'Review mapping' : 'Finish mapping'} →
             </button>
           </div>
-        `).join('')}
-      </div>
+        `).join('')}</div>`;
+      })()}
     </div>
 
     <div class="ds-section-divider">
