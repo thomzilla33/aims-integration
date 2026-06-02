@@ -7026,6 +7026,12 @@ function renderTables() {
           <h1 class="hero-title">All your data tables</h1>
           <p class="hero-desc">One Table can be fed by multiple connections.</p>
         </div>
+        <aside class="hero-aside">
+          <button class="btn btn-primary" onclick="if(typeof openWizard==='function'){openWizard()}else{location.hash='/connections'}" aria-label="Create a new table by connecting a source">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg>
+            New Table
+          </button>
+        </aside>
       </section>
 
       <div class="tbl-kpi-strip">
@@ -7044,10 +7050,6 @@ function renderTables() {
           ${errorCount > 0 ? `<button class="tbl-filter is-error ${tblLibFilter.filter === 'errors' ? 'is-active' : ''}" onclick="tblLibSetFilter('errors')">Errors <span class="tbl-filter-badge">${errorCount}</span></button>` : ''}
           ${sourceList.map(s => `<button class="tbl-filter ${tblLibFilter.filter === s.slug ? 'is-active' : ''}" onclick="tblLibSetFilter('${s.slug}')">${escapeHtml(s.name)}</button>`).join('')}
         </div>
-        <button class="tbl-new-btn" onclick="if(typeof openWizard==='function'){openWizard()}else{location.hash='/connections'}" aria-label="Create a new table by connecting a source">
-          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg>
-          New Table
-        </button>
       </div>
 
       ${filtered.length === 0 ? `
@@ -9989,6 +9991,12 @@ function renderTemplatesLibrary() {
           <h1 class="hero-title">Validation &amp; transformation templates</h1>
           <p class="hero-desc">Reusable rule packs applied to Table fields. Define once, every applied field inherits the rules.</p>
         </div>
+        <aside class="hero-aside">
+          <button class="btn btn-primary" onclick="openTemplateCreate()" aria-label="Create a new template">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9"/></svg>
+            New template
+          </button>
+        </aside>
       </section>
 
       <div class="tpl-kpi-strip">
@@ -10017,10 +10025,6 @@ function renderTemplatesLibrary() {
           <button class="tpl-filter ${f === 'cloned' ? 'is-active' : ''}" onclick="setTplLibFilter('cloned')">Cloned<span class="tpl-filter-badge">${counts.cloned}</span></button>
           <button class="tpl-filter ${f === 'custom' ? 'is-active' : ''}" onclick="setTplLibFilter('custom')">Custom<span class="tpl-filter-badge">${counts.custom}</span></button>
         </div>
-        <button class="tpl-new-btn" onclick="openTemplateCreate()" aria-label="Create a new template">
-          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9"/></svg>
-          New template
-        </button>
       </div>
 
       ${domainPills ? `<div class="tpl-lib-toolbar" style="margin-top:-8px;">
