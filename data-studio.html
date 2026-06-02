@@ -16615,6 +16615,7 @@ function renderOnboardingEmptyState() {
     : 'First time setup &middot; about 5 minutes';
   const lc = obState.lastCompleted;
   $('content').innerHTML = `
+    <section class="surface">
     <div class="breadcrumb"><span class="crumb-current">Connections</span></div>
 
     <section class="ob-empty">
@@ -16691,6 +16692,7 @@ function renderOnboardingEmptyState() {
         `).join('')}
       </div>
     </div>
+    </section>
   `;
 }
 
