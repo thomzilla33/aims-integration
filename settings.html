@@ -8790,7 +8790,7 @@ function toggleInboxRow(id, ev) {
 function clearInboxSelection() { inboxState.selected.clear(); renderRequestsInbox(); }
 function inboxBulkAction(action) {
   const n = inboxState.selected.size;
-  toast(`${action}: ${n} request${n===1?'':'s'} — flow coming soon`);
+  toast(`${action}: ${n} request${n===1?'':'s'} (coming soon)`);
   inboxState.selected.clear();
   renderRequestsInbox();
 }
@@ -8798,7 +8798,7 @@ function inboxBulkAction(action) {
 function inboxQuickAction(id, action, ev) {
   if (ev) ev.stopPropagation();
   const r = REQUESTS.find(x => x.id === id);
-  toast(`${action} · ${r?.integration || ''} — flow coming soon`);
+  toast(`${action} · ${r?.integration || ''} (coming soon)`);
 }
 
 function _inboxBucket(status) {
@@ -9618,7 +9618,7 @@ function renderWidgetsLibrary() {
                     const isMissing = missing.indexOf(slug) !== -1;
                     const brand = LOGO_SLUGS[slug];
                     if (isMissing) {
-                      return `<span class="wg-card-integ-logo is-missing" title="${escapeHtml((integ && integ.name) || slug)} — not exposed to widgets">!</span>`;
+                      return `<span class="wg-card-integ-logo is-missing" title="${escapeHtml((integ && integ.name) || slug)} is not exposed to widgets">!</span>`;
                     }
                     if (brand) {
                       return `<span class="wg-card-integ-logo" title="${escapeHtml((integ && integ.name) || slug)}"><img src="https://api.iconify.design/logos:${brand}.svg" alt="${escapeHtml((integ && integ.name) || slug)}" loading="lazy"/></span>`;
@@ -9633,7 +9633,7 @@ function renderWidgetsLibrary() {
                   ? `<button class="wg-card-cta is-open" onclick="toast('Open ${escapeHtml(w.name)} · coming soon')">Open &rarr;</button>`
                   : st === 'available'
                   ? `<button class="wg-card-cta is-install" onclick="widgetInstallToggle('${w.id}')">Install</button>`
-                  : `<button class="wg-card-cta is-blocked" disabled title="${escapeHtml(missing.map(s => { const i = INTEGRATIONS.find(x=>x.slug===s); return (i&&i.name)||s; }).join(', '))} not available to widgets — open Distribution to fix.">Blocked</button>`}
+                  : `<button class="wg-card-cta is-blocked" disabled title="${escapeHtml(missing.map(s => { const i = INTEGRATIONS.find(x=>x.slug===s); return (i&&i.name)||s; }).join(', '))} not available to widgets. Open Distribution to fix.">Blocked</button>`}
               </div>
             </div>
           `;
@@ -10190,7 +10190,7 @@ function mktCardHTML(i) {
   const bucketMeta = BUCKET_META[bucket];
   const statusMeta = STATUS_META[derivedStatus] || STATUS_META.not_connected;
   const statusChip = i.connected
-    ? `<span class="mkt-card-status status-${bucket}" title="${escapeHtml(statusMeta.label)} — ${escapeHtml(statusMeta.desc)}"><span class="mkt-card-status-dot"></span>${escapeHtml(statusMeta.label)}</span>`
+    ? `<span class="mkt-card-status status-${bucket}" title="${escapeHtml(statusMeta.label)}. ${escapeHtml(statusMeta.desc)}"><span class="mkt-card-status-dot"></span>${escapeHtml(statusMeta.label)}</span>`
     : '';
 
   const stateLine = i.connected
@@ -11347,7 +11347,7 @@ function openImpactModal(slug, onConfirm) {
   const body = `
     <div style="font-size:12.5px;color:var(--t2);line-height:1.6;margin-bottom:14px">
       ${imp.total === 0
-        ? `<b style="color:var(--t1)">${escapeHtml(integ.name)}</b> isn't used anywhere yet. Disconnecting is safe — credentials get revoked and the integration moves to Not connected.`
+        ? `<b style="color:var(--t1)">${escapeHtml(integ.name)}</b> isn't used anywhere yet. Disconnecting is safe: credentials get revoked and the integration moves to Not connected.`
         : `Revokes credentials and stops data flow. These consumers break immediately:`}
     </div>
     ${imp.total > 0 ? `
@@ -12817,7 +12817,7 @@ function capDescriptionForIntegration(i, cap) {
       slack:'Send to channels, DMs and threads with delivery retries.',
       email:'SMTP outbound and IMAP inbound channels.',
       twilio:'SMS, WhatsApp and voice as outbound channels.',
-      _default:`Outbound destination — ${i.name} receives outputs from agents.`
+      _default:`Outbound destination. ${i.name} receives outputs from agents.`
     }
   };
   return map[cap][i.slug] || map[cap]._default;
@@ -13238,7 +13238,7 @@ function authPatternHero(integration, pattern) {
       `,
       howItWorks: [
         `Generate an API token in your ${escapeHtml(i.name)} admin settings.`,
-        `Paste it below — AIMS stores it encrypted in your tenant vault.`,
+        `Paste it below. AIMS stores it encrypted in your tenant vault.`,
         `All tool calls run as the same service identity, not as any user.`,
         `Rotate the token periodically from your ${escapeHtml(i.name)} dashboard.`
       ]
@@ -13310,7 +13310,7 @@ function authPatternHero(integration, pattern) {
         <div class="auth-flow-step"><span class="auth-flow-num">4</span><span class="auth-flow-l">Paste creds</span></div>
       `,
       howItWorks: [
-        `Follow the numbered checklist below — most steps happen outside AIMS.`,
+        `Follow the numbered checklist below. Most steps happen outside AIMS.`,
         `Some require external whitelisting or admin actions in the provider.`,
         `Use the video walkthrough for the trickier steps.`,
         `Paste the final credentials at the end to complete activation.`
@@ -13407,7 +13407,7 @@ function paintDrawer() {
         const label = onlyMode === 'aims_managed' ? 'AIMS-managed (only mode this integration supports)' : 'BYOK (only mode this integration supports)';
         const desc = onlyMode === 'aims_managed'
           ? `${escapeHtml(i.name)} runs on a tenant-isolated subaccount we provision and bill on your behalf.`
-          : `${escapeHtml(i.name)} requires you to bring your own credentials — the provider does not support multi-tenancy or pooled accounts.`;
+          : `${escapeHtml(i.name)} requires you to bring your own credentials. The provider does not support multi-tenancy or pooled accounts.`;
         if (s.authMode !== onlyMode) state.drawerState.authMode = onlyMode;
         return `
           <div class="field-group" style="padding-top:6px;border-top:1px solid var(--line);margin-top:6px">
