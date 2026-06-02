@@ -6786,6 +6786,11 @@ html.theme-light .theme-icon-moon{display:block}
             <span class="ssb-item-label">Distribution</span>
           </button>
 
+          <button class="ssb-item" data-admin-only data-route="workspaces" title="Workspace teams and their access scope">
+            <span class="ssb-item-ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.5l5.5-3 5.5 3v3l-5.5 3-5.5-3v-3z"/><path d="M2.5 6.5L8 9.5l5.5-3M8 9.5v3"/></svg></span>
+            <span class="ssb-item-label">Workspaces</span>
+          </button>
+
           <button class="ssb-item" data-admin-only data-route="users" title="Who has access to which integration instance">
             <span class="ssb-item-ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="6" r="2.4"/><circle cx="11" cy="6.8" r="1.8"/><path d="M1.5 13.5c0-2.2 1.8-4 4-4s4 1.8 4 4M9.5 13.5c0-1.5 1.1-2.8 2.5-2.8s2.5 1.3 2.5 2.8"/></svg></span>
             <span class="ssb-item-label">Users</span>
@@ -9274,6 +9279,231 @@ function _paintUsersTable() {
     `;
 }
 
+
+/* ============================================================================
+   WORKSPACES — admin surface for workspace teams (list + detail)
+============================================================================ */
+let _wsToolbar = { search: '', tab: 'members' };
+
+function setWsSearch(v) {
+  _wsToolbar.search = (v || '').toLowerCase().trim();
+  const list = location.hash.replace(/^#\/?/, '').split('/');
+  if (list[0] === 'workspaces' && !list[1]) {
+    renderWorkspaces();
+    setTimeout(() => {
+      const el = document.getElementById('wsSearchInput');
+      if (el) { el.focus(); el.setSelectionRange(el.value.length, el.value.length); }
+    }, 0);
+  }
+}
+function clearWsSearch() { _wsToolbar.search = ''; renderWorkspaces(); }
+function setWsTab(t) {
+  _wsToolbar.tab = t;
+  const id = (location.hash.split('/')[1] || '');
+  if (id) renderWorkspaceDetail(id);
+}
+
+function _wsIntegrationCount(wsId) {
+  let count = 0;
+  Object.keys(WORKSPACE_DEFAULTS).forEach(slug => {
+    const list = (typeof WORKSPACE_OVERRIDES !== 'undefined' && WORKSPACE_OVERRIDES[slug]) || WORKSPACE_DEFAULTS[slug];
+    if ((list || []).indexOf(wsId) >= 0) count++;
+  });
+  return count;
+}
+
+function _wsMembers(wsId) {
+  if (typeof MOCK_PEOPLE !== 'undefined' && Array.isArray(MOCK_PEOPLE)) {
+    return MOCK_PEOPLE.filter(p => (p.workspaces || []).indexOf(wsId) >= 0);
+  }
+  return [];
+}
+
+function _wsActivity(wsId) {
+  if (typeof AUDIT_EVENTS === 'undefined') return [];
+  const w = MOCK_WORKSPACES.find(x => x.id === wsId);
+  if (!w) return [];
+  return AUDIT_EVENTS.filter(e => {
+    if (e.actor && w.owner && e.actor === w.owner) return true;
+    if (e.details && JSON.stringify(e.details).indexOf(wsId) >= 0) return true;
+    return false;
+  }).slice(0, 12);
+}
+
+function renderWorkspaces() {
+  const q = _wsToolbar.search;
+  const filtered = MOCK_WORKSPACES.filter(w => {
+    if (!q) return true;
+    return (w.name || '').toLowerCase().includes(q) ||
+           (w.desc || '').toLowerCase().includes(q) ||
+           (w.owner || '').toLowerCase().includes(q);
+  });
+  const totalMembers = MOCK_WORKSPACES.reduce((s, w) => s + (w.members || 0), 0);
+
+  $('content').innerHTML = `
+    <section class="surface">
+      <div class="breadcrumb">
+        <span class="crumb-current">Workspaces</span>
+      </div>
+
+      <section class="hero" data-tone="info">
+        <div class="hero-main">
+          <h1 class="hero-title">Workspaces</h1>
+          <p class="hero-desc">Teams in your tenant. Each workspace owns its own set of exposed integrations, members, and activity scope.</p>
+        </div>
+        <aside class="hero-aside">
+          <div class="hero-kpis">
+            <div class="hero-kpi" data-kind="info"><span class="hero-kpi-n">${MOCK_WORKSPACES.length}</span><span class="hero-kpi-l">Workspaces</span></div>
+            <div class="hero-kpi" data-kind="ok"><span class="hero-kpi-n">${totalMembers}</span><span class="hero-kpi-l">Members</span></div>
+          </div>
+        </aside>
+      </section>
+
+      <div class="toolbar">
+        <label class="toolbar-search">
+          <svg class="toolbar-search-ico" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/></svg>
+          <input id="wsSearchInput" type="text" placeholder="Search workspaces by name, owner, or description..." value="${escapeHtml(_wsToolbar.search)}" oninput="setWsSearch(this.value)" />
+          ${_wsToolbar.search ? `<button class="toolbar-search-clear" onclick="clearWsSearch()" aria-label="Clear search"><svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 3l10 10M13 3L3 13"/></svg></button>` : ''}
+        </label>
+      </div>
+
+      ${filtered.length === 0 ? `
+        <div class="toolbar-empty">No workspaces match <strong>${escapeHtml(q)}</strong>. <button class="btn btn-ghost btn-sm" onclick="clearWsSearch()" style="margin-left:6px">Clear search</button></div>
+      ` : `
+        <div class="ws-grid">
+          ${filtered.map(w => {
+            const intCount = _wsIntegrationCount(w.id);
+            return `
+            <div class="ws-card" onclick="navigate('workspaces/${escapeHtml(w.id)}')">
+              <div class="ws-card-h">
+                <span class="ws-card-color" style="background:${w.color}"></span>
+                <div class="ws-card-name">${escapeHtml(w.name)}</div>
+              </div>
+              <div class="ws-card-desc">${escapeHtml(w.desc || '')}</div>
+              <div class="ws-card-stats">
+                <span><b>${w.members || 0}</b> members</span>
+                <span class="dot">·</span>
+                <span><b>${intCount}</b> integration${intCount===1?'':'s'}</span>
+              </div>
+              <div class="ws-card-foot">
+                <span class="ws-card-owner">Owned by <b>${escapeHtml(w.owner || '—')}</b></span>
+                <span class="ws-card-arrow">→</span>
+              </div>
+            </div>
+            `;
+          }).join('')}
+        </div>
+      `}
+    </section>
+  `;
+}
+
+function renderWorkspaceDetail(id) {
+  const w = MOCK_WORKSPACES.find(x => x.id === id);
+  if (!w) {
+    $('content').innerHTML = `
+      <section class="surface">
+        <div class="breadcrumb">
+          <a href="#/workspaces">Workspaces</a><span class="crumb-sep">›</span>
+          <span class="crumb-current">Not found</span>
+        </div>
+        <div class="toolbar-empty">Workspace <strong>${escapeHtml(id)}</strong> was not found. <a href="#/workspaces" style="color:var(--cyan)">Back to list</a></div>
+      </section>
+    `;
+    return;
+  }
+
+  const members = _wsMembers(w.id);
+  const intCount = _wsIntegrationCount(w.id);
+  const activity = _wsActivity(w.id);
+  const tab = _wsToolbar.tab || 'members';
+
+  const exposedSlugs = Object.keys(WORKSPACE_DEFAULTS).filter(slug => {
+    const list = (typeof WORKSPACE_OVERRIDES !== 'undefined' && WORKSPACE_OVERRIDES[slug]) || WORKSPACE_DEFAULTS[slug];
+    return (list || []).indexOf(w.id) >= 0;
+  });
+
+  let tabBody = '';
+  if (tab === 'members') {
+    tabBody = members.length === 0
+      ? `<div class="toolbar-empty">No members assigned to this workspace yet.</div>`
+      : `<div class="ws-list">${members.map(m => `
+          <div class="ws-list-row">
+            <span class="ws-list-avatar">${escapeHtml((m.name || '').split(' ').map(s => s[0]).slice(0,2).join('').toUpperCase())}</span>
+            <div class="ws-list-l">
+              <div class="ws-list-name">${escapeHtml(m.name)}</div>
+              <div class="ws-list-meta">${escapeHtml(m.email || '')}${m.role ? ' · ' + escapeHtml(m.role) : ''}</div>
+            </div>
+            <a class="ws-list-action" href="#/users/${escapeHtml(m.id || '')}">Open →</a>
+          </div>
+        `).join('')}</div>`;
+  } else if (tab === 'integrations') {
+    tabBody = exposedSlugs.length === 0
+      ? `<div class="toolbar-empty">No integrations are exposed to this workspace yet. Go to <a href="#/distribution" style="color:var(--cyan)">Distribution</a> to expose some.</div>`
+      : `<div class="ws-list">${exposedSlugs.map(slug => {
+          const integ = INTEGRATIONS.find(x => x.slug === slug);
+          if (!integ) return '';
+          return `
+            <div class="ws-list-row" onclick="navigate('integrations/${escapeHtml(slug)}')">
+              <span class="ws-list-avatar" style="background:${integ.color || '#475569'}">${escapeHtml((integ.name || '').slice(0,2).toUpperCase())}</span>
+              <div class="ws-list-l">
+                <div class="ws-list-name">${escapeHtml(integ.name)}</div>
+                <div class="ws-list-meta">${escapeHtml(integ.vendor || '')}${integ.category ? ' · ' + escapeHtml(integ.category) : ''}</div>
+              </div>
+              <span class="ws-list-action">Open →</span>
+            </div>
+          `;
+        }).join('')}</div>`;
+  } else if (tab === 'activity') {
+    tabBody = activity.length === 0
+      ? `<div class="toolbar-empty">No recent activity scoped to this workspace.</div>`
+      : `<div class="ws-list">${activity.map(e => `
+          <div class="ws-list-row">
+            <span class="audit-ev ${e.sev==='info'?'info':e.sev==='warn'?'warn':'crit'}" style="margin-right:2px">${(e.sev || 'info').toUpperCase()}</span>
+            <div class="ws-list-l">
+              <div class="ws-list-name">${escapeHtml(e.event || '')}</div>
+              <div class="ws-list-meta">${escapeHtml(e.actor || '')} · ${escapeHtml(e.ts || '')}</div>
+            </div>
+          </div>
+        `).join('')}</div>`;
+  }
+
+  $('content').innerHTML = `
+    <section class="surface">
+      <div class="breadcrumb">
+        <a href="#/workspaces">Workspaces</a><span class="crumb-sep">›</span>
+        <span class="crumb-current">${escapeHtml(w.name)}</span>
+      </div>
+
+      <section class="hero" data-tone="info">
+        <div class="hero-main">
+          <div class="hero-eyebrow">
+            <span class="hero-mode-tag" style="background:${w.color}22;color:${w.color};border-color:${w.color}55">WORKSPACE</span>
+            <span class="hero-meta">Owned by ${escapeHtml(w.owner || '—')}</span>
+          </div>
+          <h1 class="hero-title">${escapeHtml(w.name)}</h1>
+          <p class="hero-desc">${escapeHtml(w.desc || 'Team workspace with its own scoped integrations and members.')}</p>
+        </div>
+        <aside class="hero-aside">
+          <div class="hero-kpis">
+            <div class="hero-kpi" data-kind="info"><span class="hero-kpi-n">${w.members || 0}</span><span class="hero-kpi-l">Members</span></div>
+            <div class="hero-kpi" data-kind="ok"><span class="hero-kpi-n">${intCount}</span><span class="hero-kpi-l">Integrations</span></div>
+            <div class="hero-kpi" data-kind="idle"><span class="hero-kpi-n">${activity.length}</span><span class="hero-kpi-l">Recent events</span></div>
+          </div>
+        </aside>
+      </section>
+
+      <div class="ws-tabs">
+        <button class="ws-tab ${tab==='members'?'is-active':''}" onclick="setWsTab('members')">Members <span class="ws-tab-count">${members.length}</span></button>
+        <button class="ws-tab ${tab==='integrations'?'is-active':''}" onclick="setWsTab('integrations')">Integrations <span class="ws-tab-count">${exposedSlugs.length}</span></button>
+        <button class="ws-tab ${tab==='activity'?'is-active':''}" onclick="setWsTab('activity')">Activity <span class="ws-tab-count">${activity.length}</span></button>
+      </div>
+
+      ${tabBody}
+    </section>
+  `;
+}
+
 function renderUsersHome(userId) {
   // If a userId is in the route, open the drawer after rendering the table
   const totalAccess = MOCK_PEOPLE.reduce((s, p) => s + _accessForUser(p.id).length, 0);
@@ -9740,6 +9970,7 @@ function route() {
   const ssbMap = {
     'integrations':'integrations', 'audit':'audit', 'build':'integrations', 'request':'integrations', 'requests':'requests',
     'distribution':'distribution',
+    'workspaces':'workspaces',
     'widgets':'widgets',
     'personal':'personal'
   };
@@ -9771,6 +10002,10 @@ function route() {
     renderDistribution();
   } else if (parts[0]==='users') {
     renderUsersHome(parts[1]);
+  } else if (parts[0]==='workspaces' && parts[1]) {
+    renderWorkspaceDetail(parts[1]);
+  } else if (parts[0]==='workspaces') {
+    renderWorkspaces();
   } else if (parts[0]==='widgets') {
     renderWidgetsLibrary();
   } else if (parts[0]==='personal' && parts[2]) {
