@@ -2119,6 +2119,29 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
 
 
 /* ============ TABLES SURFACE ============ */
+/* ============================================================================
+   .surface — canonical layout container for every studio page.
+   Provides horizontal padding + max-width so content never touches the
+   sidebar or viewport edges. Heroes inside extend to the edges via
+   negative margins for a full-bleed page-header look.
+============================================================================ */
+.surface{
+  padding: 24px 32px 32px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+.surface > .hero{
+  margin-left: -32px;
+  margin-right: -32px;
+  padding-left: 32px;
+  padding-right: 32px;
+}
+/* Onboarding keeps its own narrower container */
+.surface.tonb-wrap{
+  padding: 24px 20px 48px;
+  max-width: 1100px;
+}
+
 .tbl-wrap{padding:24px 28px;max-width:1280px;margin:0 auto}
 .tbl-h{
   display:flex;align-items:flex-start;justify-content:space-between;gap:20px;
