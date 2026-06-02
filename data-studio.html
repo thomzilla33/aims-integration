@@ -12395,7 +12395,9 @@ function _validateStep(stepId) {
     const w = tonbState.siteProfile;
     if (!w.name || w.name.trim().length < 2) e.siteName = 'Required.';
     if (!w.primaryCategory) e.siteCategory = 'Pick one.';
-    if (!w.sourceSystemId) e.sourceSystemId = 'Required. This is the site’s ID in your source system.';
+    // sourceSystemId is no longer required here. The Connect Data wizard
+    // (step 6) auto-detects this from the source system's API after auth.
+    // Users who already know it can still fill it manually.
     if (!w.primaryContact || w.primaryContact.trim().length < 2) e.primaryContact = 'Required.';
     if (!w.contactEmail || !/^\S+@\S+$/.test(w.contactEmail.trim())) e.contactEmailSite = 'Need a valid email.';
   }
@@ -12460,7 +12462,18 @@ function _onTonbTagKey(ev) {
 function updateTonbSiteProfile(field, value) {
   if (!tonbState.siteProfile) tonbState.siteProfile = {};
   tonbState.siteProfile[field] = value;
+  // Clear field-level errors as the user types/picks so the error UI doesn't lag.
+  if (tonbState.errors) {
+    const errKeys = { name:'siteName', primaryCategory:'siteCategory', sourceSystemId:'sourceSystemId',
+                      primaryContact:'primaryContact', contactEmail:'contactEmailSite' };
+    const k = errKeys[field];
+    if (k && tonbState.errors[k]) delete tonbState.errors[k];
+  }
   persistTonbState();
+  // Critical: re-evaluate the Continue button so it enables once required
+  // fields are filled. Without this, dropdowns + text inputs both leave the
+  // button stuck in its initial disabled state.
+  _updatePrimaryBtnEnabled();
 }
 /* Back-compat alias — old call sites still work. */
 function updateTonbWorkspace(field, value) {
@@ -12910,10 +12923,9 @@ function _renderSiteProfileStep() {
       </div>` : ''}
 
       <div class="tonb-field is-wide">
-        <label class="tonb-field-label">Source system ID<span class="tonb-field-req">*</span></label>
+        <label class="tonb-field-label">Source system ID<span class="tonb-field-opt">(optional)</span></label>
         <input type="text" placeholder="${escapeHtml(sourcePlaceholder)}" value="${escapeHtml(w.sourceSystemId||'')}" oninput="updateTonbSiteProfile('sourceSystemId', this.value)" />
-        <div class="tonb-field-hint">The ${escapeHtml(ind.site.single)}'s identifier in ${escapeHtml(dmsName)}. ${escapeHtml(dmsHint)} <a href="#" onclick="if(typeof toast==='function')toast('Tutorial coming soon');return false;" style="color:#7ed3f7;text-decoration:none">Where do I find this?</a></div>
-        ${errs.sourceSystemId ? `<div class="tonb-field-err">${escapeHtml(errs.sourceSystemId)}</div>` : ''}
+        <div class="tonb-field-hint">If you already know the ${escapeHtml(ind.site.single)}'s ID in ${escapeHtml(dmsName)}, drop it here. Otherwise we'll detect it automatically when you connect the source in the next step.</div>
       </div>
 
       <div class="tonb-field">
