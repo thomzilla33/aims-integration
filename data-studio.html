@@ -2567,6 +2567,30 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
 .tbl-field-flag.f-u {background:rgba(43,127,255,0.10);color:var(--blue);border:1px solid rgba(43,127,255,0.28)}
 
 
+/* ============ Hero CTA secondary — small status-tinted link button ============ */
+.hero-cta-secondary{
+  display:inline-flex; align-items:center; justify-content:center; gap:6px;
+  padding:8px 12px;
+  font-family:inherit; font-size:12px; font-weight:600;
+  background:rgba(245,158,11,0.08);
+  border:1px solid rgba(245,158,11,0.30);
+  border-radius:8px;
+  color:var(--amber);
+  cursor:pointer; white-space:nowrap;
+  text-decoration:none;
+  transition: all .15s ease;
+}
+.hero-cta-secondary:hover{
+  background:rgba(245,158,11,0.16);
+  border-color:rgba(245,158,11,0.50);
+}
+.hero-cta-secondary-dot{
+  width:6px; height:6px; border-radius:50%;
+  background:var(--amber);
+  box-shadow:0 0 0 2px rgba(245,158,11,0.20);
+  animation: tblErrPulse 1.6s ease-in-out infinite;
+}
+
 /* ============ Spec v2 — STUB banner + canonical name editor ============ */
 .tbl-map-stub-banner{
   display:flex; align-items:center; gap:12px;
@@ -6872,13 +6896,14 @@ function renderTables() {
             <div class="hero-kpi" data-kind="info"><span class="hero-kpi-n">${formatRowCount(totalRows)}</span><span class="hero-kpi-l">Total rows</span></div>
             ${errorCount > 0 ? `<div class="hero-kpi" data-kind="warn"><span class="hero-kpi-n">${errorCount}</span><span class="hero-kpi-l">Errors</span></div>` : ''}
           </div>
-          ${errorCount > 0 ? `<button class="hero-cta" onclick="tblLibSetFilter('errors')" aria-label="Filter to tables with errors">
-            Resolve ${errorCount} error${errorCount===1?'':'s'}
-            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 8h10M9.5 4.5L13 8l-3.5 3.5"/></svg>
-          </button>` : `<button class="hero-cta" data-tone="ok" onclick="if(typeof openWizard==='function'){openWizard()}else{location.hash='/connections'}" aria-label="Create a new table by connecting a source">
+          <button class="hero-cta" data-tone="ok" onclick="if(typeof openWizard==='function'){openWizard()}else{location.hash='/connections'}" aria-label="Create a new table by connecting a source">
             <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg>
             New Table
-          </button>`}
+          </button>
+          ${errorCount > 0 ? `<button class="hero-cta-secondary" onclick="tblLibSetFilter('errors')" aria-label="Filter to tables with errors">
+            <span class="hero-cta-secondary-dot"></span>
+            Resolve ${errorCount} error${errorCount===1?'':'s'} &rarr;
+          </button>` : ''}
         </aside>
       </section>
 
