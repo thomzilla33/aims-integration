@@ -6884,9 +6884,6 @@ function renderTables() {
 
       <section class="hero" data-tone="${errorCount > 0 ? 'warn' : 'default'}">
         <div class="hero-main">
-          <div class="hero-eyebrow">
-            <span class="hero-meta">${totalTables} table${totalTables===1?'':'s'} · ${formatRowCount(totalRows)} rows</span>
-          </div>
           <h1 class="hero-title">${errorCount > 0 ? `<span class="hero-emphasis">${errorCount}</span> table${errorCount===1?'':'s'} need attention` : 'All your data tables'}</h1>
           <p class="hero-desc">One Table can be fed by multiple connections.</p>
         </div>
@@ -9860,7 +9857,7 @@ function renderTemplatesLibrary() {
               if (!a || (v.createdAt && v.createdAt > a)) return v.createdAt;
               return a;
             }, null);
-            return latest ? `<div class="hero-eyebrow"><span class="hero-meta">Last edit ${escapeHtml(formatTplRelative(latest))}</span></div>` : '';
+            return '';
           })()}
           <h1 class="hero-title">Validation &amp; transformation templates</h1>
           <p class="hero-desc">Reusable rule packs applied to Table fields. Define once, every applied field inherits the rules.</p>
@@ -13889,9 +13886,6 @@ function renderFieldMappings() {
 
       <section class="hero" data-tone="${counts.review > 0 ? 'warn' : 'default'}">
         <div class="hero-main">
-          <div class="hero-eyebrow">
-            <span class="hero-meta">${counts.all} field${counts.all===1?'':'s'} · ${counts.review} need review</span>
-          </div>
           <h1 class="hero-title">${counts.review > 0 ? `<span class="hero-emphasis">${counts.review}</span> field${counts.review===1?'':'s'} need review` : 'Cross-connection field mappings'}</h1>
           <p class="hero-desc">Auto-mapped fields go through silently. Custom ones wait here for a decision.</p>
         </div>
@@ -14214,9 +14208,6 @@ function renderSchemaVersions() {
 
       <section class="hero">
         <div class="hero-main">
-          <div class="hero-eyebrow">
-            <span class="hero-meta">${timeline.length} version${timeline.length===1?'':'s'} captured</span>
-          </div>
           <h1 class="hero-title">Schema change history</h1>
           <p class="hero-desc">Every edit captures a version.</p>
         </div>
