@@ -7983,7 +7983,7 @@ function _doRestoreVersion(tableName, versionId) {
   list.unshift({
     id: 'v_backup_' + Date.now(),
     label: 'Auto-saved before restoring "' + target.label + '"',
-    createdAt: 'just now',
+    createdAt: Date.now(),
     author: 'You',
     snapshot: takeSnapshot(tableName)
   });
@@ -7992,7 +7992,7 @@ function _doRestoreVersion(tableName, versionId) {
   list.unshift({
     id: 'v_restore_' + Date.now(),
     label: 'Restored "' + target.label + '"',
-    createdAt: 'just now',
+    createdAt: Date.now(),
     author: 'You',
     snapshot: takeSnapshot(tableName)
   });
@@ -9032,7 +9032,7 @@ function createVersion(tableName, label) {
   tableVersions[tableName].unshift({
     id: 'v_' + Date.now() + '_' + Math.floor(Math.random()*999),
     label: label,
-    createdAt: 'just now',
+    createdAt: Date.now(),
     author: 'You',
     snapshot: takeSnapshot(tableName)
   });
@@ -9051,7 +9051,7 @@ function restoreVersion(tableName, versionId) {
   list.unshift({
     id: 'v_backup_' + Date.now(),
     label: 'Auto-saved before restoring "' + target.label + '"',
-    createdAt: 'just now',
+    createdAt: Date.now(),
     author: 'You',
     snapshot: takeSnapshot(tableName)
   });
@@ -9064,7 +9064,7 @@ function restoreVersion(tableName, versionId) {
   list.unshift({
     id: 'v_restore_' + Date.now(),
     label: 'Restored "' + target.label + '"',
-    createdAt: 'just now',
+    createdAt: Date.now(),
     author: 'You',
     snapshot: takeSnapshot(tableName)
   });
@@ -9107,7 +9107,7 @@ patchFieldOverride = function(tableName, fieldName, patch) {
       && versions[0].id === _lastVersionStamp.versionId) {
     // Merge into the existing top version
     versions[0].label = label;
-    versions[0].createdAt = 'just now';
+    versions[0].createdAt = Date.now();
     versions[0].snapshot = takeSnapshot(tableName);
     persistTableVersions();
     _lastVersionStamp.time = now;
@@ -16647,9 +16647,7 @@ function renderOnboardingEmptyState() {
 
         <div class="ob-empty-visual">
           <div class="ob-empty-visual-orb"></div>
-          <div class="ob-empty-visual-card c1"><span class="v-dot"></span> 4,210 events/hr</div>
-          <div class="ob-empty-visual-card c2"><span class="v-dot"></span> AI mapping &middot; 92%</div>
-          <div class="ob-empty-visual-card c3"><span class="v-dot"></span> 7 categories</div>
+          <div class="ob-empty-visual-card c3"><span class="v-dot"></span> ${(typeof OB_CATEGORIES !== 'undefined' ? OB_CATEGORIES.length : 7)} categories</div>
         </div>
       </div>
     </section>
