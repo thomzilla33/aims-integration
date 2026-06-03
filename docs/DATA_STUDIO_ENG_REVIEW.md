@@ -1,417 +1,370 @@
-# Data Studio — Engineering Review
+# Data Studio — Feature Review
 
-> Prototype handoff for the Data Studio v2 (May 2026 spec). This document maps
-> what's in `data-studio.html` for a principal engineer reviewing the
-> proposed feature before productionization.
+> A walkthrough of the Data Studio feature I'm proposing for review.
+> Written for the engineering team before we plan the build.
 
-**Status:** Design prototype, not production code. All data is mocked
-in-memory or in `localStorage`. Single static HTML file (~833 KB) with vanilla
-JS — no build, no framework. The shape of the UI deliberately mirrors the
-shape of the proposed backend so nothing gets lost in translation.
+## TL;DR
 
-**Demo:** open `data-studio.html` directly, or via GitHub Pages
-(`.github/workflows/pages.yml` auto-deploys main to Pages).
+Data Studio is the surface where our customers turn raw connected data into
+the structured tables their agents and teams actually use. It pairs with
+Admin Studio (governance) and Agent Studio (tooling) to close the loop:
+admins decide *what* can be used, Data Studio decides *what shape it takes*,
+and Agent Studio puts it to work.
 
----
+Five things a customer can do here:
 
-## 1. What this is
+1. **See every table they have, at a glance** — with health status, scale,
+   and who depends on each one
+2. **Connect a new source** through a guided 6-step flow
+3. **Map source fields to a clean canonical schema** — the v2 centerpiece,
+   with a visual transformation pipeline
+4. **Resolve field-level decisions** across all connections in one inbox
+5. **Track schema changes over time** with an audit trail and one-click
+   restore
 
-Data Studio is the **data infrastructure surface** of AIMS-OS. It evolves
-"Table Definitions" from a passive viewer into the active transformation +
-monitoring core of the platform. Concretely:
-
-- Browse and manage Tables (canonical destinations for data)
-- Connect sources (via the 6-step Connect Data wizard)
-- Map source fields → canonical schema (the v2 centerpiece)
-- Monitor sync health, errors, schema drift
-- Audit schema history with restore
-
-It pairs with **Admin Studio** (`settings.html` — integrations, instances,
-distribution, workspaces, audit) and **Agent Studio** (`agent-tools.html` —
-tool wrappers). Cross-studio links keep the boundary clean: governance lives
-in Admin Studio, mapping lives in Data Studio.
+What's new in this v2 (May 2026) versus the previous version:
+- Canonical Mapping is now a first-class workspace, not a hidden setting
+- Health signals are honest — broken syncs are impossible to miss
+- The connect flow drops a redundant "Choose capabilities" step
+- Onboarding ends by pointing the customer straight at the mapping work
+  (the real next action), instead of leaving them to discover it
 
 ---
 
-## 2. Surface inventory
+## 1. The customer problem we're solving
 
-Every route is hash-based. Router: `route()` reads `location.hash`, splits on
-`/`, dispatches to the appropriate `renderXxx()` function. State is restored
-from `localStorage` on each navigation; UI is fully re-rendered (no diff).
+Before this feature, customers who connected a data source ended up with:
+- Tables that existed but weren't usable until someone mapped fields manually
+- No visible state of "what's connected and healthy" versus "what's broken"
+- No structured way to define how raw field names become canonical ones
+- No record of who changed what when
 
-| Route | Renderer | Purpose |
-|---|---|---|
-| `/connections` | `renderConnections()` | List of Data-Sync connections inherited from Admin Studio. Map / re-map events into Tables. |
-| `/connections/<slug>` | `renderConnectionDetail()` | Per-connection detail: events feeding which target tables, custom field decisions. |
-| `/tables` | `renderTables()` | Library view of all canonical Tables. Cards show health, scale, downstream usage. |
-| `/tables/<name>` | `renderTableDetail()` | Split layout: field list left, 7-tab inspector right (Field / Mapping / Sync / Conn / Used by / Versions / Custom fields). |
-| `/templates` | `renderTemplates()` | Validation + transformation rule pack library. |
-| `/templates/new` | `renderTemplateCreate()` | Create flow for a new template (pick starting point, name, domain). |
-| `/templates/<id>` | `renderTemplateDetail()` | Template detail: tree editor, rule inspector, versions, applied-to. |
-| `/mappings` | `renderFieldMappings()` | Cross-connection view of every source field, with resolve decisions. |
-| `/schema` | `renderSchemaVersions()` | Unified timeline of all Table edits across the tenant. |
-| `/onboarding` | `renderTenantOnboarding()` | 7-step tenant onboarding (Welcome → Org → Template → Peer rules → Site profile → Connect → Done). |
-
-Empty-state interception: when `obState.phase === 'pending'` (first run), any
-visit to `/connections` falls through to `renderOnboardingEmptyState()` —
-the guided start screen.
+Data Studio answers all four. It's the day-2 home for everyone past the
+initial setup — admins reviewing what's flowing, data leads shaping the
+canonical schema, and platform owners auditing changes.
 
 ---
 
-## 3. State model
+## 2. What the customer can do here
 
-All state lives in module-scoped JS variables persisted to `localStorage`
-under namespaced keys. No external store, no API calls.
+The feature has **six main pages** plus an embedded **onboarding flow**.
+Each is described below in terms of what the customer accomplishes, not
+how it's built.
 
-| Variable | Storage key | What it carries |
-|---|---|---|
-| `obState` | `aims_ds_onb` | Connect Data wizard state (the 6-step flow inside Data Studio). Tracks category, connector, auth, mapping decisions, sync schedule, `lastCompleted` (the most recent finished connection). |
-| `tonbState` | `aims_ds_tenant_onboarding_v1` | Tenant onboarding state. 7 steps, industry preset (`industryId` drives vocabulary swap), org, template, peerRules, siteProfile, sites[], errors, flow ('first_run' \| 'add_site'). |
-| `tableVersions` | `aims_ds_table_versions` | Per-table version history: `{ tableName: [{id, label, createdAt, author, snapshot}] }`. Snapshots are full {overrides, customDefs} captures. |
-| `tableFieldOverrides` | `aims_ds_table_field_overrides` | Per-field customization keyed `{tableName: {fieldName: {displayName, type, isPrimaryKey, isIndexed, nullable, validations[], transformations[], canonicalName}}}`. |
-| `tableCustomDefs` | `aims_ds_table_custom_defs` | Manually-added fields per table (the "Custom fields" tab). |
-| `mappingDecisions` | `aims_ds_field_mapping_decisions` | Field Mapping decisions per cross-connection field: `{rowKey: {decision, customName, suggestedAccepted}}`. |
-| `FIELD_OVERRIDES` | `aims_ds_field_overrides_v1` | Newer key used by the Canonical Mapping pipeline (Phase A) to store per-field `{transformations[], canonicalName}`. Distinct from `tableFieldOverrides`. |
+### 2.1 Tables — the library view
 
-Mock seed data (large, declared as `const`):
-- `DS_CONNECTIONS` — 6 sample connections (HubSpot, Snowflake, Salesforce, GitHub, Spreadsheet, Amazon S3)
-- `DS_CATALOG` — broader catalog used to synthesize Tables and seed the wizard
-- `tplLibrary` — system + cloned + custom templates
-- `MOCK_TEMPLATE_LINES` — references that drive "Used by N" rollups
-- `MOCK_PEOPLE` / `MOCK_WORKSPACES` (in settings.html) — cross-referenced
+The landing page for anyone past first-run. The customer sees:
+- Every canonical table in their tenant, as a card
+- A health indicator per table (healthy / paused / errored)
+- The scale (columns and rows) and **downstream impact** ("used by N
+  template lines") so they understand blast radius before editing
+- A top-level summary: total tables, total rows, errored tables
+- Quick filters by source (Snowflake, Salesforce, GitHub, etc.) plus an
+  Errors filter that only appears when errors exist
+- A prominent **"+ New Table"** action that launches the Connect flow
 
-**Migration:** `loadTonbState()` reads v1 keys (`starter`, `grouping`,
-`workspace`) and remaps to v2 (`template`, `peerRules`, `siteProfile`).
-Backward-compatible with sessions started before the rename.
+If a sync is broken, the card is bordered red with a pulsing dot and a
+named reason ("Salesforce sync failed"). It's impossible to miss.
 
----
+### 2.2 Table detail — the workspace
 
-## 4. Design system primitives
+Clicking any table opens a split-layout workspace:
+- **Left:** every source field, with type, sample values, and badges (PK
+  for primary key, IX for indexed, NN for not nullable, V for validations,
+  T for transformations, U for downstream usage count)
+- **Right:** a seven-tab inspector for the selected field
 
-Three shared primitives emerged during the v2 work. Every list/library
-surface uses them. This is the part to lift into a real component library
-on productionization.
+The seven tabs:
 
-### `.surface`
-
-Canonical layout container.
-```css
-.surface { padding: 24px 32px 32px; max-width: 1280px; margin: 0 auto; }
-.surface > .hero { margin-left: -32px; margin-right: -32px; /* full-bleed */ }
-```
-Wraps every surface render. Provides consistent horizontal padding so content
-respects the sidebar/viewport edges. `.surface.tonb-wrap` overrides to a
-narrower 1100px max-width for the onboarding wizard.
-
-### `.hero`
-
-Page header. Title + description on the left, optional `.hero-aside` on the
-right for a primary CTA.
-```html
-<section class="hero">
-  <div class="hero-main">
-    <h1 class="hero-title">All your data tables</h1>
-    <p class="hero-desc">One Table can be fed by multiple connections.</p>
-  </div>
-  <aside class="hero-aside">
-    <button class="btn btn-primary">+ New Table</button>
-  </aside>
-</section>
-```
-Grid layout (`minmax(0, 1fr) auto`), responsive collapse below 900px.
-`data-tone="info|warn|ok"` available but currently unused on library surfaces
-(state lives in stats strips, not in hero tone).
-
-### `.toolbar`
-
-Search + filter pills row. Lives directly above the list grid.
-```html
-<div class="toolbar">
-  <label class="toolbar-search">…</label>
-  <div class="toolbar-filters">
-    <button class="toolbar-filter is-active">All <span class="toolbar-filter-count">9</span></button>
-    <button class="toolbar-filter" data-tone="ok">Mapped <span class="toolbar-filter-count">4</span></button>
-  </div>
-</div>
-```
-Filter pills support tone tokens (`ok`/`warn`/`info`) for color-coded active
-states.
-
-### Stats strip (per-surface, mirrored pattern)
-
-Read-only KPI cards above the toolbar. `.tbl-kpi-strip` / `.tpl-kpi-strip` /
-`.fm-kpi-strip` / `.sv-kpi-strip` / `.ds-kpi-strip` / `.ws-kpi-strip` —
-intentionally separate classes to keep status colors scoped, but all follow
-the same shape: auto-fit grid, `(number, label)` cards, optional `is-warn` /
-`is-ok` / `is-errors` color variants.
-
-### Common surface shape
-
-```
-┌─ .surface ─────────────────────────────────────────────────┐
-│  breadcrumb                                                  │
-│                                                              │
-│  .hero (title + desc | primary CTA aside)                    │
-│                                                              │
-│  .stats-strip  (read-only KPI cards)                         │
-│                                                              │
-│  .toolbar     (search | filter pills)                        │
-│                                                              │
-│  list / grid / split layout                                  │
-└─────────────────────────────────────────────────────────────┘
-```
-
-This shape is consistent across: Tables, Templates, Field Mappings, Schema
-Versions, Connections, Workspaces (in settings.html). Adopt this in
-production for predictability.
-
----
-
-## 5. Key flows
-
-### 5.1 First-run tenant onboarding
-
-User lands on Data Studio with no prior state.
-1. `/connections` detects `isOnboardingPending()` and shows
-   `renderOnboardingEmptyState()` — the "Welcome to Data Studio" hero.
-2. User clicks **Start first-time setup** → `tonbStart('first_run')`
-   transitions to `/onboarding`.
-3. 7 steps: Welcome → Organization → Composite template → Peer rules →
-   Site profile → Connect data → Done.
-4. Each step validates (`_validateStep`) and gates the Continue button.
-   State is persisted on every field change.
-5. Step 6 (Connect data) opens the **Connect Data wizard** as a modal — a
-   nested 6-step flow (Category → Connector → Auth → Preview → Mapping →
-   Sync). On completion, `obState.lastCompleted` is populated.
-6. Step 7 (Done) shows the SummaryRow with **"Account mapping · Pending"**
-   row carrying an amber NEXT badge. Primary CTA: "Map your fields in Data
-   Studio →" which navigates to `/tables/<object>` with `tblRailTab='mapping'`
-   pre-selected.
-
-### 5.2 Connecting a new source post-onboarding
-
-1. User clicks **"+ New Table"** in Tables hero (or `openWizard()` from
-   anywhere).
-2. Connect Data wizard launches as a modal.
-3. 6 sub-screens with internal state machine. Persistence: `obState`.
-4. On completion, the wizard's Done screen offers four next actions; the
-   primary lands the user on the Mapping tab of the new Table (the
-   handoff Edgardo requested).
-
-### 5.3 Mapping fields to canonical schema
-
-The v2 centerpiece. Lives in `renderTblMappingTab()` (Tables detail, tab 2).
-1. Pick a field on the left rail. Right rail switches to the Mapping tab.
-2. Vertical pipeline visualization: SOURCE node (cyan) → ordered chain of
-   transformations → TARGET node (emerald, editable snake_case input).
-3. Click **+ Add transformation** to open the palette: 14 ops split into
-   Stable (8) and Experimental STUB (6). Add multiple, reorder with `⋮`
-   menu, delete with `×`.
-4. Live preview row at the bottom shows Before/After using the field's
-   sample value. Updates on parameter edit without re-rendering (preserves
-   input focus).
-5. STUB ops carry amber dashed border + STUB chip. When chain contains any
-   STUB, a top-of-panel banner explains "Experimental — behavior may
-   change."
-6. Persistence: `FIELD_OVERRIDES[tableName][fieldName].transformations[]`
-   plus `.canonicalName`.
-
-### 5.4 Field Mappings resolve flow
-
-Cross-connection view of every source field that needs a decision.
-1. `/mappings` lists rows grouped by connection.
-2. Each row has Source field, suggested target, status (auto / review /
-   resolved / skipped).
-3. Click **Resolve** on a "Needs review" row → drawer opens with 3 options:
-   Accept suggestion, Create new field, Skip.
-4. Decisions persist in `mappingDecisions`.
-
----
-
-## 6. v2 spec compliance
-
-Status against the May 2026 spec sections:
-
-| Section | Status |
+| Tab | What the customer does here |
 |---|---|
-| 1. Library View (cards + filters + global action) | ✅ 100% |
-| 2. Detail Workspace (split layout + 7 tabs) | ✅ 100% — Field / Mapping / Sync / Conn / Used by / Versions / Custom fields |
-| 3. Canonical Mapping (pipeline + STUB banner + snake_case target) | ⚠️ 85% — multi-source mapping deferred (see `docs/BACKLOG.md`) |
-| 4. Create Table Flow (6-step wizard) | ✅ 100% — Category / Connector / Auth / Preview / Mapping / Sync |
-| 5. Health Indicators (banners + red dots + red borders) | ✅ 100% |
+| **Field** | Edits the field's basic properties (display name, type, nullability) |
+| **Mapping** | Defines how the source field becomes a canonical one. *The v2 centerpiece — see §2.3.* |
+| **Sync** | Monitors sync health, sees recent runs, triggers a manual sync |
+| **Conn** | Inspects the connection and re-authenticates if needed |
+| **Used by** | Sees which templates depend on this field — checks blast radius before editing |
+| **Versions** | Reviews change history with one-click restore |
+| **Custom fields** | Adds fields not present in the source (computed or manual) |
 
-**Deferred item:** multi-source mapping (combining N source fields into one
-canonical target via a merge strategy). Single-source pipelines cover 95% of
-demo paths. Full design and migration plan documented in
-`docs/BACKLOG.md` (Phase A2).
+### 2.3 Canonical Mapping — the v2 centerpiece
 
----
+This is the headline of the v2 release. For each field, the customer can
+build a transformation pipeline:
 
-## 7. Design decisions that need engineering input
+> SOURCE field → trim → lowercase → dictionary_lookup → TARGET (canonical)
 
-These are choices that worked in the prototype but should be validated for
-production:
+What the customer sees and does:
+- A **vertical pipeline** with a cyan SOURCE node, an emerald TARGET node,
+  and any number of transformations chained in between
+- An **inline catalog of 14 operations** split into Stable (8: trim,
+  lowercase, uppercase, round, to_int, to_decimal, default_value,
+  replace_null) and Experimental (6: concatenate, dictionary_lookup,
+  regex_extract, split_first_token, phone_to_e164, date_parse)
+- Experimental operations carry an **amber STUB badge** and the panel
+  shows a clear banner: "Behavior may change in future releases"
+- Per-operation controls to reorder (move up / move down) or remove
+- An editable **snake_case input** for the target field's canonical name,
+  with live sanitization
+- A **live Before/After preview** that updates as the customer edits
+  parameters, so they see the effect of the chain immediately
 
-### 7.1 State persistence strategy
-- All state in `localStorage` keys, no server roundtrip.
-- Per-table data (overrides, versions, custom defs) keyed by table NAME, not
-  ID. Renaming a table loses history. Production should use stable IDs.
-- No versioning of state shape. Migration is ad-hoc (see `loadTonbState`).
-  Production needs a real schema version field + migration registry.
+The persistence is automatic — the customer never has to "save."
 
-### 7.2 Transformation catalog scope
-- 8 stable ops (`trim`, `lowercase`, `uppercase`, `round`, `to_int`,
-  `to_decimal`, `default_value`, `replace_null`) — simple deterministic.
-- 6 STUB ops (`concatenate`, `dictionary_lookup`, `regex_extract`,
-  `split_first_token`, `phone_to_e164`, `date_parse`) — marked experimental.
-- Production decision: which STUBs promote to stable in the first release?
-  `dictionary_lookup` and `concatenate` are the most demo-able; the rest
-  carry more edge cases.
+### 2.4 Connections — Data Sync inventory
 
-### 7.3 Field-override store split
-There are currently **two** override stores with overlapping purpose:
-- `tableFieldOverrides` (older, used by Field/Sync/Conn tabs)
-- `FIELD_OVERRIDES` (newer, used by the Mapping tab)
+A view of every integration from Admin Studio that has Data Sync enabled.
+Each card shows:
+- The connection logo, name, and vendor
+- Whether its events are mapped to a table yet ("Mapped" or "Needs
+  mapping")
+- The number of instances, events per hour, and last sync time
+- If schema drift has been detected, or if there are custom fields
+  waiting for a decision
 
-The split happened because Phase A's mapping needed a clean home that
-wouldn't conflict with the existing Field-tab edits. Production should
-consolidate. Leaving this split documented as a known-debt.
+Customers come here to **resolve pending mappings** before they pile up.
+The hero stat strip shows Active / Mapped / Pending at a glance.
 
-### 7.4 Multi-source mapping data model
-See `docs/BACKLOG.md` — Phase A2 has a proposed shape:
-```js
-{ sources: [{table, field}], merge: 'concat|pick|coalesce', mergeOptions: {...}, transformations: [...] }
-```
-Engineering should validate the merge taxonomy and `mergeOptions` schema
-before this lands.
+### 2.5 Field Mappings — the cross-connection inbox
 
-### 7.5 "Just now" timestamps in mock seed
-~10 instances of `lastSync: 'just now'` / `'4 min ago'` as raw strings
-across `DS_CONNECTIONS`. Render path is `escapeHtml(c.lastSync)` — passes
-through directly. Production replaces with numeric timestamps + a relative
-formatter (`formatTplRelative` already exists for this and handles both
-numeric + string inputs).
+When a source field doesn't auto-map confidently, it lands in this inbox.
+A single view across all connections, with:
+- 5 status buckets shown as KPIs (Total / Auto-mapped / Needs review /
+  Resolved / Skipped)
+- 5 quick-filter pills below to focus the list
+- A **Resolve drawer** that opens per row with three choices: accept the
+  AI suggestion, create a new field, or skip with a reason
 
-### 7.6 Onboarding flow forking
-Tenant onboarding has two flows: `first_run` (7 steps) and `add_site` (3
-steps). `_stepIdsForFlow()` returns the right id list. Add-site flow reuses
-the same `_renderXxxStep` functions with different validation expectations.
-This works in the prototype but is fragile — production should formalize
-the step graph (DAG with conditional edges).
+Decisions persist. The "Needs review" count drops as the customer works
+through them.
 
----
+### 2.6 Schema Versions — the change log
 
-## 8. Architecture notes
+A unified timeline of every Table edit in the tenant. Customers come here
+to answer questions like:
+- "Who changed the `email` field on the `contact` table last Tuesday?"
+- "Can I revert that change without breaking downstream templates?"
 
-### Routing
-Hash-based, no library. `route()` parses `location.hash`, dispatches.
-Handles direct navigation, hashchange, and `popstate`. Re-runs full
-re-render on each route change.
+Bucketed by Today / Yesterday / This week / This month / Older. Each row
+shows the table, the change label, the author, and a one-click "Restore"
+that creates a backup version first and lets the customer roll back safely.
 
-### Rendering
-`$('content').innerHTML = template` pattern. No virtual DOM, no
-reconciliation. Every state change re-renders the affected surface from
-scratch. Side effect: input focus is lost on text inputs that trigger
-re-render — we work around this in 3 places (`tblMapEditParam`,
-`setWsSearch`, `dsSetSearch`) with `setTimeout(focus + setSelectionRange)`.
+### 2.7 Onboarding — the guided first-time setup
 
-Production should use a real framework where focus management is automatic
-(React/SolidJS/Svelte all handle this). The framework choice is a separate
-discussion.
+When a customer lands on the app for the first time, they don't see a
+blank library. They see a welcome screen that guides them through 7 steps
+across 3 phases:
 
-### CSS organization
-Single `<style>` block, ~6,000 lines. Section comments separate scopes
-(`.tbl-*`, `.tpl-*`, `.fm-*`, etc.). Recent work introduced shared
-primitives (`.surface`, `.hero`, `.toolbar`) that production should
-formalize.
+| Phase | Steps |
+|---|---|
+| **Tenant** | Welcome → Organization → Composite template → Peer comparison rules |
+| **Site** | Site profile → Connect first source |
+| **Done** | Summary + handoff to Data Studio mapping |
 
-### Cross-studio communication
-Hard-coded URL navigation (`window.location.href = 'settings.html#/...'`).
-Each studio is a separate HTML file with its own state. No shared store.
+The flow adapts vocabulary based on the customer's industry — a car
+dealership sees "stores," a bank sees "branches," a restaurant chain sees
+"locations." Same flow, industry-aware language.
+
+The final step doesn't celebrate and dump the customer on a dashboard. It
+points them straight at the next real action — **"Map your fields in Data
+Studio"** — with an amber NEXT badge on a pending account-mapping row.
 
 ---
 
-## 9. Files in this prototype
+## 3. How the pieces connect
 
-```
-data-studio.html       Main file (~833 KB, the proposed feature)
-settings.html          Admin Studio (companion — workspaces, distribution, etc.)
-agent-tools.html       Agent Studio (tools registry)
-index.html             Hub landing
-docs/
-  DATA_STUDIO_ENG_REVIEW.md   This document
-  DEMO.md                     End-user demo walkthrough
-  OnboardingFlow.md           Tenant onboarding spec
-  FILTERS_SPEC.md             Filter slideout handoff for design
-  SHELL_PATTERN.md            Cross-studio shell normalization
-  spec.md                     Original engineering brief
-  BACKLOG.md                  Deferred work (multi-source mapping)
-.github/workflows/pages.yml   GitHub Pages auto-deploy
-```
+Data Studio doesn't live in isolation. Two cross-studio hops matter:
 
----
+**Admin Studio → Data Studio.** When a customer connects an integration in
+Admin Studio and that integration has Data Sync capability, the system
+takes them straight to Data Studio Connections to map the new connection's
+fields. Mapping no longer happens in the Admin Studio wizard — that change
+was explicit in the v2 brief.
 
-## 10. How to review
+**Data Studio → Admin Studio.** From any Connection card, a link returns
+the customer to Admin Studio to manage access, change credentials, or
+adjust per-workspace exposure. Data shaping stays here; access and
+distribution stay there.
 
-1. **Open** `data-studio.html` in a browser (or the GitHub Pages URL).
-2. **Clear state**: in browser console, run:
-   ```js
-   Object.keys(localStorage).filter(k=>k.startsWith('aims_')).forEach(k=>localStorage.removeItem(k));
-   location.reload();
-   ```
-3. **Walk the flow**:
-   - Land on Welcome to Data Studio (first-run empty state)
-   - Click "Start first-time setup" → step through tenant onboarding
-   - On step 6 (Connect data) → launch wizard, complete it
-   - On step 7 (Done) → click "Map your fields in Data Studio"
-   - Arrive on Tables detail with Mapping tab open
-   - Add transformations, see the live preview update
-   - Use sidebar to walk other surfaces (Tables / Templates / Field Mappings
-     / Schema Versions / Workspaces)
-4. **Sidebar Demo controls**:
-   - **Industry preset** dropdown — switches vocabulary swap
-   - **Take the guided tour** — interactive walkthrough of all surfaces
-   - **Reset to first time setup** — clears state, returns to step 0
-   - **Show errors** — toggles synthetic error states for demo
+**Data Studio → Agent Studio.** Tables defined here become the data source
+for tools and agents in Agent Studio. The "Used by N" rollups on Tables
+cards reflect how many template lines reference each table.
 
 ---
 
-## 11. What I want from the review
+## 4. The patterns we landed on
+
+During the build, three layout patterns emerged that every page on Data
+Studio (and across the prototype) follows. They're worth highlighting for
+the design system conversation:
+
+**Page header** — title and one-line description on the left, primary
+action button on the right.
+
+**Stats strip** — read-only summary cards below the header, color-tinted
+by status (green for healthy, amber for needs attention, blue for
+informational).
+
+**Toolbar** — search input on the left, status filter pills in the middle,
+optional secondary actions on the right. Sits directly above the list.
+
+The pattern is consistent across Tables, Templates, Field Mappings, Schema
+Versions, Connections, and Workspaces. A customer learning one page learns
+all six.
+
+---
+
+## 5. Spec compliance status
+
+Against the v2 May 2026 spec sections:
+
+| Spec section | Coverage | Notes |
+|---|---|---|
+| Library View (cards + filters + global action) | **100%** | All requirements met |
+| Detail Workspace (split layout + 7 tabs) | **100%** | All 7 tabs present and functional |
+| Canonical Mapping (pipeline + STUB banner + snake_case) | **85%** | Multi-source mapping (combining N source fields into one target) is deferred — single-source covers ~95% of demo flows. Documented in `BACKLOG.md`. |
+| Create Table Flow (6-step wizard) | **100%** | Category / Connector / Auth / Preview / Mapping / Sync |
+| Health Indicators (banners, red dots, red borders) | **100%** | All three visual treatments present |
+
+The only deferred piece is multi-source mapping. It's a structural change
+(requires a merge strategy concept — concatenate / pick / coalesce — plus
+a data-model migration). Worth its own sprint with engineering input on
+the schema.
+
+---
+
+## 6. Decisions I made and want you to validate
+
+These are choices I made in the prototype that need an engineering
+perspective before we commit to them in production.
+
+### 6.1 Where customer state lives
+The prototype stores customer state locally in the browser between
+sessions. That's fine for a demo but obviously not viable for a multi-user
+product where the same customer signs in from different devices. We need
+to decide the cutover: where the state lives, when it syncs, and what
+happens to in-progress edits if connectivity drops.
+
+### 6.2 The transformation catalog scope
+The catalog ships with 14 operations: 8 marked stable and 6 marked
+experimental. We need to align on:
+- Which experimental operations promote to stable for v1
+- Whether the catalog is extensible by customers, or curated by us
+- How we version operations when behavior changes
+
+The two experimental operations most customers will actually hit are
+`concatenate` (combining first_name + last_name) and `dictionary_lookup`
+(canonicalizing values via a lookup table). Promoting these to stable
+likely requires multi-source mapping (§5 deferred item) to be useful at
+full strength.
+
+### 6.3 Connecting and mapping as one journey
+The prototype redirects the customer from Admin Studio (after a connect)
+straight to Data Studio (to map). That handoff is intentional — mapping
+is the real next action, not a side concern. But it also means the journey
+crosses two URLs / two studios. We should confirm that's the right user
+journey or push to merge the surfaces.
+
+### 6.4 The split between Field and Mapping
+Today the inspector has separate **Field** and **Mapping** tabs. Field
+edits the property metadata (display name, type, nullability). Mapping
+edits the transformation pipeline. We could merge them — they're both
+"things you do to a field" — but keeping them separate keeps each tab
+focused. Worth a conversation.
+
+### 6.5 Versioning granularity
+The prototype captures a version every time a customer changes anything
+in a Table. That's complete but noisy — a real customer doing 20 edits
+in a session would get 20 versions. We need a heuristic: throttle to one
+version per session? Group by author + time window? Only on "publish"?
+
+### 6.6 Industry vocabulary swap
+Onboarding adapts the noun ("store" / "branch" / "location") based on
+industry preset. Useful for first-run, but the production question is
+whether that adaptation should persist into the rest of Data Studio
+forever, or only during onboarding. The current prototype keeps it
+everywhere — every "site" in the product changes per industry.
+
+---
+
+## 7. What I'm not asking you to build
+
+To set scope expectations clearly:
+
+- The 9 connectors and their mock data are placeholders. Real connector
+  integration is a separate workstream.
+- The AI suggestion confidence scores are illustrative. The actual scoring
+  model is out of scope for this feature.
+- The transformation operations execute deterministically in the preview
+  for demo purposes. The production execution engine (where these
+  transformations actually run on real data) is the data-team's pipeline,
+  not this UI.
+- Cross-studio shell unification (one consistent navigation across all
+  three studios) is tracked separately.
+
+---
+
+## 8. How to review
+
+To experience the feature the way a customer would:
+
+1. **Clear any prior state.** In the browser console:
+   `Object.keys(localStorage).filter(k=>k.startsWith('aims_'))
+     .forEach(k=>localStorage.removeItem(k))` then refresh.
+2. **You'll land on "Welcome to Data Studio"** — the first-run guided
+   start. Click "Start first-time setup".
+3. **Walk the 7-step onboarding.** Each step explains itself; the Continue
+   button gates on required fields.
+4. **On the Connect data step,** launch the wizard and complete it (you
+   can pick any source — try HubSpot for the most-populated demo).
+5. **On the Done step,** click the primary CTA "Map your fields in Data
+   Studio." You'll land on the Table detail with the Mapping tab open.
+6. **Try adding transformations** — pick a field, click "Add
+   transformation," chain a few stable and STUB operations, watch the
+   live preview update.
+7. **Visit the other pages** via the sidebar: Tables, Field mappings,
+   Schema versions, Templates. Each follows the same shape (page header,
+   stats strip, toolbar, list).
+
+The sidebar also has demo controls:
+- **Industry preset** — switches vocabulary across the product
+- **Take the guided tour** — interactive walkthrough of all surfaces
+- **Reset to first time setup** — back to a clean state
+- **Show errors** — toggles synthetic error states so you can see how
+  health signals render
+
+---
+
+## 9. What I want from this review
 
 In priority order:
 
-1. **Data model validation**
-   - Are the entity boundaries (Connection / Table / Field / Template /
-     Workspace) correct?
-   - Is the override-store split (`tableFieldOverrides` vs `FIELD_OVERRIDES`)
-     acceptable as separate stores or should they consolidate before
-     production?
-
-2. **Transformation pipeline**
-   - Is the 14-op catalog reasonable for v1?
-   - Validate the multi-source mapping proposal in `docs/BACKLOG.md`
-     before we start it.
-
-3. **State persistence**
-   - When does localStorage stop being viable? What's the cutover point
-     to a real store (Supabase / Postgres / something else)?
-   - Snapshot-based version history — production-viable shape or full
-     refactor required?
-
-4. **Routing / framework**
-   - When to migrate off vanilla JS + hash routing. Framework
-     recommendation?
-
-5. **Cross-studio architecture**
-   - Three separate HTML files with hard URL jumps works for the
-     prototype demo. What does production look like — micro-frontends,
-     SPA with sub-routes, separate apps?
-
-6. **Anything I missed.** The prototype is dense; if there's a section
-   that confused you while reading the code, that's the highest-signal
-   feedback.
+1. **Is the user journey right?** Especially the cross-studio handoffs
+   (Admin Studio → Data Studio after connecting; the onboarding → mapping
+   handoff at the end).
+2. **Are the entity boundaries right?** Connection / Table / Field /
+   Template / Workspace. Anything missing, anything doubled?
+3. **Validate the multi-source mapping proposal** in `BACKLOG.md` before
+   we start that work — the data model decision (merge strategies +
+   schema) is the part that needs engineering input.
+4. **Where does customer state live and how often does it sync?** This
+   is the biggest production question and the one I have the least
+   confidence on.
+5. **Decisions in §6** — pick the ones you have an opinion on.
+6. **Anything you'd ship differently.** If a section confused you while
+   walking the demo, that's the highest-signal feedback.
 
 ---
 
-*Last updated alongside the v2 May 2026 Data Studio spec rollout.*
-*Commit reference: see `git log -- docs/DATA_STUDIO_ENG_REVIEW.md`.*
+## 10. Reference docs
+
+- `BACKLOG.md` — the multi-source mapping work, deferred with full
+  context for resumption
+- `DEMO.md` — end-user demo script
+- `OnboardingFlow.md` — onboarding spec the implementation matches
+- `FILTERS_SPEC.md` — filter slideout design handoff
+- `spec.md` — the original engineering brief this proposal builds on
+
+---
+
+*This is a design prototype. All data is mocked. The intent is to align on
+shape and journey before we plan the production build.*
