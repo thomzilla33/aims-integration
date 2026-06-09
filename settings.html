@@ -133,11 +133,11 @@ html.mode-operate .mode-banner{display:block}
   display:inline-flex; align-items:center; gap:6px; height:30px; padding:0 11px;
   background:rgba(255,255,255,0.04); border:1px solid var(--line); border-radius:18px;
   color:var(--t2); font-family:inherit; font-size:12px; font-weight:600;
-  cursor:pointer; transition:background .15s, color .15s, border-color .15s;
   flex-shrink:0;
 }
-.tb-persona:hover{background:var(--hover); color:var(--t1); border-color:var(--line-strong)}
-.tb-persona-ic{color:currentColor; transition:transform .15s}
+/* Read-only role indicator — not interactive (no hover affordance, no pointer) */
+.tb-persona.is-readonly{cursor:default;}
+.tb-persona-ic{color:currentColor}
 .tb-persona.is-user{background:rgba(6,182,212,0.08); color:var(--cyan); border-color:rgba(6,182,212,0.3)}
 @media (max-width:900px){.tb-persona-label{display:none} .tb-persona{padding:0 8px}}
 
@@ -634,7 +634,7 @@ html.theme-light .btn-primary.btn-outline{color:var(--cyan); border-color:rgba(6
 .divider{height:1px; background:var(--line); margin:8px 0}
 
 /* ── Detail page ── */
-.detail-head{padding:22px 32px 18px; border-bottom:1px solid var(--line); display:flex; flex-direction:column; gap:12px}
+.detail-head{padding:22px 32px 18px; border-bottom:1px solid var(--line); display:flex; flex-direction:column; gap:12px; position:sticky; top:0; z-index:6; background:var(--bg)}
 .detail-row{display:flex; align-items:flex-start; gap:16px}
 .detail-text{flex:1; min-width:0; display:flex; flex-direction:column; gap:5px}
 .detail-eyebrow-row{
@@ -681,6 +681,7 @@ html.theme-light .btn-primary.btn-outline{color:var(--cyan); border-color:rgba(6
 .detail-meta-pill b{color:var(--t1); font-weight:600;}
 .detail-meta-pill .ic{color:var(--t3); flex-shrink:0;}
 .detail-actions{display:flex; align-items:center; gap:8px; flex-shrink:0;}
+.detail-inuse-pill{display:inline-flex; align-items:center; gap:6px; height:32px; padding:0 12px; border-radius:8px; background:var(--emerald-soft,rgba(16,185,129,0.10)); color:#34d39c; border:1px solid rgba(16,185,129,0.28); font-size:12.5px; font-weight:600;}
 @media (max-width:760px){
   .detail-head{padding:18px 20px 14px}
   .detail-name{font-size:20px}
@@ -1250,7 +1251,8 @@ html.theme-light .btn-primary.btn-outline{color:var(--cyan); border-color:rgba(6
   background:rgba(6,182,212,0.12); border:1px solid rgba(6,182,212,0.25);
 }
 .featured-title{font-size:22px; font-weight:700; color:var(--t1); margin-bottom:8px; letter-spacing:-.01em; line-height:1.25}
-.featured-desc{font-size:13px; color:var(--t2); line-height:1.6; max-width:520px; margin-bottom:16px}
+.featured-desc{font-size:13px; color:var(--t2); line-height:1.6; max-width:520px; margin-bottom:14px}
+.featured-caps{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:16px}
 .featured-actions{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
 .featured-visual{position:relative; flex-shrink:0; z-index:1}
 .logo.logo-xl{width:96px; height:96px; font-size:34px; border-radius:var(--r14); box-shadow:0 8px 30px rgba(0,0,0,0.4)}
@@ -1383,8 +1385,97 @@ html.theme-light .btn-primary.btn-outline{color:var(--cyan); border-color:rgba(6
 }
 
 /* ──────────────────────────────────────────────────────────
+   ATTENTION BAND
+   Inline section on the Integrations home that surfaces items
+   needing admin action. Replaces the standalone Operate route.
+   Reuses op-row styling so visual language is unchanged.
+   ────────────────────────────────────────────────────────── */
+.attn-band{
+  /* Match the .active-strip inset (32px) so this banner aligns with every
+     other content block — hero, featured and sections all sit at 365px. */
+  margin: 0 32px 24px;
+  padding: 18px;
+  background: rgba(251, 191, 36, 0.04);
+  border: 1px solid rgba(251, 191, 36, 0.22);
+  border-left: 2px solid var(--amber);
+  border-radius: 10px;
+  position: relative;
+}
+.attn-band-h{
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  margin-bottom: 14px;
+}
+.attn-band-h-l{
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.attn-band-eyebrow{
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--amber);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.attn-band-dot{
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--amber);
+  animation: mode-pulse 1.8s ease-in-out infinite;
+}
+.attn-band-count{
+  font-size: 11px;
+  color: var(--t3);
+  font-weight: 500;
+}
+/* Neutralize the page-level padding .op-list carries from the old Operate
+   home. The band's own padding (18/20/16) handles the inset, so the rows
+   align with the header eyebrow and the bottom gap is tight. */
+.attn-band-list.op-list{
+  padding: 0;
+  margin-top: 0;
+  gap: 6px;
+}
+/* Scale guard: when expanded past the cap, the list scrolls internally so the
+   band never grows unbounded and pushes the catalog off-screen. ~5.5 rows. */
+.attn-band.is-expanded .attn-band-list{
+  max-height: 408px;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+/* "Show all N" / "Show less" toggle */
+.attn-band-more{
+  display: inline-flex; align-items: center; gap: 6px;
+  margin-top: 12px;
+  padding: 7px 12px;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--t2);
+  font-family: inherit; font-size: 12.5px; font-weight: 600;
+  cursor: pointer;
+  transition: color .15s, border-color .15s, background .15s;
+}
+.attn-band-more:hover{ color: var(--t1); border-color: var(--line-strong); background: var(--hover); }
+.attn-band-more-n{
+  font-size: 11px; font-weight: 700; color: var(--amber);
+  margin-left: 2px;
+}
+.attn-band-more-chev{ transition: transform .18s ease; }
+.attn-band-more-chev.is-up{ transform: rotate(180deg); }
+
+/* ──────────────────────────────────────────────────────────
    OPERATE VIEW (orchestration thesis)
    "Status of your data infrastructure" instead of "Here are integrations"
+   Kept for legacy callers; the standalone route is no longer entered.
    ────────────────────────────────────────────────────────── */
 .op-hero{
   display:flex; gap:28px; align-items:center; justify-content:space-between;
@@ -2280,6 +2371,10 @@ html.theme-light .inst-summary-more:hover{background:rgba(56,189,248,0.06)}
   transition:background .14s, border-color .14s, transform .12s;
   position:relative;
 }
+/* Capability retired by the provider — shown but not toggleable (point 12) */
+.cap-lib-card.is-unavailable{opacity:.62; border-style:dashed; cursor:default}
+.cap-lib-card.is-unavailable .toggle{opacity:.4; cursor:not-allowed}
+.cap-unavail-tag{margin-left:8px; font-size:9.5px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:var(--t3); background:rgba(255,255,255,0.06); border:1px solid var(--line); padding:1px 6px; border-radius:10px}
 /* Editable variant — card splits into a click-area (left) + toggle (right) */
 .cap-lib-card.is-editable{
   cursor:default;
@@ -2689,6 +2784,9 @@ html.theme-light .inbox-list-h{background:rgba(15,23,42,0.012); border-bottom-co
   position:relative;
 }
 .inbox-row:last-child{border-bottom:none}
+/* End-user read-only inbox: no checkbox column */
+.inbox-list.is-readonly .inbox-list-h,
+.inbox-list.is-readonly .inbox-row{grid-template-columns:168px minmax(0, 1fr) 180px 130px 80px;}
 .inbox-row:hover{background:rgba(126,211,247,0.04)}
 html.theme-light .inbox-row:hover{background:rgba(56,189,248,0.04)}
 html.theme-light .inbox-row{border-bottom-color:var(--line)}
@@ -2852,20 +2950,79 @@ html.theme-light .inbox-open:hover{background:rgba(56,189,248,0.08); color:#0284
   .inbox-row-status, .inbox-row-requester, .inbox-row-quote{display:none}
 }
 
-.ws-kpi-strip{
-  display:grid;grid-template-columns:repeat(auto-fit, minmax(160px, 1fr));gap:10px;
-  margin-bottom:14px;
+/* Workspaces pages (list + detail) — give the surface the canonical content
+   inset (32px sides) so it doesn't sit flush against the sub-sidebar / right edge. */
+.surface{ padding: 22px 32px 44px; }
+@media (max-width:760px){ .surface{ padding: 16px 18px 32px; } }
+
+/* Workspaces toolbar — search + sort. These classes had no styling (native
+   input fell back to browser defaults); style them to match the app. */
+.toolbar{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:18px; }
+.toolbar-search{
+  flex:1; min-width:220px; max-width:440px; display:flex; align-items:center; gap:8px;
+  padding:8px 12px; background:rgba(255,255,255,0.04); border:1px solid var(--line); border-radius:8px;
+  transition:border-color .15s, background .15s;
 }
-.ws-kpi{
-  background:linear-gradient(180deg, rgba(255,255,255,0.034), rgba(255,255,255,0.014));
-  border:1px solid rgba(255,255,255,0.08);
-  border-radius:12px;padding:12px 14px;
-  display:flex;flex-direction:column;gap:3px;
+.toolbar-search:focus-within{ border-color:var(--line-strong); background:rgba(255,255,255,0.06); }
+.toolbar-search-ico{ color:var(--t3); flex-shrink:0; }
+.toolbar-search input{ flex:1; min-width:0; background:transparent; border:none; outline:none; color:var(--t1); font-family:inherit; font-size:13px; }
+.toolbar-search input::placeholder{ color:var(--t3); }
+.toolbar-search-clear{ display:flex; align-items:center; justify-content:center; background:none; border:none; color:var(--t3); cursor:pointer; padding:2px; border-radius:4px; flex-shrink:0; }
+.toolbar-search-clear:hover{ color:var(--t1); background:rgba(255,255,255,0.06); }
+.toolbar-sort{ display:flex; align-items:center; gap:4px; }
+.toolbar-sort-label{ font-size:11px; font-weight:600; letter-spacing:.04em; text-transform:uppercase; color:var(--t3); margin-right:2px; }
+.toolbar-sort-btn{
+  padding:7px 11px; background:transparent; border:1px solid var(--line); border-radius:8px;
+  color:var(--t2); font-family:inherit; font-size:12px; font-weight:600; cursor:pointer;
+  transition:border-color .12s, color .12s, background .12s;
 }
-.ws-kpi-v{font-size:22px;font-weight:700;color:var(--t1);font-variant-numeric:tabular-nums;letter-spacing:-0.01em;}
-.ws-kpi-k{font-size:10.5px;font-weight:600;letter-spacing:.08em;color:var(--t3);text-transform:uppercase;}
-.ws-kpi.is-members{background:rgba(16,185,129,0.08);border-color:rgba(16,185,129,0.28);}
-.ws-kpi.is-members .ws-kpi-v,.ws-kpi.is-members .ws-kpi-k{color:#34d39c;}
+.toolbar-sort-btn:hover{ color:var(--t1); border-color:var(--line-strong); }
+.toolbar-sort-btn.is-active{ color:var(--t1); background:rgba(255,255,255,0.06); border-color:var(--line-strong); }
+.toolbar-empty{
+  padding:28px 20px; text-align:center; color:var(--t2); font-size:13px; line-height:1.55;
+  border:1px dashed var(--line); border-radius:10px; background:rgba(255,255,255,0.015);
+}
+html.theme-light .toolbar-search{ background:rgba(15,23,42,0.03); }
+html.theme-light .toolbar-empty{ background:rgba(15,23,42,0.012); }
+
+/* Hero header (Workspaces list + detail) — title block + eyebrow + KPI aside.
+   These classes had no CSS; the KPIs rendered jammed ("56Members"). */
+.hero{
+  display:flex; align-items:flex-start; justify-content:space-between; gap:32px;
+  padding-bottom:20px; margin-bottom:22px; border-bottom:1px solid var(--line);
+}
+.hero-main{ flex:1; min-width:0; }
+.hero-eyebrow{ display:flex; align-items:center; gap:10px; margin-bottom:11px; flex-wrap:wrap; }
+.hero-mode-tag{
+  display:inline-flex; align-items:center;
+  font-size:10px; font-weight:700; letter-spacing:.07em; text-transform:uppercase;
+  padding:3px 8px; border-radius:6px; border:1px solid var(--line);
+  color:var(--t2); background:rgba(255,255,255,0.04);
+}
+.hero-meta{ font-size:12.5px; color:var(--t3); }
+.hero-title{ font-size:28px; font-weight:700; line-height:1.12; letter-spacing:-0.02em; color:var(--t1); margin:0; }
+.hero-desc{ font-size:14px; color:var(--t2); line-height:1.55; margin:6px 0 0; max-width:620px; }
+.hero-aside{ flex-shrink:0; }
+.hero-kpis{ display:flex; gap:10px; }
+.hero-kpi{
+  display:flex; flex-direction:column; gap:2px; min-width:94px;
+  padding:11px 16px 12px; border:1px solid var(--line); border-radius:10px;
+  background:rgba(255,255,255,0.02);
+}
+.hero-kpi-n{ font-size:22px; font-weight:700; line-height:1.1; color:var(--t1); font-variant-numeric:tabular-nums; letter-spacing:-0.01em; }
+.hero-kpi-l{ font-size:10px; font-weight:600; letter-spacing:.07em; text-transform:uppercase; color:var(--t3); }
+.hero-kpi[data-kind="ok"]   .hero-kpi-n{ color:#34d39c; }
+.hero-kpi[data-kind="ok"]   { background:rgba(16,185,129,0.06); border-color:rgba(16,185,129,0.22); }
+.hero-kpi[data-kind="info"] .hero-kpi-n{ color:#7ed3f7; }
+.hero-kpi[data-kind="warn"] .hero-kpi-n{ color:var(--amber); }
+.hero-kpi[data-kind="idle"] .hero-kpi-n{ color:var(--t2); }
+html.theme-light .hero-kpi{ background:rgba(15,23,42,0.02); }
+@media (max-width:760px){
+  .hero{ flex-direction:column; gap:16px; }
+  .hero-title{ font-size:23px; }
+  .hero-kpis{ flex-wrap:wrap; }
+}
+/* Compact stat row — content-sized cards, not stretched edge-to-edge. */
 
 /* ============================================================================
    .ws-* — Workspaces surface (list cards + detail tabs + cross-link rows)
@@ -2953,6 +3110,27 @@ html.theme-light .inbox-open:hover{background:rgba(56,189,248,0.08); color:#0284
 .ws-list-action{
   font-size:11.5px;color:var(--cyan);font-weight:600;
   text-decoration:none;flex-shrink:0;
+}
+
+/* Groups tab — makes the workspace→group containment visible */
+.ws-group-row{cursor:default;}
+.ws-group-tag{
+  display:inline-block;margin-left:7px;
+  font-size:9.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+  padding:2px 7px;border-radius:20px;vertical-align:middle;
+  background:rgba(167,139,250,0.12);color:#cda5ff;border:1px solid rgba(167,139,250,0.28);
+}
+html.theme-light .ws-group-tag{color:#7c3aed;background:rgba(167,139,250,0.10);}
+.ws-group-avs{display:flex;align-items:center;flex-shrink:0;}
+.ws-group-av{
+  width:26px;height:26px;border-radius:50%;margin-left:-7px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:9.5px;font-weight:700;color:#fff;
+  border:2px solid var(--bg);
+}
+.ws-group-av:first-child{margin-left:0;}
+.ws-group-more{
+  margin-left:6px;font-size:11px;font-weight:600;color:var(--t3);
 }
 
 /* ── Users cross-instance view (Sprint C — Edgardo Batch 3c) ── */
@@ -3492,6 +3670,112 @@ html.theme-light .cap-drawer-scope{background:rgba(56,189,248,0.05); color:#0284
   .cap-drawer-section{padding:14px 18px}
 }
 
+/* ── Request detail drawer (click an inbox row to open the full request) ── */
+.reqd-priochip{
+  display:inline-flex; align-items:center;
+  font-size:9.5px; font-weight:800; letter-spacing:.04em;
+  padding:3px 8px; border-radius:20px; text-transform:uppercase; line-height:1;
+}
+.reqd-priochip.high{background:rgba(239,68,68,0.12); color:var(--red); border:1px solid rgba(239,68,68,0.30)}
+.reqd-priochip.medium{background:rgba(253,199,0,0.10); color:var(--amber); border:1px solid rgba(253,199,0,0.28)}
+.reqd-priochip.low{background:rgba(148,163,184,0.12); color:var(--t3); border:1px solid rgba(148,163,184,0.26)}
+
+.reqd-requester{
+  display:flex; align-items:center; gap:12px;
+  padding:12px 14px; border-radius:12px;
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.07);
+}
+html.theme-light .reqd-requester{background:var(--hover); border-color:var(--line)}
+.reqd-requester-av{
+  width:38px; height:38px; flex-shrink:0; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:12.5px; font-weight:700; color:#fff; background:#2B7FFF;
+}
+.reqd-requester-name{font-size:13.5px; font-weight:650; color:var(--t1); line-height:1.3}
+.reqd-requester-meta{font-size:11.5px; color:var(--t3); margin-top:2px; line-height:1.4}
+
+.reqd-kv{display:grid; grid-template-columns:1fr 1fr; gap:0 18px}
+
+.reqd-chips{display:flex; flex-wrap:wrap; gap:6px}
+.reqd-chip{
+  display:inline-flex; align-items:center; gap:5px;
+  font-size:11px; font-weight:600; padding:4px 9px; border-radius:7px;
+  background:rgba(255,255,255,0.04); color:var(--t2);
+  border:1px solid rgba(255,255,255,0.08); text-transform:capitalize;
+}
+.reqd-chip svg{flex-shrink:0; opacity:.8}
+.reqd-chip.warn{background:rgba(253,199,0,0.10); color:var(--amber); border-color:rgba(253,199,0,0.26); text-transform:none}
+.reqd-chip.ok{background:rgba(5,223,114,0.08); color:var(--green); border-color:rgba(5,223,114,0.24); text-transform:none}
+html.theme-light .reqd-chip{background:var(--hover); border-color:var(--line); color:var(--t2)}
+
+.reqd-quote{
+  border-radius:12px; padding:15px 16px;
+  background:rgba(167,139,250,0.07); border:1px solid rgba(167,139,250,0.24);
+}
+html.theme-light .reqd-quote{background:rgba(167,139,250,0.06); border-color:rgba(167,139,250,0.28)}
+.reqd-quote-top{display:flex; align-items:baseline; justify-content:space-between; margin-bottom:8px; gap:10px}
+.reqd-quote-amt{font-size:24px; font-weight:750; color:var(--t1); letter-spacing:-0.02em; line-height:1}
+.reqd-quote-eta{font-size:12px; font-weight:600; color:#cda5ff; white-space:nowrap}
+html.theme-light .reqd-quote-eta{color:#7c3aed}
+.reqd-quote-notes{font-size:12px; color:var(--t2); line-height:1.55; margin:0}
+
+.reqd-timeline{list-style:none; margin:0; padding:0}
+.reqd-timeline li{position:relative; padding:0 0 14px 20px}
+.reqd-timeline li:last-child{padding-bottom:0}
+.reqd-timeline li::before{
+  content:''; position:absolute; left:2px; top:3px; width:9px; height:9px;
+  border-radius:50%; background:#7ed3f7; box-shadow:0 0 0 3px rgba(126,211,247,0.15); z-index:1;
+}
+.reqd-timeline li:not(:last-child)::after{
+  content:''; position:absolute; left:6px; top:12px; bottom:-1px; width:1.5px;
+  background:rgba(255,255,255,0.09);
+}
+html.theme-light .reqd-timeline li:not(:last-child)::after{background:var(--line)}
+.reqd-tl-t{color:var(--t1); font-weight:600; font-size:12.5px; line-height:1.35}
+.reqd-tl-d{color:var(--t3); font-size:11px; margin-top:1px}
+
+.reqd-warn-block{
+  border-radius:10px; padding:12px 14px;
+  background:rgba(239,68,68,0.07); border:1px solid rgba(239,68,68,0.22);
+  font-size:12.5px; color:var(--t1); line-height:1.55;
+}
+html.theme-light .reqd-warn-block{background:rgba(239,68,68,0.05)}
+
+.reqd-note{
+  font-size:12.5px; color:var(--t2); line-height:1.55;
+  padding:12px 14px; border-radius:10px;
+  background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07);
+}
+html.theme-light .reqd-note{background:var(--hover); border-color:var(--line)}
+
+.reqd-foot{
+  flex-shrink:0; padding:14px 24px;
+  border-top:1px solid rgba(255,255,255,0.08);
+  background:#0c1428;
+  display:flex; gap:8px; flex-wrap:wrap;
+}
+html.theme-light .reqd-foot{background:#fff; border-top-color:var(--line)}
+.reqd-foot > .btn{flex:1; justify-content:center; min-width:110px}
+.reqd-foot-form{display:flex; flex-direction:column; gap:10px; width:100%}
+.reqd-foot-row{display:flex; gap:8px}
+.reqd-foot-row .reqd-input{flex:1}
+.reqd-foot-actions{display:flex; gap:8px; width:100%}
+.reqd-foot-actions .btn{flex:1; justify-content:center}
+.reqd-input, .reqd-textarea{
+  width:100%; background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.12); border-radius:8px;
+  padding:9px 11px; font-size:12.5px; color:var(--t1); font-family:inherit;
+}
+.reqd-textarea{resize:vertical; min-height:64px; line-height:1.5}
+.reqd-input:focus, .reqd-textarea:focus{outline:none; border-color:var(--cyan)}
+.reqd-input::placeholder, .reqd-textarea::placeholder{color:var(--t3)}
+html.theme-light .reqd-input, html.theme-light .reqd-textarea{background:#fff; border-color:var(--line)}
+
+@media (max-width:520px){
+  .reqd-kv{grid-template-columns:1fr}
+}
+
 /* ── Request Integration modal (Sprint C — Edgardo) ── */
 .req-modal-overlay{
   position:fixed; inset:0; z-index:280;
@@ -3720,11 +4004,22 @@ html.theme-light .req-prio-card.is-on.is-critical{background:rgba(239,68,68,0.06
   justify-content:flex-end;
   flex-shrink:0;
 }
+/* Access-remove impact preview (point 9) */
+.impact-preview{border:1px solid var(--line); border-radius:10px; overflow:hidden}
+.impact-preview-h{font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--t3); padding:10px 14px; background:rgba(255,255,255,0.02); border-bottom:1px solid var(--line)}
+.impact-row{display:flex; align-items:center; gap:12px; padding:11px 14px; border-bottom:1px solid var(--line)}
+.impact-row:last-child{border-bottom:none}
+.impact-row-n{font-family:'SF Mono',Menlo,monospace; font-size:18px; font-weight:700; color:var(--amber); min-width:28px; text-align:center}
+.impact-row-l{font-size:13px; font-weight:600; color:var(--t1)}
+.impact-row-d{font-size:11.5px; color:var(--t3)}
+.impact-empty{padding:16px 14px; font-size:12.5px; color:var(--t2)}
+/* Reason modal for "Publish anyway" (point 5) */
+.reason-modal-field{margin-top:4px}
+.reason-modal-field textarea{width:100%; min-height:84px; resize:vertical; background:var(--bg3); border:1px solid var(--line); border-radius:8px; padding:10px 12px; color:var(--t1); font-family:inherit; font-size:13px; line-height:1.5}
+.reason-modal-field textarea:focus{outline:none; border-color:var(--line-strong)}
+.reason-modal-label{font-size:12px; font-weight:600; color:var(--t1); margin-bottom:6px}
+.reason-modal-req{color:var(--red); margin-left:2px}
 html.theme-light .req-modal-foot{border-top-color:var(--line); background:rgba(15,23,42,0.012)}
-.req-modal-foot-hint{
-  flex:1; min-width:0;
-  font-size:11px; color:var(--t3); line-height:1.5;
-}
 
 /* ── Provider Overview banner: instance count (Sprint C — Edgardo) ── */
 .inst-count-banner{
@@ -4873,6 +5168,20 @@ html.theme-light .fs-cancel-btn:hover{
   font-size:10.5px; font-family:'SF Mono',Menlo,monospace; color:var(--t3);
   background:rgba(255,255,255,0.04); padding:1.5px 6px; border-radius:4px;
 }
+/* Clickable instance ID → copy to clipboard (point 8) */
+.inst-id-copy{
+  display:inline-flex; align-items:center; gap:5px; vertical-align:middle;
+  font-size:10.5px; font-family:'SF Mono',Menlo,monospace; color:var(--t3);
+  background:rgba(255,255,255,0.04); border:1px solid transparent; padding:1.5px 6px; border-radius:4px;
+  cursor:pointer; transition:color .15s, background .15s, border-color .15s;
+}
+.inst-id-copy:hover{color:var(--t1); background:rgba(255,255,255,0.07); border-color:var(--line)}
+.inst-id-copy-ic{flex-shrink:0; opacity:.7}
+.inst-id-copy.is-copied{color:#34d39c; border-color:rgba(16,185,129,0.4)}
+.inst-id-copy.is-copied .inst-id-copy-ic{opacity:1}
+/* Auth credential section highlight on cross-studio handoff (point 17) */
+@keyframes authHandoffPulse{0%{box-shadow:0 0 0 0 rgba(245,181,68,0.0); border-color:var(--amber)}30%{box-shadow:0 0 0 4px rgba(245,181,68,0.18); border-color:var(--amber)}100%{box-shadow:0 0 0 0 rgba(245,181,68,0.0)}}
+.auth-handoff-highlight{animation:authHandoffPulse 2.4s ease-out 1; border:1px solid var(--amber) !important; border-radius:10px}
 .inst-row-meta{display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-top:3px}
 .inst-row-status{
   display:inline-flex; align-items:center; gap:5px;
@@ -6063,6 +6372,47 @@ html.theme-light .theme-icon-moon{display:block}
 }
 .dist-toggle.is-na:hover{transform:none}
 
+/* Read-only by default — a status chip, not a control */
+.dist-toggle.is-ro{cursor:default}
+.dist-toggle.is-ro:hover{transform:none}
+.dist-toggle.is-on.is-ro:hover{background:rgba(16,185,129,0.10);border-color:rgba(16,185,129,0.42)}
+.dist-toggle.is-off.is-ro:hover{background:rgba(255,255,255,0.02);border-color:var(--line)}
+/* Manage mode — cells become editable, with an edit affordance */
+.dist-toggle.is-editable{cursor:pointer}
+.dist-edit-ic{margin-left:1px;opacity:.45;transition:opacity .12s}
+.dist-toggle.is-editable:hover .dist-edit-ic{opacity:1}
+
+/* Manage-exposure toggle (toolbar) */
+.dist-manage-btn{
+  margin-left:auto;display:inline-flex;align-items:center;gap:6px;
+  padding:7px 13px;border-radius:8px;border:1px solid var(--line);
+  background:transparent;color:var(--t2);
+  font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;
+  transition:border-color .12s, color .12s, background .12s;
+}
+.dist-manage-btn:hover{border-color:var(--line-strong);color:var(--t1)}
+.dist-manage-btn.is-on{background:rgba(43,127,255,0.12);border-color:rgba(43,127,255,0.45);color:var(--blue)}
+.dist-manage-note{
+  display:flex;align-items:center;gap:8px;
+  margin:0 0 12px;padding:9px 13px;border-radius:9px;
+  background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.28);
+  color:var(--amber);font-size:12px;font-weight:600;
+}
+.dist-manage-note svg{flex-shrink:0}
+
+/* Governed change modal — current → next state row */
+.dist-change-states{
+  display:flex;align-items:center;gap:10px;margin-bottom:14px;
+}
+.dist-change-state{
+  display:inline-flex;align-items:center;
+  font-size:12px;font-weight:700;padding:5px 11px;border-radius:7px;
+  background:rgba(255,255,255,0.04);border:1px solid var(--line);color:var(--t2);
+}
+.dist-change-state.is-on{background:rgba(16,185,129,0.10);color:var(--green);border-color:rgba(16,185,129,0.42)}
+.dist-change-state.is-off{background:rgba(255,255,255,0.03);color:var(--t3);border-color:var(--line)}
+.dist-change-arrow{color:var(--t3);font-size:14px}
+
 /* Status pill reused — minimal restyle */
 .dist-status{
   display:inline-flex;align-items:center;gap:5px;
@@ -6688,18 +7038,8 @@ html.theme-light .theme-icon-moon{display:block}
 
     </div>
 
-    <!-- Mode toggle (Browse / Operate) — orchestration thesis -->
-    <div class="tb-mode-toggle" role="group" aria-label="Mode" id="tbModeToggle">
-      <button class="tb-mode-btn" data-mode="browse" onclick="setMode('browse')" type="button" title="Discover and connect integrations">
-        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.4"/><path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-        <span>Browse</span>
-      </button>
-      <button class="tb-mode-btn" data-mode="operate" onclick="setMode('operate')" type="button" title="Monitor health, mapping and usage">
-        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 13h12M4 13V8M7.5 13V5M11 13V9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-        <span>Operate</span>
-        <span class="tb-mode-badge" id="tbOperateBadge" aria-hidden="true"></span>
-      </button>
-    </div>
+    <!-- Mode toggle removed — Browse + Operate are unified into the Integrations home.
+         "Needs attention" items appear inline above the catalog when admin has work to do. -->
   </div>
 
   <button class="tb-search-btn" type="button" onclick="toast('Press ⌘K to open global search')" aria-label="Search">
@@ -6726,11 +7066,14 @@ html.theme-light .theme-icon-moon{display:block}
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
     </button>
     <span class="tb-divider-v"></span>
-    <!-- Persona pill (Admin / User view) — orchestration thesis -->
-    <button class="tb-persona" id="tbPersonaBtn" type="button" onclick="togglePersona()" title="Switch between admin and end-user views">
-      <svg class="tb-persona-ic" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M3 5l3 3 3-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      <span class="tb-persona-label" id="tbPersonaLabel">Admin view</span>
-    </button>
+    <!-- Role indicator (read-only) — reflects the signed-in user's permissions.
+         NOT a switch: there is no toggle and no "preview as end-user". The role
+         is set by the user's access. For prototype demos, append ?role=user or
+         ?role=admin to the URL to view either side. -->
+    <span class="tb-persona is-readonly" id="tbPersonaBtn" role="status" aria-live="polite" title="Your role in this workspace">
+      <svg class="tb-persona-ic" width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true"><circle cx="7" cy="4.5" r="2.4" stroke="currentColor" stroke-width="1.3"/><path d="M2.5 12c0-2.2 2-3.8 4.5-3.8s4.5 1.6 4.5 3.8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      <span class="tb-persona-label" id="tbPersonaLabel">Admin</span>
+    </span>
     <span class="tb-divider-v"></span>
     <div class="tb-identity" role="group" aria-label="Workspace and account">
       <button class="tb-ws-badge" type="button" onclick="toast('Workspace switcher')" aria-label="Workspace">
@@ -6742,8 +7085,8 @@ html.theme-light .theme-icon-moon{display:block}
   </div>
 </header>
 
-<!-- Operate-mode strip (only visible when html.mode-operate) -->
-<div class="mode-banner"><span class="mode-banner-dot"></span>Operate mode · monitoring the data infrastructure</div>
+<!-- Operate-mode banner removed — modes unified into the Integrations home. -->
+
 
 <!-- App layout: sidebar + main -->
 <div class="app">
@@ -7007,7 +7350,7 @@ const CAP_META = {
   data_sync: {
     label:'Data Sync', cls:'data', color:'#05DF72',
     icon:'<svg width="11" height="11" viewBox="0 0 16 16" fill="none"><path d="M2 6a3 3 0 013-3h8M14 10a3 3 0 01-3 3H3M11 1l3 2-3 2M5 11l-3 2 3 2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
-    desc:'Continuous events fed into Helix Data Studio for mapping & ingestion'
+    desc:'Continuous events fed into Data Studio for mapping & ingestion'
   },
   mcp: {
     label:'MCP', cls:'mcp', color:'#06B6D4',
@@ -7329,6 +7672,11 @@ function toggleInstanceCap(slug, instId, type, item, ev) {
     list.splice(idx, 1);
     toast(`${capLabel(item)} disabled on ${inst.name}`);
   } else {
+    // Constraint: never enable a capability the provider does not declare.
+    if (_availableCaps(slug, type).indexOf(item) === -1) {
+      toast(`${capLabel(item)} is no longer offered by this provider and can't be enabled`, 'error');
+      return;
+    }
     list.push(item);
     toast(`${capLabel(item)} enabled on ${inst.name}`, 'success');
   }
@@ -7620,27 +7968,66 @@ const STUDIO_ROLES = {
 // Workspace-wide groups/teams (cross-studio). memberIds points into
 // MOCK_PEOPLE — used by the Users view to expand groups into per-person
 // access (Sprint C Batch 3c).
+// Groups = reusable bundles of people, used as the subject of access grants.
+// Containment (Option A): a group lives inside a workspace (or spans several via
+// crossWorkspace) and its members are always a subset of that workspace's members.
+// Member counts are DERIVED at load (see reconciliation below) — never hand-kept.
 const WORKSPACE_GROUPS = [
-  { id:'sales-pod',        label:'Sales Pod',        members:11, memberIds:['mg','sc','ap'] },
-  { id:'engineering',      label:'Engineering',      members:23, memberIds:['es','tg','mc','np','jh'] },
-  { id:'ai-research',      label:'AI Research',      members:5,  memberIds:['np','mc'] },
-  { id:'customer-success', label:'Customer Success', members:14, memberIds:['sc','dp'] },
-  { id:'leadership',       label:'Leadership Team',  members:6,  memberIds:['tg','mg','es','ap'] }
+  { id:'sales-pod',        label:'Sales Pod',        workspace:'sales',   memberIds:['mg','rs','lv','cf','ot'] },
+  { id:'engineering',      label:'Engineering',      workspace:'eng',     memberIds:['es','np','mc','jh','fn','am','ro'] },
+  { id:'ai-research',      label:'AI Research',       workspace:'eng',     memberIds:['np','mc','ve'] },
+  { id:'customer-success', label:'Customer Success', workspace:'cs',      memberIds:['sc','dp','bg','nl'] },
+  { id:'finance-ops',      label:'Finance Ops',       workspace:'fin',     memberIds:['ap','mr','hc'] },
+  { id:'growth',           label:'Growth',            workspace:'mkt',     memberIds:['cb','as','ln','ag'] },
+  { id:'leadership',       label:'Leadership Team',   crossWorkspace:true, memberIds:['tg','mg','es','ap','sc'] }
 ];
 
-/* Mock people directory — used by the per-instance "Who can use it" picker.
-   Per Edgardo: access is granted to people or groups directly (not roles). */
+/* Mock people directory — used by the per-instance "Who can use it" picker and
+   by the Workspaces surface. Per Edgardo: access is granted to people or groups
+   directly (not roles). `workspaces` is the SINGLE SOURCE OF TRUTH for membership
+   (Option A) — every workspace/group member count derives from it. */
 const MOCK_PEOPLE = [
-  { id:'tg',  name:'Thomas González',  initials:'TG', role:'CTO',                  color:'#10b981' },
-  { id:'mg',  name:'María González',   initials:'MG', role:'Head of Data',         color:'#7ed3f7' },
-  { id:'es',  name:'Edgardo Sierra',   initials:'ES', role:'VP Engineering',       color:'#cda5ff' },
-  { id:'sb',  name:'Sebastián Blandón',initials:'SB', role:'Product Designer',     color:'#fbbf24' },
-  { id:'dp',  name:'Diana Pérez',      initials:'DP', role:'Solutions Architect',  color:'#ff7d7d' },
-  { id:'np',  name:'Naomi Park',       initials:'NP', role:'Data Engineer',        color:'#34d39c' },
-  { id:'mc',  name:'Marcus Chen',      initials:'MC', role:'Platform Lead',        color:'#a78bfa' },
-  { id:'sc',  name:'Sarah Chen',       initials:'SC', role:'Customer Success Lead',color:'#06B6D4' },
-  { id:'ap',  name:'Alex Park',        initials:'AP', role:'Finance Manager',      color:'#fbbf24' },
-  { id:'jh',  name:'Jordan Huerta',    initials:'JH', role:'Eng Manager',          color:'#7ed3f7' }
+  { id:'tg',  name:'Thomas González',   initials:'TG', role:'CTO',                  color:'#10b981', workspaces:['eng','mkt'] },
+  { id:'mg',  name:'María González',    initials:'MG', role:'Head of Data',         color:'#7ed3f7', workspaces:['sales'] },
+  { id:'es',  name:'Edgardo Sierra',    initials:'ES', role:'VP Engineering',       color:'#cda5ff', workspaces:['eng'] },
+  { id:'sb',  name:'Sebastián Blandón', initials:'SB', role:'Product Designer',     color:'#fbbf24', workspaces:['eng'] },
+  { id:'dp',  name:'Diana Pérez',       initials:'DP', role:'Solutions Architect',  color:'#ff7d7d', workspaces:['cs'] },
+  { id:'np',  name:'Naomi Park',        initials:'NP', role:'Data Engineer',        color:'#34d39c', workspaces:['eng'] },
+  { id:'mc',  name:'Marcus Chen',       initials:'MC', role:'Platform Lead',        color:'#a78bfa', workspaces:['eng'] },
+  { id:'sc',  name:'Sarah Chen',        initials:'SC', role:'Customer Success Lead',color:'#06B6D4', workspaces:['cs'] },
+  { id:'ap',  name:'Alex Park',         initials:'AP', role:'Finance Manager',      color:'#fbbf24', workspaces:['fin'] },
+  { id:'jh',  name:'Jordan Huerta',     initials:'JH', role:'Eng Manager',          color:'#7ed3f7', workspaces:['eng'] },
+  // — Sales Team —
+  { id:'rs',  name:'Ricardo Salazar',   initials:'RS', role:'Account Executive',    color:'#60a5fa', workspaces:['sales'] },
+  { id:'lv',  name:'Lucía Vega',        initials:'LV', role:'Sales Development Rep', color:'#f472b6', workspaces:['sales'] },
+  { id:'dm',  name:'Daniel Moreno',     initials:'DM', role:'Sales Engineer',       color:'#34d39c', workspaces:['sales','eng'] },
+  { id:'cf',  name:'Carla Fuentes',     initials:'CF', role:'Account Executive',    color:'#fb923c', workspaces:['sales'] },
+  { id:'ot',  name:'Omar Trejo',        initials:'OT', role:'Sales Operations',     color:'#a78bfa', workspaces:['sales'] },
+  { id:'ph',  name:'Paula Herrera',     initials:'PH', role:'Sales Development Rep', color:'#22d3ee', workspaces:['sales'] },
+  { id:'gv',  name:'Gabriel Vargas',    initials:'GV', role:'Regional Lead',        color:'#e879f9', workspaces:['sales'] },
+  { id:'ir',  name:'Isabela Rojas',     initials:'IR', role:'Account Executive',    color:'#facc15', workspaces:['sales'] },
+  { id:'ka',  name:'Karen Aguilar',     initials:'KA', role:'Revenue Operations',   color:'#4ade80', workspaces:['sales','fin'] },
+  // — Engineering —
+  { id:'fn',  name:'Felipe Núñez',      initials:'FN', role:'Backend Engineer',     color:'#60a5fa', workspaces:['eng'] },
+  { id:'am',  name:'Andrea Mejía',      initials:'AM', role:'Frontend Engineer',    color:'#f472b6', workspaces:['eng'] },
+  { id:'ro',  name:'Rodrigo Ortiz',     initials:'RO', role:'Site Reliability Eng', color:'#fbbf24', workspaces:['eng'] },
+  { id:'ve',  name:'Valentina Espinoza',initials:'VE', role:'ML Engineer',          color:'#a78bfa', workspaces:['eng'] },
+  { id:'ts',  name:'Tomás Soto',        initials:'TS', role:'QA Lead',              color:'#34d39c', workspaces:['eng'] },
+  // — Customer Success —
+  { id:'bg',  name:'Bruno Gómez',       initials:'BG', role:'Customer Success Mgr', color:'#06B6D4', workspaces:['cs'] },
+  { id:'nl',  name:'Natalia León',      initials:'NL', role:'Support Engineer',     color:'#ff7d7d', workspaces:['cs'] },
+  { id:'eq',  name:'Emilio Quintero',   initials:'EQ', role:'Onboarding Lead',      color:'#cda5ff', workspaces:['cs'] },
+  { id:'sr',  name:'Sofía Ramírez',     initials:'SR', role:'Customer Success Mgr', color:'#fb923c', workspaces:['cs'] },
+  { id:'ji',  name:'Julián Iglesias',   initials:'JI', role:'Support Specialist',   color:'#22d3ee', workspaces:['cs'] },
+  // — Finance —
+  { id:'mr',  name:'Mariana Ríos',      initials:'MR', role:'Controller',           color:'#4ade80', workspaces:['fin'] },
+  { id:'hc',  name:'Héctor Cano',       initials:'HC', role:'FP&A Analyst',         color:'#e879f9', workspaces:['fin'] },
+  // — Marketing —
+  { id:'cb',  name:'Camila Bravo',      initials:'CB', role:'Demand Generation',    color:'#60a5fa', workspaces:['mkt'] },
+  { id:'as',  name:'Adrián Salas',      initials:'AS', role:'Content Lead',         color:'#f472b6', workspaces:['mkt'] },
+  { id:'ln',  name:'Laura Navarro',     initials:'LN', role:'Lifecycle Manager',    color:'#fbbf24', workspaces:['mkt'] },
+  { id:'pd',  name:'Pedro Duarte',      initials:'PD', role:'Brand Manager',        color:'#a78bfa', workspaces:['mkt'] },
+  { id:'ag',  name:'Ana Gil',           initials:'AG', role:'Growth Analyst',       color:'#34d39c', workspaces:['mkt','sales'] }
 ];
 
 /* Seed default "Who can use it" for an instance the first time it's read.
@@ -7691,14 +8078,12 @@ function addGroupToInstance(slug, instId, groupId) {
   if (g) toast(`Added ${g.label} to instance access`, 'success');
 }
 function removePersonFromInstance(slug, instId, personId) {
-  const acc = getInstanceAccess(slug, instId);
-  acc.people = acc.people.filter(p => p !== personId);
-  renderInstanceDetail(slug, instId);
+  const p = MOCK_PEOPLE.find(x => x.id === personId);
+  openAccessRemoveModal(slug, instId, 'person', personId, p ? p.name : 'this person');
 }
 function removeGroupFromInstance(slug, instId, groupId) {
-  const acc = getInstanceAccess(slug, instId);
-  acc.groups = acc.groups.filter(g => g !== groupId);
-  renderInstanceDetail(slug, instId);
+  const g = WORKSPACE_GROUPS.find(x => x.id === groupId);
+  openAccessRemoveModal(slug, instId, 'group', groupId, g ? g.label : 'this group');
 }
 
 /* Per-instance workspace availability (Sprint C — Edgardo).
@@ -7725,8 +8110,87 @@ function addWorkspaceToInstance(slug, instId, wsId) {
   if (w) toast(`Added ${w.name} to instance access`, 'success');
 }
 function removeWorkspaceFromInstance(slug, instId, wsId) {
-  const ws = getInstanceWorkspaces(slug, instId);
-  ws.workspaces = ws.workspaces.filter(x => x !== wsId);
+  const w = MOCK_WORKSPACES.find(x => x.id === wsId);
+  openAccessRemoveModal(slug, instId, 'workspace', wsId, w ? w.name : 'this workspace');
+}
+
+/* ── Access remove confirmation + impact preview (point 9) ─────────────── */
+let _accessRemovePending = null;
+
+function openAccessRemoveModal(slug, instId, kind, id, name) {
+  _accessRemovePending = { slug, instId, kind, id, name };
+  // Impact: what downstream consumers lose access if this grant is removed.
+  const usage = (typeof STUDIO_USAGE !== 'undefined' && STUDIO_USAGE[slug]) || {};
+  const agents = (usage.agentic && usage.agentic.count) ? Math.max(1, Math.round((usage.agentic.count||0)/40)) : 0;
+  const workflows = Object.values(usage).reduce((s,u)=>{ const m=/(\d+)\s*(agent|route|channel|flow)/.exec(u.detail||''); return s+(m?parseInt(m[1],10):0); },0);
+  const widgets = (MOCK_WIDGET_TEMPLATES||[]).filter(w => w.installed && (w.integrations||[]).indexOf(slug)!==-1).length;
+  const impactRows = [
+    ['Workflows', workflows, 'automation triggers that reference this connection'],
+    ['Agents', agents, 'agents that call it as a tool'],
+    ['Widgets', widgets, 'dashboards built on its data']
+  ].filter(r => r[1] > 0);
+
+  ensureAccessRemoveModal();
+  const body = document.getElementById('accessRemoveBody');
+  body.innerHTML = `
+    <header class="req-modal-h">
+      <div class="req-modal-h-ic" aria-hidden="true" style="background:rgba(229,72,77,0.12);color:var(--red)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+      </div>
+      <div class="req-modal-h-text">
+        <h2 class="req-modal-title">Remove ${escapeHtml(name)}?</h2>
+        <p class="req-modal-sub">Removing access takes effect immediately on this instance only.</p>
+      </div>
+      <button class="req-modal-close" type="button" onclick="closeAccessRemoveModal()" aria-label="Close"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3.5 3.5l7 7M10.5 3.5l-7 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+    </header>
+    <div class="req-modal-body">
+      <div class="impact-preview">
+        <div class="impact-preview-h">If you confirm, these lose access</div>
+        ${impactRows.length === 0
+          ? `<div class="impact-empty">No active workflows, agents or widgets depend on this grant.</div>`
+          : impactRows.map(([label,n,desc]) => `
+            <div class="impact-row">
+              <span class="impact-row-n">${n}</span>
+              <div class="impact-row-text"><div class="impact-row-l">${label}</div><div class="impact-row-d">${escapeHtml(desc)}</div></div>
+            </div>`).join('')}
+      </div>
+    </div>
+    <footer class="req-modal-foot">
+      <button class="btn btn-ghost btn-sm" type="button" onclick="closeAccessRemoveModal()">Cancel</button>
+      <button class="btn btn-danger btn-sm" type="button" onclick="confirmAccessRemove()">Remove access</button>
+    </footer>
+  `;
+  requestAnimationFrame(() => document.getElementById('accessRemoveOverlay')?.classList.add('is-open'));
+}
+
+function ensureAccessRemoveModal() {
+  if (document.getElementById('accessRemoveOverlay')) return;
+  const wrap = document.createElement('div');
+  wrap.innerHTML = `<div class="req-modal-overlay" id="accessRemoveOverlay" onclick="closeAccessRemoveModal(event)" role="presentation"><div class="req-modal" id="accessRemoveModal" role="dialog" aria-modal="true" onclick="event.stopPropagation()"><div id="accessRemoveBody"></div></div></div>`;
+  while (wrap.firstChild) document.body.appendChild(wrap.firstChild);
+}
+
+function closeAccessRemoveModal(ev) {
+  if (ev && ev.target && ev.target.id !== 'accessRemoveOverlay') return;
+  document.getElementById('accessRemoveOverlay')?.classList.remove('is-open');
+  _accessRemovePending = null;
+}
+
+function confirmAccessRemove() {
+  const r = _accessRemovePending;
+  if (!r) return;
+  if (r.kind === 'person') {
+    const acc = getInstanceAccess(r.slug, r.instId); acc.people = acc.people.filter(p => p !== r.id);
+  } else if (r.kind === 'group') {
+    const acc = getInstanceAccess(r.slug, r.instId); acc.groups = acc.groups.filter(g => g !== r.id);
+  } else if (r.kind === 'workspace') {
+    const ws = getInstanceWorkspaces(r.slug, r.instId); ws.workspaces = ws.workspaces.filter(x => x !== r.id);
+  }
+  recordAudit(r.instId, 'access.revoked', 'Thomas González', `Removed ${r.kind} access: ${r.name}`);
+  document.getElementById('accessRemoveOverlay')?.classList.remove('is-open');
+  toast(`${r.name} removed from access`, 'success');
+  const slug = r.slug, instId = r.instId;
+  _accessRemovePending = null;
   renderInstanceDetail(slug, instId);
 }
 
@@ -7820,7 +8284,7 @@ const INTEGRATIONS = [
   { slug:'notion', name:'Notion', vendor:'Notion Labs', category:'productivity', color:'#000000',
     desc:'Read and write Notion pages, databases and blocks.',
     capabilities:['knowledge','tools'], authMethods:['oauth'], source:'official',
-    connected:true, health:'healthy', lastRun:'1 hour ago', errors24h:0,
+    connected:true, health:'degraded', schemaDrift:true, lastRun:'1 hour ago', errors24h:2,
     connectedBy:{name:'Diana Pérez',initials:'DP'}, connectedAt:'5 weeks ago',
     studios:{governance:true,agentic:true,workforce:false}, allowPersonal:false
   },
@@ -7865,7 +8329,7 @@ const INTEGRATIONS = [
   { slug:'jira', name:'Jira', vendor:'Atlassian', category:'ticketing', color:'#0052CC', vendorGroup:'atlassian',
     desc:'Create, update and link Jira issues; react to status changes.',
     capabilities:['tools','triggers'], authMethods:['oauth','apikey'], source:'official',
-    connected:true, health:'healthy', lastRun:'5 min ago', errors24h:0,
+    connected:true, health:'healthy', needsMapping:true, lastRun:'5 min ago', errors24h:0,
     connectedBy:{name:'Thomas González',initials:'TG'}, connectedAt:'6 weeks ago',
     studios:{governance:false,agentic:true,workforce:true}, allowPersonal:true
   },
@@ -7921,7 +8385,7 @@ const INTEGRATIONS = [
   { slug:'gdrive', name:'Google Drive', vendor:'Google', category:'storage', color:'#1FA463', vendorGroup:'google',
     desc:'Index Drive folders as knowledge sources for Governance, or let each user access their own files.',
     capabilities:['knowledge'], authMethods:['oauth','service','per_user'], source:'official',
-    connected:true, health:'healthy', lastRun:'30 min ago', errors24h:0,
+    connected:true, health:'failed', lastRun:'2 days ago', errors24h:12,
     connectedBy:{name:'Diana Pérez',initials:'DP'}, connectedAt:'1 month ago',
     studios:{governance:true,agentic:false,workforce:false}, allowPersonal:true
   },
@@ -8019,7 +8483,7 @@ const INTEGRATIONS = [
   { slug:'internal-billing', name:'Internal Billing API', vendor:'Built by your workspace', category:'custom', color:'#06B6D4',
     desc:'Private connector to the internal billing system (REST).',
     capabilities:['tools'], authMethods:['apikey'], source:'private',
-    connected:true, health:'healthy', lastRun:'12 min ago', errors24h:0,
+    connected:true, health:'healthy', needsMapping:true, lastRun:'12 min ago', errors24h:0,
     connectedBy:{name:'Diana Pérez',initials:'DP'}, connectedAt:'10 days ago',
     studios:{governance:false,agentic:true,workforce:false}, allowPersonal:false,
     lifecycle:'published', publishedAt:'8 days ago', publishedBy:'Alex Park', version:'v1.2',
@@ -8047,6 +8511,11 @@ const AUDIT_EVENTS = [
   { ts:'1 hour ago', tsAbs:'2026-05-19 13:20:11 UTC', sev:'warn', event:'integration.health_degraded', actor:'System', actorType:'system', resource:'datadog', studio:null, ip:null, details:{reason:'Webhook retries exceeded'} },
   { ts:'4 hours ago', tsAbs:'2026-05-19 10:24:00 UTC', sev:'info', event:'integration.used_by_agent', actor:'Agent: Onboarding Bot', actorType:'agent', resource:'snowflake', studio:'agentic', ip:'10.0.4.12', details:{action:'query', rows_returned:1247} },
   { ts:'12 hours ago', tsAbs:'2026-05-19 02:31:08 UTC', sev:'info', event:'integration.permissions_changed', actor:'María González', actorType:'user', resource:'github', studio:null, ip:'192.168.1.42', details:{before:{rolesAg:['Agent Builders']}, after:{rolesAg:['Agent Builders'], rolesGov:['Knowledge Curators']}} },
+  // Distribution policy changes — traceability for the seeded DIST_OVERRIDES.
+  { ts:'13 hours ago', tsAbs:'2026-05-19 01:48:00 UTC', sev:'warn', event:'distribution.surface_hidden', actor:'María González', actorType:'user', resource:'salesforce', studio:null, ip:'192.168.1.42', details:{surface:'ai_assistant', surfaceName:'AI Assistant', from:'available', to:'disabled', reason:'PII exposure risk — keeping Salesforce out of the assistant until DLP review.'} },
+  { ts:'13 hours ago', tsAbs:'2026-05-19 01:46:12 UTC', sev:'warn', event:'distribution.surface_hidden', actor:'María González', actorType:'user', resource:'salesforce', studio:null, ip:'192.168.1.42', details:{surface:'widgets', surfaceName:'Widgets & Cards', from:'available', to:'disabled', reason:'Dashboards consolidated into the governed reporting workspace.'} },
+  { ts:'2 days ago', tsAbs:'2026-05-17 10:05:40 UTC', sev:'warn', event:'distribution.surface_hidden', actor:'Thomas González', actorType:'user', resource:'github', studio:null, ip:'192.168.1.10', details:{surface:'widgets', surfaceName:'Widgets & Cards', from:'available', to:'disabled', reason:'No widget use case — reducing surface area.'} },
+  { ts:'5 days ago', tsAbs:'2026-05-14 09:30:00 UTC', sev:'warn', event:'distribution.surface_hidden', actor:'Thomas González', actorType:'user', resource:'snowflake', studio:null, ip:'192.168.1.10', details:{surface:'workflows', surfaceName:'Workflows', from:'available', to:'disabled', reason:'Workflow access paused pending cost review on query volume.'} },
   { ts:'1 day ago', tsAbs:'2026-05-18 14:00:00 UTC', sev:'info', event:'sso.login_success', actor:'Thomas González', actorType:'user', resource:null, studio:null, ip:'192.168.1.10', details:{provider:'Okta', mfa:true} },
   { ts:'2 days ago', tsAbs:'2026-05-17 09:42:33 UTC', sev:'crit', event:'integration.health_failed', actor:'System', actorType:'system', resource:'zendesk', studio:null, ip:null, details:{reason:'401 Unauthorized — token expired'} },
   { ts:'3 days ago', tsAbs:'2026-05-16 11:20:00 UTC', sev:'info', event:'integration.connected', actor:'María González', actorType:'user', resource:'slack', studio:null, ip:'192.168.1.42', details:{auth_method:'oauth', scopes_granted:7} },
@@ -8067,9 +8536,26 @@ const AUDIT_EVENTS = [
 const _savedPersona = localStorage.getItem('aims_persona') || 'admin';
 const _savedMode = localStorage.getItem('aims_mode');
 
+// ── End-user permission model (prototype stand-in for backend auth claims) ──
+// The admin persona has full access. The end-user persona is gated:
+//   • inbox: may they open the Requests inbox? (default no)
+//   • allowedProviders: which integrations may they USE? (others → "Request access")
+// Demo: append ?inbox=1 to grant the end-user inbox access for a walkthrough.
+const USER_PERMS = {
+  inbox: false,
+  allowedProviders: new Set(['slack','notion','gsheets','gmail','gcal','jira','github','snowflake','gdrive'])
+};
+function userCanUseProvider(slug){ return state.persona !== 'user' || USER_PERMS.allowedProviders.has(slug); }
+function isAdmin(){ return state.persona === 'admin'; }
+// The signed-in end-user (prototype stand-in). Matches the topbar avatar (TG)
+// and the request-modal default requester.
+const CURRENT_USER_NAME = 'Thomas González';
+
 const state = {
-  // ── Orchestration thesis: mode + persona ──
-  mode: _savedMode || (_savedPersona === 'admin' ? 'operate' : 'browse'),  // 'browse' | 'operate'
+  // ── Mode unified into the Integrations home (Browse + Operate merged) ──
+  // `mode` is pinned to 'browse'; the "Needs your attention" band now surfaces
+  // operate work inline. Kept on state so legacy reads don't throw.
+  mode: 'browse',                                                            // always 'browse'
   persona: _savedPersona,                                                    // 'admin' | 'user'
   operateTab: 'needs_attention',                                // default landing tab inside Operate
   homeTab: (localStorage.getItem('aims_home_tab') || null),    // 'integrated' | 'marketplace' (null = compute default)
@@ -8427,8 +8913,8 @@ function renderRequestForm() {
       <div class="req-success">
         <div class="req-success-ic"><svg width="32" height="32" viewBox="0 0 16 16" fill="none"><path d="M3 8l3 3 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         <h1 class="req-success-title">Your request was submitted</h1>
-        <p class="req-success-sub">Ticket <strong>REQ-${String(REQUESTS.length+1).padStart(3,'0')}</strong> · ${escapeHtml(s.integrationName || 'New integration')} · ETA review in 24h</p>
-        <p class="req-success-body">The AIMS managed services team will review your request and reach out with a scope and quote within one business day. You can track progress in the Requests inbox.</p>
+        <p class="req-success-sub">Ticket <strong>REQ-${String(REQUESTS.length+1).padStart(3,'0')}</strong> · ${escapeHtml(s.integrationName || 'New integration')}</p>
+        <p class="req-success-body">You can track progress in the Requests inbox.</p>
         <div class="req-success-actions">
           <a class="btn btn-primary" href="#/requests">Go to Requests inbox →</a>
           <a class="btn btn-ghost btn-sm" href="#/integrations" onclick="requestFormState.step=0">Back to Connections</a>
@@ -8633,7 +9119,6 @@ function ensureRequestModal() {
         </header>
         <div class="req-modal-body" id="reqModalBody"></div>
         <footer class="req-modal-foot">
-          <span class="req-modal-foot-hint">You're asking someone to build this for free — be specific to help us prioritize.</span>
           <button class="btn btn-ghost btn-sm" type="button" onclick="closeRequestModal()">Cancel</button>
           <button class="btn btn-primary btn-sm" type="button" onclick="submitRequestModal()">Submit request →</button>
         </footer>
@@ -8837,7 +9322,7 @@ function submitRequestModal() {
   });
   closeRequestModal();
   if (typeof track === 'function') track('request_submitted', { integration: s.integrationName, priority: s.priority });
-  toast(`Request REQ-${ticketNum} submitted · review in 24h`, 'success');
+  toast(`Request REQ-${ticketNum} submitted · track it in the Requests inbox`, 'success');
   // Reset form
   Object.assign(requestModalState, {
     integrationName: '',
@@ -8897,16 +9382,29 @@ function toggleInboxRow(id, ev) {
 }
 function clearInboxSelection() { inboxState.selected.clear(); renderRequestsInbox(); }
 function inboxBulkAction(action) {
-  const n = inboxState.selected.size;
-  toast(`${action}: ${n} request${n===1?'':'s'} (coming soon)`);
+  const ids = [...inboxState.selected];
+  const n = ids.length;
+  if (n === 0) return;
+  const targets = ids.map(id => { const r = REQUESTS.find(x => x.id === id); return r ? r.integration : id; });
+  // Point 15: ONE audit entry listing the N affected entities — not N entries.
+  AUDIT_EVENTS.unshift({
+    ts:'just now', tsAbs:'(now)', sev:'info',
+    event:'request.bulk_' + action.toLowerCase(),
+    actor:'Thomas González', actorType:'user', resource:null, studio:null, ip:'192.168.1.10',
+    details:{ action, count:n, targets }
+  });
+  toast(`${action}: ${n} request${n===1?'':'s'} — logged as one audit entry`, 'success');
   inboxState.selected.clear();
   renderRequestsInbox();
 }
 
 function inboxQuickAction(id, action, ev) {
   if (ev) ev.stopPropagation();
+  if (action === 'Approve' || action === 'Approve quote') return reqApprove(id);
+  if (action === 'Reject') { openReqDetail(id); reqSetMode('decline'); return; }
+  if (action === 'Assign') { openReqDetail(id); return; }
   const r = REQUESTS.find(x => x.id === id);
-  toast(`${action} · ${r?.integration || ''} (coming soon)`);
+  toast(`${action} · ${r?.integration || ''}`);
 }
 
 function _inboxBucket(status) {
@@ -8914,9 +9412,17 @@ function _inboxBucket(status) {
   return status;
 }
 
+// Pool of requests visible to the current viewer: admins see all, end-users
+// see only the requests they submitted.
+function _inboxPool() {
+  return state.persona === 'user'
+    ? REQUESTS.filter(r => (r.requester?.name) === CURRENT_USER_NAME)
+    : REQUESTS;
+}
+
 function _filteredRequests() {
   const q = (inboxState.search||'').toLowerCase();
-  return REQUESTS.filter(r => {
+  return _inboxPool().filter(r => {
     if (inboxState.filter !== 'all' && _inboxBucket(r.status) !== inboxState.filter) return false;
     if (q) {
       const hay = `${r.integration} ${r.vendor} ${r.requester?.name||''} ${r.requester?.dept||''} ${r.businessIntent||''} ${(r.actionTypes||[]).join(' ')}`.toLowerCase();
@@ -8927,18 +9433,20 @@ function _filteredRequests() {
 }
 
 function renderRequestsInbox() {
+  const isUser = state.persona === 'user';
+  const pool = _inboxPool();
   const counts = {
-    all: REQUESTS.length,
-    pending: REQUESTS.filter(r => _inboxBucket(r.status) === 'pending').length,
-    quoted: REQUESTS.filter(r => r.status === 'quoted').length,
-    in_progress: REQUESTS.filter(r => r.status === 'in_progress').length,
-    done: REQUESTS.filter(r => r.status === 'done').length,
-    rejected: REQUESTS.filter(r => r.status === 'rejected').length
+    all: pool.length,
+    pending: pool.filter(r => _inboxBucket(r.status) === 'pending').length,
+    quoted: pool.filter(r => r.status === 'quoted').length,
+    in_progress: pool.filter(r => r.status === 'in_progress').length,
+    done: pool.filter(r => r.status === 'done').length,
+    rejected: pool.filter(r => r.status === 'rejected').length
   };
   const filtered = _filteredRequests();
-  const selectedCount = inboxState.selected.size;
+  const selectedCount = isUser ? 0 : inboxState.selected.size;
   const allFilteredIds = filtered.map(r => r.id);
-  const allSelected = allFilteredIds.length > 0 && allFilteredIds.every(id => inboxState.selected.has(id));
+  const allSelected = !isUser && allFilteredIds.length > 0 && allFilteredIds.every(id => inboxState.selected.has(id));
 
   const tab = (label, key, count, accent) => `
     <button class="inbox-tab ${inboxState.filter===key?'is-active':''}" type="button" onclick="setInboxFilter('${key}')">
@@ -8953,8 +9461,8 @@ function renderRequestsInbox() {
     <section class="inbox-wrap">
       <header class="inbox-head">
         <div class="inbox-head-l">
-          <h1 class="inbox-title">Requests</h1>
-          <span class="inbox-count">${REQUESTS.length} total${counts.pending > 0 ? ` · <b style="color:#fbbf24">${counts.pending} waiting on you</b>` : ''}</span>
+          <h1 class="inbox-title">${isUser ? 'My requests' : 'Requests'}</h1>
+          <span class="inbox-count">${counts.all} total${(!isUser && counts.pending > 0) ? ` · <b style="color:#fbbf24">${counts.pending} waiting on you</b>` : ''}</span>
         </div>
         <button class="inbox-new-btn" type="button" onclick="openRequestModal()">
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M6 2v8M2 6h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
@@ -8978,22 +9486,22 @@ function renderRequestsInbox() {
         </label>
       </div>
 
-      ${selectedCount > 0 ? `
+      ${(!isUser && selectedCount > 0) ? `
         <div class="inbox-bulkbar">
           <span class="inbox-bulkbar-count"><strong>${selectedCount}</strong> selected</span>
           <button class="inbox-bulkbar-btn" type="button" onclick="inboxBulkAction('Approve')">Approve</button>
           <button class="inbox-bulkbar-btn" type="button" onclick="inboxBulkAction('Reject')">Reject</button>
           <button class="inbox-bulkbar-btn" type="button" onclick="inboxBulkAction('Reassign')">Reassign</button>
           <span style="flex:1"></span>
-          <button class="inbox-bulkbar-clear" type="button" onclick="clearInboxSelection()">Clear</button>
+          <button class="inbox-bulkbar-clear" type="button" onclick="clearInboxSelection()">Clear selection</button>
         </div>
       ` : ''}
 
-      <div class="inbox-list" role="list">
+      <div class="inbox-list ${isUser ? 'is-readonly' : ''}" role="list">
         <div class="inbox-list-h">
-          <label class="inbox-list-h-check">
+          ${isUser ? '' : `<label class="inbox-list-h-check">
             <input type="checkbox" ${allSelected?'checked':''} onchange="toggleInboxSelectAll(this.checked)"/>
-          </label>
+          </label>`}
           <span class="inbox-list-h-l">Status</span>
           <span class="inbox-list-h-l inbox-list-h-vendor">Request</span>
           <span class="inbox-list-h-l">Requester</span>
@@ -9002,20 +9510,21 @@ function renderRequestsInbox() {
         </div>
         ${filtered.length === 0 ? `
           <div class="inbox-empty">
-            <div class="inbox-empty-t">${inboxState.search ? 'No requests match your search' : 'No requests in this view'}</div>
-            <div class="inbox-empty-d">${inboxState.search ? 'Try a different vendor, requester, or scope.' : 'Switch tabs or submit a new request to populate this inbox.'}</div>
+            <div class="inbox-empty-t">${inboxState.search ? 'No requests match your search' : 'No results in this view'}</div>
+            <div class="inbox-empty-d">${inboxState.search ? 'Try a different vendor, requester, or scope.' : 'Switch tabs to see requests in another status.'}</div>
           </div>
-        ` : filtered.map(requestRowHTML).join('')}
+        ` : filtered.map(r => requestRowHTML(r, isUser)).join('')}
       </div>
     </section>
   `;
 }
 
-function requestRowHTML(r) {
+function requestRowHTML(r, isUser) {
   const meta = REQUEST_STATUS_META[r.status] || REQUEST_STATUS_META.pending_review;
-  const isSelected = inboxState.selected.has(r.id);
+  const isSelected = !isUser && inboxState.selected.has(r.id);
   const isPending = r.status === 'pending_review' || r.status === 'in_review';
-  const quickActions = isPending
+  // End-users get no inline admin actions (Approve/Reject/Assign).
+  const quickActions = isUser ? '' : isPending
     ? `<button class="inbox-quick-act" type="button" title="Approve" onclick="inboxQuickAction('${r.id}','Approve', event)"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.5l2.5 2.5 4.5-5"/></svg></button>
        <button class="inbox-quick-act" type="button" title="Reject" onclick="inboxQuickAction('${r.id}','Reject', event)"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M3 3l6 6M9 3l-6 6"/></svg></button>
        <button class="inbox-quick-act" type="button" title="Assign" onclick="inboxQuickAction('${r.id}','Assign', event)"><svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="7" cy="5" r="2"/><path d="M3 12c0-2 1.8-3.5 4-3.5s4 1.5 4 3.5" stroke-linecap="round"/></svg></button>`
@@ -9026,10 +9535,10 @@ function requestRowHTML(r) {
 
   const preview = (r.businessIntent || '').replace(/\s+/g, ' ').trim();
   return `
-    <div class="inbox-row ${isSelected?'is-selected':''} ${isPending?'is-pending':''}" role="listitem" onclick="toast('Request detail view coming soon')">
-      <label class="inbox-row-check" onclick="event.stopPropagation()">
+    <div class="inbox-row ${isSelected?'is-selected':''} ${isPending?'is-pending':''}" role="listitem" tabindex="0" onclick="openReqDetail('${r.id}')" onkeydown="if(event.key==='Enter'){openReqDetail('${r.id}')}">
+      ${isUser ? '' : `<label class="inbox-row-check" onclick="event.stopPropagation()">
         <input type="checkbox" ${isSelected?'checked':''} onchange="toggleInboxRow('${r.id}')"/>
-      </label>
+      </label>`}
       <div class="inbox-row-status">
         <span class="req-status-chip" style="background:${meta.bg};color:${meta.color};border-color:${meta.border}">
           <span class="req-status-dot" style="background:${meta.color}"></span>${meta.label}
@@ -9062,12 +9571,289 @@ function requestRowHTML(r) {
       </div>
       <div class="inbox-row-action">
         <div class="inbox-quick-actions">${quickActions}</div>
-        <button class="inbox-open" type="button" onclick="event.stopPropagation();toast('Open ${escapeHtml(r.integration).replace(/'/g,'')} · coming soon')" aria-label="Open ${escapeHtml(r.integration)} detail">
+        <button class="inbox-open" type="button" onclick="event.stopPropagation();openReqDetail('${r.id}')" aria-label="Open ${escapeHtml(r.integration)} detail">
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2l4 4-4 4"/></svg>
         </button>
       </div>
     </div>
   `;
+}
+
+/* ===== Request detail drawer =====
+   Clicking an inbox row opens the full request. Role-aware: admins get the
+   review actions (approve / decline / quote / deliver); end-users see a
+   read-only view with a status note (no composer, no actions). */
+let reqDetailState = { id: null, mode: 'view' };
+
+function ensureReqDetail() {
+  if (document.getElementById('reqDetail')) return;
+  const html = `
+    <div class="cap-drawer-overlay" id="reqDetailOverlay" onclick="closeReqDetail()" role="presentation"></div>
+    <aside class="cap-drawer" id="reqDetail" role="dialog" aria-labelledby="reqDetailTitle" aria-modal="true">
+      <div class="cap-drawer-body" id="reqDetailBody"></div>
+      <div class="reqd-foot" id="reqDetailFoot"></div>
+    </aside>`;
+  const wrap = document.createElement('div');
+  wrap.innerHTML = html;
+  while (wrap.firstChild) document.body.appendChild(wrap.firstChild);
+}
+
+function openReqDetail(id) {
+  const r = REQUESTS.find(x => x.id === id);
+  if (!r) return;
+  ensureReqDetail();
+  reqDetailState = { id, mode: 'view' };
+  paintReqDetail();
+  requestAnimationFrame(() => {
+    document.getElementById('reqDetailOverlay')?.classList.add('is-open');
+    document.getElementById('reqDetail')?.classList.add('is-open');
+  });
+  if (typeof track === 'function') track('request_detail_open', { id });
+}
+
+function closeReqDetail() {
+  reqDetailState.mode = 'view';
+  document.getElementById('reqDetailOverlay')?.classList.remove('is-open');
+  document.getElementById('reqDetail')?.classList.remove('is-open');
+}
+
+function paintReqDetail() {
+  const r = REQUESTS.find(x => x.id === reqDetailState.id);
+  const body = document.getElementById('reqDetailBody');
+  const foot = document.getElementById('reqDetailFoot');
+  if (!r || !body) return;
+  const isUser = state.persona === 'user';
+  const meta = REQUEST_STATUS_META[r.status] || REQUEST_STATUS_META.pending_review;
+  const prio = r.priority || 'low';
+
+  const eyeIco  = '<svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M1 7s2.2-4 6-4 6 4 6 4-2.2 4-6 4-6-4-6-4z"/><circle cx="7" cy="7" r="1.6"/></svg>';
+  const penIco  = '<svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9.4 2.6l2 2-6.4 6.4-2.6.6.6-2.6z"/></svg>';
+  const accessChips = (r.actionTypes || []).map(a =>
+    `<span class="reqd-chip">${a === 'read' ? eyeIco : penIco}${escapeHtml(a)}</span>`
+  ).join('');
+
+  const sensitivity = [];
+  if (r.hasPII) sensitivity.push('<span class="reqd-chip warn">Contains PII</span>');
+  if (r.hasFinancial) sensitivity.push('<span class="reqd-chip warn">Financial data</span>');
+  if (!sensitivity.length) sensitivity.push('<span class="reqd-chip ok">No sensitive data</span>');
+
+  const tl = [];
+  tl.push(`<li><div class="reqd-tl-t">Requested by ${escapeHtml(r.requester.name)}</div><div class="reqd-tl-d">${escapeHtml(r.requestedAt)}</div></li>`);
+  if (r.quote) tl.push(`<li><div class="reqd-tl-t">Quote sent · $${r.quote.amount.toLocaleString()}</div><div class="reqd-tl-d">${r.quote.etaWeeks}-week build estimate</div></li>`);
+  if (r.status === 'in_progress') tl.push('<li><div class="reqd-tl-t">Build in progress</div><div class="reqd-tl-d">Engineering is wiring the connector</div></li>');
+  if (r.status === 'done') tl.push('<li><div class="reqd-tl-t">Delivered — live in the catalog</div><div class="reqd-tl-d">Available to the team</div></li>');
+  if (r.status === 'rejected') tl.push('<li><div class="reqd-tl-t">Request declined</div><div class="reqd-tl-d">See the reason below</div></li>');
+
+  body.innerHTML = `
+    <header class="cap-drawer-h">
+      <div class="cap-drawer-h-row">
+        <span class="req-status-chip" style="background:${meta.bg};color:${meta.color};border-color:${meta.border}">
+          <span class="req-status-dot" style="background:${meta.color}"></span>${meta.label}
+        </span>
+        <span class="reqd-priochip ${prio}">${escapeHtml(prio)} priority</span>
+        <span style="flex:1"></span>
+        <button class="cap-drawer-close" type="button" onclick="closeReqDetail()" aria-label="Close">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M3.5 3.5l7 7M10.5 3.5l-7 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+      <h2 class="cap-drawer-title" id="reqDetailTitle">${escapeHtml(r.integration)}</h2>
+      <div class="cap-drawer-h-sub">${escapeHtml(r.vendor)} · ${r.isStandard ? 'Standard connector' : 'Custom build'}</div>
+    </header>
+
+    <section class="cap-drawer-section">
+      <h3 class="cap-drawer-section-h">Requested by</h3>
+      <div class="reqd-requester">
+        <span class="reqd-requester-av">${escapeHtml(r.requester.initials)}</span>
+        <div>
+          <div class="reqd-requester-name">${escapeHtml(r.requester.name)}</div>
+          <div class="reqd-requester-meta">${escapeHtml(r.requester.dept)} · ${escapeHtml(r.requester.tenant)} · ${escapeHtml(r.age)}</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cap-drawer-section">
+      <h3 class="cap-drawer-section-h">Business case</h3>
+      <p class="cap-drawer-p">${escapeHtml(r.businessIntent)}</p>
+    </section>
+
+    <section class="cap-drawer-section">
+      <h3 class="cap-drawer-section-h">Request details</h3>
+      <div class="reqd-kv">
+        <div class="ov-side-row"><span class="ov-side-k">Scope</span><span class="ov-side-v">${escapeHtml(r.requester.tenant)}</span></div>
+        <div class="ov-side-row"><span class="ov-side-k">People impacted</span><span class="ov-side-v">${r.estimatedUsers} ${r.estimatedUsers === 1 ? 'user' : 'users'}</span></div>
+        <div class="ov-side-row"><span class="ov-side-k">Timeline</span><span class="ov-side-v" style="text-transform:capitalize">${escapeHtml(r.timeline)}</span></div>
+        <div class="ov-side-row"><span class="ov-side-k">Connector type</span><span class="ov-side-v">${r.isStandard ? 'Standard' : 'Custom'}</span></div>
+      </div>
+    </section>
+
+    <section class="cap-drawer-section">
+      <h3 class="cap-drawer-section-h">Access requested</h3>
+      <div class="reqd-chips">${accessChips}</div>
+    </section>
+
+    <section class="cap-drawer-section">
+      <h3 class="cap-drawer-section-h">Data sensitivity</h3>
+      <div class="reqd-chips">${sensitivity.join('')}</div>
+    </section>
+
+    ${r.quote ? `
+    <section class="cap-drawer-section">
+      <h3 class="cap-drawer-section-h">Quote</h3>
+      <div class="reqd-quote">
+        <div class="reqd-quote-top">
+          <span class="reqd-quote-amt">$${r.quote.amount.toLocaleString()}</span>
+          <span class="reqd-quote-eta">${r.quote.etaWeeks}-week ETA</span>
+        </div>
+        <p class="reqd-quote-notes">${escapeHtml(r.quote.notes || '')}</p>
+      </div>
+    </section>` : ''}
+
+    ${r.status === 'rejected' && r.rejectionReason ? `
+    <section class="cap-drawer-section">
+      <h3 class="cap-drawer-section-h">Why it was declined</h3>
+      <div class="reqd-warn-block">${escapeHtml(r.rejectionReason)}</div>
+    </section>` : ''}
+
+    <section class="cap-drawer-section">
+      <h3 class="cap-drawer-section-h">Activity</h3>
+      <ul class="reqd-timeline">${tl.join('')}</ul>
+    </section>
+  `;
+
+  if (foot) foot.innerHTML = reqDetailFooterHTML(r, isUser);
+}
+
+function reqDetailFooterHTML(r, isUser) {
+  if (isUser) {
+    const note = {
+      pending_review: "We're reviewing your request. You'll get a notification when there's an update.",
+      in_review:      'An admin is reviewing your request right now.',
+      quoted:         'A quote is ready. Your admin will confirm the next step.',
+      in_progress:    "Your integration is being built. We'll let you know when it's live.",
+      done:           'This integration is live — find it in the catalog.',
+      rejected:       'This request was declined. See the reason above.'
+    }[r.status] || "We'll keep you posted on this request.";
+    return `<div class="reqd-note" style="flex:1 1 100%">${escapeHtml(note)}</div>`;
+  }
+
+  if (reqDetailState.mode === 'decline') {
+    return `
+      <div class="reqd-foot-form">
+        <textarea class="reqd-textarea" id="reqDeclineReason" placeholder="Reason for declining — shared with the requester"></textarea>
+        <div class="reqd-foot-actions">
+          <button class="btn btn-ghost btn-sm" type="button" onclick="reqSetMode('view')">Cancel</button>
+          <button class="btn btn-danger btn-sm" type="button" onclick="reqConfirmDecline('${r.id}')">Decline request</button>
+        </div>
+      </div>`;
+  }
+  if (reqDetailState.mode === 'quote') {
+    return `
+      <div class="reqd-foot-form">
+        <div class="reqd-foot-row">
+          <input class="reqd-input" id="reqQuoteAmt" type="number" min="0" inputmode="numeric" placeholder="Amount (USD)"/>
+          <input class="reqd-input" id="reqQuoteEta" type="number" min="1" inputmode="numeric" placeholder="ETA (weeks)"/>
+        </div>
+        <textarea class="reqd-textarea" id="reqQuoteNotes" placeholder="What's included in this build"></textarea>
+        <div class="reqd-foot-actions">
+          <button class="btn btn-ghost btn-sm" type="button" onclick="reqSetMode('view')">Cancel</button>
+          <button class="btn btn-primary btn-sm" type="button" onclick="reqConfirmQuote('${r.id}')">Send quote</button>
+        </div>
+      </div>`;
+  }
+
+  switch (r.status) {
+    case 'pending_review':
+    case 'in_review':
+      return `
+        <button class="btn btn-ghost btn-sm" type="button" onclick="reqSetMode('decline')">Decline</button>
+        ${!r.isStandard ? `<button class="btn btn-ghost btn-sm" type="button" onclick="reqSetMode('quote')">Send quote</button>` : ''}
+        <button class="btn btn-primary btn-sm" type="button" onclick="reqApprove('${r.id}')">${r.isStandard ? 'Approve &amp; build' : 'Approve'}</button>`;
+    case 'quoted':
+      return `
+        <button class="btn btn-ghost btn-sm" type="button" onclick="reqSetMode('decline')">Decline</button>
+        <button class="btn btn-primary btn-sm" type="button" onclick="reqApprove('${r.id}')">Approve quote &amp; build</button>`;
+    case 'in_progress':
+      return `
+        <button class="btn btn-ghost btn-sm" type="button" onclick="reqOpenBuild('${r.id}')">Open build</button>
+        <button class="btn btn-primary btn-sm" type="button" onclick="reqMarkDelivered('${r.id}')">Mark delivered</button>`;
+    case 'done':
+      return `<button class="btn btn-primary btn-sm" type="button" onclick="reqOpenBuild('${r.id}')">Open connection</button>`;
+    case 'rejected':
+      return `
+        <div class="reqd-note" style="flex:1 1 100%">This request was declined. You can reopen it to reconsider.</div>
+        <button class="btn btn-ghost btn-sm" type="button" onclick="reqReopen('${r.id}')">Reopen request</button>`;
+    default:
+      return '';
+  }
+}
+
+function reqSetMode(mode) {
+  reqDetailState.mode = mode;
+  paintReqDetail();
+  requestAnimationFrame(() => {
+    document.getElementById(mode === 'decline' ? 'reqDeclineReason' : 'reqQuoteAmt')?.focus();
+  });
+}
+
+// Mutates the in-memory request, then refreshes both the drawer and the inbox.
+function _reqRefresh() {
+  paintReqDetail();
+  if (location.hash.startsWith('#/requests')) renderRequestsInbox();
+}
+
+function reqApprove(id) {
+  const r = REQUESTS.find(x => x.id === id); if (!r) return;
+  r.status = 'in_progress';
+  reqDetailState.mode = 'view';
+  toast(`Approved — ${r.integration} moved to build`);
+  _reqRefresh();
+}
+
+function reqConfirmDecline(id) {
+  const r = REQUESTS.find(x => x.id === id); if (!r) return;
+  const reason = (document.getElementById('reqDeclineReason')?.value || '').trim();
+  if (!reason) { toast('Add a reason so the requester knows why', 'error'); return; }
+  r.status = 'rejected';
+  r.rejectionReason = reason;
+  reqDetailState.mode = 'view';
+  toast(`Declined — ${r.integration}`);
+  _reqRefresh();
+}
+
+function reqConfirmQuote(id) {
+  const r = REQUESTS.find(x => x.id === id); if (!r) return;
+  const amt = parseInt(document.getElementById('reqQuoteAmt')?.value, 10);
+  const eta = parseInt(document.getElementById('reqQuoteEta')?.value, 10);
+  const notes = (document.getElementById('reqQuoteNotes')?.value || '').trim();
+  if (!amt || !eta) { toast('Enter an amount and an ETA', 'error'); return; }
+  r.quote = { amount: amt, etaWeeks: eta, notes: notes || 'Custom connector build.' };
+  r.status = 'quoted';
+  reqDetailState.mode = 'view';
+  toast(`Quote sent — $${amt.toLocaleString()} · ${eta}w`);
+  _reqRefresh();
+}
+
+function reqMarkDelivered(id) {
+  const r = REQUESTS.find(x => x.id === id); if (!r) return;
+  r.status = 'done';
+  toast(`${r.integration} marked as delivered`);
+  _reqRefresh();
+}
+
+function reqReopen(id) {
+  const r = REQUESTS.find(x => x.id === id); if (!r) return;
+  r.status = 'pending_review';
+  delete r.rejectionReason;
+  reqDetailState.mode = 'view';
+  toast(`Reopened — ${r.integration}`);
+  _reqRefresh();
+}
+
+function reqOpenBuild(id) {
+  const r = REQUESTS.find(x => x.id === id); if (!r) return;
+  closeReqDetail();
+  toast(`Opening ${r.integration}…`);
+  navigate('#/integrations');
 }
 
 // ⌘K opens inbox search when on the Requests route
@@ -9134,20 +9920,127 @@ function getDistribution(slug) {
   return out;
 }
 
-function toggleDistribution(slug, surfaceId) {
+// Distribution is a tenant-wide control plane. Per governance design, the matrix
+// is READ-ONLY by default; edits go through a deliberate modal (impact preview +
+// required reason + audit entry). `_distManage` unlocks the cells for editing.
+let _distManage = false;
+function distToggleManage() {
+  _distManage = !_distManage;
+  renderDistribution();
+}
+
+// Apply a single exposure change. Only ever called from the governed modal —
+// never from a raw cell click. Writes the change to the audit log.
+function _applyDistChange(slug, surfaceId, reason) {
   const integ = INTEGRATIONS.find(i => i.slug === slug);
   const surface = DIST_SURFACES.find(s => s.id === surfaceId);
-  if (!integ || !surface) return;
-  if (!distCapMatch(integ, surface)) return; // N/A is not toggleable
+  if (!integ || !surface || !distCapMatch(integ, surface)) return; // N/A is not changeable
   const cur = getDistribution(slug)[surfaceId];
   const next = !cur;
   if (!DIST_OVERRIDES[slug]) DIST_OVERRIDES[slug] = {};
   DIST_OVERRIDES[slug][surfaceId] = next;
   persistDistOverrides();
-  renderDistribution();
-  if (typeof toast === 'function') {
-    toast(integ.name + ' ' + (next ? 'enabled' : 'disabled') + ' for ' + surface.name);
+  if (typeof AUDIT_EVENTS !== 'undefined') {
+    AUDIT_EVENTS.unshift({
+      ts:'just now', tsAbs:'(now)', sev: next ? 'info' : 'warn',
+      event: next ? 'distribution.surface_exposed' : 'distribution.surface_hidden',
+      actor:'Thomas González', actorType:'user', resource:slug, studio:null, ip:'192.168.1.10',
+      details:{ surface: surface.id, surfaceName: surface.name, from: cur ? 'available' : 'disabled', to: next ? 'available' : 'disabled', reason: reason || '' }
+    });
   }
+  renderDistribution();
+  if (typeof toast === 'function') toast(`${integ.name} ${next ? 'exposed to' : 'hidden from'} ${surface.name}`);
+}
+
+// Surface-scoped impact: what currently consumes this integration on this surface.
+function _distImpact(slug, surfaceId) {
+  const rows = [];
+  const usage = (typeof STUDIO_USAGE !== 'undefined' && STUDIO_USAGE[slug]) || {};
+  if (surfaceId === 'widgets') {
+    (typeof MOCK_WIDGET_TEMPLATES !== 'undefined' ? MOCK_WIDGET_TEMPLATES : [])
+      .filter(w => w.installed && (w.integrations || []).includes(slug))
+      .forEach(w => rows.push({ n: w.name, d: 'dashboard built on its data' }));
+  } else if (surfaceId === 'agent_studio' && usage.agentic && usage.agentic.count > 0) {
+    rows.push({ n: usage.agentic.detail || `${usage.agentic.count} agents`, d: 'call it as a tool' });
+  } else if (surfaceId === 'ai_assistant' && usage.agentic && usage.agentic.count > 0) {
+    rows.push({ n: 'AI Assistant', d: `uses it for chat context (${usage.agentic.count} ${usage.agentic.unit})` });
+  } else if (surfaceId === 'workflows' && usage.workforce && usage.workforce.count > 0) {
+    rows.push({ n: usage.workforce.detail || `${usage.workforce.count} routes`, d: 'automation routes that reference it' });
+  } else if (surfaceId === 'data_studio' && usage.governance && usage.governance.count > 0) {
+    rows.push({ n: usage.governance.detail || `${usage.governance.count} records`, d: 'synced data that would stop refreshing' });
+  }
+  return rows;
+}
+
+let _distChangePending = null;
+function ensureDistChangeModal() {
+  if (document.getElementById('distChangeOverlay')) return;
+  const wrap = document.createElement('div');
+  wrap.innerHTML = `<div class="req-modal-overlay" id="distChangeOverlay" onclick="closeDistChangeModal(event)" role="presentation"><div class="req-modal" id="distChangeModal" role="dialog" aria-modal="true" onclick="event.stopPropagation()"><div id="distChangeBody"></div></div></div>`;
+  while (wrap.firstChild) document.body.appendChild(wrap.firstChild);
+}
+function closeDistChangeModal(ev) {
+  if (ev && ev.target && ev.target.id !== 'distChangeOverlay') return;
+  document.getElementById('distChangeOverlay')?.classList.remove('is-open');
+  _distChangePending = null;
+}
+function openDistChangeModal(slug, surfaceId) {
+  const integ = INTEGRATIONS.find(i => i.slug === slug);
+  const surface = DIST_SURFACES.find(s => s.id === surfaceId);
+  if (!integ || !surface || !distCapMatch(integ, surface)) return;
+  const cur = getDistribution(slug)[surfaceId];
+  const next = !cur;
+  const disabling = !next;
+  _distChangePending = { slug, surfaceId };
+  const impact = disabling ? _distImpact(slug, surfaceId) : [];
+  const warnIco = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>';
+  const okIco = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
+  ensureDistChangeModal();
+  document.getElementById('distChangeBody').innerHTML = `
+    <header class="req-modal-h">
+      <div class="req-modal-h-ic" aria-hidden="true" style="background:${disabling ? 'rgba(229,72,77,0.12);color:var(--red)' : 'rgba(16,185,129,0.12);color:var(--green)'}">${disabling ? warnIco : okIco}</div>
+      <div class="req-modal-h-text">
+        <h2 class="req-modal-title">${disabling ? 'Hide' : 'Expose'} ${escapeHtml(integ.name)} ${disabling ? 'from' : 'in'} ${escapeHtml(surface.name)}?</h2>
+        <p class="req-modal-sub">This applies to the entire tenant${disabling ? ' — anything using it on this surface stops working.' : '.'}</p>
+      </div>
+      <button class="req-modal-close" type="button" onclick="closeDistChangeModal()" aria-label="Close"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3.5 3.5l7 7M10.5 3.5l-7 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+    </header>
+    <div class="req-modal-body">
+      <div class="dist-change-states">
+        <span class="dist-change-state">${cur ? 'Available' : 'Disabled'}</span>
+        <span class="dist-change-arrow">→</span>
+        <span class="dist-change-state ${next ? 'is-on' : 'is-off'}">${next ? 'Available' : 'Disabled'}</span>
+      </div>
+      ${disabling ? `
+        <div class="impact-preview">
+          <div class="impact-preview-h">If you confirm, these stop working on ${escapeHtml(surface.name)}</div>
+          ${impact.length === 0
+            ? `<div class="impact-empty">No tracked consumers on this surface — but the change still applies tenant-wide.</div>`
+            : impact.map(r => `<div class="impact-row"><span class="impact-row-n">•</span><div class="impact-row-text"><div class="impact-row-l">${escapeHtml(r.n)}</div><div class="impact-row-d">${escapeHtml(r.d)}</div></div></div>`).join('')}
+        </div>` : ''}
+      <div class="reason-modal-field">
+        <div class="reason-modal-label">Reason<span class="reason-modal-req">*</span></div>
+        <textarea id="distChangeReason" placeholder="Why are you changing this? Recorded in the audit log." oninput="var b=document.getElementById('distChangeConfirm'); if(b) b.disabled = !this.value.trim()"></textarea>
+      </div>
+    </div>
+    <footer class="req-modal-foot">
+      <button class="btn btn-ghost btn-sm" type="button" onclick="closeDistChangeModal()">Cancel</button>
+      <button class="btn ${disabling ? 'btn-danger' : 'btn-primary'} btn-sm" id="distChangeConfirm" type="button" disabled onclick="confirmDistChange()">${disabling ? 'Hide for tenant' : 'Expose for tenant'}</button>
+    </footer>
+  `;
+  requestAnimationFrame(() => {
+    document.getElementById('distChangeOverlay')?.classList.add('is-open');
+    document.getElementById('distChangeReason')?.focus();
+  });
+}
+function confirmDistChange() {
+  const p = _distChangePending;
+  if (!p) return;
+  const reason = (document.getElementById('distChangeReason')?.value || '').trim();
+  if (!reason) { toast('A reason is required — it goes in the audit log', 'error'); return; }
+  document.getElementById('distChangeOverlay')?.classList.remove('is-open');
+  _applyDistChange(p.slug, p.surfaceId, reason);
+  _distChangePending = null;
 }
 
 let _distFilters = { search: '', status: 'all' /* all | working | needs | inactive */ };
@@ -9298,7 +10191,7 @@ function _paintUsersTable() {
 /* ============================================================================
    WORKSPACES — admin surface for workspace teams (list + detail)
 ============================================================================ */
-let _wsToolbar = { search: '', tab: 'members' };
+let _wsToolbar = { search: '', tab: 'members', sort: 'name' };
 
 function setWsSearch(v) {
   _wsToolbar.search = (v || '').toLowerCase().trim();
@@ -9312,6 +10205,7 @@ function setWsSearch(v) {
   }
 }
 function clearWsSearch() { _wsToolbar.search = ''; renderWorkspaces(); }
+function setWsSort(s) { _wsToolbar.sort = s; renderWorkspaces(); }
 function setWsTab(t) {
   _wsToolbar.tab = t;
   const id = (location.hash.split('/')[1] || '');
@@ -9329,9 +10223,25 @@ function _wsIntegrationCount(wsId) {
 
 function _wsMembers(wsId) {
   if (typeof MOCK_PEOPLE !== 'undefined' && Array.isArray(MOCK_PEOPLE)) {
-    return MOCK_PEOPLE.filter(p => (p.workspaces || []).indexOf(wsId) >= 0);
+    return MOCK_PEOPLE
+      .filter(p => (p.workspaces || []).indexOf(wsId) >= 0)
+      .sort((a, b) => (a.name || '').localeCompare(b.name || ''));
   }
   return [];
+}
+
+function _personInWorkspace(personId, wsId) {
+  const p = MOCK_PEOPLE.find(x => x.id === personId);
+  return !!(p && (p.workspaces || []).includes(wsId));
+}
+
+// Groups visible in a workspace (Option A containment): those that live in it,
+// plus any cross-workspace group with at least one member here (e.g. Leadership).
+function _wsGroups(wsId) {
+  return WORKSPACE_GROUPS.filter(g =>
+    g.workspace === wsId ||
+    (g.crossWorkspace && (g.memberIds || []).some(id => _personInWorkspace(id, wsId)))
+  );
 }
 
 function _wsActivity(wsId) {
@@ -9347,13 +10257,20 @@ function _wsActivity(wsId) {
 
 function renderWorkspaces() {
   const q = _wsToolbar.search;
-  const filtered = MOCK_WORKSPACES.filter(w => {
+  const sort = _wsToolbar.sort || 'name';
+  let filtered = MOCK_WORKSPACES.filter(w => {
     if (!q) return true;
     return (w.name || '').toLowerCase().includes(q) ||
            (w.desc || '').toLowerCase().includes(q) ||
            (w.owner || '').toLowerCase().includes(q);
   });
-  const totalMembers = MOCK_WORKSPACES.reduce((s, w) => s + (w.members || 0), 0);
+  // Apply the active sort ("filter") — name A→Z, most members, most integrations.
+  filtered = [...filtered].sort((a, b) => {
+    if (sort === 'members') return (b.members || 0) - (a.members || 0);
+    if (sort === 'integrations') return (_wsIntegrationCount(b.id) || 0) - (_wsIntegrationCount(a.id) || 0);
+    return (a.name || '').localeCompare(b.name || '');
+  });
+  const sortBtn = (key, label) => `<button class="toolbar-sort-btn ${sort===key?'is-active':''}" type="button" onclick="setWsSort('${key}')">${label}</button>`;
 
   $('content').innerHTML = `
     <section class="surface">
@@ -9368,17 +10285,18 @@ function renderWorkspaces() {
         </div>
       </section>
 
-      <div class="ws-kpi-strip">
-        <div class="ws-kpi"><span class="ws-kpi-v">${MOCK_WORKSPACES.length}</span><span class="ws-kpi-k">Workspaces</span></div>
-        <div class="ws-kpi is-members"><span class="ws-kpi-v">${totalMembers}</span><span class="ws-kpi-k">Members</span></div>
-      </div>
-
       <div class="toolbar">
         <label class="toolbar-search">
           <svg class="toolbar-search-ico" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/></svg>
           <input id="wsSearchInput" type="text" placeholder="Search workspaces by name, owner, or description..." value="${escapeHtml(_wsToolbar.search)}" oninput="setWsSearch(this.value)" />
           ${_wsToolbar.search ? `<button class="toolbar-search-clear" onclick="clearWsSearch()" aria-label="Clear search"><svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 3l10 10M13 3L3 13"/></svg></button>` : ''}
         </label>
+        <div class="toolbar-sort" role="group" aria-label="Sort workspaces">
+          <span class="toolbar-sort-label">Sort</span>
+          ${sortBtn('name','Name')}
+          ${sortBtn('members','Most members')}
+          ${sortBtn('integrations','Most integrations')}
+        </div>
       </div>
 
       ${filtered.length === 0 ? `
@@ -9428,6 +10346,7 @@ function renderWorkspaceDetail(id) {
   }
 
   const members = _wsMembers(w.id);
+  const groups = _wsGroups(w.id);
   const intCount = _wsIntegrationCount(w.id);
   const activity = _wsActivity(w.id);
   const tab = _wsToolbar.tab || 'members';
@@ -9441,16 +10360,35 @@ function renderWorkspaceDetail(id) {
   if (tab === 'members') {
     tabBody = members.length === 0
       ? `<div class="toolbar-empty">No members assigned to this workspace yet.</div>`
-      : `<div class="ws-list">${members.map(m => `
+      : `<div class="ws-list">${members.map(m => {
+          const inGroups = groups.filter(g => (g.memberIds || []).includes(m.id)).map(g => g.label);
+          const meta = [m.role, inGroups.join(', ')].filter(Boolean).join(' · ');
+          return `
           <div class="ws-list-row">
-            <span class="ws-list-avatar">${escapeHtml((m.name || '').split(' ').map(s => s[0]).slice(0,2).join('').toUpperCase())}</span>
+            <span class="ws-list-avatar" style="background:${m.color || '#475569'}">${escapeHtml(m.initials || (m.name || '').slice(0,2).toUpperCase())}</span>
             <div class="ws-list-l">
               <div class="ws-list-name">${escapeHtml(m.name)}</div>
-              <div class="ws-list-meta">${escapeHtml(m.email || '')}${m.role ? ' · ' + escapeHtml(m.role) : ''}</div>
+              <div class="ws-list-meta">${escapeHtml(meta)}</div>
             </div>
             <a class="ws-list-action" href="#/users/${escapeHtml(m.id || '')}">Open →</a>
           </div>
-        `).join('')}</div>`;
+        `;}).join('')}</div>`;
+  } else if (tab === 'groups') {
+    tabBody = groups.length === 0
+      ? `<div class="toolbar-empty">No groups in this workspace yet. Groups are reusable bundles of people you grant integration access to.</div>`
+      : `<div class="ws-list">${groups.map(g => {
+          const gm = (g.memberIds || []).map(id => MOCK_PEOPLE.find(p => p.id === id)).filter(Boolean);
+          const avatars = gm.slice(0, 7).map(p => `<span class="ws-group-av" title="${escapeHtml(p.name)}" style="background:${p.color || '#475569'}">${escapeHtml(p.initials)}</span>`).join('');
+          return `
+            <div class="ws-list-row ws-group-row">
+              <div class="ws-list-l">
+                <div class="ws-list-name">${escapeHtml(g.label)}${g.crossWorkspace ? ' <span class="ws-group-tag">Cross-workspace</span>' : ''}</div>
+                <div class="ws-list-meta">${gm.length} member${gm.length === 1 ? '' : 's'}</div>
+              </div>
+              <div class="ws-group-avs">${avatars}${gm.length > 7 ? `<span class="ws-group-more">+${gm.length - 7}</span>` : ''}</div>
+            </div>
+          `;
+        }).join('')}</div>`;
   } else if (tab === 'integrations') {
     tabBody = exposedSlugs.length === 0
       ? `<div class="toolbar-empty">No integrations are exposed to this workspace yet. Go to <a href="#/distribution" style="color:var(--cyan)">Distribution</a> to expose some.</div>`
@@ -9500,15 +10438,16 @@ function renderWorkspaceDetail(id) {
         </div>
         <aside class="hero-aside">
           <div class="hero-kpis">
-            <div class="hero-kpi" data-kind="info"><span class="hero-kpi-n">${w.members || 0}</span><span class="hero-kpi-l">Members</span></div>
-            <div class="hero-kpi" data-kind="ok"><span class="hero-kpi-n">${intCount}</span><span class="hero-kpi-l">Integrations</span></div>
-            <div class="hero-kpi" data-kind="idle"><span class="hero-kpi-n">${activity.length}</span><span class="hero-kpi-l">Recent events</span></div>
+            <div class="hero-kpi" data-kind="info"><span class="hero-kpi-n">${members.length}</span><span class="hero-kpi-l">Members</span></div>
+            <div class="hero-kpi" data-kind="ok"><span class="hero-kpi-n">${groups.length}</span><span class="hero-kpi-l">Groups</span></div>
+            <div class="hero-kpi" data-kind="idle"><span class="hero-kpi-n">${intCount}</span><span class="hero-kpi-l">Integrations</span></div>
           </div>
         </aside>
       </section>
 
       <div class="ws-tabs">
         <button class="ws-tab ${tab==='members'?'is-active':''}" onclick="setWsTab('members')">Members <span class="ws-tab-count">${members.length}</span></button>
+        <button class="ws-tab ${tab==='groups'?'is-active':''}" onclick="setWsTab('groups')">Groups <span class="ws-tab-count">${groups.length}</span></button>
         <button class="ws-tab ${tab==='integrations'?'is-active':''}" onclick="setWsTab('integrations')">Integrations <span class="ws-tab-count">${exposedSlugs.length}</span></button>
         <button class="ws-tab ${tab==='activity'?'is-active':''}" onclick="setWsTab('activity')">Activity <span class="ws-tab-count">${activity.length}</span></button>
       </div>
@@ -9706,7 +10645,14 @@ function renderDistribution() {
         <button class="dist-filter ${_distFilters.status==='all'?'is-active':''}" onclick="distSetFilter('status','all')">All <span class="dist-filter-badge">${totalConn}</span></button>
         <button class="dist-filter ${_distFilters.status==='working'?'is-active':''}" onclick="distSetFilter('status','working')">Working <span class="dist-filter-badge">${workingCount}</span></button>
         ${needsCount > 0 ? `<button class="dist-filter is-warn ${_distFilters.status==='needs'?'is-active':''}" onclick="distSetFilter('status','needs')">Needs attention <span class="dist-filter-badge">${needsCount}</span></button>` : ''}
+        <button class="dist-manage-btn ${_distManage?'is-on':''}" type="button" onclick="distToggleManage()" title="${_distManage ? 'Exit manage mode' : 'Unlock the matrix to change exposure'}">
+          ${_distManage
+            ? '<svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2.5" y="6" width="9" height="6" rx="1.3"/><path d="M4.5 6V4.2a2.5 2.5 0 0 1 5 0V6" stroke-linecap="round"/></svg> Done'
+            : '<svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2.5" y="6" width="9" height="6" rx="1.3"/><path d="M4.5 6V4.2a2.5 2.5 0 0 1 4.7-.9" stroke-linecap="round"/></svg> Manage exposure'}
+        </button>
       </div>
+
+      ${_distManage ? `<div class="dist-manage-note"><svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="7" cy="7" r="5.5"/><path d="M7 4.2v3.2M7 9.6h.01"/></svg> Manage mode — every change applies to the whole tenant and is recorded in the audit log.</div>` : ''}
 
       <div class="dist-table-wrap">
         <div class="dist-table-scroll">
@@ -9757,11 +10703,17 @@ function renderDistribution() {
                         return `<td class="dist-row-cell"><button class="dist-toggle is-na" disabled title="${escapeHtml(i.name)} does not support ${escapeHtml(s.name)} (missing capability)">N/A</button></td>`;
                       }
                       const isOn = v === true;
+                      const pill = isOn
+                        ? '<svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 6l3 3 5-7"/></svg> Available'
+                        : '<svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="4"/></svg> Disabled';
+                      if (!_distManage) {
+                        // Read-only by default — a status chip, not a control.
+                        return `<td class="dist-row-cell"><span class="dist-toggle ${isOn?'is-on':'is-off'} is-ro">${pill}</span></td>`;
+                      }
+                      // Manage mode — clicking opens the governed change modal.
                       return `<td class="dist-row-cell">
-                        <button class="dist-toggle ${isOn?'is-on':'is-off'}" onclick="toggleDistribution('${i.slug}','${s.id}')" title="${isOn ? 'Available in ' + escapeHtml(s.name) + '. Click to hide.' : 'Hidden from ' + escapeHtml(s.name) + '. Click to expose.'}">
-                          ${isOn
-                            ? '<svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 6l3 3 5-7"/></svg> Available'
-                            : '<svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="4"/></svg> Disabled'}
+                        <button class="dist-toggle ${isOn?'is-on':'is-off'} is-editable" onclick="openDistChangeModal('${i.slug}','${s.id}')" title="Change exposure — opens a confirmation, recorded in the audit log">
+                          ${pill}<svg class="dist-edit-ic" width="10" height="10" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9.4 2.6l2 2-6.4 6.4-2.6.6.6-2.6z"/></svg>
                         </button>
                       </td>`;
                     }).join('')}
@@ -9979,6 +10931,19 @@ function route() {
   const hash = window.location.hash.replace(/^#\/?/, '') || 'integrations';
   const parts = hash.split('/');
 
+  // ── Route guards: end-users are silently redirected away from admin-only
+  // surfaces (no access-denied page — that would reveal the surface exists). ──
+  if (state.persona === 'user') {
+    const isInstanceDetail = parts[0]==='integrations' && parts[1] && parts[2]==='instances';
+    const isBuild = parts[0]==='build';
+    const isAdminOnly = parts[0]==='distribution' || parts[0]==='workspaces' || parts[0]==='users' || parts[0]==='audit' || parts[0]==='widgets';
+    const isInboxBlocked = parts[0]==='requests' && !USER_PERMS.inbox;
+    if (isInstanceDetail || isBuild || isAdminOnly || isInboxBlocked) {
+      location.hash = '#/integrations';   // silent redirect — re-triggers route()
+      return;
+    }
+  }
+
   // Sub-sidebar active state
   document.querySelectorAll('.ssb-item').forEach(b=>b.classList.remove('active'));
   const ssbMap = {
@@ -10036,12 +11001,65 @@ function route() {
 
 /* ====================== HOME ====================== */
 
-function renderHome() {
-  // Orchestration thesis: when in Operate mode, render the orchestration surface instead
-  if (state.mode === 'operate' && state.persona === 'admin') {
-    return renderOperateHome();
-  }
+/* ────────────────────────────────────────────────────────────
+   Attention band — inline section that replaces the standalone
+   Operate home. Renders only when admin has connected items that
+   need attention. Reuses the existing op-row styling so visual
+   language is consistent with the prior Operate view.
+   ──────────────────────────────────────────────────────────── */
+// Severity order so the band always surfaces the most urgent first — broken
+// now (auth / provider down) before pending work (drift / mapping). Lower = first.
+const ATTN_SEVERITY = {
+  auth_failed: 0, auth_expired: 1, provider_down: 2, rate_limited: 3,
+  schema_drift: 4, needs_mapping: 5, partially_configured: 5
+};
+const ATTN_CAP = 5;  // rows shown before "Show all" collapses the rest
 
+function attentionBandHTML() {
+  if (state.persona !== 'admin') return '';
+  let items = INTEGRATIONS.filter(i =>
+    i.connected && bucketOf(deriveStatus(i)) === 'needs_attention'
+  );
+  if (items.length === 0) return '';
+  // Most urgent first
+  items = [...items].sort((a, b) =>
+    (ATTN_SEVERITY[deriveStatus(a)] ?? 9) - (ATTN_SEVERITY[deriveStatus(b)] ?? 9)
+  );
+
+  const expanded = !!state.attnExpanded;
+  const visible = expanded ? items : items.slice(0, ATTN_CAP);
+  const overflow = items.length - ATTN_CAP;
+
+  const moreBtn = items.length > ATTN_CAP ? `
+    <button class="attn-band-more" type="button" onclick="toggleAttnBand()">
+      ${expanded
+        ? 'Show less'
+        : `Show all ${items.length}<span class="attn-band-more-n">+${overflow}</span>`}
+      <svg class="attn-band-more-chev ${expanded ? 'is-up' : ''}" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M3 4.5l3 3 3-3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>` : '';
+
+  return `
+    <section class="attn-band ${expanded ? 'is-expanded' : ''}" aria-label="Needs your attention">
+      <header class="attn-band-h">
+        <div class="attn-band-h-l">
+          <span class="attn-band-eyebrow">
+            <span class="attn-band-dot" aria-hidden="true"></span>
+            Needs your attention
+          </span>
+          <span class="attn-band-count">${items.length} integration${items.length===1?'':'s'}</span>
+        </div>
+      </header>
+      <div class="attn-band-list op-list">
+        ${visible.map(opRowHTML).join('')}
+      </div>
+      ${moreBtn}
+    </section>
+  `;
+}
+
+function toggleAttnBand() { state.attnExpanded = !state.attnExpanded; route(); }
+
+function renderHome() {
   const connected = INTEGRATIONS.filter(i=>i.connected);
 
   // Compute default homeTab the first time the user lands here
@@ -10055,11 +11073,18 @@ function renderHome() {
     return renderIntegratedHome(connected);
   }
 
-  const withIssues = connected.filter(i=>i.health==='degraded'||i.health==='failed').length;
+  const withIssues = connected.filter(i => bucketOf(deriveStatus(i)) === 'needs_attention').length;
   const total = INTEGRATIONS.length;
   const partners = INTEGRATIONS.filter(i=>i.source==='partner');
   const popular = ['github','salesforce','jira','snowflake','notion','linear'].map(s=>findIntegration(s)).filter(Boolean);
-  const featured = findIntegration('snowflake');
+  // Featured slot config. Set to null to render no featured card (no empty slot).
+  // headline ≤ 8 words; desc 1–2 sentences.
+  const FEATURED_CONFIG = {
+    slug: 'snowflake',
+    headline: 'Turn Snowflake into a Knowledge source for Governance',
+    desc: 'Use your data warehouse tables as searchable knowledge for agents, or invoke Snowflake queries as tools from Agentic. SOC 2 compliant and fully auditable.'
+  };
+  const featured = FEATURED_CONFIG ? findIntegration(FEATURED_CONFIG.slug) : null;
 
   let filtered = INTEGRATIONS;
   if (state.activeSrc!=='all') filtered = filtered.filter(i=>i.source===state.activeSrc);
@@ -10107,6 +11132,8 @@ function renderHome() {
       </div>
     </section>
 
+    ${attentionBandHTML()}
+
     ${homeTabStripHTML(connected.length, 'marketplace')}
 
     ${connected.length > 0 ? `
@@ -10135,16 +11162,16 @@ function renderHome() {
       </div>
     ` : ''}
 
-    ${!isFiltering ? `
+    ${(!isFiltering && featured) ? `
       <div class="featured-wrap">
         <div class="featured-card" onclick="navigate('#/integrations/${featured.slug}')">
           <div class="featured-content">
             <span class="featured-eyebrow"><svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true" style="vertical-align:-1px;margin-right:5px"><path d="M8 2l1.8 3.7 4.2.6-3 2.9.7 4.1L8 11.4l-3.7 1.9.7-4.1-3-2.9 4.2-.6L8 2z"/></svg>Featured this week</span>
-            <h2 class="featured-title">Turn Snowflake into a Knowledge source for Governance</h2>
-            <p class="featured-desc">Use your data warehouse tables as searchable knowledge for agents, or invoke Snowflake queries as tools from Agentic. SOC 2 compliant, role-based access, fully auditable.</p>
+            <h2 class="featured-title">${escapeHtml(FEATURED_CONFIG.headline)}</h2>
+            <p class="featured-desc">${escapeHtml(FEATURED_CONFIG.desc)}</p>
+            <div class="featured-caps">${capChips(featured.capabilities||[])}</div>
             <div class="featured-actions">
-              <button class="btn btn-primary btn-sm" onclick="event.stopPropagation();navigate('#/integrations/${featured.slug}')">Explore ${escapeHtml(featured.name)} →</button>
-              <button class="btn btn-link btn-sm" onclick="event.stopPropagation();toast('Already connected ✓','success')">View capabilities</button>
+              <button class="btn btn-primary btn-sm" onclick="event.stopPropagation();navigate('#/integrations/${featured.slug}')">${featured.connected ? 'Open' : 'Learn more'}</button>
             </div>
           </div>
           <div class="featured-visual">${logo(featured, 'xl')}</div>
@@ -10336,6 +11363,7 @@ function opRowHTML(i) {
 
   const actionLabel = {
     needs_mapping: 'Finish mapping',
+    partially_configured: 'Finish mapping',  // back-compat alias — same intent as needs_mapping
     schema_drift: 'Resolve drift',
     auth_expired: 'Reauthenticate',
     auth_failed: 'Reauthenticate',
@@ -10439,6 +11467,8 @@ function renderIntegratedHome(connected) {
         <input class="mkt-search-input" type="text" placeholder="Search your active integrations…" value="${escapeHtml(state.search)}" oninput="setSearch(this.value)"/>
       </div>
     </section>
+
+    ${attentionBandHTML()}
 
     ${homeTabStripHTML(connected.length, 'integrated')}
 
@@ -10622,6 +11652,68 @@ function _fsChangedCount(){
    Right-side panel showing About + What you can do +
    Use cases + Required scopes for a single capability.
    ──────────────────────────────────────────────────────── */
+/* ── Provider Activity — event detail drawer (point 6) ───────────────────
+   Reuses the .cap-drawer styling. Shows full event detail: actor, timestamp,
+   target, and the change diff. */
+let _activityEvents = [];
+
+function ensureEventDrawer() {
+  if (document.getElementById('eventDrawer')) return;
+  const html = `
+    <div class="cap-drawer-overlay" id="eventDrawerOverlay" onclick="closeEventDrawer()" role="presentation"></div>
+    <aside class="cap-drawer" id="eventDrawer" role="dialog" aria-labelledby="eventDrawerTitle" aria-modal="true">
+      <div class="cap-drawer-body" id="eventDrawerBody"></div>
+    </aside>`;
+  const wrap = document.createElement('div');
+  wrap.innerHTML = html;
+  while (wrap.firstChild) document.body.appendChild(wrap.firstChild);
+}
+
+function openEventDrawer(idx) {
+  const e = _activityEvents[idx];
+  if (!e) return;
+  ensureEventDrawer();
+  const body = document.getElementById('eventDrawerBody');
+  // Lifecycle events carry a state transition rather than a field diff.
+  const diff = e.label === 'Instance created'
+    ? [['Before','—'],['After','Active · credentials configured']]
+    : e.label === 'Integration added to workspace'
+      ? [['Before','Not in workspace'],['After','Available in workspace']]
+      : [['Change', e.label]];
+  body.innerHTML = `
+    <header class="cap-drawer-h">
+      <div class="cap-drawer-h-row">
+        <span class="cap-drawer-h-tag">Activity event</span>
+        <button class="cap-drawer-close" type="button" onclick="closeEventDrawer()" aria-label="Close">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M3.5 3.5l7 7M10.5 3.5l-7 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+      <h2 class="cap-drawer-title" id="eventDrawerTitle">${escapeHtml(e.label)}</h2>
+    </header>
+    <section class="cap-drawer-section">
+      <h3 class="cap-drawer-section-h">Details</h3>
+      <div class="ov-side-row"><span class="ov-side-k">Actor</span><span class="ov-side-v">${escapeHtml(e.actor)}</span></div>
+      <div class="ov-side-row"><span class="ov-side-k">When</span><span class="ov-side-v">${escapeHtml(e.ts)}</span></div>
+      <div class="ov-side-row"><span class="ov-side-k">Target</span><span class="ov-side-v">${escapeHtml(e.target)}</span></div>
+      <div class="ov-side-row"><span class="ov-side-k">Provider</span><span class="ov-side-v">${escapeHtml(e.provider)}</span></div>
+    </section>
+    <section class="cap-drawer-section">
+      <h3 class="cap-drawer-section-h">Change</h3>
+      ${diff.map(([k,v]) => `<div class="ov-side-row"><span class="ov-side-k">${escapeHtml(k)}</span><span class="ov-side-v" style="font-family:'SF Mono',Menlo,monospace;font-size:11.5px">${escapeHtml(v)}</span></div>`).join('')}
+    </section>
+    ${e.instanceId ? `<section class="cap-drawer-section"><a class="btn btn-ghost btn-sm" href="#/integrations/${e.slug}/instances/${e.instanceId}" onclick="closeEventDrawer()">Open instance →</a></section>` : ''}
+  `;
+  requestAnimationFrame(() => {
+    document.getElementById('eventDrawerOverlay')?.classList.add('is-open');
+    document.getElementById('eventDrawer')?.classList.add('is-open');
+  });
+}
+
+function closeEventDrawer() {
+  document.getElementById('eventDrawerOverlay')?.classList.remove('is-open');
+  document.getElementById('eventDrawer')?.classList.remove('is-open');
+}
+
 let capDrawerState = { open:false, key:null, instanceName:null };
 
 function ensureCapDrawer() {
@@ -11140,12 +12232,21 @@ function activeChipsHTML() {
 
 /* ============ WORKSPACES (multi-workspace per tenant) ============ */
 const MOCK_WORKSPACES = [
-  { id:'sales', name:'Sales Team',       color:'#06B6D4', members:124, owner:'María González',  desc:'Pipeline + outbound' },
-  { id:'eng',   name:'Engineering',      color:'#A78BFA', members:87,  owner:'Carlos Tovar',     desc:'Product + platform' },
-  { id:'cs',    name:'Customer Success', color:'#FDC700', members:56,  owner:'Sarah Chen',       desc:'Support + onboarding' },
-  { id:'fin',   name:'Finance',          color:'#10B981', members:18,  owner:'Alex Park',        desc:'Billing + reporting' },
-  { id:'mkt',   name:'Marketing',        color:'#EF4444', members:32,  owner:'Thomas González',  desc:'Campaigns + lifecycle' }
+  { id:'sales', name:'Sales Team',       color:'#06B6D4', owner:'María González',  desc:'Pipeline + outbound' },
+  { id:'eng',   name:'Engineering',      color:'#A78BFA', owner:'Edgardo Sierra',  desc:'Product + platform' },
+  { id:'cs',    name:'Customer Success', color:'#FDC700', owner:'Sarah Chen',      desc:'Support + onboarding' },
+  { id:'fin',   name:'Finance',          color:'#10B981', owner:'Alex Park',       desc:'Billing + reporting' },
+  { id:'mkt',   name:'Marketing',        color:'#EF4444', owner:'Thomas González', desc:'Campaigns + lifecycle' }
 ];
+
+// Option A — single source of truth. Membership is declared on the person
+// (MOCK_PEOPLE.workspaces) and on the group (WORKSPACE_GROUPS.memberIds). These
+// cached `.members` counts are derived once at load so the KPIs and the lists
+// they label can never drift apart.
+WORKSPACE_GROUPS.forEach(g => { g.members = (g.memberIds || []).length; });
+MOCK_WORKSPACES.forEach(w => {
+  w.members = MOCK_PEOPLE.filter(p => (p.workspaces || []).includes(w.id)).length;
+});
 
 // Per-integration default workspace availability. Falls back to "all workspaces"
 // when an integration isn't listed.
@@ -11758,7 +12859,7 @@ function publishCardHtml(integ) {
     title = pending > 0 ? `Awaiting ${pending} approval${pending===1?'':'s'} before publish` : 'All approvals in — ready to publish';
     desc = `Staged ${integ.stagedAt ? escapeHtml(integ.stagedAt) : 'recently'} by <b>${escapeHtml(integ.stagedBy || 'workspace admin')}</b>. Tests are passing on dry-run data. Once approvers sign off, publish to make it available for any workspace to install.`;
     action = pending > 0
-      ? `<button class="publish-card-btn is-secondary" onclick="toast('Reminder sent to ' + ${pending} + ' pending approver' + (${pending}===1?'':'s'))">Remind approvers</button><button class="publish-card-btn is-primary" onclick="advanceLifecycle('${integ.slug}','published')">Publish anyway &rarr;</button>`
+      ? `<button class="publish-card-btn is-secondary" onclick="toast('Reminder sent to ' + ${pending} + ' pending approver' + (${pending}===1?'':'s'))">Remind approvers</button><button class="publish-card-btn is-primary" onclick="openPublishAnywayModal('${integ.slug}')">Publish anyway &rarr;</button>`
       : `<button class="publish-card-btn is-primary" onclick="advanceLifecycle('${integ.slug}','published')">Publish to library &rarr;</button>`;
   } else if (lc === 'published') {
     iconSvg = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-12"/></svg>';
@@ -11815,11 +12916,20 @@ function publishCardHtml(integ) {
   `;
 }
 
-function advanceLifecycle(slug, target) {
+function advanceLifecycle(slug, target, bypassReason) {
   const i = INTEGRATIONS.find(x => x.slug === slug);
   if (!i) return;
   const prev = i.lifecycle || 'draft';
   i.lifecycle = target;
+  // Bypassing approvers requires a reason, which is written to the audit log.
+  if (bypassReason) {
+    AUDIT_EVENTS.unshift({
+      ts:'just now', tsAbs:'(now)', sev:'warn',
+      event:'integration.published_bypass',
+      actor:'Thomas González', actorType:'user', resource:slug, studio:null, ip:'192.168.1.10',
+      details:{ from:prev, to:target, bypassed_approvers:true, reason:bypassReason }
+    });
+  }
   if (target === 'staged') {
     i.stagedAt = 'just now';
     i.stagedBy = (getOwner(slug) && getOwner(slug).name) || 'workspace admin';
@@ -11836,6 +12946,61 @@ function advanceLifecycle(slug, target) {
   const labels = { draft:'Draft', staged:'Staged', published:'Published' };
   toast(i.name + ': ' + labels[prev] + ' → ' + labels[target]);
   paintDetail(i);
+}
+
+/* ── "Publish anyway" reason modal (point 5) ───────────────────────────── */
+let _publishAnywaySlug = null;
+
+function openPublishAnywayModal(slug) {
+  _publishAnywaySlug = slug;
+  const i = INTEGRATIONS.find(x => x.slug === slug);
+  if (document.getElementById('publishAnywayOverlay')) document.getElementById('publishAnywayOverlay').remove();
+  const wrap = document.createElement('div');
+  wrap.innerHTML = `
+    <div class="req-modal-overlay" id="publishAnywayOverlay" onclick="closePublishAnyway(event)" role="presentation">
+      <div class="req-modal" role="dialog" aria-modal="true" onclick="event.stopPropagation()">
+        <header class="req-modal-h">
+          <div class="req-modal-h-ic" style="background:rgba(245,181,68,0.14);color:var(--amber)" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+          </div>
+          <div class="req-modal-h-text">
+            <h2 class="req-modal-title">Publish without all approvals?</h2>
+            <p class="req-modal-sub">${escapeHtml(i?i.name:'This integration')} still has pending approvers. A reason is required and will be recorded in the audit log.</p>
+          </div>
+          <button class="req-modal-close" type="button" onclick="closePublishAnyway()" aria-label="Close"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3.5 3.5l7 7M10.5 3.5l-7 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+        </header>
+        <div class="req-modal-body">
+          <div class="reason-modal-field">
+            <div class="reason-modal-label">Reason for bypassing approvers<span class="reason-modal-req">*</span></div>
+            <textarea id="publishAnywayReason" placeholder="e.g. Blocking the Q3 launch; approver is OOO and VP signed off over email." oninput="document.getElementById('publishAnywayConfirm').disabled = !this.value.trim()"></textarea>
+          </div>
+        </div>
+        <footer class="req-modal-foot">
+          <button class="btn btn-ghost btn-sm" type="button" onclick="closePublishAnyway()">Cancel</button>
+          <button class="btn btn-primary btn-sm" id="publishAnywayConfirm" type="button" disabled onclick="confirmPublishAnyway()">Publish anyway</button>
+        </footer>
+      </div>
+    </div>`;
+  while (wrap.firstChild) document.body.appendChild(wrap.firstChild);
+  requestAnimationFrame(() => {
+    document.getElementById('publishAnywayOverlay')?.classList.add('is-open');
+    document.getElementById('publishAnywayReason')?.focus();
+  });
+}
+
+function closePublishAnyway(ev) {
+  if (ev && ev.target && ev.target.id !== 'publishAnywayOverlay') return;
+  document.getElementById('publishAnywayOverlay')?.classList.remove('is-open');
+  _publishAnywaySlug = null;
+}
+
+function confirmPublishAnyway() {
+  const reason = (document.getElementById('publishAnywayReason')||{}).value || '';
+  if (!reason.trim()) return;
+  const slug = _publishAnywaySlug;
+  document.getElementById('publishAnywayOverlay')?.classList.remove('is-open');
+  _publishAnywaySlug = null;
+  advanceLifecycle(slug, 'published', reason.trim());
 }
 
 function renderDetail(slug) {
@@ -11939,7 +13104,7 @@ function gateBannerHTML(i) {
   const gate = gateLevel(i);
   const copy = {
     needs_mapping:   { title:`${i.name} has custom fields pending mapping`,    body:'Data Studio detected fields that AIMS could not auto-map. Until they are resolved, workflows that reference them will be blocked.',                cta:'Resolve in Data Studio', href:`#/integrations/${i.slug}` },
-    schema_drift:    { title:`Schema drift detected for ${i.name}`,            body:'The upstream provider added or renamed fields. Existing workflows still run, but new fields are not flowing into Helix until you confirm the mapping.', cta:'Review changes',          href:`#/integrations/${i.slug}` },
+    schema_drift:    { title:`Schema drift detected for ${i.name}`,            body:'The upstream provider added or renamed fields. Existing workflows still run, but new fields are not flowing into Data Studio until you confirm the mapping.', cta:'Review changes',          href:`#/integrations/${i.slug}` },
     auth_expired:    { title:`${i.name} authentication has expired`,           body:'OAuth token or API key is no longer valid. All capability calls will fail until credentials are refreshed.',                                            cta:'Reauthenticate',          href:`#/integrations/${i.slug}` },
     auth_failed:     { title:`${i.name} authentication failed`,                body:'The provider rejected the stored credentials. Refresh them to bring this integration back online.',                                                    cta:'Reauthenticate',          href:`#/integrations/${i.slug}` },
     rate_limited:    { title:`${i.name} is rate-limited by the provider`,      body:'Quota exceeded. Calls are being throttled. Consider upgrading the plan or staggering the workflow trigger.',                                          cta:'Open provider quota',     href:`#/integrations/${i.slug}` },
@@ -12000,7 +13165,7 @@ function paintDetail(i) {
         <div class="detail-text">
           <div class="detail-eyebrow-row">
             ${cat ? `<span class="detail-cat-chip" data-cat style="color:${cat.color || '#2B7FFF'}">${escapeHtml(cat.label)}</span>` : ''}
-            ${i.connected ? healthBadge(i.health) : ''}
+            ${i.connected ? `<span class="mkt-card-status status-${bucketOf(deriveStatus(i))}" style="position:static"><span class="mkt-card-status-dot"></span>${escapeHtml((STATUS_META[deriveStatus(i)]||STATUS_META.ready).label)}</span>` : ''}
             ${i.connected ? `<span class="detail-time">Last run · ${escapeHtml(i.lastRun)}</span>` : ''}
           </div>
           <div class="detail-name">${escapeHtml(i.name)} ${srcBadge(i)} ${lcBadgeHtml(i)}</div>
@@ -12032,7 +13197,11 @@ function paintDetail(i) {
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2.5c.5 0 1 .4 1.1.9l1.1 4.9c.1.3.3.5.6.6l4.9 1.1c.5.1.9.6.9 1.1s-.4 1-.9 1.1l-4.9 1.1c-.3.1-.5.3-.6.6l-1.1 4.9c-.1.5-.6.9-1.1.9s-1-.4-1.1-.9l-1.1-4.9c-.1-.3-.3-.5-.6-.6l-4.9-1.1c-.5-.1-.9-.6-.9-1.1s.4-1 .9-1.1l4.9-1.1c.3-.1.5-.3.6-.6l1.1-4.9c.1-.5.6-.9 1.1-.9z" fill="currentColor"/></svg>
             Ask AI
           </button>
-          ${i.connected ? `
+          ${(state.persona === 'user' && i.connected && !userCanUseProvider(i.slug)) ? `
+            <button class="btn btn-primary" onclick="openRequestModal('access to ${escapeHtml(i.name).replace(/'/g,'')}')">Request access</button>
+          ` : (state.persona === 'user' && i.connected) ? `
+            <span class="detail-inuse-pill" title="You have access to this integration">● In use</span>
+          ` : i.connected ? `
             <button class="btn btn-ghost btn-sm" onclick="toast('Credentials rotation simulated')">Rotate credentials</button>
             <button class="btn btn-danger btn-sm" onclick="disconnect('${i.slug}')">Disconnect</button>
           ` : `
@@ -12047,7 +13216,7 @@ function paintDetail(i) {
     <div class="tabs">
       ${(state.persona === 'user'
           ? ['overview','capabilities']
-          : ['overview','capabilities','instances','usage','activity']
+          : ['overview','capabilities','instances','usage','activity','audit']
         ).map(t => `<button class="tab ${state.detailTab===t?'active':''}" onclick="setDetailTab('${i.slug}','${t}')">${t.charAt(0).toUpperCase()+t.slice(1)}</button>`).join('')}
     </div>
 
@@ -12057,6 +13226,7 @@ function paintDetail(i) {
       ${state.detailTab==='instances' ? detailInstances(i) : ''}
       ${state.detailTab==='usage' ? detailUsage(i) : ''}
       ${state.detailTab==='activity' ? detailProviderActivity(i) : ''}
+      ${state.detailTab==='audit' ? detailAudit(i) : ''}
     </div>
   `;
 }
@@ -12068,14 +13238,53 @@ function setDetailTab(slug, tab) { state.detailTab = tab; paintDetail(findIntegr
 let instanceTabState = 'basic';
 function setInstanceTab(slug, instId, tab){ instanceTabState = tab; renderInstanceDetail(slug, instId) }
 
+// One-shot flag: when an instance is opened via a cross-studio auth handoff,
+// the Authentication tab's credential section gets a brief highlight.
+let _authHandoffHighlight = null;
+
+// Instance ID → clipboard, with brief check-icon feedback (point 8).
+function copyInstanceId(id, ev) {
+  if (ev) ev.stopPropagation();
+  const btn = ev && ev.currentTarget;
+  const done = () => {
+    toast('Instance ID copied', 'success');
+    if (btn) {
+      btn.classList.add('is-copied');
+      setTimeout(() => btn.classList.remove('is-copied'), 1400);
+    }
+  };
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(id).then(done, done);
+    } else { done(); }
+  } catch(e) { done(); }
+}
+
 function renderInstanceDetail(slug, instId) {
+  // Cross-studio handoff: the instance route may carry ?tab=&source= (deep-link
+  // from Workforce/Agentic when a workflow hits an auth issue). Parse it out.
+  let handoffTab = null, handoffSource = null;
+  if (instId && instId.indexOf('?') !== -1) {
+    const [realId, qs] = instId.split('?');
+    const p = new URLSearchParams(qs);
+    handoffTab = p.get('tab');
+    handoffSource = p.get('source');
+    instId = realId;
+    // Normalize external tab names to internal tab keys.
+    const TAB_ALIAS = { authentication:'auth', basic_info:'basic', 'basic info':'basic' };
+    if (handoffTab && TAB_ALIAS[handoffTab]) handoffTab = TAB_ALIAS[handoffTab];
+  }
   const i = findIntegration(slug);
   if (!i) { renderNotFound(slug); return }
   const inst = instancesOf(slug).find(x => x.id === instId);
   if (!inst) { renderNotFound(instId); return }
   const status = STATUS_META[inst.status] || STATUS_META.fully_configured;
   const cat = CATEGORIES.find(c=>c.slug===i.category);
+  if (handoffTab) instanceTabState = handoffTab;
   const tab = instanceTabState || 'basic';
+  // Flag the auth section for a one-shot highlight when arriving via handoff.
+  _authHandoffHighlight = (handoffSource && tab === 'auth') ? handoffSource : null;
+  if (handoffSource && typeof track === 'function') track('auth_handoff_arrival', { source: handoffSource, slug, instId });
 
   $('content').innerHTML = `
     <div class="breadcrumb">
@@ -12090,7 +13299,7 @@ function renderInstanceDetail(slug, instId) {
       <div class="detail-row">
         ${logo(i, 'lg')}
         <div class="detail-text">
-          <div class="detail-name">${escapeHtml(inst.name)} <span class="inst-row-id" style="font-size:11px">${escapeHtml(inst.id)}</span></div>
+          <div class="detail-name">${escapeHtml(inst.name)} <button class="inst-id-copy" type="button" onclick="copyInstanceId('${escapeHtml(inst.id).replace(/'/g,'')}', event)" title="Copy instance ID"><span class="inst-id-copy-text">${escapeHtml(inst.id)}</span><svg class="inst-id-copy-ic" width="11" height="11" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="8" rx="1.2"/><path d="M3.5 5.5H2.2A1.2 1.2 0 001 6.7v5.1A1.2 1.2 0 002.2 13h5.1a1.2 1.2 0 001.2-1.2v-1.3" transform="translate(0.5 -1.5)"/></svg></button></div>
           <div class="detail-vendor">Instance of <a href="#/integrations/${i.slug}" style="color:var(--accent);text-decoration:none">${escapeHtml(i.name)}</a> · ${escapeHtml(cat?cat.label:'')}</div>
           <div class="detail-meta">
             <span class="inst-row-status ${status.cls}">● ${escapeHtml(status.label)}</span>
@@ -12109,7 +13318,7 @@ function renderInstanceDetail(slug, instId) {
             Ask AI
           </button>
           <button class="btn btn-ghost btn-sm" onclick="setInstanceTab('${i.slug}','${inst.id}','auth')">Rotate credentials</button>
-          <button class="btn btn-danger btn-sm" onclick="if(confirm('Disconnect this instance?'))toast('${escapeHtml(inst.name)} disconnected','success')">Disconnect</button>
+          <button class="btn btn-danger btn-sm" onclick="toast('${escapeHtml(inst.name).replace(/'/g,'')} disconnected','success')">Disconnect</button>
         </div>
       </div>
     </div>
@@ -12241,6 +13450,22 @@ function instanceCapsHTML(i, inst) {
     const dsLink = isDataSync && g.items.length > 0
       ? `<a href="data-studio.html#/connections/${i.slug}" style="font-size:11.5px;color:var(--emerald);text-decoration:none;font-weight:600">Open mapping in Data Studio →</a>`
       : '';
+    // Capabilities the instance once had but the provider no longer declares.
+    // They can't be toggled — only shown as "Unavailable" so the gap is visible.
+    const retired = [...g.activeSet].filter(k => g.items.indexOf(k) === -1);
+    const retiredCards = retired.map(item => `
+      <div class="cap-lib-card is-unavailable" title="No longer offered by ${escapeHtml(i.name)}">
+        <span class="cap-lib-card-clickarea" style="cursor:default">
+          <span class="cap-lib-card-ic ${meta.cls}" style="opacity:.5">${meta.icon}</span>
+          <span class="cap-lib-card-body">
+            <span class="cap-lib-card-h"><span class="cap-lib-card-title">${escapeHtml(capLabel(item))}</span><span class="cap-unavail-tag">Unavailable</span></span>
+            <span class="cap-lib-card-desc">The provider no longer offers this capability. It can't be enabled.</span>
+            <span class="cap-lib-card-foot"><span class="cap-lib-card-key">${escapeHtml(item)}</span></span>
+          </span>
+        </span>
+        <div class="cap-lib-card-switch"><button class="toggle" type="button" disabled aria-disabled="true" title="Unavailable — the provider no longer offers this capability"></button></div>
+      </div>
+    `).join('');
 
     return `
       <section class="ov-widget">
@@ -12255,9 +13480,10 @@ function instanceCapsHTML(i, inst) {
         </header>
         <div class="ov-widget-body">
           <p style="font-size:12px; color:var(--t2); line-height:1.5; margin:0 0 14px">${escapeHtml(g.desc)}</p>
-          ${g.items.length === 0
+          ${(g.items.length === 0 && !retiredCards)
             ? `<div class="cap-lib-empty">${escapeHtml(i.name)} doesn't expose any ${meta.label} capabilities.</div>`
             : `<div class="cap-lib-grid">
+                ${retiredCards}
                 ${g.items.map(item => {
                   const isOn = g.activeSet.has(item);
                   return `
@@ -12420,6 +13646,9 @@ function instanceAuthHTML(i, inst) {
   const m = AUTH_METHOD_DETAIL[methodKey];
   const mode = inst.authMode === 'aims_managed' ? 'AIMS-managed' : 'BYOK';
   const status = (STATUS_META[inst.status] || STATUS_META.fully_configured);
+  // One-shot highlight when arriving via a cross-studio auth handoff (point 17).
+  const handoffClass = _authHandoffHighlight ? ' auth-handoff-highlight' : '';
+  _authHandoffHighlight = null;
 
   const fieldRow = (f) => {
     const v = f.v || f.fallback || '—';
@@ -12457,7 +13686,7 @@ function instanceAuthHTML(i, inst) {
       </div>
     </section>
 
-    <section class="ov-widget">
+    <section class="ov-widget${handoffClass}">
       <header class="ov-widget-h">
         <h3 class="ov-widget-title">Connection details</h3>
         <span class="ov-widget-meta">Method-specific fields for ${escapeHtml(m.label.toLowerCase())}</span>
@@ -12723,7 +13952,7 @@ function generateMockAudit(instId, authMode) {
     { event:'capability.disabled',  actor:'Diana Pérez',     detail:'Disabled merge_pr — pending policy review',                                                       daysAgo: 22 },
     { event:'access.granted',       actor:'Thomas González', detail:'Added direct grant to Diana Pérez',                                                               daysAgo: 21 },
     { event:'capability.activated', actor:'Diana Pérez',     detail:'Re-enabled merge_pr after policy approved',                                                       daysAgo: 19 },
-    { event:'mapping.updated',      actor:'Naomi Park',      detail:'Added 4 custom field mappings for Helix sync',                                                    daysAgo: 18 },
+    { event:'mapping.updated',      actor:'Naomi Park',      detail:'Added 4 custom field mappings for Data Studio sync',                                                    daysAgo: 18 },
     { event:'credentials.rotated',  actor:'AIMS-OS (auto)',  detail:'Scheduled token refresh',                                                                         daysAgo: 16 },
     { event:'capability.activated', actor:'Thomas González', detail:'Enabled list_users tool',                                                                         daysAgo: 14 },
     { event:'permissions.changed',  actor:'Edgardo Sierra',  detail:'Migrated role grants to people+groups (Sprint A)',                                                daysAgo: 12 },
@@ -12749,7 +13978,19 @@ function generateMockAudit(instId, authMode) {
     { event:'credentials.test',     actor:'Diana Pérez',     detail:'Pre-deploy verification — all checks green',                                                      daysAgo: 0.05 }
   ];
   const now = Date.now();
-  return events.map(e => ({ ...e, ts: new Date(now - e.daysAgo * 86400000) })).sort((a, b) => b.ts - a.ts);
+  const base = events.map(e => ({ ...e, ts: new Date(now - e.daysAgo * 86400000) }));
+  // Merge in any audit entries recorded this session (access changes, bulk actions).
+  const session = (SESSION_AUDIT[instId] || []).map(e => ({ ...e }));
+  return session.concat(base).sort((a, b) => b.ts - a.ts);
+}
+
+// Session audit store — append-only. New governance actions land here and
+// surface in the instance Audit tab (immutable: no edit/delete affordance).
+const SESSION_AUDIT = {};
+function recordAudit(instId, event, actor, detail) {
+  if (!instId) return;
+  if (!SESSION_AUDIT[instId]) SESSION_AUDIT[instId] = [];
+  SESSION_AUDIT[instId].unshift({ event, actor: actor || 'Thomas González', detail, ts: new Date() });
 }
 
 // Format relative time (e.g. "2 min ago", "5 hours ago", "3 days ago")
@@ -13411,7 +14652,7 @@ function detailLogs(i) {
 function detailAudit(i) {
   const events = AUDIT_EVENTS.filter(e => e.resource === i.slug);
   return `
-    <div class="audit-head"><strong style="color:var(--t1)">Configuration audit</strong> for ${escapeHtml(i.name)} · Last 30 days · <a href="#/audit" style="color:var(--accent);text-decoration:none">View full audit log →</a><br><span style="font-size:11px;color:var(--t3)">— each row is a configuration change (instance created, capability toggled, permissions edited, credentials rotated)</span></div>
+    <div class="audit-head"><strong style="color:var(--t1)">Configuration audit</strong> for ${escapeHtml(i.name)} · Last 30 days · <a href="#/audit" style="color:var(--accent);text-decoration:none">View full audit log →</a><br><span style="font-size:11px;color:var(--t3)">— each row is a configuration change (instance created, capability toggled, permissions edited, credentials rotated, surface exposure changed)</span></div>
     ${events.length===0 ? `<div class="empty"><div class="empty-h">No config changes for this integration in the last 30 days</div><div class="empty-p">Try widening the date range from the full audit log.</div></div>` : auditTable(events, false)}
   `;
 }
@@ -13437,6 +14678,8 @@ function detailProviderActivity(i) {
     target: i.name,
     actor: 'Thomas González'
   });
+  // Stash for the event detail drawer (read by openEventDrawer on row click).
+  _activityEvents = events.map((e, idx) => ({ ...e, idx, provider: i.name, slug: i.slug }));
 
   return `
     <section class="ov-widget">
@@ -13451,16 +14694,16 @@ function detailProviderActivity(i) {
             <span style="font-size:12px;color:var(--t2);line-height:1.5">Full execution logs and configuration audit live per instance. <a href="#/integrations/${i.slug}/instances/${instances[0].id}" style="color:var(--cyan)">Open ${escapeHtml(instances[0].name)} →</a></span>
           </div>
         ` : ''}
-        <table class="audit-table">
+        <table class="audit-table is-clickable">
       <thead><tr><th>Timestamp</th><th>Event</th><th>Target</th><th>Actor</th><th></th></tr></thead>
       <tbody>
-        ${events.map(e => `
-          <tr>
+        ${events.map((e, idx) => `
+          <tr onclick="openEventDrawer(${idx})" title="View event detail">
             <td>${escapeHtml(e.ts)}</td>
             <td><span class="audit-ev info">${escapeHtml(e.label)}</span></td>
             <td>${escapeHtml(e.target)}</td>
             <td>${escapeHtml(e.actor)}</td>
-            <td>${e.instanceId ? `<a href="#/integrations/${i.slug}/instances/${e.instanceId}" style="color:var(--cyan);font-size:11px;text-decoration:none">Open instance →</a>` : ''}</td>
+            <td>${e.instanceId ? `<a href="#/integrations/${i.slug}/instances/${e.instanceId}" onclick="event.stopPropagation()" style="color:var(--cyan);font-size:11px;text-decoration:none">Open instance →</a>` : ''}</td>
           </tr>
         `).join('')}
       </tbody>
@@ -14827,25 +16070,10 @@ const TOUR_STEPS = [
     openSwitcher:true
   },
   {
-    title:'Two modes inside Admin Studio',
-    body:'<strong>Browse</strong> is for discovery (the catalog and active connections). <strong>Operate</strong> is for triage (status of your data infrastructure). End-users default to Browse, admins to Operate.',
+    title:'Issues surface inline — no mode switch',
+    body:'Anything that needs a decision — expired credentials, mapping gaps, schema drift — appears in the <strong>Needs your attention</strong> band right at the top of the Integrations home. Resolve it here, then keep browsing. There is no separate "Operate" mode to remember.',
     route:'#/integrations',
-    target:'#tbModeToggle'
-  },
-  {
-    title:'Operate mode signals everywhere',
-    body:'When you switch to Operate, the topbar gets an amber accent line and this strip appears. No matter how deep you navigate (instances, wizards, audit), you always know you are operating, not browsing.',
-    route:'#/integrations',
-    mode:'operate',
-    target:'.mode-banner',
-    scrollToTarget:true
-  },
-  {
-    title:'Triage view: Needs Attention first',
-    body:'Operate landing has 3 KPIs: Working, Needs attention, Inactive. The default tab is <strong>Needs Attention</strong> so issues surface immediately.',
-    route:'#/integrations',
-    mode:'operate',
-    target:'.op-hero',
+    target:'.attn-band',
     scrollToTarget:true
   },
   {
@@ -15129,67 +16357,40 @@ function setHomeTab(tab) {
   setTimeout(()=>{ const el = document.querySelector('.content'); if (el) el.scrollTop = 0; }, 0);
 }
 
+// Mode toggle was removed — Browse + Operate unified into the Integrations home.
+// setMode is preserved as a no-op so legacy callers (tour walkthrough, deep links)
+// keep working. State is always 'browse' so any `state.mode === 'operate'` branch
+// in legacy code is dead.
 function setMode(mode) {
-  if (mode !== 'browse' && mode !== 'operate') return;
-  if (state.mode === mode) return;
-  state.mode = mode;
-  try { localStorage.setItem('aims_mode', mode); } catch(e){}
-  document.documentElement.classList.toggle('mode-operate', mode === 'operate');
+  state.mode = 'browse';
+  try { localStorage.setItem('aims_mode', 'browse'); } catch(e){}
+  document.documentElement.classList.remove('mode-operate');
   paintModeToggle();
-  // Reset to home when switching modes so the user sees the new surface
   if (location.hash.startsWith('#/integrations') && location.hash.split('/').length <= 2) {
     route();
-  } else {
-    // Go home so the mode change is immediately visible
-    location.hash = '#/integrations';
   }
 }
 
+// Safe no-op — the toggle node no longer exists.
 function paintModeToggle() {
-  const grp = document.getElementById('tbModeToggle');
-  if (!grp) return;
-  grp.querySelectorAll('.tb-mode-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.mode === state.mode);
-  });
-  // Update the "needs attention" badge on the Operate button
-  const badge = document.getElementById('tbOperateBadge');
-  if (badge) {
-    const count = INTEGRATIONS.filter(i => i.connected && bucketOf(deriveStatus(i)) === 'needs_attention').length;
-    badge.textContent = count > 0 ? String(count) : '';
-  }
+  document.documentElement.classList.remove('mode-operate');
 }
 
 // Admin vs User: how much surface do we expose
-function togglePersona() {
-  state.persona = (state.persona === 'admin') ? 'user' : 'admin';
-  try { localStorage.setItem('aims_persona', state.persona); } catch(e){}
-  paintPersonaPill();
-  // If switching to user while in Operate, snap to Browse (users don't operate)
-  if (state.persona === 'user' && state.mode === 'operate') {
-    state.mode = 'browse';
-    try { localStorage.setItem('aims_mode', 'browse'); } catch(e){}
-    paintModeToggle();
-  }
-  toast(`Switched to ${state.persona === 'admin' ? 'Admin' : 'End-user'} view`);
-  route();
-}
+// Role is read-only — determined by the user's permissions, not by a UI toggle.
+// Kept as a no-op so any legacy caller (e.g. tour walkthrough) doesn't throw.
+function togglePersona() { /* no-op — role indicator is read-only */ }
 
+// Paint the read-only role indicator from state.persona.
 function paintPersonaPill() {
-  const btn = document.getElementById('tbPersonaBtn');
   const label = document.getElementById('tbPersonaLabel');
-  if (!btn || !label) return;
   if (state.persona === 'user') {
-    btn.classList.add('is-user');
-    label.textContent = 'End-user view';
     document.documentElement.classList.add('persona-user');
+    if (label) label.textContent = 'End-user';
   } else {
-    btn.classList.remove('is-user');
-    label.textContent = 'Admin view';
     document.documentElement.classList.remove('persona-user');
+    if (label) label.textContent = 'Admin';
   }
-  // In end-user view, the Operate mode is hidden (users don't see orchestration)
-  const operateBtn = document.querySelector('.tb-mode-btn[data-mode="operate"]');
-  if (operateBtn) operateBtn.style.display = (state.persona === 'user') ? 'none' : '';
 }
 
 // Paint mode + persona controls on initial load
@@ -15369,7 +16570,7 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape' && rolePickerState.open) closeRolePicker();
 });
 
-/* ====================== HELIX DATA STUDIO HANDOFF ====================== */
+/* ====================== DATA STUDIO HANDOFF ====================== */
 
 // Mock field mappings shown in the wizard step "Map fields" and in the Helix drawer.
 // Auto-count is the number of standard fields we auto-mapped. customFields are the ones
@@ -15453,7 +16654,7 @@ const REQUESTS = [
     integration: 'Gainsight', vendor: 'Gainsight Inc.', isStandard: false,
     actionTypes: ['read'], hasPII: true, hasFinancial: true,
     timeline: 'quarter', estimatedUsers: 40,
-    businessIntent: 'Sync customer health scores into Helix so the Renewal Risk agent can flag at-risk accounts 60 days before renewal.',
+    businessIntent: 'Sync customer health scores into Data Studio so the Renewal Risk agent can flag at-risk accounts 60 days before renewal.',
     requestedAt: '2026-05-21 14:22',
     quote: { amount: 18500, etaWeeks: 4, notes: 'Custom connector. Includes 2 health score schemas + writeback to Salesforce.' }
   },
@@ -15473,7 +16674,7 @@ const REQUESTS = [
     integration: 'PagerDuty', vendor: 'PagerDuty, Inc.', isStandard: true,
     actionTypes: ['read', 'write'], hasPII: false, hasFinancial: false,
     timeline: 'no rush', estimatedUsers: 12,
-    businessIntent: 'Sync on-call schedules with Helix so the Standby agent knows who to ping.',
+    businessIntent: 'Sync on-call schedules with Data Studio so the Standby agent knows who to ping.',
     requestedAt: '2026-05-08 10:30',
     quote: { amount: 2800, etaWeeks: 1, notes: 'Standard connector. Delivered May 14.' }
   },
@@ -15564,7 +16765,7 @@ function openHelix(slug, instId) {
       </div>
 
       <div style="margin-top:14px;font-size:11px;color:var(--t3);line-height:1.55">
-        Once activated, AIMS will start ingesting <strong style="color:var(--t1)">${mapping.fields.length} fields</strong> from ${escapeHtml(i.name)} into Helix. You can revise this mapping at any time without disrupting the pipeline.
+        Once activated, AIMS will start ingesting <strong style="color:var(--t1)">${mapping.fields.length} fields</strong> from ${escapeHtml(i.name)} into Data Studio. You can revise this mapping at any time without disrupting the pipeline.
       </div>
     </div>
     <div class="drawer-foot">
@@ -15623,10 +16824,13 @@ window.addEventListener('hashchange', route);
 document.querySelectorAll('.ssb-item:not(.disabled)').forEach(b => {
   b.addEventListener('click', () => {
     const r = b.dataset.route;
-    if (r==='integrations') navigate('#/integrations');
-    else if (r==='audit') navigate('#/audit');
-    else if (r==='personal') navigate('#/personal');
-    else if (r==='requests') navigate('#/requests');
+    // Every wired admin surface navigates from the sub-sidebar (no dead links).
+    const ROUTES = {
+      integrations:'#/integrations', requests:'#/requests', distribution:'#/distribution',
+      workspaces:'#/workspaces', users:'#/users', widgets:'#/widgets',
+      audit:'#/audit', personal:'#/personal'
+    };
+    if (ROUTES[r]) navigate(ROUTES[r]);
   });
 });
 document.querySelectorAll('.ssb-item.disabled').forEach(b => {
@@ -15669,6 +16873,26 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
+
+// Role is read-only in the UI; for prototype demos it can be set via ?role=user
+// or ?role=admin (standing in for the permission claim the backend would supply).
+(function honorRoleParam(){
+  try {
+    const url = new URL(window.location.href);
+    const r = url.searchParams.get('role');
+    if (r === 'user' || r === 'admin') {
+      state.persona = (r === 'user') ? 'user' : 'admin';
+      try { localStorage.setItem('aims_persona', state.persona); } catch(e){}
+      url.searchParams.delete('role');
+    }
+    // Demo flag: grant the end-user persona inbox access (their own requests).
+    const inbox = url.searchParams.get('inbox');
+    if (inbox === '1') { USER_PERMS.inbox = true; url.searchParams.delete('inbox'); }
+    if (r || inbox) {
+      window.history.replaceState({}, '', url.pathname + (url.search || '') + (url.hash || '#/integrations'));
+    }
+  } catch(e){}
+})();
 
 paintShellControls();
 
