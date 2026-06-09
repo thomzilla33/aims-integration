@@ -130,19 +130,29 @@ html.mode-operate .mode-banner{display:block}
 
 /* ── Persona pill (Admin / User view) ── */
 .tb-persona{
-  display:inline-flex; align-items:center; gap:6px; height:30px; padding:0 11px;
+  display:inline-flex; align-items:center; gap:6px; height:30px; padding:0 8px 0 11px;
   background:rgba(255,255,255,0.04); border:1px solid var(--line); border-radius:18px;
   color:var(--t2); font-family:inherit; font-size:12px; font-weight:600;
-  flex-shrink:0;
+  flex-shrink:0; cursor:pointer; transition:border-color .12s, background .12s, color .12s;
 }
-/* Read-only role indicator — not interactive (no hover affordance, no pointer) */
+.tb-persona:hover{border-color:var(--line-strong); color:var(--t1)}
 .tb-persona.is-readonly{cursor:default;}
 .tb-persona-ic{color:currentColor}
 .tb-persona.is-user{background:rgba(6,182,212,0.08); color:var(--cyan); border-color:rgba(6,182,212,0.3)}
+.tb-persona.is-user:hover{border-color:rgba(6,182,212,0.5)}
+/* Demo-only affordance: this pill toggles the viewing persona (role normally comes from auth) */
+.tb-persona-demo{
+  font-size:8.5px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; line-height:1;
+  padding:2px 5px; border-radius:6px;
+  background:rgba(255,255,255,0.10); color:var(--t3);
+}
+.tb-persona.is-user .tb-persona-demo{background:rgba(6,182,212,0.18); color:var(--cyan)}
 @media (max-width:900px){.tb-persona-label{display:none} .tb-persona{padding:0 8px}}
 
 /* Hide admin-only surfaces when persona=user */
 html.persona-user [data-admin-only]{display:none !important}
+/* Show requester-only surfaces (e.g. "My requests") only when persona=user */
+html:not(.persona-user) [data-user-only]{display:none !important}
 
 .tb-search-btn{
   width:340px; flex-shrink:0; height:32px;
@@ -2655,7 +2665,7 @@ html.theme-light .inbox-new-btn:hover{background:rgba(56,189,248,0.10); border-c
 .inbox-tab{
   display:inline-flex; align-items:center; gap:7px;
   padding:7px 11px;
-  border-radius:7px;
+  border-radius:8px;
   background:transparent;
   border:1px solid transparent;
   color:var(--t2);
@@ -2691,17 +2701,18 @@ html.theme-light .inbox-tab-count{background:#F1F5F9; color:var(--t3)}
 .inbox-search{
   flex:1; min-width:220px; max-width:380px;
   display:flex; align-items:center; gap:8px;
-  padding:7px 10px;
-  background:rgba(255,255,255,0.022);
-  border:1px solid rgba(255,255,255,0.08);
+  padding:8px 12px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid var(--line);
   border-radius:8px;
   color:var(--t3);
+  transition:border-color .15s, background .15s;
 }
 .inbox-search:focus-within{border-color:rgba(126,211,247,0.40); background:rgba(126,211,247,0.04)}
 .inbox-search input{
   flex:1;
   background:transparent; border:none; outline:none;
-  color:var(--t1); font-family:inherit; font-size:12.5px;
+  color:var(--t1); font-family:inherit; font-size:13px;
 }
 .inbox-search input::placeholder{color:var(--t3)}
 .inbox-search-kbd{
@@ -2756,7 +2767,7 @@ html.theme-light .inbox-bulkbar-btn:hover{background:var(--hover); border-color:
 html.theme-light .inbox-list{background:#FFFFFF; border-color:var(--line)}
 .inbox-list-h{
   display:grid;
-  grid-template-columns:28px 168px minmax(0, 1fr) 180px 130px 80px;
+  grid-template-columns:28px 168px minmax(0, 1fr) 180px 130px 116px;
   align-items:center;
   gap:14px;
   padding:9px 14px;
@@ -2774,7 +2785,7 @@ html.theme-light .inbox-list-h{background:rgba(15,23,42,0.012); border-bottom-co
 
 .inbox-row{
   display:grid;
-  grid-template-columns:28px 168px minmax(0, 1fr) 180px 130px 80px;
+  grid-template-columns:28px 168px minmax(0, 1fr) 180px 130px 116px;
   align-items:center;
   gap:14px;
   padding:10px 14px;
@@ -2891,7 +2902,7 @@ html.theme-light .inbox-tag.is-warn{background:rgba(251,191,36,0.08); color:#b45
 .inbox-row:hover .inbox-quick-actions{opacity:1}
 .inbox-row.is-selected .inbox-quick-actions{opacity:1}
 .inbox-quick-act{
-  width:24px; height:24px;
+  width:24px; height:24px; flex-shrink:0;
   display:flex; align-items:center; justify-content:center;
   background:transparent;
   border:1px solid transparent;
@@ -2911,7 +2922,7 @@ html.theme-light .inbox-quick-act:hover{background:var(--hover); border-color:va
 .inbox-quick-act[title="Reject"]:hover{color:#ff7d7d; background:rgba(239,68,68,0.10); border-color:rgba(239,68,68,0.32)}
 
 .inbox-open{
-  width:26px; height:26px;
+  width:26px; height:26px; flex-shrink:0;
   display:flex; align-items:center; justify-content:center;
   background:transparent;
   border:1px solid rgba(255,255,255,0.10);
@@ -2937,7 +2948,7 @@ html.theme-light .inbox-open:hover{background:rgba(56,189,248,0.08); color:#0284
 
 @media (max-width:1080px){
   .inbox-list-h, .inbox-row{
-    grid-template-columns:28px 140px minmax(0, 1fr) 140px 100px 60px;
+    grid-template-columns:28px 140px minmax(0, 1fr) 140px 100px 104px;
     gap:10px;
   }
 }
@@ -6906,6 +6917,66 @@ html.theme-light .theme-icon-moon{display:block}
   background:rgba(255,255,255,0.10);color:inherit;
 }
 
+/* ============================================================
+   UNIFIED SEARCH + FILTER TOOLBAR  (canonical = Integrations)
+   Every list/library surface (Requests, Distribution, Workspaces,
+   Users, Widgets) uses the same icon-left search field and the same
+   segmented filter control as the Integrations catalog. This block is
+   intentionally last so it overrides each surface's legacy styling.
+   ============================================================ */
+/* — Search field: bordered box, blue focus glow (matches .ct-search) — */
+.inbox-search, .dist-search, .toolbar-search, .users-search, .wg-search{
+  background:rgba(255,255,255,0.04);
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:7px 11px;
+  transition:border-color .15s, background .15s, box-shadow .15s;
+}
+.inbox-search:focus-within, .dist-search:focus-within, .toolbar-search:focus-within,
+.users-search:focus-within, .wg-search:focus-within{
+  border-color:rgba(43,127,255,0.45);
+  background:rgba(43,127,255,0.06);
+  box-shadow:0 0 0 3px rgba(43,127,255,0.12);
+}
+.inbox-search input, .dist-search input, .toolbar-search input,
+.users-search input, .wg-search input{ font-size:12.5px; }
+html.theme-light .inbox-search, html.theme-light .dist-search,
+html.theme-light .toolbar-search, html.theme-light .users-search,
+html.theme-light .wg-search{ background:rgba(15,23,42,0.03); border-color:var(--line); }
+
+/* — Filter control: segmented group (container + inner buttons) — */
+.inbox-tabs, .toolbar-sort, .users-filters, .dist-filters, .wg-filters{
+  display:inline-flex; align-items:center; gap:2px;
+  padding:2px; background:var(--hover);
+  border:1px solid var(--line); border-radius:8px;
+  flex-wrap:wrap;
+}
+.toolbar-sort .toolbar-sort-label{ display:none; }
+.inbox-tab, .toolbar-sort-btn, .users-filter, .dist-filter, .wg-filter{
+  display:inline-flex; align-items:center; gap:6px;
+  padding:5px 10px; border-radius:6px;
+  background:transparent; border:1px solid transparent;
+  color:var(--t2); font-family:inherit; font-size:11.5px; font-weight:600;
+  cursor:pointer; transition:background .12s, color .12s;
+}
+.inbox-tab:hover, .toolbar-sort-btn:hover, .users-filter:hover,
+.dist-filter:hover, .wg-filter:hover{
+  background:transparent; border-color:transparent; color:var(--t1);
+}
+.inbox-tab.is-active, .toolbar-sort-btn.is-active, .users-filter.is-on,
+.dist-filter.is-active, .wg-filter.is-active{
+  background:var(--bg3); border-color:transparent; color:var(--t1);
+}
+/* keep a subtle amber hint on the Distribution "Needs attention" filter */
+.dist-filter.is-warn{ background:transparent; border-color:transparent; color:var(--amber); }
+.dist-filter.is-warn.is-active{ background:var(--bg3); border-color:transparent; color:var(--amber); }
+html.theme-light .inbox-tabs, html.theme-light .toolbar-sort,
+html.theme-light .users-filters, html.theme-light .dist-filters,
+html.theme-light .wg-filters{ background:rgba(15,23,42,0.04); border-color:var(--line); }
+html.theme-light .inbox-tab.is-active, html.theme-light .toolbar-sort-btn.is-active,
+html.theme-light .users-filter.is-on, html.theme-light .dist-filter.is-active,
+html.theme-light .wg-filter.is-active{ background:#FFFFFF; color:var(--t1); }
+
 .wg-grid{
   display:grid;grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));gap:12px;
 }
@@ -7066,14 +7137,14 @@ html.theme-light .theme-icon-moon{display:block}
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
     </button>
     <span class="tb-divider-v"></span>
-    <!-- Role indicator (read-only) — reflects the signed-in user's permissions.
-         NOT a switch: there is no toggle and no "preview as end-user". The role
-         is set by the user's access. For prototype demos, append ?role=user or
-         ?role=admin to the URL to view either side. -->
-    <span class="tb-persona is-readonly" id="tbPersonaBtn" role="status" aria-live="polite" title="Your role in this workspace">
+    <!-- Persona pill — DEMO affordance. In production the role comes from the
+         signed-in user's auth claims; here it's a toggle so you can preview both
+         the Admin and the End-user (requester) experience without editing the URL. -->
+    <button class="tb-persona" id="tbPersonaBtn" type="button" onclick="togglePersona()" title="Demo: switch between the Admin and End-user view">
       <svg class="tb-persona-ic" width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true"><circle cx="7" cy="4.5" r="2.4" stroke="currentColor" stroke-width="1.3"/><path d="M2.5 12c0-2.2 2-3.8 4.5-3.8s4.5 1.6 4.5 3.8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
       <span class="tb-persona-label" id="tbPersonaLabel">Admin</span>
-    </span>
+      <span class="tb-persona-demo">Demo</span>
+    </button>
     <span class="tb-divider-v"></span>
     <div class="tb-identity" role="group" aria-label="Workspace and account">
       <button class="tb-ws-badge" type="button" onclick="toast('Workspace switcher')" aria-label="Workspace">
@@ -7237,6 +7308,11 @@ html.theme-light .theme-icon-moon{display:block}
           <button class="ssb-item" data-route="personal">
             <span class="ssb-item-ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 1.5v3M11 1.5v3M3 5h10v2a4 4 0 01-4 4H7a4 4 0 01-4-4V5zM8 11v3.5"/></svg></span>
             <span class="ssb-item-label">My Integrations</span>
+          </button>
+
+          <button class="ssb-item" data-route="requests" data-user-only title="Track the integrations you've requested">
+            <span class="ssb-item-ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="2" width="11" height="12" rx="1.4"/><path d="M5.5 1v2M10.5 1v2M5.2 7l1.3 1.3 2.8-2.8M5.2 11h5"/></svg></span>
+            <span class="ssb-item-label">My requests</span>
           </button>
 
           <button class="ssb-item disabled" data-route="tokens" title="API tokens (coming soon)">
@@ -9322,7 +9398,10 @@ function submitRequestModal() {
   });
   closeRequestModal();
   if (typeof track === 'function') track('request_submitted', { integration: s.integrationName, priority: s.priority });
-  toast(`Request REQ-${ticketNum} submitted · track it in the Requests inbox`, 'success');
+  const isUser = state.persona === 'user';
+  toast(`Request REQ-${ticketNum} submitted · track it in ${isUser ? 'My requests' : 'the Requests inbox'}`, 'success');
+  // End-users land on "My requests" so they immediately see the new request at the top.
+  if (isUser) navigate('#/requests');
   // Reset form
   Object.assign(requestModalState, {
     integrationName: '',
@@ -10642,9 +10721,11 @@ function renderDistribution() {
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="7" cy="7" r="5"/><path d="M14 14l-3-3"/></svg>
           <input id="distSearchInput" type="text" placeholder="Search integrations..." value="${escapeHtml(_distFilters.search)}" oninput="distSearchInput(this.value)"/>
         </label>
-        <button class="dist-filter ${_distFilters.status==='all'?'is-active':''}" onclick="distSetFilter('status','all')">All <span class="dist-filter-badge">${totalConn}</span></button>
-        <button class="dist-filter ${_distFilters.status==='working'?'is-active':''}" onclick="distSetFilter('status','working')">Working <span class="dist-filter-badge">${workingCount}</span></button>
-        ${needsCount > 0 ? `<button class="dist-filter is-warn ${_distFilters.status==='needs'?'is-active':''}" onclick="distSetFilter('status','needs')">Needs attention <span class="dist-filter-badge">${needsCount}</span></button>` : ''}
+        <div class="dist-filters">
+          <button class="dist-filter ${_distFilters.status==='all'?'is-active':''}" onclick="distSetFilter('status','all')">All <span class="dist-filter-badge">${totalConn}</span></button>
+          <button class="dist-filter ${_distFilters.status==='working'?'is-active':''}" onclick="distSetFilter('status','working')">Working <span class="dist-filter-badge">${workingCount}</span></button>
+          ${needsCount > 0 ? `<button class="dist-filter is-warn ${_distFilters.status==='needs'?'is-active':''}" onclick="distSetFilter('status','needs')">Needs attention <span class="dist-filter-badge">${needsCount}</span></button>` : ''}
+        </div>
         <button class="dist-manage-btn ${_distManage?'is-on':''}" type="button" onclick="distToggleManage()" title="${_distManage ? 'Exit manage mode' : 'Unlock the matrix to change exposure'}">
           ${_distManage
             ? '<svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2.5" y="6" width="9" height="6" rx="1.3"/><path d="M4.5 6V4.2a2.5 2.5 0 0 1 5 0V6" stroke-linecap="round"/></svg> Done'
@@ -10873,10 +10954,10 @@ function renderWidgetsLibrary() {
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="7" cy="7" r="5"/><path d="M14 14l-3-3"/></svg>
           <input type="text" placeholder="Search widgets..." value="${escapeHtml(_wgFilters.search)}" oninput="wgSearchInput(this.value)"/>
         </label>
-        ${WG_CATEGORIES.map(cat => {
+        <div class="wg-filters">${WG_CATEGORIES.map(cat => {
           const count = cat.id === 'all' ? MOCK_WIDGET_TEMPLATES.length : MOCK_WIDGET_TEMPLATES.filter(w => w.category === cat.id).length;
           return `<button class="wg-filter ${_wgFilters.category===cat.id?'is-active':''}" onclick="wgSetFilter('category','${cat.id}')">${escapeHtml(cat.label)} <span class="wg-filter-badge">${count}</span></button>`;
-        }).join('')}
+        }).join('')}</div>
       </div>
 
       <div class="wg-grid">
@@ -10937,8 +11018,9 @@ function route() {
     const isInstanceDetail = parts[0]==='integrations' && parts[1] && parts[2]==='instances';
     const isBuild = parts[0]==='build';
     const isAdminOnly = parts[0]==='distribution' || parts[0]==='workspaces' || parts[0]==='users' || parts[0]==='audit' || parts[0]==='widgets';
-    const isInboxBlocked = parts[0]==='requests' && !USER_PERMS.inbox;
-    if (isInstanceDetail || isBuild || isAdminOnly || isInboxBlocked) {
+    // Note: #/requests is allowed for end-users — renderRequestsInbox shows only
+    // their own submissions ("My requests"), never the tenant-wide admin inbox.
+    if (isInstanceDetail || isBuild || isAdminOnly) {
       location.hash = '#/integrations';   // silent redirect — re-triggers route()
       return;
     }
@@ -16379,17 +16461,30 @@ function paintModeToggle() {
 // Admin vs User: how much surface do we expose
 // Role is read-only — determined by the user's permissions, not by a UI toggle.
 // Kept as a no-op so any legacy caller (e.g. tour walkthrough) doesn't throw.
-function togglePersona() { /* no-op — role indicator is read-only */ }
+// Demo affordance: flip the viewing persona. In production the role is fixed by
+// the user's auth claims — here it's a toggle so both experiences are previewable.
+function togglePersona() {
+  state.persona = state.persona === 'user' ? 'admin' : 'user';
+  try { localStorage.setItem('aims_persona', state.persona); } catch(e) {}
+  paintPersonaPill();
+  // Re-render the current route under the new persona (guards will redirect the
+  // end-user away from any admin-only surface they were viewing).
+  if (typeof route === 'function') route();
+  toast(`Now viewing as ${state.persona === 'user' ? 'End-user' : 'Admin'}`, 'success');
+}
 
-// Paint the read-only role indicator from state.persona.
+// Paint the persona pill from state.persona (label + cyan tint when end-user).
 function paintPersonaPill() {
   const label = document.getElementById('tbPersonaLabel');
+  const pill = document.getElementById('tbPersonaBtn');
   if (state.persona === 'user') {
     document.documentElement.classList.add('persona-user');
     if (label) label.textContent = 'End-user';
+    if (pill) pill.classList.add('is-user');
   } else {
     document.documentElement.classList.remove('persona-user');
     if (label) label.textContent = 'Admin';
+    if (pill) pill.classList.remove('is-user');
   }
 }
 
