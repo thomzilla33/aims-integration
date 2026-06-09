@@ -6993,7 +6993,7 @@ html.theme-light .theme-icon-moon{display:block}
    intentionally last so it overrides each surface's legacy styling.
    ============================================================ */
 /* — Search field: bordered box, blue focus glow (matches .ct-search) — */
-.inbox-search, .dist-search, .toolbar-search, .users-search, .wg-search{
+.inbox-search, .dist-search, .toolbar-search, .users-search, .wg-search, .audit-search{
   background:rgba(255,255,255,0.04);
   border:1px solid var(--line);
   border-radius:8px;
@@ -7001,26 +7001,26 @@ html.theme-light .theme-icon-moon{display:block}
   transition:border-color .15s, background .15s, box-shadow .15s;
 }
 .inbox-search:focus-within, .dist-search:focus-within, .toolbar-search:focus-within,
-.users-search:focus-within, .wg-search:focus-within{
+.users-search:focus-within, .wg-search:focus-within, .audit-search:focus-within{
   border-color:rgba(43,127,255,0.45);
   background:rgba(43,127,255,0.06);
   box-shadow:0 0 0 3px rgba(43,127,255,0.12);
 }
 .inbox-search input, .dist-search input, .toolbar-search input,
-.users-search input, .wg-search input{ font-size:12.5px; }
+.users-search input, .wg-search input, .audit-search input{ font-size:12.5px; }
 html.theme-light .inbox-search, html.theme-light .dist-search,
 html.theme-light .toolbar-search, html.theme-light .users-search,
-html.theme-light .wg-search{ background:rgba(15,23,42,0.03); border-color:var(--line); }
+html.theme-light .wg-search, html.theme-light .audit-search{ background:rgba(15,23,42,0.03); border-color:var(--line); }
 
 /* — Filter control: segmented group (container + inner buttons) — */
-.inbox-tabs, .toolbar-sort, .users-filters, .dist-filters, .wg-filters{
+.inbox-tabs, .toolbar-sort, .users-filters, .dist-filters, .wg-filters, .audit-sev{
   display:inline-flex; align-items:center; gap:2px;
   padding:2px; background:var(--hover);
   border:1px solid var(--line); border-radius:8px;
   flex-wrap:wrap;
 }
 .toolbar-sort .toolbar-sort-label{ display:none; }
-.inbox-tab, .toolbar-sort-btn, .users-filter, .dist-filter, .wg-filter{
+.inbox-tab, .toolbar-sort-btn, .users-filter, .dist-filter, .wg-filter, .audit-sev-btn{
   display:inline-flex; align-items:center; gap:6px;
   padding:5px 10px; border-radius:6px;
   background:transparent; border:1px solid transparent;
@@ -7028,11 +7028,11 @@ html.theme-light .wg-search{ background:rgba(15,23,42,0.03); border-color:var(--
   cursor:pointer; transition:background .12s, color .12s;
 }
 .inbox-tab:hover, .toolbar-sort-btn:hover, .users-filter:hover,
-.dist-filter:hover, .wg-filter:hover{
+.dist-filter:hover, .wg-filter:hover, .audit-sev-btn:hover{
   background:transparent; border-color:transparent; color:var(--t1);
 }
 .inbox-tab.is-active, .toolbar-sort-btn.is-active, .users-filter.is-on,
-.dist-filter.is-active, .wg-filter.is-active{
+.dist-filter.is-active, .wg-filter.is-active, .audit-sev-btn.is-active{
   background:var(--bg3); border-color:transparent; color:var(--t1);
 }
 /* keep a subtle amber hint on the Distribution "Needs attention" filter */
@@ -7040,10 +7040,21 @@ html.theme-light .wg-search{ background:rgba(15,23,42,0.03); border-color:var(--
 .dist-filter.is-warn.is-active{ background:var(--bg3); border-color:transparent; color:var(--amber); }
 html.theme-light .inbox-tabs, html.theme-light .toolbar-sort,
 html.theme-light .users-filters, html.theme-light .dist-filters,
-html.theme-light .wg-filters{ background:rgba(15,23,42,0.04); border-color:var(--line); }
+html.theme-light .wg-filters, html.theme-light .audit-sev{ background:rgba(15,23,42,0.04); border-color:var(--line); }
 html.theme-light .inbox-tab.is-active, html.theme-light .toolbar-sort-btn.is-active,
 html.theme-light .users-filter.is-on, html.theme-light .dist-filter.is-active,
-html.theme-light .wg-filter.is-active{ background:#FFFFFF; color:var(--t1); }
+html.theme-light .wg-filter.is-active, html.theme-light .audit-sev-btn.is-active{ background:#FFFFFF; color:var(--t1); }
+
+/* Audit log filter row — unified search + segmented severity + consistent select */
+.audit-search{ flex:1; min-width:200px; max-width:380px; display:flex; align-items:center; gap:8px; color:var(--t3); }
+.audit-search svg{ flex-shrink:0; }
+.audit-search input{ flex:1; background:transparent; border:none; outline:none; color:var(--t1); font-family:inherit; }
+.audit-search input::placeholder{ color:var(--t3); }
+.audit-select{
+  background:rgba(255,255,255,0.04); border:1px solid var(--line); border-radius:8px;
+  padding:6px 10px; color:var(--t1); font-size:12px; font-family:inherit; outline:none; cursor:pointer;
+}
+html.theme-light .audit-select{ background:rgba(15,23,42,0.03); }
 
 .wg-grid{
   display:grid;grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));gap:12px;
@@ -15661,18 +15672,18 @@ function renderAudit() {
     <div class="section">
       <div class="audit-filters">
         <div class="audit-filter">
-          <span>Date range:</span>
-          <select class="audit-filter-input">
+          <span>Date range</span>
+          <select class="audit-select">
             <option>Last 30 days</option><option>Last 7 days</option><option>Last 90 days</option><option>Custom…</option>
           </select>
         </div>
-        <div class="audit-filter">
-          <span>Severity:</span>
-          ${['info','warn','crit'].map(sev=>`<button class="pill ${auditFilters.severity.has(sev)?'active':''}" style="font-size:11px;padding:3px 9px" onclick="toggleAuditSev('${sev}')">${sev==='info'?'Info':sev==='warn'?'Warning':'Critical'}</button>`).join('')}
+        <div class="audit-sev" role="group" aria-label="Filter by severity">
+          ${['info','warn','crit'].map(sev=>`<button class="audit-sev-btn ${auditFilters.severity.has(sev)?'is-active':''}" type="button" onclick="toggleAuditSev('${sev}')">${sev==='info'?'Info':sev==='warn'?'Warning':'Critical'}</button>`).join('')}
         </div>
-        <div class="audit-filter" style="flex:1;min-width:200px">
-          <input class="audit-filter-input" type="text" placeholder="Search by event, actor, resource…" value="${escapeHtml(auditFilters.search)}" oninput="auditFilters.search=this.value;renderAudit();setTimeout(()=>{const i=document.querySelector('.audit-filter input[type=text]');if(i){i.focus();i.setSelectionRange(this.value.length,this.value.length)}},0)"/>
-        </div>
+        <label class="audit-search">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/></svg>
+          <input type="text" placeholder="Search by event, actor, resource…" value="${escapeHtml(auditFilters.search)}" oninput="auditFilters.search=this.value;renderAudit();setTimeout(()=>{const i=document.querySelector('.audit-search input');if(i){i.focus();i.setSelectionRange(this.value.length,this.value.length)}},0)"/>
+        </label>
         <span class="audit-count">Showing ${events.length} of ${AUDIT_EVENTS.length} events</span>
       </div>
 
