@@ -6808,11 +6808,12 @@ html.theme-light .theme-icon-moon{display:block}
 .impact-list{display:flex;flex-direction:column;gap:6px;max-height:280px;overflow-y:auto}
 .impact-list .usage-row{padding:9px 12px}
 .impact-modal-f{
-  display:flex;align-items:center;justify-content:flex-end;gap:8px;
+  display:flex;flex-direction:column;align-items:stretch;gap:12px;
   padding:14px 22px;
   border-top:1px solid var(--line);
   background:rgba(255,255,255,0.015);
 }
+.impact-modal-f-actions{ display:flex; align-items:center; justify-content:flex-end; gap:8px; }
 .impact-modal-f .btn-danger{background:#ef4444;color:#fff;border:none}
 .impact-modal-f .btn-danger:hover{background:#dc2626}
 
@@ -6832,9 +6833,9 @@ html.theme-light .impact-group{ background:rgba(239,68,68,0.045); border-color:r
 .impact-group-more{ color:var(--t3); font-size:11.5px; font-style:italic; padding-left:13px; }
 .impact-empty{ display:flex; gap:12px; align-items:flex-start; padding:16px; border-radius:10px; background:rgba(255,255,255,0.03); border:1px solid var(--line); font-size:12.5px; color:var(--t2); line-height:1.55; }
 .impact-empty b{ color:var(--t1); }
-/* Type-to-confirm gate */
-.impact-confirm{ margin-top:16px; padding-top:15px; border-top:1px solid rgba(239,68,68,0.18); }
-.impact-confirm-label{ display:block; font-size:12px; color:var(--t2); line-height:1.5; margin-bottom:8px; }
+/* Type-to-confirm gate (lives in the footer, always visible) */
+.impact-confirm{ }
+.impact-confirm-label{ display:block; font-size:12px; color:var(--t2); line-height:1.5; margin-bottom:7px; }
 .impact-confirm-label b{ color:#fca5a5; font-family:'SF Mono','Menlo',monospace; font-weight:600; }
 .impact-confirm-input{
   width:100%; padding:9px 12px;
@@ -13154,7 +13155,7 @@ function openImpactModal(slug, onConfirm, opts) {
   const imp = getImpactSummary(slug);
   _impactModalCallback = onConfirm || null;
   // Destructive guard: when consumers would break, require typing the name to confirm.
-  _impactRequirePhrase = imp.total > 0 ? integ.name : null;
+  _impactRequirePhrase = integ.name;   // every disconnect requires typing the name to confirm
 
   $('impactModalTitle').textContent = 'Disconnect ' + label + '?';
   $('impactModalSub').textContent = imp.total === 0
@@ -13183,16 +13184,20 @@ function openImpactModal(slug, onConfirm, opts) {
              </ul>
            </div>`;
          }).join('')}
-       </div>
-       <div class="impact-confirm">
-         <label class="impact-confirm-label" for="impactConfirmInput">To confirm, type <b>${escapeHtml(integ.name)}</b> below.</label>
-         <input class="impact-confirm-input" id="impactConfirmInput" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${escapeHtml(integ.name)}" oninput="_impactConfirmCheck()" onkeydown="if(event.key==='Enter'){event.preventDefault();confirmImpactModal();}"/>
        </div>`;
   $('impactModalBody').innerHTML = body;
 
+  // The type-to-confirm field lives in the (non-scrolling) footer so it's always
+  // visible — never buried below a long impact list.
   $('impactModalFooter').innerHTML = `
-    <button class="btn btn-ghost btn-sm" id="impactCancelBtn" type="button" onclick="closeImpactModal()">Keep connected</button>
-    <button class="btn btn-danger btn-sm" id="impactConfirmBtn" type="button" ${_impactRequirePhrase ? 'disabled' : ''} onclick="confirmImpactModal()">${imp.total === 0 ? 'Disconnect' : 'Disconnect — block ' + imp.total + ' consumer' + (imp.total === 1 ? '' : 's')}</button>
+    <div class="impact-confirm">
+      <label class="impact-confirm-label" for="impactConfirmInput">To confirm, type <b>${escapeHtml(integ.name)}</b></label>
+      <input class="impact-confirm-input" id="impactConfirmInput" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${escapeHtml(integ.name)}" oninput="_impactConfirmCheck()" onkeydown="if(event.key==='Enter'){event.preventDefault();confirmImpactModal();}"/>
+    </div>
+    <div class="impact-modal-f-actions">
+      <button class="btn btn-ghost btn-sm" id="impactCancelBtn" type="button" onclick="closeImpactModal()">Keep connected</button>
+      <button class="btn btn-danger btn-sm" id="impactConfirmBtn" type="button" ${_impactRequirePhrase ? 'disabled' : ''} onclick="confirmImpactModal()">${imp.total === 0 ? 'Disconnect' : 'Disconnect — block ' + imp.total + ' consumer' + (imp.total === 1 ? '' : 's')}</button>
+    </div>
   `;
 
   $('impactModalOverlay').classList.add('is-open');
