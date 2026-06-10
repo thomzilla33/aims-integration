@@ -6816,6 +6816,38 @@ html.theme-light .theme-icon-moon{display:block}
 .impact-modal-f .btn-danger{background:#ef4444;color:#fff;border:none}
 .impact-modal-f .btn-danger:hover{background:#dc2626}
 
+/* Critical disconnect alert — elevated danger treatment (exclusive to this destructive action) */
+.impact-modal{ border-top:3px solid #ef4444; }
+.impact-headline{ font-size:15px; font-weight:800; letter-spacing:-.01em; line-height:1.3; color:#fca5a5; margin-bottom:4px; }
+.impact-sub{ font-size:12px; color:var(--t2); line-height:1.5; margin:0 0 16px; }
+.impact-groups{ display:flex; flex-direction:column; gap:10px; }
+.impact-group{ border:1px solid rgba(239,68,68,0.20); border-radius:10px; background:rgba(239,68,68,0.04); overflow:hidden; }
+html.theme-light .impact-group{ background:rgba(239,68,68,0.045); border-color:rgba(239,68,68,0.22); }
+.impact-group-h{ display:flex; align-items:center; gap:8px; padding:9px 12px; border-bottom:1px solid rgba(239,68,68,0.14); }
+.impact-group-label{ flex:1; font-size:10.5px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:#fca5a5; }
+.impact-group-count{ font-size:11px; font-weight:800; min-width:20px; text-align:center; padding:1px 7px; border-radius:20px; background:rgba(239,68,68,0.16); color:#fca5a5; }
+.impact-group-items{ list-style:none; margin:0; padding:7px 12px 10px; display:flex; flex-direction:column; gap:5px; }
+.impact-group-items li{ display:flex; align-items:center; gap:8px; font-size:12.5px; color:var(--t1); line-height:1.4; }
+.impact-group-dot{ width:5px; height:5px; border-radius:50%; background:#ef4444; flex-shrink:0; opacity:.75; }
+.impact-group-more{ color:var(--t3); font-size:11.5px; font-style:italic; padding-left:13px; }
+.impact-empty{ display:flex; gap:12px; align-items:flex-start; padding:16px; border-radius:10px; background:rgba(255,255,255,0.03); border:1px solid var(--line); font-size:12.5px; color:var(--t2); line-height:1.55; }
+.impact-empty b{ color:var(--t1); }
+/* Type-to-confirm gate */
+.impact-confirm{ margin-top:16px; padding-top:15px; border-top:1px solid rgba(239,68,68,0.18); }
+.impact-confirm-label{ display:block; font-size:12px; color:var(--t2); line-height:1.5; margin-bottom:8px; }
+.impact-confirm-label b{ color:#fca5a5; font-family:'SF Mono','Menlo',monospace; font-weight:600; }
+.impact-confirm-input{
+  width:100%; padding:9px 12px;
+  background:rgba(255,255,255,0.04); border:1px solid var(--line); border-radius:8px;
+  color:var(--t1); font-size:13px; font-family:inherit; outline:none;
+  transition:border-color .15s, box-shadow .15s;
+}
+.impact-confirm-input::placeholder{ color:var(--t3); }
+.impact-confirm-input:focus{ border-color:#ef4444; box-shadow:0 0 0 3px rgba(239,68,68,0.14); }
+html.theme-light .impact-confirm-input{ background:rgba(15,23,42,0.03); }
+.impact-modal-f .btn-danger:disabled{ opacity:.42; cursor:not-allowed; }
+.impact-modal-f .btn-danger:disabled:hover{ background:#ef4444; }
+
 
 /* ============ PUBLISH WORKFLOW ============ */
 .lc-badge{
@@ -7456,7 +7488,7 @@ html.theme-light .audit-select{ background:rgba(15,23,42,0.03); }
 
 
 <!-- Impact analysis modal (disconnect confirmation) -->
-<div class="impact-modal-overlay" id="impactModalOverlay" onclick="if(event.target===this)closeImpactModal()">
+<div class="impact-modal-overlay" id="impactModalOverlay">
   <div class="impact-modal" role="dialog" aria-labelledby="impactModalTitle">
     <header class="impact-modal-h">
       <div class="impact-modal-h-ic">
@@ -13112,55 +13144,101 @@ function detailUsage(integ) {
 
 /* ============ DISCONNECT IMPACT MODAL ============ */
 let _impactModalCallback = null;
+let _impactRequirePhrase = null;   // when set, the user must type this to enable Disconnect
 
-function openImpactModal(slug, onConfirm) {
+function openImpactModal(slug, onConfirm, opts) {
   const integ = INTEGRATIONS.find(i => i.slug === slug);
   if (!integ) return;
+  opts = opts || {};
+  const label = opts.label || integ.name;     // instance name when disconnecting an instance
   const imp = getImpactSummary(slug);
   _impactModalCallback = onConfirm || null;
+  // Destructive guard: when consumers would break, require typing the name to confirm.
+  _impactRequirePhrase = imp.total > 0 ? integ.name : null;
 
-  $('impactModalTitle').textContent = 'Disconnect ' + integ.name + '?';
+  $('impactModalTitle').textContent = 'Disconnect ' + label + '?';
   $('impactModalSub').textContent = imp.total === 0
-    ? 'No active consumers — safe to disconnect.'
-    : 'Impact analysis · ' + imp.total + ' consumer' + (imp.total === 1 ? '' : 's') + ' affected';
+    ? 'Revokes its credentials and moves it to Not connected.'
+    : 'This will immediately block every consumer that depends on it.';
 
-  const body = `
-    <div style="font-size:12.5px;color:var(--t2);line-height:1.6;margin-bottom:14px">
-      ${imp.total === 0
-        ? `<b style="color:var(--t1)">${escapeHtml(integ.name)}</b> isn't used anywhere yet. Disconnecting is safe: credentials get revoked and the integration moves to Not connected.`
-        : `Revokes credentials and stops data flow. These consumers break immediately:`}
-    </div>
-    ${imp.total > 0 ? `
-      <div class="impact-summary">
-        <div class="impact-summary-tile"><div class="impact-summary-v">${imp.workflows}</div><div class="impact-summary-l">Workflows</div></div>
-        <div class="impact-summary-tile"><div class="impact-summary-v">${imp.agents}</div><div class="impact-summary-l">Agents</div></div>
-        <div class="impact-summary-tile"><div class="impact-summary-v">${imp.networks}</div><div class="impact-summary-l">Networks</div></div>
-        <div class="impact-summary-tile"><div class="impact-summary-v">${imp.widgets}</div><div class="impact-summary-l">Widgets</div></div>
-      </div>
-      <div class="impact-list-h">Affected consumers</div>
-      <div class="impact-list">
-        ${imp.consumers.map(c => usageRowHtml(c, slug)).join('')}
-      </div>
-    ` : ''}
-  `;
+  const groups = [['workflow','Workflows'],['agent','Agents'],['network','Networks'],['widget','Widgets']];
+  const body = imp.total === 0
+    ? `<div class="impact-empty">
+         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" style="color:var(--green);flex-shrink:0;margin-top:1px" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+         <div>Nothing depends on <b>${escapeHtml(label)}</b> right now. Disconnecting just revokes its credentials and moves it to Not connected — nothing breaks.</div>
+       </div>`
+    : `<div class="impact-headline">${imp.total} consumer${imp.total === 1 ? '' : 's'} will be blocked</div>
+       <p class="impact-sub">Credentials are revoked and data stops flowing — everything below breaks immediately.</p>
+       <div class="impact-groups">
+         ${groups.map(([t, gl]) => {
+           const items = imp.consumers.filter(c => c.type === t);
+           if (!items.length) return '';
+           const shown = items.slice(0, 5);
+           const more = items.length - shown.length;
+           return `<div class="impact-group">
+             <div class="impact-group-h"><span class="impact-group-label">${gl}</span><span class="impact-group-count">${items.length}</span></div>
+             <ul class="impact-group-items">
+               ${shown.map(c => `<li><span class="impact-group-dot"></span>${escapeHtml(c.name)}</li>`).join('')}
+               ${more > 0 ? `<li class="impact-group-more">and ${more} more…</li>` : ''}
+             </ul>
+           </div>`;
+         }).join('')}
+       </div>
+       <div class="impact-confirm">
+         <label class="impact-confirm-label" for="impactConfirmInput">To confirm, type <b>${escapeHtml(integ.name)}</b> below.</label>
+         <input class="impact-confirm-input" id="impactConfirmInput" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${escapeHtml(integ.name)}" oninput="_impactConfirmCheck()" onkeydown="if(event.key==='Enter'){event.preventDefault();confirmImpactModal();}"/>
+       </div>`;
   $('impactModalBody').innerHTML = body;
 
   $('impactModalFooter').innerHTML = `
-    <button class="btn btn-ghost btn-sm" onclick="closeImpactModal()">Cancel</button>
-    <button class="btn btn-danger btn-sm" onclick="confirmImpactModal()">${imp.total === 0 ? 'Disconnect' : 'Disconnect anyway'}</button>
+    <button class="btn btn-ghost btn-sm" id="impactCancelBtn" type="button" onclick="closeImpactModal()">Keep connected</button>
+    <button class="btn btn-danger btn-sm" id="impactConfirmBtn" type="button" ${_impactRequirePhrase ? 'disabled' : ''} onclick="confirmImpactModal()">${imp.total === 0 ? 'Disconnect' : 'Disconnect — block ' + imp.total + ' consumer' + (imp.total === 1 ? '' : 's')}</button>
   `;
 
   $('impactModalOverlay').classList.add('is-open');
   document.body.style.overflow = 'hidden';
+  // Cancel is the safe default — focus it, not the destructive action.
+  requestAnimationFrame(() => document.getElementById('impactCancelBtn')?.focus());
+}
+
+// Audit entry for a disconnect, carrying the grouped impact detail.
+function _recordDisconnectAudit(slug, label, imp, kind, instId) {
+  if (typeof AUDIT_EVENTS === 'undefined') return;
+  AUDIT_EVENTS.unshift({
+    ts:'just now', tsAbs:'(now)', sev: imp.total > 0 ? 'crit' : 'warn',
+    event: kind === 'instance' ? 'integration.instance_disconnected' : 'integration.disconnected',
+    actor:'Thomas González', actorType:'user', resource:slug, studio:null, ip:'192.168.1.10',
+    details:{
+      target: label,
+      blocked_consumers: imp.total,
+      by_type: { workflows: imp.workflows, agents: imp.agents, networks: imp.networks, widgets: imp.widgets },
+      consumers: imp.consumers.slice(0, 25).map(c => ({ type: c.type, name: c.name })),
+      instance: instId || undefined
+    }
+  });
 }
 
 function closeImpactModal() {
   $('impactModalOverlay').classList.remove('is-open');
   document.body.style.overflow = '';
   _impactModalCallback = null;
+  _impactRequirePhrase = null;
+}
+
+// Enable the destructive button only when the typed phrase matches.
+function _impactConfirmCheck() {
+  const inp = document.getElementById('impactConfirmInput');
+  const btn = document.getElementById('impactConfirmBtn');
+  if (!inp || !btn || !_impactRequirePhrase) return;
+  btn.disabled = inp.value.trim().toLowerCase() !== _impactRequirePhrase.toLowerCase();
 }
 
 function confirmImpactModal() {
+  // Guard: if a phrase is required, the typed value must match before we proceed.
+  if (_impactRequirePhrase) {
+    const inp = document.getElementById('impactConfirmInput');
+    if (!inp || inp.value.trim().toLowerCase() !== _impactRequirePhrase.toLowerCase()) return;
+  }
   const cb = _impactModalCallback;
   closeImpactModal();
   if (typeof cb === 'function') cb();
@@ -13660,7 +13738,7 @@ function renderInstanceDetail(slug, instId) {
             Ask AI
           </button>
           <button class="btn btn-ghost btn-sm" onclick="setInstanceTab('${i.slug}','${inst.id}','auth')">Rotate credentials</button>
-          <button class="btn btn-danger btn-sm" onclick="toast('${escapeHtml(inst.name).replace(/'/g,'')} disconnected','success')">Disconnect</button>
+          <button class="btn btn-danger btn-sm" onclick="disconnectInstance('${i.slug}','${inst.id}')">Disconnect</button>
         </div>
       </div>
     </div>
@@ -15081,8 +15159,9 @@ function disconnect(slug) {
   const i = findIntegration(slug);
   if (!i) return;
   openImpactModal(slug, function() {
-    i.connected = false; i.health = null;
     const imp = getImpactSummary(slug);
+    i.connected = false; i.health = null;
+    _recordDisconnectAudit(slug, i.name, imp, 'provider');
     if (imp.total > 0) {
       toast(`${i.name} disconnected — ${imp.total} consumer${imp.total === 1 ? '' : 's'} now blocked`, 'success');
     } else {
@@ -15090,6 +15169,23 @@ function disconnect(slug) {
     }
     paintDetail(i);
   });
+}
+
+// Instance-level disconnect — same critical alert, scoped/labeled to the instance.
+function disconnectInstance(slug, instId) {
+  const i = findIntegration(slug);
+  const inst = instancesOf(slug).find(x => x.id === instId);
+  if (!i || !inst) return;
+  openImpactModal(slug, function() {
+    const imp = getImpactSummary(slug);
+    _recordDisconnectAudit(slug, inst.name, imp, 'instance', instId);
+    if (imp.total > 0) {
+      toast(`${inst.name} disconnected — ${imp.total} consumer${imp.total === 1 ? '' : 's'} now blocked`, 'success');
+    } else {
+      toast(`${inst.name} disconnected`, 'success');
+    }
+    navigate(`#/integrations/${slug}`);
+  }, { label: inst.name });
 }
 
 /* ====================== CONNECT DRAWER ====================== */
