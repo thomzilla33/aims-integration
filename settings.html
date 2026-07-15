@@ -549,7 +549,7 @@ html.theme-light .btn-primary.btn-outline{color:var(--cyan); border-color:rgba(6
 /* ── Inputs ── */
 .input{
   width:100%; background:rgba(255,255,255,0.04);
-  border:1px solid var(--line); border-radius:var(--r6);
+  border:1px solid var(--line); border-radius:var(--r8);
   padding:8px 12px; color:var(--t1); font-size:13px; font-family:inherit;
   outline:none; transition:border-color .12s, background .12s;
 }
@@ -614,6 +614,7 @@ html.theme-light .btn-primary.btn-outline{color:var(--cyan); border-color:rgba(6
 .cap-chip.cap-tool{color:#d8b4fe; background:rgba(173,70,255,0.10); border-color:rgba(173,70,255,0.22)}
 .cap-chip.cap-data{color:#6ee7b7; background:rgba(0,201,80,0.10); border-color:rgba(0,201,80,0.22)}
 .cap-chip.cap-mcp{color:#7dd3fc; background:rgba(81,162,255,0.10); border-color:rgba(81,162,255,0.25)}
+.cap-chip.cap-channel{color:#f9a8d4; background:rgba(236,72,153,0.10); border-color:rgba(236,72,153,0.22)}
 
 .conn-meta{display:flex; justify-content:space-between; gap:8px; font-size:11px; color:var(--t2)}
 .conn-meta strong{color:var(--t1); font-weight:600}
@@ -634,7 +635,7 @@ html.theme-light .btn-primary.btn-outline{color:var(--cyan); border-color:rgba(6
 .src-tab.active{background:var(--bg3); color:var(--t1); box-shadow:0 1px 2px rgba(0,0,0,0.2)}
 .src-tab .src-count{margin-left:6px; font-size:10px; color:var(--t3); font-weight:500}
 .src-tab.active .src-count{color:var(--t2)}
-.src-tab.build-own{margin-left:auto; color:var(--cyan); display:inline-flex; align-items:center; gap:5px}
+.src-tab.build-own{margin-left:auto; color:var(--accent); display:inline-flex; align-items:center; gap:5px}
 
 .pill-row{display:flex; gap:6px; flex-wrap:wrap; align-items:center; margin-bottom:14px}
 .pill{
@@ -661,7 +662,7 @@ html.theme-light .btn-primary.btn-outline{color:var(--cyan); border-color:rgba(6
 /* ── Catalog grid ── */
 .catalog-grid{display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); gap:10px}
 .cat-card{
-  background:var(--bg3); border:1px solid var(--line); border-radius:var(--r10);
+  background:var(--bg3); border:1px solid var(--line); border-radius:var(--r8);
   padding:14px; display:flex; flex-direction:column; gap:8px;
   cursor:pointer; transition:border-color .15s, background .15s;
   min-height:140px;
@@ -673,7 +674,7 @@ html.theme-light .btn-primary.btn-outline{color:var(--cyan); border-color:rgba(6
 .cat-desc{font-size:11px; color:var(--t2); line-height:1.5; flex:1}
 .cat-foot{display:flex; align-items:center; justify-content:space-between; gap:6px; margin-top:auto}
 .src-badge{
-  font-size:9px; font-weight:700; padding:2px 7px; border-radius:4px;
+  font-size:9px; font-weight:700; padding:2px 7px; border-radius:6px;
   text-transform:uppercase; letter-spacing:.04em;
 }
 .src-badge.official{background:rgba(43,127,255,0.12); color:var(--accent); border:1px solid rgba(43,127,255,0.22)}
@@ -977,7 +978,7 @@ html.theme-light .btn-primary.btn-outline{color:var(--cyan); border-color:rgba(6
 .method-chooser{padding:24px 32px}
 .method-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:14px; margin-top:18px}
 .method-card{
-  background:var(--bg3); border:1px solid var(--line); border-radius:var(--r10);
+  background:var(--bg3); border:1px solid var(--line); border-radius:var(--r8);
   padding:18px; cursor:pointer; transition:border-color .15s, background .15s;
   display:flex; flex-direction:column; gap:8px;
 }
@@ -985,8 +986,8 @@ html.theme-light .btn-primary.btn-outline{color:var(--cyan); border-color:rgba(6
 .method-ico{width:36px; height:36px; border-radius:var(--r8); display:flex; align-items:center; justify-content:center; margin-bottom:4px}
 .method-ico.webhook{background:rgba(43,127,255,0.10); color:var(--accent)}
 .method-ico.openapi{background:rgba(167,139,250,0.10); color:var(--purple)}
-.method-ico.sdk{background:rgba(6,182,212,0.10); color:var(--cyan)}
-.method-name{font-size:15px; font-weight:700; color:var(--t1)}
+.method-ico.sdk{background:rgba(148,163,184,0.12); color:#94A3B8}
+.method-name{font-size:15px; font-weight:600; color:var(--t1)}
 .method-desc{font-size:12px; color:var(--t2); line-height:1.5; flex:1}
 .method-meta{display:flex; gap:10px; font-size:11px; color:var(--t3); margin-top:6px}
 .method-meta .m{display:flex; align-items:center; gap:4px}
@@ -2130,9 +2131,15 @@ html.theme-light .btn-primary.btn-outline{color:var(--cyan); border-color:rgba(6
   color:var(--t2); cursor:pointer; transition:background .12s, color .12s, border-color .12s;
 }
 .pgn-pg:hover, .pgn-nav:hover:not([disabled]){background:var(--hover); color:var(--t1); border-color:var(--line-strong)}
-.pgn-pg.active{background:var(--cyan); color:#001318; border-color:var(--cyan)}
+.pgn-pg.active{background:var(--accent); color:#fff; border-color:var(--accent)}
 .pgn-nav[disabled]{opacity:.4; cursor:not-allowed}
 .pgn-ellipsis{color:var(--t3); padding:0 4px}
+
+/* Sortable table headers */
+.th-sortable{cursor:pointer; user-select:none; white-space:nowrap}
+.th-sortable:hover{color:var(--t1)}
+.sort-caret{margin-left:5px; font-size:10px; opacity:.4}
+.sort-caret.is-active{opacity:1; color:var(--accent)}
 
 @media (max-width:680px){
   .log-toolbar{flex-direction:column; align-items:stretch}
@@ -2730,24 +2737,23 @@ html.theme-light .inbox-new-btn:hover{background:rgba(56,189,248,0.10); border-c
 .inbox-tabs{display:flex; gap:4px; flex-wrap:wrap}
 .inbox-tab{
   display:inline-flex; align-items:center; gap:7px;
-  padding:7px 11px;
-  border-radius:8px;
+  padding:8px 10px;
+  border:none; border-bottom:2px solid transparent;
   background:transparent;
-  border:1px solid transparent;
   color:var(--t2);
-  font-family:inherit; font-size:12px; font-weight:600;
+  font-family:inherit; font-size:13px; font-weight:600;
   cursor:pointer;
-  transition:background .12s, border-color .12s, color .12s;
+  transition:color .12s, border-color .12s, background .12s;
 }
-.inbox-tab:hover{background:rgba(255,255,255,0.03); color:var(--t1)}
+.inbox-tab:hover:not(.is-active){color:var(--t1)}
 .inbox-tab.is-active{
-  background:rgba(255,255,255,0.05);
-  border-color:rgba(255,255,255,0.10);
-  color:var(--t1);
+  color:var(--accent);
+  border-bottom-color:var(--accent);
+  background:transparent;
 }
 html.theme-light .inbox-tab{color:var(--t2)}
-html.theme-light .inbox-tab:hover{background:var(--hover); color:var(--t1)}
-html.theme-light .inbox-tab.is-active{background:#FFFFFF; border-color:var(--line); color:var(--t1)}
+html.theme-light .inbox-tab:hover:not(.is-active){color:var(--t1)}
+html.theme-light .inbox-tab.is-active{color:var(--accent); border-bottom-color:var(--accent); background:transparent}
 .inbox-tab-count{
   display:inline-flex; align-items:center; justify-content:center;
   min-width:18px; padding:1px 6px;
@@ -2774,7 +2780,7 @@ html.theme-light .inbox-tab-count{background:#F1F5F9; color:var(--t3)}
   color:var(--t3);
   transition:border-color .15s, background .15s;
 }
-.inbox-search:focus-within{border-color:rgba(126,211,247,0.40); background:rgba(126,211,247,0.04)}
+.inbox-search:focus-within{border-color:rgba(43,127,255,0.40); background:rgba(43,127,255,0.04)}
 .inbox-search input{
   flex:1;
   background:transparent; border:none; outline:none;
@@ -2826,8 +2832,8 @@ html.theme-light .inbox-bulkbar-btn:hover{background:var(--hover); border-color:
 
 .inbox-list{
   background:rgba(255,255,255,0.012);
-  border:1px solid rgba(255,255,255,0.06);
-  border-radius:11px;
+  border:0.5px solid var(--line);
+  border-radius:8px;
   overflow:hidden;
 }
 html.theme-light .inbox-list{background:#FFFFFF; border-color:var(--line)}
@@ -2843,9 +2849,9 @@ html.theme-light .inbox-list{background:#FFFFFF; border-color:var(--line)}
 html.theme-light .inbox-list-h{background:rgba(15,23,42,0.012); border-bottom-color:var(--line)}
 .inbox-list-h-check{display:flex; align-items:center; justify-content:center}
 .inbox-list-h-l{
-  font-size:10.5px; font-weight:700;
-  text-transform:uppercase; letter-spacing:.06em;
-  color:var(--t3);
+  font-size:12px; font-weight:500;
+  letter-spacing:normal;
+  color:var(--t2);
 }
 .inbox-list-h-action{text-align:right}
 
@@ -2864,11 +2870,11 @@ html.theme-light .inbox-list-h{background:rgba(15,23,42,0.012); border-bottom-co
 /* End-user read-only inbox: no checkbox column */
 .inbox-list.is-readonly .inbox-list-h,
 .inbox-list.is-readonly .inbox-row{grid-template-columns:168px minmax(0, 1fr) 180px 130px 80px;}
-.inbox-row:hover{background:rgba(126,211,247,0.04)}
-html.theme-light .inbox-row:hover{background:rgba(56,189,248,0.04)}
+.inbox-row:hover{background:rgba(43,127,255,0.05)}
+html.theme-light .inbox-row:hover{background:rgba(43,127,255,0.05)}
 html.theme-light .inbox-row{border-bottom-color:var(--line)}
-.inbox-row.is-selected{background:rgba(126,211,247,0.08)}
-html.theme-light .inbox-row.is-selected{background:rgba(56,189,248,0.06)}
+.inbox-row.is-selected{background:rgba(43,127,255,0.10)}
+html.theme-light .inbox-row.is-selected{background:rgba(43,127,255,0.07)}
 .inbox-row.is-pending::before{
   content:''; position:absolute; left:0; top:6px; bottom:6px;
   width:3px; border-radius:0 2px 2px 0;
@@ -2879,14 +2885,14 @@ html.theme-light .inbox-row.is-selected{background:rgba(56,189,248,0.06)}
 .inbox-row-check input,
 .inbox-list-h-check input{
   width:14px; height:14px; cursor:pointer;
-  accent-color:#7ed3f7;
+  accent-color:var(--accent);
 }
 
 .inbox-row-status{display:flex; flex-direction:column; gap:4px; align-items:flex-start; min-width:0}
 .inbox-row-status .req-status-chip{
   display:inline-flex; align-items:center; gap:5px;
   padding:2px 9px;
-  border-radius:99px;
+  border-radius:8px;
   font-size:10.5px; font-weight:700;
   letter-spacing:.02em;
   border:1px solid transparent;
@@ -2899,7 +2905,7 @@ html.theme-light .inbox-row.is-selected{background:rgba(56,189,248,0.06)}
 .inbox-prio{
   display:inline-flex; align-items:center;
   padding:1px 6px;
-  border-radius:99px;
+  border-radius:8px;
   background:rgba(239,68,68,0.12);
   color:#ff7d7d;
   border:1px solid rgba(239,68,68,0.32);
@@ -2928,7 +2934,7 @@ html.theme-light .inbox-prio{background:rgba(239,68,68,0.08); color:#dc2626; bor
 .inbox-tag{
   display:inline-flex; align-items:center;
   padding:0 6px;
-  border-radius:4px;
+  border-radius:6px;
   background:rgba(255,255,255,0.04);
   font-size:10px; font-weight:700;
   letter-spacing:.02em;
@@ -3607,7 +3613,7 @@ html.theme-light .cap-drawer-overlay{background:rgba(15,23,42,0.32)}
 .cap-drawer{
   position:fixed; top:0; right:0; bottom:0;
   width:520px; max-width:100vw; z-index:270;
-  background:linear-gradient(180deg, #131c33 0%, #0c1428 100%);
+  background:var(--bg2);
   border-left:1px solid rgba(255,255,255,0.10);
   box-shadow:-24px 0 60px -20px rgba(0,0,0,0.55);
   display:flex; flex-direction:column;
@@ -3640,9 +3646,9 @@ html.theme-light .cap-drawer-h{border-bottom-color:var(--line)}
   background:rgba(255,255,255,0.04);
   border:1px solid rgba(255,255,255,0.06);
 }
-.cap-drawer-h-ic.tool{background:rgba(167,139,250,0.10); color:#cda5ff; border-color:rgba(167,139,250,0.28)}
-.cap-drawer-h-ic.data{background:rgba(16,185,129,0.10); color:#34d39c; border-color:rgba(16,185,129,0.28)}
-.cap-drawer-h-ic.mcp{background:rgba(56,189,248,0.10); color:#7ed3f7; border-color:rgba(56,189,248,0.28)}
+.cap-drawer-h-ic.tool{background:rgba(173,70,255,0.10); color:#d8b4fe; border-color:rgba(173,70,255,0.22)}
+.cap-drawer-h-ic.data{background:rgba(0,201,80,0.10); color:#6ee7b7; border-color:rgba(0,201,80,0.22)}
+.cap-drawer-h-ic.mcp{background:rgba(81,162,255,0.10); color:#7dd3fc; border-color:rgba(81,162,255,0.25)}
 html.theme-light .cap-drawer-h-ic.tool{background:rgba(167,139,250,0.10); color:#7c3aed; border-color:rgba(167,139,250,0.34)}
 html.theme-light .cap-drawer-h-ic.data{background:rgba(16,185,129,0.10); color:#047857; border-color:rgba(16,185,129,0.32)}
 html.theme-light .cap-drawer-h-ic.mcp{background:rgba(56,189,248,0.10); color:#0284c7; border-color:rgba(56,189,248,0.34)}
@@ -3963,7 +3969,7 @@ html.theme-light .req-modal-field-l .req-req{color:#dc2626}
   width:100%; padding:8px 10px;
   background:rgba(255,255,255,0.022);
   border:1px solid rgba(255,255,255,0.10);
-  border-radius:7px;
+  border-radius:8px;
   color:var(--t1); font-family:inherit;
   font-size:12.5px;
   transition:border-color .12s, background .12s;
@@ -3974,8 +3980,8 @@ html.theme-light .req-modal-field-l .req-req{color:#dc2626}
 .req-modal-field select:focus,
 .req-modal-field textarea:focus{
   outline:none;
-  border-color:rgba(126,211,247,0.42);
-  background:rgba(126,211,247,0.04);
+  border-color:rgba(43,127,255,0.42);
+  background:rgba(43,127,255,0.04);
 }
 .req-modal-field input[readonly]{
   background:rgba(255,255,255,0.012);
@@ -4005,7 +4011,7 @@ html.theme-light .req-modal-field-hint.is-bad{color:#dc2626}
   padding:5px 10px;
   background:rgba(255,255,255,0.022);
   border:1px solid rgba(255,255,255,0.10);
-  border-radius:6px;
+  border-radius:8px;
   color:var(--t2);
   font-size:11.5px; font-weight:500;
   cursor:pointer;
@@ -4014,13 +4020,13 @@ html.theme-light .req-modal-field-hint.is-bad{color:#dc2626}
 .req-modal-radio input{display:none}
 .req-modal-radio:hover{border-color:rgba(255,255,255,0.20)}
 .req-modal-radio.is-on{
-  background:rgba(126,211,247,0.10);
-  border-color:rgba(126,211,247,0.45);
-  color:#7ed3f7;
+  background:rgba(43,127,255,0.12);
+  border-color:rgba(43,127,255,0.45);
+  color:var(--accent);
 }
 html.theme-light .req-modal-radio{background:#FFFFFF; border-color:var(--line); color:var(--t2)}
 html.theme-light .req-modal-radio:hover{border-color:var(--line-strong)}
-html.theme-light .req-modal-radio.is-on{background:rgba(56,189,248,0.06); border-color:rgba(56,189,248,0.42); color:#0284c7}
+html.theme-light .req-modal-radio.is-on{background:rgba(43,127,255,0.08); border-color:rgba(43,127,255,0.42); color:#1d4ed8}
 
 /* Priority cards (Edgardo: importance over timeline) */
 .req-modal-priority{
@@ -4928,6 +4934,9 @@ html.theme-light .fs-cancel-btn:hover{
   font-size:10.5px; color:var(--t3); line-height:1.4;
   border-top:1px solid var(--line);
 }
+
+/* Scope gate: entry points marked data-scope-min="v15" are hidden while in V1 */
+html[data-scope="v1"] [data-scope-min="v15"]{ display:none !important; }
 
 /* ── Build your own promo card ── */
 .build-promo{
@@ -7064,35 +7073,35 @@ html.theme-light .toolbar-search, html.theme-light .users-search,
 html.theme-light .wg-search, html.theme-light .audit-search{ background:rgba(15,23,42,0.03); border-color:var(--line); }
 
 /* — Filter control: segmented group (container + inner buttons) — */
-.inbox-tabs, .toolbar-sort, .users-filters, .dist-filters, .wg-filters, .audit-sev{
+.toolbar-sort, .users-filters, .dist-filters, .wg-filters, .audit-sev{
   display:inline-flex; align-items:center; gap:2px;
   padding:2px; background:var(--hover);
   border:1px solid var(--line); border-radius:8px;
   flex-wrap:wrap;
 }
 .toolbar-sort .toolbar-sort-label{ display:none; }
-.inbox-tab, .toolbar-sort-btn, .users-filter, .dist-filter, .wg-filter, .audit-sev-btn{
+.toolbar-sort-btn, .users-filter, .dist-filter, .wg-filter, .audit-sev-btn{
   display:inline-flex; align-items:center; gap:6px;
   padding:5px 10px; border-radius:6px;
   background:transparent; border:1px solid transparent;
   color:var(--t2); font-family:inherit; font-size:11.5px; font-weight:600;
   cursor:pointer; transition:background .12s, color .12s;
 }
-.inbox-tab:hover, .toolbar-sort-btn:hover, .users-filter:hover,
+.toolbar-sort-btn:hover, .users-filter:hover,
 .dist-filter:hover, .wg-filter:hover, .audit-sev-btn:hover{
   background:transparent; border-color:transparent; color:var(--t1);
 }
-.inbox-tab.is-active, .toolbar-sort-btn.is-active, .users-filter.is-on,
+.toolbar-sort-btn.is-active, .users-filter.is-on,
 .dist-filter.is-active, .wg-filter.is-active, .audit-sev-btn.is-active{
   background:var(--bg3); border-color:transparent; color:var(--t1);
 }
 /* keep a subtle amber hint on the Distribution "Needs attention" filter */
 .dist-filter.is-warn{ background:transparent; border-color:transparent; color:var(--amber); }
 .dist-filter.is-warn.is-active{ background:var(--bg3); border-color:transparent; color:var(--amber); }
-html.theme-light .inbox-tabs, html.theme-light .toolbar-sort,
+html.theme-light .toolbar-sort,
 html.theme-light .users-filters, html.theme-light .dist-filters,
 html.theme-light .wg-filters, html.theme-light .audit-sev{ background:rgba(15,23,42,0.04); border-color:var(--line); }
-html.theme-light .inbox-tab.is-active, html.theme-light .toolbar-sort-btn.is-active,
+html.theme-light .toolbar-sort-btn.is-active,
 html.theme-light .users-filter.is-on, html.theme-light .dist-filter.is-active,
 html.theme-light .wg-filter.is-active, html.theme-light .audit-sev-btn.is-active{ background:#FFFFFF; color:var(--t1); }
 
@@ -7101,11 +7110,11 @@ html.theme-light .wg-filter.is-active, html.theme-light .audit-sev-btn.is-active
 .audit-search svg{ flex-shrink:0; }
 .audit-search input{ flex:1; background:transparent; border:none; outline:none; color:var(--t1); font-family:inherit; }
 .audit-search input::placeholder{ color:var(--t3); }
-.audit-select{
+.audit-select, .users-select{
   background:rgba(255,255,255,0.04); border:1px solid var(--line); border-radius:8px;
   padding:6px 10px; color:var(--t1); font-size:12px; font-family:inherit; outline:none; cursor:pointer;
 }
-html.theme-light .audit-select{ background:rgba(15,23,42,0.03); }
+html.theme-light .audit-select, html.theme-light .users-select{ background:rgba(15,23,42,0.03); }
 
 .wg-grid{
   display:grid;grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));gap:12px;
@@ -8767,6 +8776,7 @@ const state = {
   activeStudio:null,
   sortBy:'popular',
   search:'',
+  catalogPage:1,
   catMoreOpen:false,
   detailTab:'overview',
   drawerOpen:false,
@@ -9566,10 +9576,12 @@ function submitRequest() {
 }
 
 // Inbox UI state — bucket filter, search, bulk select
-const inboxState = { filter: 'all', search: '', selected: new Set() };
+const inboxState = { filter: 'all', search: '', selected: new Set(), page: 1, sortKey: null, sortDir: 'asc' };
 
-function setInboxFilter(f) { inboxState.filter = f; renderRequestsInbox(); }
-function setInboxSearch(v) { inboxState.search = v; renderRequestsInbox(); setTimeout(()=>{ const el = document.getElementById('inboxSearchInput'); if (el) { el.focus(); el.setSelectionRange(v.length, v.length); }}, 0); }
+function setInboxFilter(f) { inboxState.filter = f; inboxState.page = 1; renderRequestsInbox(); }
+function setInboxSearch(v) { inboxState.search = v; inboxState.page = 1; renderRequestsInbox(); setTimeout(()=>{ const el = document.getElementById('inboxSearchInput'); if (el) { el.focus(); el.setSelectionRange(v.length, v.length); }}, 0); }
+function setInboxPage(p) { inboxState.page = p; renderRequestsInbox(); }
+function setInboxSort(k) { sortToggle(inboxState, k, 'asc'); inboxState.page = 1; renderRequestsInbox(); }
 function toggleInboxSelectAll(checked) {
   const ids = _filteredRequests().map(r => r.id);
   if (checked) ids.forEach(id => inboxState.selected.add(id));
@@ -9646,10 +9658,17 @@ function renderRequestsInbox() {
     done: pool.filter(r => r.status === 'done').length,
     rejected: pool.filter(r => r.status === 'rejected').length
   };
-  const filtered = _filteredRequests();
+  const filtered = sortRows(_filteredRequests(), inboxState.sortKey, inboxState.sortDir,
+    (r,k)=> k==='status' ? (r.status||'') : k==='requester' ? (r.requester?.name||'') : (r.integration||''));
   const selectedCount = isUser ? 0 : inboxState.selected.size;
   const allFilteredIds = filtered.map(r => r.id);
   const allSelected = !isUser && allFilteredIds.length > 0 && allFilteredIds.every(id => inboxState.selected.has(id));
+
+  const INBOX_PAGE_SIZE = 15;
+  const inboxTotal = filtered.length;
+  const inboxPages = Math.max(1, Math.ceil(inboxTotal / INBOX_PAGE_SIZE));
+  const inboxPage = Math.min(Math.max(1, inboxState.page || 1), inboxPages);
+  const inboxVisible = filtered.slice((inboxPage-1)*INBOX_PAGE_SIZE, (inboxPage-1)*INBOX_PAGE_SIZE + INBOX_PAGE_SIZE);
 
   const tab = (label, key, count, accent) => `
     <button class="inbox-tab ${inboxState.filter===key?'is-active':''}" type="button" onclick="setInboxFilter('${key}')">
@@ -9705,9 +9724,9 @@ function renderRequestsInbox() {
           ${isUser ? '' : `<label class="inbox-list-h-check">
             <input type="checkbox" ${allSelected?'checked':''} onchange="toggleInboxSelectAll(this.checked)"/>
           </label>`}
-          <span class="inbox-list-h-l">Status</span>
-          <span class="inbox-list-h-l inbox-list-h-vendor">Request</span>
-          <span class="inbox-list-h-l">Requester</span>
+          <span class="inbox-list-h-l th-sortable" onclick="setInboxSort('status')">Status ${sortCaret(inboxState,'status')}</span>
+          <span class="inbox-list-h-l inbox-list-h-vendor th-sortable" onclick="setInboxSort('request')">Request ${sortCaret(inboxState,'request')}</span>
+          <span class="inbox-list-h-l th-sortable" onclick="setInboxSort('requester')">Requester ${sortCaret(inboxState,'requester')}</span>
           <span class="inbox-list-h-l inbox-list-h-meta">Quote / ETA</span>
           <span class="inbox-list-h-l inbox-list-h-action"></span>
         </div>
@@ -9716,8 +9735,9 @@ function renderRequestsInbox() {
             <div class="inbox-empty-t">${inboxState.search ? 'No requests match your search' : 'No results in this view'}</div>
             <div class="inbox-empty-d">${inboxState.search ? 'Try a different vendor, requester, or scope.' : 'Switch tabs to see requests in another status.'}</div>
           </div>
-        ` : filtered.map(r => requestRowHTML(r, isUser)).join('')}
+        ` : inboxVisible.map(r => requestRowHTML(r, isUser)).join('')}
       </div>
+      ${paginatorHTML(inboxPage, inboxPages, inboxTotal, INBOX_PAGE_SIZE, 'setInboxPage')}
     </section>
   `;
 }
@@ -10426,17 +10446,22 @@ function confirmDistChange() {
   _distChangePending = null;
 }
 
-let _distFilters = { search: '', status: 'all' /* all | working | needs | inactive */ };
+let _distFilters = { search: '', status: 'all', page: 1, sortKey: null, sortDir: 'asc' /* all | working | needs | inactive */ };
 
 function distSetFilter(key, value) {
   _distFilters[key] = value;
+  _distFilters.page = 1;
   renderDistribution();
 }
 
 function distSearchInput(value) {
   _distFilters.search = (value || '').toLowerCase();
+  _distFilters.page = 1;
   renderDistribution(true /* preserveFocus */);
 }
+
+function setDistPage(p) { _distFilters.page = p; renderDistribution(); }
+function setDistSort(k) { sortToggle(_distFilters, k, 'asc'); _distFilters.page = 1; renderDistribution(); }
 
 function distStatusBucketOf(integ) {
   // Borrow from STATUS_META — fall back to simple inference.
@@ -10459,7 +10484,7 @@ function distStatusLabelOf(integ) {
    USERS — cross-instance access view (Sprint C — Edgardo).
    "Quiénes son mis users y en qué instancia tiene acceso"
    ──────────────────────────────────────────────────────── */
-const _usersUiState = { search:'', dept:'all', filter:'all' };
+const _usersUiState = { search:'', dept:'all', filter:'all', page:1, sortKey:'name', sortDir:'asc' };
 
 /* For each person, compute the integration instances they can reach
    (directly, or via group membership, or via a workspace they belong to).
@@ -10516,29 +10541,38 @@ function _peopleFiltered() {
   });
 }
 
-function setUsersSearch(v) { _usersUiState.search = v; _paintUsersTable(); setTimeout(()=>{ const el = document.getElementById('usersSearchInput'); if (el) { el.focus(); el.setSelectionRange(v.length, v.length); }}, 0); }
-function setUsersDept(v)   { _usersUiState.dept   = v; _paintUsersTable(); }
-function setUsersFilter(v) { _usersUiState.filter = v; _paintUsersTable(); }
+function setUsersSearch(v) { _usersUiState.search = v; _usersUiState.page = 1; _paintUsersTable(); setTimeout(()=>{ const el = document.getElementById('usersSearchInput'); if (el) { el.focus(); el.setSelectionRange(v.length, v.length); }}, 0); }
+function setUsersDept(v)   { _usersUiState.dept   = v; _usersUiState.page = 1; _paintUsersTable(); }
+function setUsersFilter(v) { _usersUiState.filter = v; _usersUiState.page = 1; _paintUsersTable(); }
+function setUsersPage(p)   { _usersUiState.page = p; _paintUsersTable(); }
+function setUsersSort(k)   { sortToggle(_usersUiState, k, k==='access'?'desc':'asc'); _usersUiState.page = 1; _paintUsersTable(); }
 
 function _paintUsersTable() {
   const wrap = document.getElementById('usersTableWrap');
   if (!wrap) return;
   const filtered = _peopleFiltered();
-  wrap.innerHTML = filtered.length === 0
+  const sorted = sortRows(filtered, _usersUiState.sortKey, _usersUiState.sortDir,
+    (p,k)=> k==='access' ? _accessForUser(p.id).length : k==='role' ? (p.role||'') : (p.name||''));
+  const USERS_PAGE_SIZE = 15;
+  const total = sorted.length;
+  const pages = Math.max(1, Math.ceil(total / USERS_PAGE_SIZE));
+  const page = Math.min(Math.max(1, _usersUiState.page || 1), pages);
+  const visible = sorted.slice((page-1)*USERS_PAGE_SIZE, (page-1)*USERS_PAGE_SIZE + USERS_PAGE_SIZE);
+  wrap.innerHTML = total === 0
     ? `<div class="users-empty">No people match these filters. <a href="#" onclick="setUsersSearch('');setUsersDept('all');setUsersFilter('all');return false" style="color:#7ed3f7">Clear filters</a></div>`
     : `
       <table class="users-table">
         <thead>
           <tr>
-            <th>User</th>
-            <th>Role</th>
-            <th>Instance access</th>
+            <th class="th-sortable" onclick="setUsersSort('name')">User ${sortCaret(_usersUiState,'name')}</th>
+            <th class="th-sortable" onclick="setUsersSort('role')">Role ${sortCaret(_usersUiState,'role')}</th>
+            <th class="th-sortable" onclick="setUsersSort('access')">Instance access ${sortCaret(_usersUiState,'access')}</th>
             <th>Via</th>
             <th></th>
           </tr>
         </thead>
         <tbody>
-          ${filtered.map(p => {
+          ${visible.map(p => {
             const access = _accessForUser(p.id);
             const viaSources = new Set();
             access.forEach(a => a.via.forEach(v => viaSources.add(v.type === 'person' ? 'Direct' : v.label)));
@@ -10567,6 +10601,7 @@ function _paintUsersTable() {
           }).join('')}
         </tbody>
       </table>
+      ${paginatorHTML(page, pages, total, USERS_PAGE_SIZE, 'setUsersPage')}
     `;
 }
 
@@ -10574,10 +10609,11 @@ function _paintUsersTable() {
 /* ============================================================================
    WORKSPACES — admin surface for workspace teams (list + detail)
 ============================================================================ */
-let _wsToolbar = { search: '', tab: 'members', sort: 'name' };
+let _wsToolbar = { search: '', tab: 'members', sort: 'name', page: 1 };
 
 function setWsSearch(v) {
   _wsToolbar.search = (v || '').toLowerCase().trim();
+  _wsToolbar.page = 1;
   const list = location.hash.replace(/^#\/?/, '').split('/');
   if (list[0] === 'workspaces' && !list[1]) {
     renderWorkspaces();
@@ -10587,8 +10623,9 @@ function setWsSearch(v) {
     }, 0);
   }
 }
-function clearWsSearch() { _wsToolbar.search = ''; renderWorkspaces(); }
-function setWsSort(s) { _wsToolbar.sort = s; renderWorkspaces(); }
+function clearWsSearch() { _wsToolbar.search = ''; _wsToolbar.page = 1; renderWorkspaces(); }
+function setWsSort(s) { _wsToolbar.sort = s; _wsToolbar.page = 1; renderWorkspaces(); }
+function setWsPage(p) { _wsToolbar.page = p; renderWorkspaces(); }
 function setWsTab(t) {
   _wsToolbar.tab = t;
   const id = (location.hash.split('/')[1] || '');
@@ -10653,6 +10690,11 @@ function renderWorkspaces() {
     if (sort === 'integrations') return (_wsIntegrationCount(b.id) || 0) - (_wsIntegrationCount(a.id) || 0);
     return (a.name || '').localeCompare(b.name || '');
   });
+  const WS_PAGE_SIZE = 12;
+  const wsTotal = filtered.length;
+  const wsPages = Math.max(1, Math.ceil(wsTotal / WS_PAGE_SIZE));
+  const wsPage = Math.min(Math.max(1, _wsToolbar.page || 1), wsPages);
+  const wsVisible = filtered.slice((wsPage-1)*WS_PAGE_SIZE, (wsPage-1)*WS_PAGE_SIZE + WS_PAGE_SIZE);
   const sortBtn = (key, label) => `<button class="toolbar-sort-btn ${sort===key?'is-active':''}" type="button" onclick="setWsSort('${key}')">${label}</button>`;
 
   $('content').innerHTML = `
@@ -10686,7 +10728,7 @@ function renderWorkspaces() {
         <div class="toolbar-empty">No workspaces match <strong>${escapeHtml(q)}</strong>. <button class="btn btn-ghost btn-sm" onclick="clearWsSearch()" style="margin-left:6px">Clear search</button></div>
       ` : `
         <div class="ws-grid">
-          ${filtered.map(w => {
+          ${wsVisible.map(w => {
             const intCount = _wsIntegrationCount(w.id);
             return `
             <div class="ws-card" onclick="navigate('workspaces/${escapeHtml(w.id)}')">
@@ -10708,6 +10750,7 @@ function renderWorkspaces() {
             `;
           }).join('')}
         </div>
+        ${paginatorHTML(wsPage, wsPages, wsTotal, WS_PAGE_SIZE, 'setWsPage')}
       `}
     </section>
   `;
@@ -10864,6 +10907,9 @@ function renderUsersHome(userId) {
           <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><circle cx="6" cy="6" r="4"/><path d="M9.5 9.5L12 12" stroke-linecap="round"/></svg>
           <input id="usersSearchInput" type="text" placeholder="Search by name or role…" value="${escapeHtml(_usersUiState.search||'')}" oninput="setUsersSearch(this.value)"/>
         </label>
+        <select class="users-select" onchange="setUsersDept(this.value)" aria-label="Filter by role">
+          ${_userDeptOptions().map(r => `<option value="${escapeHtml(r)}" ${_usersUiState.dept===r?'selected':''}>${r==='all'?'All roles':escapeHtml(r)}</option>`).join('')}
+        </select>
         <div class="users-filters">
           <button class="users-filter ${_usersUiState.filter==='all'?'is-on':''}" onclick="setUsersFilter('all')">All <span class="users-filter-badge">${MOCK_PEOPLE.length}</span></button>
           <button class="users-filter ${_usersUiState.filter==='has_access'?'is-on':''}" onclick="setUsersFilter('has_access')">With access <span class="users-filter-badge">${withAccess}</span></button>
@@ -10988,6 +11034,15 @@ function renderDistribution() {
     return distStatusBucketOf(i) === _distFilters.status;
   });
 
+  const sortedDist = sortRows(filtered, _distFilters.sortKey, _distFilters.sortDir, (i,k)=>
+    k==='status' ? distStatusBucketOf(i) :
+    k==='owner' ? ((getOwner(i.slug)||{}).name || (i.connectedBy||{}).name || '') : (i.name||''));
+  const DIST_PAGE_SIZE = 15;
+  const distTotal = sortedDist.length;
+  const distPages = Math.max(1, Math.ceil(distTotal / DIST_PAGE_SIZE));
+  const distPage = Math.min(Math.max(1, _distFilters.page || 1), distPages);
+  const distVisible = sortedDist.slice((distPage-1)*DIST_PAGE_SIZE, (distPage-1)*DIST_PAGE_SIZE + DIST_PAGE_SIZE);
+
   // Counts (on the full connected set, not filtered)
   const totalConn = connected.length;
   const workingCount = connected.filter(i => distStatusBucketOf(i) === 'working').length;
@@ -11044,16 +11099,16 @@ function renderDistribution() {
           <table class="dist-table">
             <thead>
               <tr>
-                <th style="min-width:260px">Integration</th>
-                <th style="min-width:140px">Status</th>
-                <th style="min-width:140px">Owner</th>
+                <th class="th-sortable" style="min-width:260px" onclick="setDistSort('name')">Integration ${sortCaret(_distFilters,'name')}</th>
+                <th class="th-sortable" style="min-width:140px" onclick="setDistSort('status')">Status ${sortCaret(_distFilters,'status')}</th>
+                <th class="th-sortable" style="min-width:140px" onclick="setDistSort('owner')">Owner ${sortCaret(_distFilters,'owner')}</th>
                 ${DIST_SURFACES.map(s => `<th class="dist-th-surface" title="${escapeHtml(s.desc)}">${escapeHtml(s.name)}</th>`).join('')}
               </tr>
             </thead>
             <tbody>
               ${filtered.length === 0 ? `
                 <tr><td colspan="${3 + DIST_SURFACES.length}"><div class="dist-empty">No integrations match the current filters.</div></td></tr>
-              ` : filtered.map(i => {
+              ` : distVisible.map(i => {
                 const dist = getDistribution(i.slug);
                 const bucket = distStatusBucketOf(i);
                 const label = distStatusLabelOf(i);
@@ -11108,6 +11163,7 @@ function renderDistribution() {
             </tbody>
           </table>
         </div>
+        ${paginatorHTML(distPage, distPages, distTotal, DIST_PAGE_SIZE, 'setDistPage')}
       </div>
     </div>
   `;
@@ -11149,16 +11205,19 @@ const WG_CATEGORIES = [
   { id:'team',        label:'Team' }
 ];
 
-let _wgFilters = { search:'', category:'all' };
+let _wgFilters = { search:'', category:'all', page:1 };
 
 function wgSetFilter(key, value) {
   _wgFilters[key] = value;
+  _wgFilters.page = 1;
   renderWidgetsLibrary();
 }
 function wgSearchInput(value) {
   _wgFilters.search = (value || '').toLowerCase();
+  _wgFilters.page = 1;
   renderWidgetsLibrary();
 }
+function setWgPage(p) { _wgFilters.page = p; renderWidgetsLibrary(); }
 
 // A widget's status is derived from Distribution availability:
 // - installed:true → 'installed'
@@ -11235,6 +11294,12 @@ function renderWidgetsLibrary() {
            });
   });
 
+  const WG_PAGE_SIZE = 12;
+  const wgTotal = filtered.length;
+  const wgPages = Math.max(1, Math.ceil(wgTotal / WG_PAGE_SIZE));
+  const wgPage = Math.min(Math.max(1, _wgFilters.page || 1), wgPages);
+  const wgVisible = filtered.slice((wgPage-1)*WG_PAGE_SIZE, (wgPage-1)*WG_PAGE_SIZE + WG_PAGE_SIZE);
+
   $('content').innerHTML = `
     <div class="wg-wrap">
       <div class="breadcrumb">
@@ -11267,7 +11332,7 @@ function renderWidgetsLibrary() {
       <div class="wg-grid">
         ${filtered.length === 0 ? `
           <div class="wg-empty">No widgets match the current filters.</div>
-        ` : filtered.map(w => {
+        ` : wgVisible.map(w => {
           const st = widgetStatus(w);
           const missing = widgetMissingIntegrations(w);
           const statusLabel = st === 'installed' ? 'Installed' : (st === 'available' ? 'Ready to install' : 'Blocked');
@@ -11308,6 +11373,7 @@ function renderWidgetsLibrary() {
           `;
         }).join('')}
       </div>
+      ${paginatorHTML(wgPage, wgPages, wgTotal, WG_PAGE_SIZE, 'setWgPage')}
     </div>
   `;
 }
@@ -11334,7 +11400,11 @@ function route() {
   // Full-vision-only surfaces bounce to Integrations while in V1 scope. ──
   {
     let _scope = 'v1'; try { _scope = sessionStorage.getItem('aims-scope') || 'v1'; } catch(e){}
-    if (_scope === 'v1' && ['distribution','workspaces','users','widgets'].includes(parts[0])) {
+    if (_scope !== 'v2' && ['distribution','workspaces','users','widgets'].includes(parts[0])) {
+      location.hash = '#/integrations'; return;
+    }
+    // Build your own is a 1.5 feature — bounce out of it while in V1.
+    if (_scope === 'v1' && parts[0] === 'build') {
       location.hash = '#/integrations'; return;
     }
   }
@@ -11506,6 +11576,13 @@ function renderHome() {
   }
   // 'popular' = leave default order (curated)
 
+  // Catalog pagination (clamped so a shrinking filter never lands on a blank page)
+  const CATALOG_PAGE_SIZE = 24;
+  const catalogTotal = filtered.length;
+  const catalogPages = Math.max(1, Math.ceil(catalogTotal / CATALOG_PAGE_SIZE));
+  const catalogPage = Math.min(Math.max(1, state.catalogPage || 1), catalogPages);
+  const catalogVisible = filtered.slice((catalogPage - 1) * CATALOG_PAGE_SIZE, (catalogPage - 1) * CATALOG_PAGE_SIZE + CATALOG_PAGE_SIZE);
+
   const isFiltering = state.activeCats.size>0 || state.activeCaps.size>0 || state.activeStates.size>0 || !!state.search || state.activeSrc!=='all' || !!state.activeStudio;
 
   $('content').innerHTML = `
@@ -11595,7 +11672,7 @@ function renderHome() {
         <div class="mkt-grid">${partners.map(mktCardHTML).join('')}</div>
       </div>
 
-      <div class="build-promo" onclick="navigate('#/build')">
+      <div class="build-promo" data-scope-min="v15" onclick="navigate('#/build')">
         <div class="build-promo-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M14 3l3 3-7 7-1 5-3-1 1-5 7-9z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M3 21h18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div>
         <div class="build-promo-text">
           <div class="build-promo-title">Can't find what you need? Build your own.</div>
@@ -11659,10 +11736,13 @@ function renderHome() {
             <a class="btn btn-ghost btn-sm" href="#/build">Or build it yourself →</a>
           </div>
         </div>
-      ` : `<div class="mkt-grid">${filtered.map(mktCardHTML).join('')}</div>`}
+      ` : `<div class="mkt-grid">${catalogVisible.map(mktCardHTML).join('')}</div>
+      ${paginatorHTML(catalogPage, catalogPages, catalogTotal, CATALOG_PAGE_SIZE, 'setCatalogPage')}`}
     </div>
   `;
 }
+
+function setCatalogPage(p){ state.catalogPage = p; renderHome(); const el = document.getElementById('catalogSection'); if (el) el.scrollIntoView({ block:'start', behavior:'smooth' }); }
 
 /* ── Operate view (orchestration thesis: status of your data infrastructure) ── */
 function renderOperateHome() {
@@ -11829,7 +11909,7 @@ function homeTabStripHTML(connectedCount, currentTab) {
       </button>
       <span style="flex:1"></span>
       <a class="btn btn-primary btn-sm" href="javascript:void(0)" onclick="openRequestModal()" style="text-decoration:none">+ Request integration</a>
-      <a class="btn btn-primary btn-outline btn-sm" href="#/build" style="text-decoration:none">+ Build your own</a>
+      <a class="btn btn-primary btn-outline btn-sm" data-scope-min="v15" href="#/build" style="text-decoration:none">+ Build your own</a>
     </div>
   `;
 }
@@ -11864,29 +11944,32 @@ function renderIntegratedHome(connected) {
     ${homeTabStripHTML(connected.length, 'integrated')}
 
     <div class="integrated-section">
-      ${Object.keys(grouped).map(catSlug => {
-        const cat = CATEGORIES.find(c => c.slug === catSlug);
-        const items = grouped[catSlug];
-        const label = cat ? cat.label : 'Other';
-        const color = cat ? cat.color : '#94A3B8';
-        const filtered = state.search ? items.filter(i =>
-          i.name.toLowerCase().includes(state.search.toLowerCase()) ||
-          (i.desc||'').toLowerCase().includes(state.search.toLowerCase())
-        ) : items;
-        if (filtered.length === 0) return '';
-        return `
+      ${(() => {
+        const groups = Object.keys(grouped).map(catSlug => {
+          const cat = CATEGORIES.find(c => c.slug === catSlug);
+          const items = grouped[catSlug];
+          const filtered = state.search ? items.filter(i =>
+            i.name.toLowerCase().includes(state.search.toLowerCase()) ||
+            (i.desc||'').toLowerCase().includes(state.search.toLowerCase())
+          ) : items;
+          return { label: cat ? cat.label : 'Other', color: cat ? cat.color : '#94A3B8', filtered };
+        }).filter(g => g.filtered.length > 0);
+        if (groups.length === 0) {
+          return `<div class="empty"><div class="empty-h">No active integrations match “${escapeHtml(state.search)}”</div><div class="empty-p">Try a different search, or browse the Marketplace to connect something new.</div></div>`;
+        }
+        return groups.map(g => `
           <div class="integrated-cat">
             <div class="integrated-cat-h">
-              <span class="integrated-cat-dot" style="background:${color}"></span>
-              <span class="integrated-cat-label">${escapeHtml(label)}</span>
-              <span class="integrated-cat-count">${filtered.length}</span>
+              <span class="integrated-cat-dot" style="background:${g.color}"></span>
+              <span class="integrated-cat-label">${escapeHtml(g.label)}</span>
+              <span class="integrated-cat-count">${g.filtered.length}</span>
             </div>
             <div class="integrated-grid">
-              ${filtered.map(homeIntegratedCardHTML).join('')}
+              ${g.filtered.map(homeIntegratedCardHTML).join('')}
             </div>
           </div>
-        `;
-      }).join('')}
+        `).join('');
+      })()}
     </div>
   `;
 }
@@ -11990,12 +12073,12 @@ function mktCardHTML(i) {
 
 function scrollToCatalog(){ const el = $('catalogSection'); if(el) el.scrollIntoView({behavior:'smooth', block:'start'}) }
 function setConnFilter(v, e){ document.querySelectorAll('.seg-btn').forEach(b=>b.classList.remove('active')); e.target.classList.add('active') }
-function setSrc(s){ state.activeSrc = s; renderHome() }
-function toggleCat(s){ state.activeCats.has(s) ? state.activeCats.delete(s) : state.activeCats.add(s); renderHome() }
-function toggleCap(c){ state.activeCaps.has(c) ? state.activeCaps.delete(c) : state.activeCaps.add(c); renderHome() }
-function toggleState(s){ state.activeStates.has(s) ? state.activeStates.delete(s) : state.activeStates.add(s); renderHome() }
-function setSearch(v){ state.search = v; renderHome(); setTimeout(()=>{ const inp=document.querySelector('.search-input'); if(inp){inp.focus();inp.setSelectionRange(v.length,v.length)} },0) }
-function clearFilters(){ state.activeCats.clear(); state.activeCaps.clear(); state.activeStates.clear(); state.search=''; state.activeSrc='all'; state.activeStudio=null; renderHome() }
+function setSrc(s){ state.activeSrc = s; state.catalogPage = 1; renderHome() }
+function toggleCat(s){ state.activeCats.has(s) ? state.activeCats.delete(s) : state.activeCats.add(s); state.catalogPage = 1; renderHome() }
+function toggleCap(c){ state.activeCaps.has(c) ? state.activeCaps.delete(c) : state.activeCaps.add(c); state.catalogPage = 1; renderHome() }
+function toggleState(s){ state.activeStates.has(s) ? state.activeStates.delete(s) : state.activeStates.add(s); state.catalogPage = 1; renderHome() }
+function setSearch(v){ state.search = v; state.catalogPage = 1; renderHome(); setTimeout(()=>{ const inp=document.querySelector('.search-input'); if(inp){inp.focus();inp.setSelectionRange(v.length,v.length)} },0) }
+function clearFilters(){ state.activeCats.clear(); state.activeCaps.clear(); state.activeStates.clear(); state.search=''; state.activeSrc='all'; state.activeStudio=null; state.catalogPage = 1; renderHome() }
 
 /* ────────────────────────────────────────────────────────
    FILTERS SLIDEOUT (DS — Figma node 14341-62310)
@@ -12566,9 +12649,10 @@ document.addEventListener('keydown', (e) => {
 function setStudio(s){
   if (s === 'null') s = null;
   state.activeStudio = (state.activeStudio===s)?null:s;
+  state.catalogPage = 1;
   renderHome();
 }
-function setSort(s){ state.sortBy = s; renderHome() }
+function setSort(s){ state.sortBy = s; state.catalogPage = 1; renderHome() }
 function toggleCatMore(){ state.catMoreOpen = !state.catMoreOpen; renderHome() }
 
 function removeFilter(kind, value) {
@@ -14512,6 +14596,28 @@ function paginatorHTML(currentPage, totalPages, totalRows, pageSize, onPageFn) {
   `;
 }
 
+/* ── Shared table sort helpers ──
+   Each sortable table keeps { sortKey, sortDir } on its state object and supplies
+   a value-getter. sortToggle flips direction on the active column, sortRows applies
+   the comparison (numeric-aware, stable copy), sortCaret renders the header glyph. */
+function sortToggle(st, key, defaultDir){
+  if (st.sortKey === key) st.sortDir = st.sortDir === 'asc' ? 'desc' : 'asc';
+  else { st.sortKey = key; st.sortDir = defaultDir || 'asc'; }
+}
+function sortRows(rows, key, dir, getVal){
+  if (!key) return rows;
+  const sorted = [...rows].sort((a, b) => {
+    const av = getVal(a, key), bv = getVal(b, key);
+    if (typeof av === 'number' && typeof bv === 'number') return av - bv;
+    return String(av == null ? '' : av).localeCompare(String(bv == null ? '' : bv), undefined, { numeric:true, sensitivity:'base' });
+  });
+  return dir === 'desc' ? sorted.reverse() : sorted;
+}
+function sortCaret(st, key){
+  if (st.sortKey !== key) return '<span class="sort-caret" aria-hidden="true">↕</span>';
+  return `<span class="sort-caret is-active" aria-hidden="true">${st.sortDir === 'asc' ? '↑' : '↓'}</span>`;
+}
+
 function instanceLogsHTML(i, inst) {
   const s = instanceLogsState;
   const allLogs = generateMockLogs(inst.id);
@@ -15758,15 +15864,42 @@ function finalizeConnect(){
 
 /* ====================== AUDIT (full) ====================== */
 
-let auditFilters = { severity:new Set(), eventTypes:new Set(), dateRange:'30d', search:'', expanded:null };
+let auditFilters = { severity:new Set(), eventTypes:new Set(), dateRange:'30d', search:'', page:1, sortKey:null, sortDir:'asc', expanded:null };
+
+// Parse a relative timestamp label ("2 min ago", "10 days ago", "1 month ago") to whole days.
+function auditEventAgeDays(ts) {
+  const m = String(ts||'').match(/(\d+)\s*(min|hour|day|week|month|year)/i);
+  if (!m) return 0;
+  const n = +m[1], u = m[2].toLowerCase();
+  if (u === 'min' || u === 'hour') return 0;
+  if (u === 'day') return n;
+  if (u === 'week') return n * 7;
+  if (u === 'month') return n * 30;
+  return n * 365;
+}
 
 function renderAudit() {
   let events = AUDIT_EVENTS;
   if (auditFilters.severity.size>0) events = events.filter(e=>auditFilters.severity.has(e.sev));
+  if (auditFilters.dateRange && auditFilters.dateRange !== 'all') {
+    const maxDays = auditFilters.dateRange === '7d' ? 7 : auditFilters.dateRange === '90d' ? 90 : 30;
+    events = events.filter(e => auditEventAgeDays(e.ts) <= maxDays);
+  }
   if (auditFilters.search) {
     const q = auditFilters.search.toLowerCase();
     events = events.filter(e => (e.event||'').toLowerCase().includes(q) || (e.actor||'').toLowerCase().includes(q) || (e.resource||'').toLowerCase().includes(q));
   }
+
+  events = sortRows(events, auditFilters.sortKey, auditFilters.sortDir, (e,k)=>
+    k==='time' ? auditEventAgeDays(e.ts) :
+    k==='severity' ? ({crit:0,warn:1,info:2}[e.sev] ?? 3) :
+    k==='actor' ? (e.actor||'') : (e.event||''));
+
+  const AUDIT_PAGE_SIZE = 15;
+  const auditTotal = events.length;
+  const auditPages = Math.max(1, Math.ceil(auditTotal / AUDIT_PAGE_SIZE));
+  const auditPage = Math.min(Math.max(1, auditFilters.page || 1), auditPages);
+  const auditVisible = events.slice((auditPage - 1) * AUDIT_PAGE_SIZE, (auditPage - 1) * AUDIT_PAGE_SIZE + AUDIT_PAGE_SIZE);
 
   $('content').innerHTML = `
     <div class="breadcrumb">
@@ -15790,8 +15923,11 @@ function renderAudit() {
       <div class="audit-filters">
         <div class="audit-filter">
           <span>Date range</span>
-          <select class="audit-select">
-            <option>Last 30 days</option><option>Last 7 days</option><option>Last 90 days</option><option>Custom…</option>
+          <select class="audit-select" onchange="auditFilters.dateRange=this.value;auditFilters.page=1;renderAudit()">
+            <option value="7d" ${auditFilters.dateRange==='7d'?'selected':''}>Last 7 days</option>
+            <option value="30d" ${auditFilters.dateRange==='30d'?'selected':''}>Last 30 days</option>
+            <option value="90d" ${auditFilters.dateRange==='90d'?'selected':''}>Last 90 days</option>
+            <option value="all" ${auditFilters.dateRange==='all'?'selected':''}>All time</option>
           </select>
         </div>
         <div class="audit-sev" role="group" aria-label="Filter by severity">
@@ -15799,27 +15935,32 @@ function renderAudit() {
         </div>
         <label class="audit-search">
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/></svg>
-          <input type="text" placeholder="Search by event, actor, resource…" value="${escapeHtml(auditFilters.search)}" oninput="auditFilters.search=this.value;renderAudit();setTimeout(()=>{const i=document.querySelector('.audit-search input');if(i){i.focus();i.setSelectionRange(this.value.length,this.value.length)}},0)"/>
+          <input type="text" placeholder="Search by event, actor, resource…" value="${escapeHtml(auditFilters.search)}" oninput="auditFilters.search=this.value;auditFilters.page=1;renderAudit();setTimeout(()=>{const i=document.querySelector('.audit-search input');if(i){i.focus();i.setSelectionRange(this.value.length,this.value.length)}},0)"/>
         </label>
-        <span class="audit-count">Showing ${events.length} of ${AUDIT_EVENTS.length} events</span>
+        <span class="audit-count">${events.length === AUDIT_EVENTS.length ? `${AUDIT_EVENTS.length} events` : `${events.length} of ${AUDIT_EVENTS.length} events`}</span>
       </div>
 
       ${events.length===0 ? `
         <div class="empty"><div class="empty-h">No events match these filters</div><div class="empty-p">Try widening the date range.</div></div>
-      ` : auditTable(events, true)}
+      ` : auditTable(auditVisible, true, true) + paginatorHTML(auditPage, auditPages, auditTotal, AUDIT_PAGE_SIZE, 'setAuditLogPage')}
     </div>
   `;
 }
 
-function auditTable(events, full) {
+function setAuditLogPage(p){ auditFilters.page = p; renderAudit(); }
+
+function auditTable(events, full, sortable) {
+  const sh = (key, label, extra) => sortable
+    ? `<th class="th-sortable" ${extra||''} onclick="setAuditSort('${key}')">${label} ${sortCaret(auditFilters, key)}</th>`
+    : `<th ${extra||''}>${label}</th>`;
   return `
     <table class="audit-table">
       <thead>
         <tr>
-          <th style="width:120px">Timestamp</th>
-          <th style="width:80px">Severity</th>
-          <th>Event</th>
-          <th>Actor</th>
+          ${sh('time','Timestamp','style="width:120px"')}
+          ${sh('severity','Severity','style="width:80px"')}
+          ${sh('event','Event')}
+          ${sh('actor','Actor')}
           ${full?'<th>Resource</th>':''}
           <th>Studio</th>
           ${full?'<th>IP</th>':''}
@@ -15853,7 +15994,8 @@ function auditTable(events, full) {
   `;
 }
 
-function toggleAuditSev(sev) { auditFilters.severity.has(sev) ? auditFilters.severity.delete(sev) : auditFilters.severity.add(sev); renderAudit() }
+function toggleAuditSev(sev) { auditFilters.severity.has(sev) ? auditFilters.severity.delete(sev) : auditFilters.severity.add(sev); auditFilters.page = 1; renderAudit() }
+function setAuditSort(k) { sortToggle(auditFilters, k, 'asc'); auditFilters.page = 1; renderAudit() }
 function toggleAuditExpand(idx) { auditFilters.expanded = auditFilters.expanded===idx ? null : idx; renderAudit() }
 
 /* ====================== BUILD YOUR OWN ====================== */
@@ -15869,8 +16011,8 @@ function renderBuildChooser() {
     <div class="ph">
       <div class="ph-top">
         <div class="ph-text">
-          <div class="ph-h1" style="display:flex;align-items:center;gap:10px">Build a private integration <span style="font-size:11px;font-weight:700;padding:3px 9px;border-radius:10px;background:rgba(167,139,250,0.10);color:var(--purple);border:1px solid rgba(167,139,250,0.30);text-transform:uppercase;letter-spacing:.05em">Preview · v2</span></div>
-          <div class="ph-sub">Choose how to connect your internal system or third-party API to AIMS-OS. <strong style="color:var(--amber)">⚠ Out of scope for v1 launch</strong> — same screens will serve customer-built providers in a later release.</div>
+          <div class="ph-h1" style="display:flex;align-items:center;gap:10px">Build a private integration <span style="font-size:11px;font-weight:700;padding:3px 9px;border-radius:8px;background:rgba(167,139,250,0.10);color:var(--purple);border:1px solid rgba(167,139,250,0.30);text-transform:uppercase;letter-spacing:.05em">Preview · 1.5</span></div>
+          <div class="ph-sub">Choose how to connect your internal system or third-party API to AIMS-OS. <strong style="color:var(--amber)">⚠ Planned for the 1.5 release</strong> — the same screens will serve customer-built providers.</div>
         </div>
       </div>
     </div>
@@ -15992,7 +16134,7 @@ function webhookStepContent() {
       </select>
     </div>
     <div class="field-group"><label class="field-label">Icon</label>
-      <div style="display:flex;gap:8px;align-items:center"><div class="logo logo-lg" style="background:#06B6D4">${(s.name||'?')[0].toUpperCase()}</div><button class="btn btn-ghost btn-sm">Upload custom</button></div>
+      <div style="display:flex;gap:8px;align-items:center"><div class="logo logo-lg" style="background:#6B7280">${(s.name||'?')[0].toUpperCase()}</div><button class="btn btn-ghost btn-sm">Upload custom</button></div>
     </div>
   `;
   if (s.step===2) return `
@@ -16014,11 +16156,16 @@ function webhookStepContent() {
   if (s.step===4) return `
     <h3 style="font-size:14px;font-weight:700;margin-bottom:6px">Declare capabilities</h3>
     <p style="font-size:12px;color:var(--t2);margin-bottom:14px">Which behaviors does this integration provide?</p>
-    ${Object.keys(CAP_META).map(c=>`
-      <div class="checkbox-row" onclick="s=webhookState.capabilities;s.has('${c}')?s.delete('${c}'):s.add('${c}');renderBuildWebhook()">
-        <div class="checkbox ${webhookState.capabilities.has(c)?'checked':''}">${webhookState.capabilities.has(c)?'✓':''}</div>
-        <span class="cap-chip ${c}">${CAP_META[c].label}</span>
-        <span style="font-size:11px;color:var(--t3);margin-left:auto">${c==='tools'?'Agents can invoke actions':c==='knowledge'?'Data indexed for search':c==='triggers'?'Inbound webhook events':'Outbound delivery'}</span>
+    ${[
+      {key:'tools',     chip:'cap-tool',    label:'Tools',     desc:'Agents can invoke actions'},
+      {key:'knowledge', chip:'cap-data',    label:'Knowledge', desc:'Data indexed for search'},
+      {key:'triggers',  chip:'cap-mcp',     label:'Triggers',  desc:'Inbound webhook events'},
+      {key:'channels',  chip:'cap-channel', label:'Channels',  desc:'Outbound delivery'}
+    ].map(c=>`
+      <div class="checkbox-row" onclick="s=webhookState.capabilities;s.has('${c.key}')?s.delete('${c.key}'):s.add('${c.key}');renderBuildWebhook()">
+        <div class="checkbox ${webhookState.capabilities.has(c.key)?'checked':''}">${webhookState.capabilities.has(c.key)?'✓':''}</div>
+        <span class="cap-chip ${c.chip}">${c.label}</span>
+        <span style="font-size:11px;color:var(--t3);margin-left:auto">${c.desc}</span>
       </div>
     `).join('')}
   `;
@@ -16037,7 +16184,7 @@ Content-Type: application/json
 
     <h3 style="font-size:14px;font-weight:700;margin:18px 0 6px">Preview card</h3>
     <div class="cat-card" style="max-width:280px;cursor:default">
-      <div class="cat-row">${logo(s.name||'New integration', '#06B6D4', 'sm')}<div><div class="cat-name">${escapeHtml(s.name||'New integration')}</div><div class="cat-cat">${escapeHtml(CATEGORIES.find(c=>c.slug===s.category)?.label||'')}</div></div></div>
+      <div class="cat-row">${logo(s.name||'New integration', '#6B7280', 'sm')}<div><div class="cat-name">${escapeHtml(s.name||'New integration')}</div><div class="cat-cat">${escapeHtml(CATEGORIES.find(c=>c.slug===s.category)?.label||'')}</div></div></div>
       <div class="cat-desc">${escapeHtml(s.desc||'Custom workspace integration.')}</div>
       <div class="cat-foot"><span class="src-badge private">Private</span><button class="cat-cta">Connect</button></div>
     </div>
@@ -16065,7 +16212,7 @@ function publishWebhook() {
   if(!s.name || !s.category){ toast('Name and category are required','error'); return }
   const slug = s.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
   INTEGRATIONS.push({
-    slug, name:s.name, vendor:'Built by your workspace', category:s.category, color:'#06B6D4',
+    slug, name:s.name, vendor:'Built by your workspace', category:s.category, color:'#6B7280',
     desc:s.desc||'Private workspace integration.',
     capabilities:[...webhookState.capabilities], authMethods:[s.auth==='none'?'apikey':'apikey'],
     source:'private', connected:false
@@ -16188,6 +16335,9 @@ function renderBuildSDK() {
 
 /* ====================== PERSONAL ====================== */
 
+let personalSearch = '';
+function setPersonalSearch(v){ personalSearch = v; renderPersonal(); setTimeout(()=>{ const el=document.getElementById('personalSearchInput'); if(el){ el.focus(); el.setSelectionRange(v.length, v.length); }},0); }
+
 function renderPersonal() {
   const personalAllowed = INTEGRATIONS.filter(i => i.allowPersonal);
   const myConnected = personalAllowed.filter(i => i.slug==='slack' || i.slug==='gdrive'); // mock: I personally connected these
@@ -16195,6 +16345,11 @@ function renderPersonal() {
     {...findIntegration('slack'), personalAccount:'thomas.gonzalez@gmail.com', personalConnectedAt:'12 days ago'},
     {...findIntegration('gdrive'), personalAccount:'thomas@personalmail.com', personalConnectedAt:'1 month ago'}
   ];
+  const _pq = (personalSearch||'').toLowerCase();
+  const discover = INTEGRATIONS.filter(i => i.category!=='custom').filter(i =>
+    !_pq || i.name.toLowerCase().includes(_pq) || (i.desc||'').toLowerCase().includes(_pq) ||
+    (CATEGORIES.find(c=>c.slug===i.category)?.label||'').toLowerCase().includes(_pq)
+  );
   $('content').innerHTML = `
     <div class="breadcrumb">
       <span class="crumb-current">My Integrations</span>
@@ -16219,10 +16374,16 @@ function renderPersonal() {
     <div class="divider" style="margin:8px 32px 24px"></div>
 
     <div class="section">
-      <div class="section-head"><div class="section-title">Discover</div></div>
+      <div class="section-head"><div class="section-title">Discover</div><span class="audit-count" style="margin-left:auto">${discover.length} available</span></div>
       <p style="font-size:12px;color:var(--t2);margin-bottom:14px">Only integrations your admin has allowed for personal connections appear here.</p>
-      <div class="catalog-grid">
-        ${INTEGRATIONS.filter(i=>i.category!=='custom').map(i => {
+      <div class="search-wrap" style="margin-bottom:14px">
+        <svg class="search-icon" width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.4"/><path d="M11 11l3 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        <input id="personalSearchInput" class="search-input" type="text" placeholder="Search integrations you can connect…" value="${escapeHtml(personalSearch)}" oninput="setPersonalSearch(this.value)"/>
+      </div>
+      ${discover.length===0 ? `
+        <div class="empty"><div class="empty-h">No integrations match “${escapeHtml(personalSearch)}”</div><div class="empty-p">Try a different search.</div></div>
+      ` : `<div class="catalog-grid">
+        ${discover.map(i => {
           const enabled = i.allowPersonal;
           return `
             <div class="cat-card" style="${enabled?'':'opacity:.5'}" ${enabled?`onclick="navigate('#/personal/integrations/${i.slug}')"`:`title="Your admin hasn't allowed personal connections for ${i.name}"`}>
@@ -16232,7 +16393,7 @@ function renderPersonal() {
             </div>
           `;
         }).join('')}
-      </div>
+      </div>`}
     </div>
   `;
 }
@@ -17412,19 +17573,23 @@ route();
   <span style="font-weight:600; color:#e2e8f0; letter-spacing:.02em;">Scope</span>
   <div style="display:flex; gap:4px;">
     <button type="button" onclick="setScope('v1')" id="scope-v1" style="padding:3px 10px; border-radius:5px; border:1px solid #2563EB; background:#2563EB; color:#fff; font-size:11px; cursor:pointer; font-weight:600; transition:all .15s;">V1</button>
+    <button type="button" onclick="setScope('v15')" id="scope-v15" style="padding:3px 10px; border-radius:5px; border:1px solid #2A2D35; background:transparent; color:#94a3b8; font-size:11px; cursor:pointer; transition:all .15s;">1.5</button>
     <button type="button" onclick="setScope('v2')" id="scope-v2" style="padding:3px 10px; border-radius:5px; border:1px solid #2A2D35; background:transparent; color:#94a3b8; font-size:11px; cursor:pointer; transition:all .15s;">Full vision</button>
   </div>
 </div>
 <script>
 (function(){
-  var SCOPE_TIERS = ['v1','v2'];
+  var SCOPE_TIERS = ['v1','v15','v2'];
   // V1 nav routes. 'personal' = "My Integrations". 'requests' covers admin "Requests" + user "My requests".
+  // 1.5 adds "Build your own" (a content entry point, not a sidebar route), so the sidebar in
+  // v15 matches V1; only Full vision (v2) reveals the extra nav routes.
   var V1_ROUTES = ['integrations','requests','audit','personal'];
 
   // Show/hide sidebar nav items + collapse empty groups for the active scope.
   // Reads scope from sessionStorage so route() can re-run it on every navigation.
   window.__applyNavScope = function(){
     var scope = 'v1'; try { scope = sessionStorage.getItem('aims-scope') || 'v1'; } catch(e){}
+    document.documentElement.setAttribute('data-scope', scope);  // drives CSS scope-gate
     document.querySelectorAll('.ssb-group').forEach(function(grp){
       var items = [].slice.call(grp.querySelectorAll('.ssb-item'));
       items.forEach(function(it){
@@ -17451,9 +17616,12 @@ route();
       b.style.borderColor = on ? '#2563EB' : '#2A2D35';
       b.style.fontWeight  = on ? '600' : '400';
     });
-    // Bounce out of a Full-vision-only surface when switching down to V1
+    // Bounce out of a surface the new scope no longer exposes.
     var parts = location.hash.replace(/^#\/?/, '').split('/');
-    if (scope === 'v1' && ['distribution','workspaces','users','widgets'].indexOf(parts[0]) > -1) {
+    if (scope !== 'v2' && ['distribution','workspaces','users','widgets'].indexOf(parts[0]) > -1) {
+      location.hash = '#/integrations';
+    }
+    if (scope === 'v1' && parts[0] === 'build') {
       location.hash = '#/integrations';
     }
   };
