@@ -7,15 +7,16 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
-  --bg:#0a0d1a; --bg2:#0f172e; --bg3:#0d1323;
+  /* Core tokens aligned to AIMS-OS Design System (canvas #0A0E1A · surface #0D1120 · border #ffffff1a) */
+  --bg:#0A0E1A; --bg2:#0f172e; --bg3:#0D1120;
   --t1:rgba(255,255,255,0.92); --t2:rgba(255,255,255,0.60); --t3:rgba(255,255,255,0.38);
-  --line:rgba(255,255,255,0.08);
+  --line:rgba(255,255,255,0.10);
   --line-strong:rgba(255,255,255,0.14);
   --hover:rgba(255,255,255,0.04);
   --hover-strong:rgba(255,255,255,0.08);
-  --shell-page-bg:#070e1c;
-  --shell-topbar-bg:rgba(10,13,26,0.72);
-  --shell-sidebar-bg:#0d1323;
+  --shell-page-bg:#0A0E1A;
+  --shell-topbar-bg:rgba(10,14,26,0.72);
+  --shell-sidebar-bg:#0D1120;
   --accent:#2B7FFF; --accent-2:#155DFC;
   --cyan:#06B6D4; --green:#05DF72; --amber:#FDC700; --red:#EF4444; --purple:#A78BFA; --pink:#EC4899;
   --grad:linear-gradient(135deg,#2B7FFF 0%,#155DFC 100%);
@@ -25,6 +26,26 @@
   --r4:4px; --r6:6px; --r8:8px; --r10:10px; --r12:12px; --r14:14px;
   /* Spacing scale (4px base) — for new code; existing values may be unchanged */
   --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:20px; --s6:24px; --s7:32px; --s8:48px;
+  /* DS Sidebar component tokens (studio rail) */
+  --sb-bg:#0F172B;
+  --sb-icon-default:rgba(128,175,255,0.90);
+  --sb-icon-active:#ffffff;
+  --sb-icon-hover-bg:rgba(255,255,255,0.06);
+  --sb-active-grad:radial-gradient(circle at 61% 68%, #2173FF 29%, #09E2AB 61%);
+  --sb-active-shadow:6px 6px 18px 0 rgba(82,163,255,0.35);
+  --sb-hover-shadow:0 0 16px 0 rgba(33,127,255,0.45);
+  --sb-separator:rgba(255,255,255,0.15);
+  --sb-container-shadow:8px 8px 16px rgba(0,0,0,0.25);
+  /* DS Topbar component tokens */
+  --topbar-workspace-border:rgba(43,127,255,0.20);
+  --topbar-zone-hover-bg:rgba(255,255,255,0.04);
+  --topbar-zone-hover-bd:rgba(43,127,255,0.45);
+  --topbar-btn-hover:rgba(255,255,255,0.08);
+  --topbar-search-bg:rgba(255,255,255,0.10);
+  --topbar-search-border:rgba(255,255,255,0.10);
+  --topbar-avatar-ring:rgba(43,127,255,0.30);
+  --topbar-divider:rgba(255,255,255,0.08);
+  --topbar-icon:rgba(255,255,255,0.70);
 }
 html,body{height:100%}
 body{
@@ -36,8 +57,8 @@ body{
 
 /* ── TOPBAR (fixed full width, blur backdrop) ── */
 .topbar{
-  position:fixed; top:0; left:0; right:0; height:52px; z-index:20;
-  display:flex; align-items:center; gap:10px; padding:0 20px 0 15px;
+  position:fixed; top:0; left:0; right:0; height:40px; z-index:20;
+  display:flex; align-items:center; gap:8px; padding:0 14px 0 12px;
   background:var(--shell-topbar-bg);
   border-bottom:1px solid var(--line);
   backdrop-filter:blur(20px) saturate(1.8);
@@ -48,11 +69,12 @@ body{
 
 .tb-context-wrap{position:relative; flex-shrink:0; display:inline-flex; align-items:center}
 .tb-context{
-  display:flex; align-items:center; gap:8px; height:34px; padding:0 9px 0 6px;
-  border-radius:8px; background:transparent; border:none; cursor:pointer;
-  color:var(--t1); font-family:inherit; transition:background .15s;
+  display:flex; align-items:center; gap:8px; height:30px; padding:0 8px 0 6px;
+  border-radius:8px; background:transparent;
+  border:1px solid var(--topbar-workspace-border); cursor:pointer;
+  color:var(--t1); font-family:inherit; transition:background .15s, border-color .15s;
 }
-.tb-context:hover{background:var(--hover)}
+.tb-context:hover{background:var(--topbar-zone-hover-bg); border-color:var(--topbar-zone-hover-bd)}
 .tb-context-logo{
   width:26px; height:26px; border-radius:7px;
   display:flex; align-items:center; justify-content:center;
@@ -155,8 +177,8 @@ html.persona-user [data-admin-only]{display:none !important}
 html:not(.persona-user) [data-user-only]{display:none !important}
 
 .tb-search-btn{
-  width:340px; flex-shrink:0; height:32px;
-  background:var(--hover); border:1px solid var(--line);
+  width:340px; flex-shrink:0; height:30px;
+  background:var(--topbar-search-bg); border:1px solid var(--topbar-search-border);
   border-radius:var(--r8); padding:0 6px 0 10px;
   color:var(--t3); font-family:inherit; font-size:13px;
   cursor:pointer; display:flex; align-items:center; gap:8px;
@@ -246,22 +268,23 @@ html.theme-light .notif-preview{background:var(--hover); border-color:var(--line
 .notif-empty{padding:34px 16px; text-align:center; color:var(--t3); font-size:12.5px; line-height:1.5}
 .tb-divider-v{
   display:inline-block; width:1px; height:22px;
-  background:var(--line); margin:0 4px; flex-shrink:0; align-self:center;
+  background:var(--topbar-divider); margin:0 4px; flex-shrink:0; align-self:center;
 }
 
+/* Workspace/account identity — styled as a DS Topbar "zone" (bordered, rounded-8) */
 .tb-identity{
   display:inline-flex; align-items:center; gap:2px;
-  background:var(--hover); border:1px solid var(--line);
-  border-radius:9999px; padding:3px; flex-shrink:0;
-  transition:border-color .12s;
+  background:transparent; border:1px solid var(--topbar-workspace-border);
+  border-radius:8px; padding:3px; flex-shrink:0;
+  transition:border-color .12s, background .12s;
 }
-.tb-identity:hover{border-color:var(--line-strong)}
+.tb-identity:hover{background:var(--topbar-zone-hover-bg); border-color:var(--topbar-zone-hover-bd)}
 .tb-ws-badge{
   display:inline-flex; align-items:center; gap:7px;
   padding:0 8px 0 0; background:transparent; border:none; cursor:pointer;
   color:rgba(255,255,255,0.85); font-family:inherit; font-size:12px; font-weight:600;
   line-height:1; flex-shrink:0; transition:background .12s, color .12s;
-  max-width:180px; height:28px; border-radius:9999px;
+  max-width:180px; height:28px; border-radius:6px;
 }
 .tb-ws-badge:hover{background:var(--hover-strong); color:var(--t1)}
 .tb-ws-badge-logo{
@@ -280,73 +303,18 @@ html.theme-light .notif-preview{background:var(--hover); border-color:var(--line
   display:flex; align-items:center; justify-content:center;
   font-size:10px; font-weight:700; color:#fff;
   cursor:pointer; flex-shrink:0; border:none; font-family:inherit;
+  box-shadow:0 0 0 1.5px var(--topbar-avatar-ring);   /* DS Topbar avatar ring */
 }
 
 /* ── APP layout (below fixed topbar) ── */
 .app{
   display:flex; width:100%; height:100vh;
-  padding:60px 8px 8px 0; gap:8px;
+  padding:48px 8px 8px 8px; gap:8px;
   overflow:hidden; box-sizing:border-box;
 }
 
-/* ── SIDEBAR (52px rail, collapsible to 220px) ── */
-.sidebar{
-  width:52px; flex-shrink:0; margin-left:8px;
-  background:var(--shell-sidebar-bg);
-  display:flex; flex-direction:column;
-  border-radius:14px;
-  border:1px solid var(--line);
-  box-shadow:0 0 0 1px rgba(255,255,255,0.04),0 2px 4px rgba(0,0,0,0.4),0 8px 24px rgba(0,0,0,0.45),0 24px 48px rgba(0,0,0,0.3);
-  position:relative; z-index:10; overflow:hidden;
-  transition:width .22s cubic-bezier(.4,0,.2,1);
-}
-.sidebar.sb-expanded{width:220px}
-.sb-nav{flex:1; display:flex; flex-direction:column; padding:6px 8px; gap:1px; overflow:hidden}
-.sb-item{
-  display:flex; align-items:center; height:42px; border:none; border-radius:var(--r8);
-  background:transparent; color:rgba(255,255,255,0.50);
-  font-size:13px; font-weight:600;
-  cursor:pointer; width:100%; text-align:left; text-decoration:none;
-  transition:background .15s, color .15s;
-  white-space:nowrap; overflow:hidden; flex-shrink:0; padding:0 10px; gap:0;
-  font-family:inherit;
-}
-.sidebar:not(.sb-expanded) .sb-item{justify-content:center; padding:0}
-.sidebar.sb-expanded .sb-item{justify-content:flex-start; padding:0 8px; gap:10px}
-.sb-item-icon{
-  width:32px; height:32px; border-radius:8px;
-  background:rgba(255,255,255,0.04);
-  display:flex; align-items:center; justify-content:center;
-  flex-shrink:0; transition:background .15s;
-}
-.sb-item-icon svg{width:17px; height:17px}
-.sb-item:hover{background:transparent; color:rgba(255,255,255,0.80)}
-.sb-item:hover .sb-item-icon{background:rgba(255,255,255,0.09)}
-.sidebar:not(.sb-expanded) .sb-item.active{background:transparent}
-.sidebar:not(.sb-expanded) .sb-item.active .sb-item-icon{
-  background:var(--grad); color:#fff;
-  box-shadow:0 2px 10px rgba(21,93,252,0.4);
-}
-.sidebar.sb-expanded .sb-item.active{background:rgba(43,127,255,0.10); color:var(--t1)}
-.sidebar.sb-expanded .sb-item.active .sb-item-icon{background:var(--grad); color:#fff}
-.sb-label{opacity:0; transition:opacity .12s; pointer-events:none; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
-.sidebar.sb-expanded .sb-label{opacity:1; pointer-events:auto}
-.sb-divider{height:1px; background:var(--line); margin:4px 0; flex-shrink:0}
-.sb-bottom{flex-shrink:0; border-top:1px solid var(--line); padding:4px 8px 8px}
-.sb-toggle{
-  display:flex; align-items:center; height:40px; border:none; border-radius:10px;
-  background:transparent; color:rgba(128,175,255,0.55);
-  font-size:12px; font-weight:600;
-  cursor:pointer; width:100%; white-space:nowrap; overflow:hidden;
-  transition:background .12s, color .12s; font-family:inherit;
-}
-.sidebar:not(.sb-expanded) .sb-toggle{justify-content:center; gap:0; padding:0}
-.sidebar.sb-expanded .sb-toggle{justify-content:flex-start; padding:0 8px; gap:10px}
-.sb-toggle:hover{background:var(--hover); color:#80AFFF}
-.sb-toggle-icon{width:18px; height:18px; flex-shrink:0; transition:transform .22s}
-.sidebar.sb-expanded .sb-toggle-icon{transform:rotate(180deg)}
-.sb-toggle-label{opacity:0; transition:opacity .12s}
-.sidebar.sb-expanded .sb-toggle-label{opacity:1}
+/* Studio rail removed — nav consolidated into a single DS Sidebar (.ssb).
+   Studio switching lives in the topbar ("Admin Studio ▾"). */
 
 .main{
   flex:1; display:flex; min-width:0;
@@ -368,6 +336,30 @@ html.theme-light .notif-preview{background:var(--hover); border-color:var(--line
   background:linear-gradient(90deg, transparent 0%, rgba(43,127,255,0.30) 50%, transparent 100%);
   pointer-events:none;
 }
+
+/* Header row: title + collapse toggle */
+.ssb-header{display:flex; align-items:center; justify-content:space-between; gap:8px}
+.ssb-collapse{
+  width:26px; height:26px; flex-shrink:0; border:none; background:transparent;
+  color:var(--t3); border-radius:6px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  transition:background .12s, color .12s;
+}
+.ssb-collapse:hover{background:var(--hover); color:var(--t1)}
+
+/* ── DS Sidebar collapse (icons-only, like the DS Sidebar menu) ── */
+.ssb{transition:width .2s cubic-bezier(.4,0,.2,1)}
+.ssb.is-collapsed{width:56px}
+.ssb.is-collapsed .ssb-header{justify-content:center; padding:16px 0 4px}
+.ssb.is-collapsed .ssb-header-title,
+.ssb.is-collapsed .ssb-search-wrap,
+.ssb.is-collapsed .ssb-item-label,
+.ssb.is-collapsed .ssb-item-badge,
+.ssb.is-collapsed .ssb-grp-h{display:none}
+.ssb.is-collapsed .ssb-item{justify-content:center; gap:0; padding:8px 0; margin:2px auto; width:40px}
+.ssb.is-collapsed .ssb-item.active::before{display:none}
+.ssb.is-collapsed .ssb-group{padding:6px 0}
+.ssb.is-collapsed .ssb-group + .ssb-group{margin-top:6px; padding-top:8px}
 
 /* Header */
 .ssb-header{padding:16px 16px 4px}
@@ -458,11 +450,6 @@ html.theme-light .notif-preview{background:var(--hover); border-color:var(--line
 .ssb-item-label{flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
 .ssb-item-lock{
   width:11px; height:11px; color:var(--t3); flex-shrink:0; opacity:.7;
-}
-.ssb-item-alert{
-  width:7px; height:7px; border-radius:50%;
-  background:var(--amber); flex-shrink:0;
-  box-shadow:0 0 0 3px rgba(253,199,0,0.15);
 }
 .ssb-item-new{
   font-size:8.5px; font-weight:700; padding:1.5px 6px; border-radius:8px;
@@ -619,13 +606,14 @@ html.theme-light .btn-primary.btn-outline{color:var(--cyan); border-color:rgba(6
 .cap-chips{display:flex; gap:4px; flex-wrap:wrap}
 .cap-chip{
   display:inline-flex; align-items:center; gap:4px;
-  font-size:10px; font-weight:600; padding:2.5px 7px; border-radius:5px;
+  font-size:11px; font-weight:500; padding:3px 8px; border-radius:8px;
   background:rgba(255,255,255,0.04); color:var(--t2); border:1px solid var(--line);
 }
 .cap-chip svg{flex-shrink:0}
-.cap-chip.cap-tool{color:var(--purple); background:rgba(167,139,250,0.10); border-color:rgba(167,139,250,0.22)}
-.cap-chip.cap-data{color:var(--green); background:rgba(5,223,114,0.10); border-color:rgba(5,223,114,0.22)}
-.cap-chip.cap-mcp{color:var(--cyan); background:rgba(6,182,212,0.10); border-color:rgba(6,182,212,0.25)}
+/* DS Tag colours: purple / limeGreen-success / lightBlue */
+.cap-chip.cap-tool{color:#d8b4fe; background:rgba(173,70,255,0.10); border-color:rgba(173,70,255,0.22)}
+.cap-chip.cap-data{color:#6ee7b7; background:rgba(0,201,80,0.10); border-color:rgba(0,201,80,0.22)}
+.cap-chip.cap-mcp{color:#7dd3fc; background:rgba(81,162,255,0.10); border-color:rgba(81,162,255,0.25)}
 
 .conn-meta{display:flex; justify-content:space-between; gap:8px; font-size:11px; color:var(--t2)}
 .conn-meta strong{color:var(--t1); font-weight:600}
@@ -650,7 +638,7 @@ html.theme-light .btn-primary.btn-outline{color:var(--cyan); border-color:rgba(6
 
 .pill-row{display:flex; gap:6px; flex-wrap:wrap; align-items:center; margin-bottom:14px}
 .pill{
-  font-size:11px; font-weight:500; padding:4px 10px; border-radius:20px;
+  font-size:11px; font-weight:500; padding:4px 10px; border-radius:8px;
   background:var(--hover); color:var(--t2); border:1px solid var(--line);
   cursor:pointer; display:inline-flex; align-items:center; gap:5px;
   font-family:inherit; transition:background .12s, color .12s, border-color .12s;
@@ -721,7 +709,7 @@ html.theme-light .btn-primary.btn-outline{color:var(--cyan); border-color:rgba(6
 }
 .detail-cat-chip{
   display:inline-flex; align-items:center; gap:5px;
-  padding:3px 9px; border-radius:11px;
+  padding:3px 9px; border-radius:8px;
   background:rgba(43,127,255,0.10);
   border:1px solid rgba(43,127,255,0.28);
   color:#2B7FFF; font-size:10.5px; font-weight:700;
@@ -783,12 +771,12 @@ html.theme-light .btn-primary.btn-outline{color:var(--cyan); border-color:rgba(6
 }
 .tab:hover{color:var(--t1); background:rgba(255,255,255,0.03)}
 .tab.active{
-  color:#7ed3f7;
-  border-color:#7ed3f7;
-  background:rgba(56,189,248,0.06);
+  color:var(--accent);
+  border-color:var(--accent);
+  background:transparent;
 }
 .tab:focus-visible{
-  outline:2px solid rgba(56,189,248,0.5); outline-offset:-2px;
+  outline:2px solid rgba(43,127,255,0.5); outline-offset:-2px;
   border-radius:6px;
 }
 .tab-count{
@@ -800,7 +788,7 @@ html.theme-light .btn-primary.btn-outline{color:var(--cyan); border-color:rgba(6
   transition:background .12s, color .12s;
 }
 .tab.active .tab-count{
-  background:rgba(56,189,248,0.20); color:#7ed3f7;
+  background:rgba(43,127,255,0.20); color:var(--accent);
 }
 .tab.is-warn .tab-count{background:rgba(245,158,11,0.18); color:#fbbf24;}
 .tab.is-ok .tab-count{background:rgba(16,185,129,0.18); color:#34d39c;}
@@ -813,8 +801,8 @@ html.theme-light .btn-primary.btn-outline{color:var(--cyan); border-color:rgba(6
 .ov-cap-cards{display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:10px; margin:8px 0 14px}
 .ov-cap-card{
   background:rgba(255,255,255,0.022);
-  border:1px solid rgba(255,255,255,0.06);
-  border-radius:10px; padding:12px;
+  border:0.5px solid var(--line);
+  border-radius:8px; padding:12px;
   transition:border-color .15s, background .15s;
 }
 .ov-cap-card:hover{
@@ -834,7 +822,7 @@ html.theme-light .btn-primary.btn-outline{color:var(--cyan); border-color:rgba(6
 
 .scope-chips{display:flex; flex-wrap:wrap; gap:5px}
 .scope-chip{
-  font-size:11px; padding:3px 8px; border-radius:6px;
+  font-size:11px; padding:3px 8px; border-radius:8px;
   background:rgba(255,255,255,0.04);
   color:var(--t2);
   border:1px solid rgba(255,255,255,0.08);
@@ -849,16 +837,16 @@ html.theme-light .btn-primary.btn-outline{color:var(--cyan); border-color:rgba(6
 
 .ov-side{
   background:rgba(255,255,255,0.022);
-  border:1px solid rgba(255,255,255,0.06);
-  border-radius:12px; padding:16px;
+  border:0.5px solid var(--line);
+  border-radius:8px; padding:16px;
   height:fit-content;
 }
 .ov-side-row{padding:8px 0; font-size:12px; border-bottom:1px solid rgba(255,255,255,0.04); display:flex; flex-direction:column; gap:2px}
 .ov-side-row:last-child{border-bottom:none}
 .ov-side-k{color:var(--t3); font-size:10px; text-transform:uppercase; letter-spacing:.06em; font-weight:600}
 .ov-side-v{color:var(--t1); font-size:12px}
-.ov-side-v a{color:#7ed3f7; text-decoration:none; transition:color .12s}
-.ov-side-v a:hover{text-decoration:underline; color:#a5e0fb}
+.ov-side-v a{color:var(--accent); text-decoration:none; transition:color .12s}
+.ov-side-v a:hover{text-decoration:underline; color:#5b9bff}
 .ov-comp{display:flex; flex-wrap:wrap; gap:5px; margin-top:4px}
 .ov-comp .src-badge{background:var(--hover); color:var(--t2); border-color:var(--line)}
 
@@ -926,11 +914,11 @@ html.theme-light .btn-primary.btn-outline{color:var(--cyan); border-color:rgba(6
 .audit-head{margin:0 0 14px; font-size:12.5px; color:var(--t2); line-height:1.5}
 .audit-filters{display:flex; gap:8px; align-items:center; flex-wrap:wrap; padding:10px 14px; background:var(--bg3); border:1px solid var(--line); border-radius:var(--r8); margin-bottom:14px}
 .audit-filter{display:flex; align-items:center; gap:6px; font-size:12px; color:var(--t2)}
-.audit-filter-input{background:var(--hover); border:1px solid var(--line); border-radius:var(--r6); padding:4px 8px; color:var(--t1); font-size:12px; font-family:inherit; outline:none}
+.audit-filter-input{background:var(--hover); border:1px solid var(--line); border-radius:var(--r8); padding:4px 8px; color:var(--t1); font-size:12px; font-family:inherit; outline:none}
 .audit-count{margin-left:auto; font-size:11px; color:var(--t3)}
 .audit-table{width:100%; border-collapse:collapse; background:transparent; border:1px solid var(--line); border-radius:8px; overflow:hidden}
 .audit-table th, .audit-table td{text-align:left; padding:10px 12px; font-size:12px; border-bottom:1px solid var(--line)}
-.audit-table th{background:var(--hover); color:var(--t3); font-weight:600; font-size:10px; text-transform:uppercase; letter-spacing:.05em}
+.audit-table th{background:transparent; color:var(--t2); font-weight:500; letter-spacing:normal}
 .audit-table tbody tr{cursor:pointer; transition:background .12s}
 .audit-table tbody tr:hover{background:var(--hover)}
 .audit-table tbody tr:last-child td{border-bottom:none}
@@ -1237,14 +1225,14 @@ html.theme-light .btn-primary.btn-outline{color:var(--cyan); border-color:rgba(6
   border:1px solid rgba(6,182,212,0.28); border-radius:11px;
   font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.06em;
 }
-.mkt-hero-title{font-size:32px; font-weight:700; color:var(--t1); letter-spacing:-.02em; margin-bottom:10px; position:relative; padding-top:12px}
+.mkt-hero-title{font-size:32px; font-weight:700; line-height:1.2; color:var(--t1); letter-spacing:-.02em; margin-bottom:10px; position:relative; padding-top:12px}
 .mkt-hero-sub{font-size:14px; color:var(--t2); max-width:540px; margin:0 auto 26px; position:relative; line-height:1.6}
 .mkt-search-wrap{position:relative; max-width:560px; margin:0 auto 22px}
 .mkt-search-icon{position:absolute; left:18px; top:50%; transform:translateY(-50%); color:var(--t3); pointer-events:none}
 .mkt-search-input{
-  width:100%; padding:14px 18px 14px 46px;
+  width:100%; padding:11px 18px 11px 44px;
   background:var(--bg3); border:1px solid var(--line);
-  border-radius:var(--r10); font-size:14px; color:var(--t1);
+  border-radius:var(--r8); font-size:14px; color:var(--t1);
   outline:none; font-family:inherit;
   transition:border-color .15s, background .15s, box-shadow .15s;
   box-shadow:0 4px 20px rgba(0,0,0,0.18);
@@ -1354,8 +1342,8 @@ html.theme-light .btn-primary.btn-outline{color:var(--cyan); border-color:rgba(6
   gap:12px;
 }
 .mkt-card{
-  background:var(--bg3); border:1px solid rgba(255,255,255,0.06);
-  border-radius:12px; padding:16px;
+  background:var(--bg3); border:0.5px solid var(--line);
+  border-radius:8px; padding:16px;
   cursor:pointer; display:flex; flex-direction:column; gap:10px;
   transition:border-color .15s, background .15s, transform .12s, box-shadow .2s;
   position:relative; min-height:178px;
@@ -1385,17 +1373,17 @@ html.theme-light .btn-primary.btn-outline{color:var(--cyan); border-color:rgba(6
 }
 .mkt-card-cta{
   display:inline-flex; align-items:center; gap:5px;
-  font-size:11.5px; font-weight:600; padding:6px 12px;
-  border-radius:7px; cursor:pointer;
-  background:rgba(56,189,248,0.10);
-  color:#7ed3f7;
-  border:1px solid rgba(56,189,248,0.28);
+  font-size:12px; font-weight:600; padding:6px 12px;
+  border-radius:8px; cursor:pointer;
+  background:rgba(43,127,255,0.12);
+  color:var(--accent);
+  border:1px solid rgba(43,127,255,0.28);
   font-family:inherit; transition:all .15s ease;
 }
 .mkt-card-cta:hover{
-  background:rgba(56,189,248,0.18);
-  border-color:rgba(56,189,248,0.45);
-  color:var(--t1);
+  background:rgba(43,127,255,0.20);
+  border-color:rgba(43,127,255,0.45);
+  color:#fff;
 }
 .mkt-card-state{
   font-size:11px; font-weight:600;
@@ -1428,7 +1416,7 @@ html.theme-light .btn-primary.btn-outline{color:var(--cyan); border-color:rgba(6
   position:absolute; top:14px; right:14px;
   display:inline-flex; align-items:center; gap:5px;
   font-size:10px; font-weight:700; padding:3px 8px 3px 7px;
-  border-radius:20px; line-height:1;
+  border-radius:8px; line-height:1;
   letter-spacing:.01em; white-space:nowrap;
   max-width:140px; overflow:hidden; text-overflow:ellipsis;
 }
@@ -1690,7 +1678,7 @@ html.theme-light .btn-primary.btn-outline{color:var(--cyan); border-color:rgba(6
 .op-row-status .mkt-card-status{font-size:11px; padding:4px 9px}
 .op-row-main{display:flex; align-items:center; gap:12px; min-width:0}
 .op-row-text{min-width:0; flex:1}
-.op-row-name{font-size:14px; font-weight:700; color:var(--t1); margin-bottom:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.op-row-name{font-size:14px; font-weight:600; color:var(--t1); margin-bottom:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
 .op-row-meta{
   display:flex; align-items:center; gap:6px; flex-wrap:wrap;
   font-size:12px; color:var(--t3); font-weight:500;
@@ -1704,10 +1692,20 @@ html.theme-light .btn-primary.btn-outline{color:var(--cyan); border-color:rgba(6
   display:flex; align-items:center; justify-content:center; letter-spacing:-.02em;
 }
 .op-row-action{display:flex; justify-content:flex-end}
+
+/* ── DS EntityList row (sample) — state Tag + action on the right, per the DS Sidebar/EntityList spec ── */
+.op-row.op-row-ds{display:flex; align-items:center; justify-content:space-between; gap:16px; padding:12px 16px}
+.op-ds-left{display:flex; align-items:center; gap:12px; min-width:0; flex:1}
+.op-ds-text{min-width:0}
+.op-ds-name{font-size:16px; font-weight:600; line-height:1.25; color:var(--t1); overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.op-ds-meta{display:flex; align-items:center; gap:6px; flex-wrap:wrap; font-size:12px; font-weight:500; color:var(--t3); margin-top:2px}
+.op-ds-meta .op-dot{color:var(--line-strong); font-weight:400}
+.op-ds-right{display:flex; align-items:center; gap:10px; flex-shrink:0}
+.op-ds-divider{width:1px; height:18px; background:var(--line); flex-shrink:0}
 .op-cta{
   display:inline-flex; align-items:center; gap:6px; height:30px; padding:0 12px;
-  font-family:inherit; font-size:12px; font-weight:700;
-  border-radius:7px; cursor:pointer; transition:transform .12s, background .15s;
+  font-family:inherit; font-size:12px; font-weight:600;
+  border-radius:8px; cursor:pointer; transition:transform .12s, background .15s;
   white-space:nowrap;
 }
 .op-cta:hover{transform:translateY(-1px)}
@@ -2092,14 +2090,14 @@ html.theme-light .btn-primary.btn-outline{color:var(--cyan); border-color:rgba(6
 .log-toolbar{
   display:flex; align-items:center; gap:12px; flex-wrap:wrap;
   padding:12px 14px; margin:14px 0;
-  background:var(--bg2); border:1px solid var(--line); border-radius:10px;
+  background:var(--bg2); border:0.5px solid var(--line); border-radius:8px;
 }
 .log-filters{display:flex; gap:8px; flex-wrap:wrap; flex:1; min-width:0}
 .log-filter{display:flex; align-items:center; gap:6px}
 .log-filter-l{font-size:11px; color:var(--t3); font-weight:600; letter-spacing:.02em}
 .log-filter-s{
   font-family:inherit; font-size:12px; font-weight:600;
-  background:var(--hover); border:1px solid var(--line); border-radius:7px;
+  background:var(--hover); border:1px solid var(--line); border-radius:8px;
   color:var(--t1); padding:5px 24px 5px 9px; cursor:pointer;
   appearance:none; -webkit-appearance:none;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'><path d='M2 4l3 3 3-3' stroke='%2394A3B8' stroke-width='1.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>");
@@ -2108,7 +2106,7 @@ html.theme-light .btn-primary.btn-outline{color:var(--cyan); border-color:rgba(6
 .log-filter-s:hover{border-color:var(--line-strong)}
 .log-search{
   display:flex; align-items:center; gap:6px;
-  padding:5px 10px; background:var(--hover); border:1px solid var(--line); border-radius:7px;
+  padding:5px 10px; background:var(--hover); border:1px solid var(--line); border-radius:8px;
   min-width:200px; color:var(--t3);
 }
 .log-search input{
@@ -2189,8 +2187,8 @@ html.theme-light .btn-primary.btn-outline{color:var(--cyan); border-color:rgba(6
    ────────────────────────────────────────────────────────── */
 .ov-widget{
   background:var(--bg2);
-  border:1px solid var(--line);
-  border-radius:12px;
+  border:0.5px solid var(--line);
+  border-radius:8px;
   margin-bottom:14px;
   overflow:hidden;
 }
@@ -4656,10 +4654,10 @@ html.theme-light .fs-panel{
 }
 .fs-count-pill{
   display:inline-flex; align-items:center; gap:4px;
-  padding:3px 9px; border-radius:99px;
-  background:rgba(126,211,247,0.10);
-  color:#7ed3f7;
-  border:1px solid rgba(126,211,247,0.28);
+  padding:3px 9px; border-radius:8px;
+  background:rgba(43,127,255,0.12);
+  color:var(--accent);
+  border:1px solid rgba(43,127,255,0.28);
   font-size:10.5px; font-weight:700;
   letter-spacing:.02em;
   font-variant-numeric:tabular-nums;
@@ -4670,7 +4668,7 @@ html.theme-light .fs-panel{
   color:var(--t3);
 }
 .fs-close{
-  width:28px; height:28px; border-radius:7px;
+  width:28px; height:28px; border-radius:8px;
   background:transparent; border:none; cursor:pointer;
   color:var(--t3);
   display:flex; align-items:center; justify-content:center;
@@ -4746,7 +4744,7 @@ html.theme-light .fs-section-count.has{background:rgba(16,185,129,0.10); color:#
 /* Options */
 .fs-option{
   display:flex; align-items:center; gap:10px;
-  padding:7px 9px; border-radius:7px;
+  padding:7px 9px; border-radius:8px;
   background:transparent;
   border:1px solid transparent;
   color:var(--t2); font-family:inherit;
@@ -4759,17 +4757,17 @@ html.theme-light .fs-section-count.has{background:rgba(16,185,129,0.10); color:#
   color:var(--t1);
 }
 .fs-option.is-on{
-  background:rgba(16,185,129,0.07);
-  color:#bff0d6;
-  border-color:rgba(16,185,129,0.22);
+  background:rgba(43,127,255,0.10);
+  color:var(--t1);
+  border-color:rgba(43,127,255,0.28);
 }
-.fs-option.is-on:hover{background:rgba(16,185,129,0.10)}
+.fs-option.is-on:hover{background:rgba(43,127,255,0.14)}
 html.theme-light .fs-option{color:var(--t2)}
 html.theme-light .fs-option:hover{background:var(--hover); color:var(--t1)}
 html.theme-light .fs-option.is-on{
-  background:rgba(16,185,129,0.07);
-  color:#047857;
-  border-color:rgba(16,185,129,0.30);
+  background:rgba(43,127,255,0.08);
+  color:#1d4ed8;
+  border-color:rgba(43,127,255,0.30);
 }
 
 /* Custom checkbox */
@@ -4782,8 +4780,8 @@ html.theme-light .fs-option.is-on{
   transition:background .12s, border-color .12s;
 }
 .fs-option.is-on .fs-checkbox{
-  background:#10b981;
-  border-color:#10b981;
+  background:var(--accent);
+  border-color:var(--accent);
 }
 .fs-checkbox svg{opacity:0; transition:opacity .12s}
 .fs-option.is-on .fs-checkbox svg{opacity:1}
@@ -5264,7 +5262,7 @@ html.theme-light .fs-cancel-btn:hover{
 .inst-row-meta{display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-top:3px}
 .inst-row-status{
   display:inline-flex; align-items:center; gap:5px;
-  font-size:11px; font-weight:600; padding:2px 8px; border-radius:14px;
+  font-size:11px; font-weight:600; padding:2px 8px; border-radius:8px;
   white-space:nowrap;
 }
 .inst-row-status.ok{background:rgba(5,223,114,0.08); color:var(--green); border:1px solid rgba(5,223,114,0.20)}
@@ -5647,6 +5645,26 @@ html.theme-light{
   --line-strong:rgba(15,23,42,0.18);
   --hover:rgba(15,23,42,0.04);
   --hover-strong:rgba(15,23,42,0.08);
+
+  /* DS Sidebar (light) — dark rail even in light mode, per the DS spec */
+  --sb-bg:#000000;
+  --sb-icon-default:#80AFFF;
+  --sb-icon-active:#ffffff;
+  --sb-icon-hover-bg:rgba(255,255,255,0.08);
+  --sb-separator:rgba(255,255,255,0.15);
+  --sb-container-shadow:8px 8px 16px rgba(0,0,0,0.12);
+  /* --sb-active-grad / --sb-active-shadow / --sb-hover-shadow are theme-agnostic (inherit from :root) */
+
+  /* DS Topbar (light) */
+  --topbar-workspace-border:#e9f1ff;
+  --topbar-zone-hover-bg:rgba(0,0,0,0.03);
+  --topbar-zone-hover-bd:rgba(43,127,255,0.45);
+  --topbar-btn-hover:rgba(0,0,0,0.04);
+  --topbar-search-bg:#ffffff;
+  --topbar-search-border:rgba(186,186,186,1);
+  --topbar-avatar-ring:#80AFFF;
+  --topbar-divider:#f2f2f2;
+  --topbar-icon:rgba(92,92,92,1);
 }
 
 /* Body backdrop */
@@ -5657,14 +5675,14 @@ html.theme-light .topbar{border-bottom-color:var(--line)}
 html.theme-light .tb-context-name,
 html.theme-light .tb-ws-badge{color:var(--t1)}
 html.theme-light .tb-context-chev{color:var(--t2)}
-html.theme-light .tb-search-btn{background:rgba(15,23,42,0.03); border-color:var(--line); color:var(--t3)}
-html.theme-light .tb-search-btn:hover{background:rgba(15,23,42,0.06)}
+html.theme-light .tb-search-btn{background:var(--topbar-search-bg); border-color:var(--topbar-search-border); color:var(--t3)}
+html.theme-light .tb-search-btn:hover{background:var(--topbar-btn-hover)}
 html.theme-light .tb-search-ic,
 html.theme-light .icon-btn{color:var(--t2)}
 html.theme-light .icon-btn:hover{background:var(--hover); color:var(--t1)}
 html.theme-light .tb-search-kbd{background:rgba(15,23,42,0.04); border-color:rgba(15,23,42,0.10); color:var(--t3)}
-html.theme-light .tb-divider-v{background:var(--line)}
-html.theme-light .tb-identity{background:rgba(15,23,42,0.03); border-color:var(--line)}
+html.theme-light .tb-divider-v{background:var(--topbar-divider)}
+html.theme-light .tb-identity{background:transparent; border-color:var(--topbar-workspace-border)}
 html.theme-light .tb-menu-btn{color:var(--t2)}
 html.theme-light .tb-menu-btn:hover{color:var(--t1)}
 
@@ -7274,15 +7292,7 @@ html.theme-light .audit-select{ background:rgba(15,23,42,0.03); }
 <!-- App layout: sidebar + main -->
 <div class="app">
 
-  <!-- Left sidebar (studio nav) -->
-    <nav class="sidebar" aria-label="Main">
-    <button class="sb-item" title="Control Tower" aria-label="Control Tower" onclick="toast('Control Tower (coming soon)')"><svg viewBox="0 0 18 18" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true"><path d="M9 16v-5M6 16h6"/><rect x="6.5" y="8.5" width="5" height="2.5" rx="1"/><path d="M4 5a6 6 0 0110 0M6 6.5a3.5 3.5 0 016 0"/></svg></button>
-    <div class="sb-divider"></div>
-    <button class="sb-item" title="Agentic Studio · Agents and networks" aria-label="Agentic Studio · Agents and networks" onclick="window.location.href='agentic-studio.html'"><svg viewBox="0 0 18 18" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true"><circle cx="9" cy="6" r="3"/><path d="M3 17c0-3.314 2.686-5 6-5s6 1.686 6 5"/></svg></button>
-    <button class="sb-item" title="Data Studio" aria-label="Data Studio" onclick="window.location.href='data-studio.html'"><svg viewBox="0 0 18 18" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="3.5" width="13" height="11" rx="1.4"/><path d="M2.5 7h13M2.5 11h13M6.5 3.5v11M11.5 3.5v11"/></svg></button>
-    <button class="sb-item" title="Agent Studio · Tools" aria-label="Agent Studio · Tools" onclick="window.location.href='agent-tools.html'"><svg viewBox="0 0 18 18" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="1.5" y="4.5" width="4" height="3" rx=".8"/><rect x="6.5" y="1.5" width="4" height="3" rx=".8"/><rect x="6.5" y="7.5" width="4" height="3" rx=".8"/><path d="M5.5 6h1M5.5 3H6a.5.5 0 01.5.5v1"/></svg></button>
-    <button class="sb-item active" title="Admin Studio" aria-label="Admin Studio" onclick="window.location.href='settings.html'"><svg viewBox="0 0 18 18" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="9" r="2"/><circle cx="4" cy="4" r="1.4"/><circle cx="14" cy="4" r="1.4"/><circle cx="4" cy="14" r="1.4"/><circle cx="14" cy="14" r="1.4"/><path d="M5 5l2.5 2.5M13 5L10.5 7.5M5 13l2.5-2.5M13 13L10.5 10.5"/></svg></button>
-  </nav>
+  <!-- Studio switching lives in the topbar ("Admin Studio ▾"). One DS Sidebar below. -->
 
   <!-- Sub-sidebar backdrop (mobile/tablet overlay) -->
   <div class="ssb-backdrop" id="ssbBackdrop" onclick="closeSsb()"></div>
@@ -7293,9 +7303,12 @@ html.theme-light .audit-select{ background:rgba(15,23,42,0.03); }
     <!-- Sub-sidebar (premium) -->
     <aside class="ssb">
 
-      <!-- Header: Settings + Search -->
+      <!-- Header: Settings + collapse toggle (DS Sidebar) -->
       <div class="ssb-header">
         <div class="ssb-header-title">Settings</div>
+        <button class="ssb-collapse" type="button" onclick="toggleSidebarCollapse()" aria-label="Collapse sidebar" title="Collapse menu">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="12" height="10" rx="1.5"/><path d="M6.5 3v10"/></svg>
+        </button>
       </div>
       <div class="ssb-search-wrap">
         <svg class="ssb-search-ico" width="12" height="12" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4" stroke="currentColor" stroke-width="1.3"/><path d="M9.5 9.5L12 12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
@@ -7313,13 +7326,11 @@ html.theme-light .audit-select{ background:rgba(15,23,42,0.03); }
           <button class="ssb-item" data-route="integrations">
             <span class="ssb-item-ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="8" cy="8" r="2"/><circle cx="3" cy="3" r="1.3"/><circle cx="13" cy="3" r="1.3"/><circle cx="13" cy="3" r="1.3"/><circle cx="3" cy="13" r="1.3"/><circle cx="13" cy="13" r="1.3"/><path d="M4.1 4.1l2.5 2.5M11.9 4.1L9.4 6.6M4.1 11.9l2.5-2.5M11.9 11.9L9.4 9.4"/></svg></span>
             <span class="ssb-item-label">Integrations</span>
-            <span class="ssb-item-alert" title="1 integration failing"></span>
           </button>
 
           <button class="ssb-item" data-admin-only data-route="requests" title="Integration requests">
             <span class="ssb-item-ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="12" height="10" rx="1.2"/><path d="M2 5l6 4 6-4"/></svg></span>
             <span class="ssb-item-label">Requests</span>
-            <span class="ssb-item-alert" id="reqAlertDot" title="Pending requests"></span>
           </button>
 
           <button class="ssb-item" data-admin-only data-route="distribution" title="Control where integrations are exposed">
@@ -11319,6 +11330,16 @@ function route() {
     }
   }
 
+  // ── Version scope guard: V1 exposes only Integrations / Requests / Audit log / My Integrations.
+  // Full-vision-only surfaces bounce to Integrations while in V1 scope. ──
+  {
+    let _scope = 'v1'; try { _scope = sessionStorage.getItem('aims-scope') || 'v1'; } catch(e){}
+    if (_scope === 'v1' && ['distribution','workspaces','users','widgets'].includes(parts[0])) {
+      location.hash = '#/integrations'; return;
+    }
+  }
+  if (window.__applyNavScope) window.__applyNavScope();
+
   // Sub-sidebar active state
   document.querySelectorAll('.ssb-item').forEach(b=>b.classList.remove('active'));
   const ssbMap = {
@@ -11722,7 +11743,7 @@ function renderOperateHome() {
 }
 
 // One row per integration in the Operate list — surfaces status, action, owner, usage
-function opRowHTML(i) {
+function opRowHTML(i, _idx) {
   const status = deriveStatus(i);
   const meta = STATUS_META[status] || STATUS_META.not_connected;
   const bucket = bucketOf(status);
@@ -11757,18 +11778,15 @@ function opRowHTML(i) {
     : `#/integrations/${i.slug}`;
   const isBlocked = gate === 'block' && bucket === 'needs_attention';
 
+  // ── DS EntityList row — leading logo + 16px title + bullet meta on the left;
+  //    action + state Tag + owner grouped on the right (DS EntityList convention). ──
   return `
-    <div class="op-row" onclick="navigate('#/integrations/${i.slug}')">
-      <div class="op-row-status">
-        <span class="mkt-card-status status-${bucket}" style="position:static" title="${escapeHtml(meta.desc)}">
-          <span class="mkt-card-status-dot"></span>${escapeHtml(meta.label)}
-        </span>
-      </div>
-      <div class="op-row-main">
+    <div class="op-row op-row-ds" onclick="navigate('#/integrations/${i.slug}')">
+      <div class="op-ds-left">
         ${logo(i, 'sm')}
-        <div class="op-row-text">
-          <div class="op-row-name">${escapeHtml(i.name)}</div>
-          <div class="op-row-meta">
+        <div class="op-ds-text">
+          <div class="op-ds-name">${escapeHtml(i.name)}</div>
+          <div class="op-ds-meta">
             ${cat ? `<span style="color:${cat.color}">${cat.label}</span>` : ''}
             ${instances.length > 0 ? `<span class="op-dot">·</span><span>${instances.length} instance${instances.length===1?'':'s'}</span>` : ''}
             ${totalCalls > 0 ? `<span class="op-dot">·</span><span>${totalCalls.toLocaleString()} calls/day</span>` : ''}
@@ -11776,13 +11794,11 @@ function opRowHTML(i) {
           </div>
         </div>
       </div>
-      <div class="op-row-owner">
+      <div class="op-ds-right">
+        <button class="op-cta op-cta-${actionTone}" onclick="event.stopPropagation();navigate('${actionHref}')">${escapeHtml(actionLabel)}<svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M4 2l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <span class="op-ds-divider"></span>
+        <span class="mkt-card-status status-${bucket}" style="position:static" title="${escapeHtml(meta.desc)}"><span class="mkt-card-status-dot"></span>${escapeHtml(meta.label)}</span>
         ${i.connectedBy ? `<span class="op-row-avatar" title="Connected by ${escapeHtml(i.connectedBy.name)}">${escapeHtml(i.connectedBy.initials)}</span>` : ''}
-      </div>
-      <div class="op-row-action">
-        ${isBlocked
-          ? `<button class="op-cta op-cta-${actionTone}" onclick="event.stopPropagation();navigate('${actionHref}')">${escapeHtml(actionLabel)}<svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M4 2l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`
-          : `<button class="op-cta op-cta-${actionTone}" onclick="event.stopPropagation();navigate('${actionHref}')">${escapeHtml(actionLabel)}<svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M4 2l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`}
       </div>
     </div>
   `;
@@ -17358,13 +17374,14 @@ document.addEventListener('keydown', (e) => {
 
 paintShellControls();
 
-// Paint requests pending indicator
-(function paintRequestsAlert(){
-  const dot = document.getElementById('reqAlertDot');
-  if (!dot) return;
-  const pending = REQUESTS.filter(r => r.status==='pending_review').length;
-  dot.style.display = pending > 0 ? '' : 'none';
-})();
+// DS Sidebar collapse (icons-only) — persisted
+function toggleSidebarCollapse(){
+  const ssb = document.querySelector('.ssb');
+  if (!ssb) return;
+  const collapsed = ssb.classList.toggle('is-collapsed');
+  try { localStorage.setItem('aims_ssb_collapsed', collapsed ? '1' : '0'); } catch(e){}
+}
+try { if (localStorage.getItem('aims_ssb_collapsed') === '1') { const s = document.querySelector('.ssb'); if (s) s.classList.add('is-collapsed'); } } catch(e){}
 
 // Honor ?request=<name> URL param coming from Data Studio request CTA.
 // Pre-fills the integration name on the request form, then navigates to it.
@@ -17386,6 +17403,66 @@ paintShellControls();
 })();
 
 route();
+</script>
+
+<!-- ── Version scope toggle (V1 / Full vision) — prototype delivery scoping ──
+     V1 exposes only: Integrations · Requests · Audit log · My Integrations.
+     Everything else appears only in Full vision (still in the build, versioned). -->
+<div id="scope-toggle" role="group" aria-label="Feature scope selector" style="position:fixed; bottom:16px; right:16px; z-index:9999; display:flex; align-items:center; gap:8px; background:#13151A; border:1px solid #2A2D35; border-radius:8px; padding:6px 10px; font-family:'Inter',sans-serif; font-size:12px; color:#94a3b8; box-shadow:0 4px 16px rgba(0,0,0,0.4);">
+  <span style="font-weight:600; color:#e2e8f0; letter-spacing:.02em;">Scope</span>
+  <div style="display:flex; gap:4px;">
+    <button type="button" onclick="setScope('v1')" id="scope-v1" style="padding:3px 10px; border-radius:5px; border:1px solid #2563EB; background:#2563EB; color:#fff; font-size:11px; cursor:pointer; font-weight:600; transition:all .15s;">V1</button>
+    <button type="button" onclick="setScope('v2')" id="scope-v2" style="padding:3px 10px; border-radius:5px; border:1px solid #2A2D35; background:transparent; color:#94a3b8; font-size:11px; cursor:pointer; transition:all .15s;">Full vision</button>
+  </div>
+</div>
+<script>
+(function(){
+  var SCOPE_TIERS = ['v1','v2'];
+  // V1 nav routes. 'personal' = "My Integrations". 'requests' covers admin "Requests" + user "My requests".
+  var V1_ROUTES = ['integrations','requests','audit','personal'];
+
+  // Show/hide sidebar nav items + collapse empty groups for the active scope.
+  // Reads scope from sessionStorage so route() can re-run it on every navigation.
+  window.__applyNavScope = function(){
+    var scope = 'v1'; try { scope = sessionStorage.getItem('aims-scope') || 'v1'; } catch(e){}
+    document.querySelectorAll('.ssb-group').forEach(function(grp){
+      var items = [].slice.call(grp.querySelectorAll('.ssb-item'));
+      items.forEach(function(it){
+        var route = it.getAttribute('data-route');
+        var keep = scope === 'v2' || (route && V1_ROUTES.indexOf(route) > -1);
+        it.style.display = keep ? '' : 'none';   // '' → fall back to CSS (persona rules still apply)
+      });
+      var anyVisible = items.some(function(it){
+        return it.style.display !== 'none' && window.getComputedStyle(it).display !== 'none';
+      });
+      grp.style.display = anyVisible ? '' : 'none';
+    });
+  };
+
+  window.setScope = function(scope){
+    if (SCOPE_TIERS.indexOf(scope) < 0) scope = 'v1';
+    try { sessionStorage.setItem('aims-scope', scope); } catch(e){}
+    window.__applyNavScope();
+    SCOPE_TIERS.forEach(function(t){
+      var b = document.getElementById('scope-' + t); if (!b) return;
+      var on = t === scope;
+      b.style.background  = on ? '#2563EB' : 'transparent';
+      b.style.color       = on ? '#fff' : '#94a3b8';
+      b.style.borderColor = on ? '#2563EB' : '#2A2D35';
+      b.style.fontWeight  = on ? '600' : '400';
+    });
+    // Bounce out of a Full-vision-only surface when switching down to V1
+    var parts = location.hash.replace(/^#\/?/, '').split('/');
+    if (scope === 'v1' && ['distribution','workspaces','users','widgets'].indexOf(parts[0]) > -1) {
+      location.hash = '#/integrations';
+    }
+  };
+
+  var saved = 'v1'; try { saved = sessionStorage.getItem('aims-scope') || 'v1'; } catch(e){}
+  window.setScope(saved);
+  // Re-apply after full load in case persona/init runs after this script
+  window.addEventListener('load', function(){ window.__applyNavScope(); });
+})();
 </script>
 
 </body>
