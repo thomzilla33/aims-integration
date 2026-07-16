@@ -7267,6 +7267,134 @@ html.theme-light .audit-select, html.theme-light .users-select{ background:rgba(
   border:1px dashed var(--line-strong);border-radius:10px;background:rgba(255,255,255,0.015);
 }
 
+/* ============================================================
+   DS FILTERS COMPONENT  (Figma node 7996-4655)
+   Canonical filter toolbar for every list/grid surface:
+   search + filter dropdowns (removable value chips) + Clear +
+   sort dropdown + All-filters pill. Chip fill/stroke/text map
+   to DS Surface/Primary/Subtle · Border/Primary/Default · Text/Info.
+   ============================================================ */
+.dsf-bar{ display:flex; align-items:center; gap:16px; flex-wrap:wrap; margin-bottom:16px; }
+.dsf-left{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; flex:1 1 auto; min-width:0; }
+.dsf-right{ display:flex; align-items:center; gap:12px; flex-shrink:0; margin-left:auto; }
+
+/* — Search — */
+.dsf-search{
+  display:flex; align-items:center; gap:8px;
+  height:36px; padding:0 12px; min-width:220px; max-width:340px; flex:1 1 220px;
+  background:rgba(255,255,255,0.05); border:1px solid var(--line); border-radius:8px;
+  transition:border-color .15s, background .15s, box-shadow .15s;
+}
+.dsf-search:focus-within{ border-color:rgba(43,127,255,0.45); background:rgba(43,127,255,0.06); box-shadow:0 0 0 3px rgba(43,127,255,0.12); }
+.dsf-search-ic{ color:var(--t3); flex-shrink:0; }
+.dsf-search input{ flex:1; min-width:0; background:transparent; border:none; outline:none; color:var(--t1); font-family:inherit; font-size:13px; }
+.dsf-search input::placeholder{ color:var(--t3); }
+
+/* — Filter dropdown: trigger pill + menu — */
+.dsf-drop{ position:relative; flex-shrink:0; }
+.dsf-drop-trigger{
+  display:inline-flex; align-items:center; gap:6px;
+  height:36px; padding:0 8px 0 12px;
+  background:rgba(255,255,255,0.05); border:1px solid var(--line); border-radius:8px;
+  color:var(--t1); font-family:inherit; font-size:13px; font-weight:500;
+  cursor:pointer; transition:border-color .12s, background .12s;
+}
+.dsf-drop-trigger:hover{ border-color:var(--line-strong); }
+.dsf-drop.has-value .dsf-drop-trigger{ padding-left:5px; gap:5px; }
+.dsf-drop.is-open .dsf-drop-trigger{ border-color:rgba(43,127,255,0.55); background:rgba(43,127,255,0.06); }
+.dsf-drop-label{ color:var(--t2); }
+.dsf-chev{ color:var(--t3); flex-shrink:0; transition:transform .15s; }
+.dsf-drop.is-open .dsf-chev, .dsf-sort.is-open .dsf-chev{ transform:rotate(180deg); }
+
+/* — value chip (Surface/Primary/Subtle · Border/Primary/Default · Text/Info) — */
+.dsf-chip{
+  display:inline-flex; align-items:center; gap:3px;
+  height:24px; padding:0 3px 0 8px; border-radius:6px;
+  background:rgba(43,127,255,0.16); border:1px solid rgba(43,127,255,0.45);
+  color:#a9c8ff; font-size:12px; font-weight:600; max-width:150px;
+}
+.dsf-chip-l{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.dsf-chip-x{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:16px; height:16px; border:none; background:transparent; border-radius:4px;
+  color:#a9c8ff; font-size:13px; line-height:1; cursor:pointer; flex-shrink:0;
+}
+.dsf-chip-x:hover{ background:rgba(43,127,255,0.30); color:#fff; }
+.dsf-more{ font-size:11px; font-weight:700; color:var(--accent); padding:0 3px; }
+
+/* — dropdown / sort menu — */
+.dsf-menu{
+  display:none; position:absolute; top:calc(100% + 6px); left:0; z-index:80;
+  min-width:210px; max-height:340px; overflow:auto; padding:6px;
+  background:var(--bg2); border:1px solid var(--line-strong); border-radius:10px;
+  box-shadow:0 16px 40px rgba(0,0,0,0.45);
+}
+.dsf-menu-right{ left:auto; right:0; }
+.dsf-drop.is-open .dsf-menu, .dsf-sort.is-open .dsf-menu{ display:block; }
+.dsf-menu-item{
+  display:flex; align-items:center; gap:8px; width:100%;
+  padding:7px 8px; border:none; background:transparent; border-radius:7px;
+  color:var(--t1); font-family:inherit; font-size:13px; font-weight:500;
+  cursor:pointer; text-align:left; transition:background .1s;
+}
+.dsf-menu-item:hover{ background:var(--hover-strong); }
+.dsf-menu-item.is-sel{ color:var(--accent); }
+.dsf-menu-check{ width:16px; height:16px; display:inline-flex; align-items:center; justify-content:center; color:var(--accent); flex-shrink:0; }
+.dsf-menu-lbl{ flex:1; white-space:nowrap; }
+.dsf-menu-count{ font-size:11px; font-weight:700; color:var(--t3); background:rgba(255,255,255,0.06); padding:1px 6px; border-radius:6px; }
+
+/* — Clear filters — */
+.dsf-clear{
+  display:inline-flex; align-items:center; height:36px; padding:0 6px;
+  background:none; border:none; color:var(--t2); font-family:inherit;
+  font-size:13px; font-weight:600; cursor:pointer; white-space:nowrap;
+}
+.dsf-clear:hover{ color:var(--accent); }
+
+/* — All filters pill (radius-full per DS) — */
+.dsf-allfilters{
+  display:inline-flex; align-items:center; gap:8px;
+  height:36px; padding:0 14px; border-radius:100px;
+  background:rgba(255,255,255,0.05); border:1px solid var(--line);
+  color:var(--t1); font-family:inherit; font-size:13px; font-weight:600; cursor:pointer;
+  transition:border-color .12s, background .12s;
+}
+.dsf-allfilters:hover{ border-color:var(--line-strong); }
+.dsf-allfilters.has-active{ border-color:rgba(43,127,255,0.45); color:var(--accent); background:rgba(43,127,255,0.06); }
+.dsf-allfilters-badge{ min-width:18px; height:18px; padding:0 5px; display:inline-flex; align-items:center; justify-content:center; border-radius:6px; background:rgba(43,127,255,0.22); color:var(--accent); font-size:11px; font-weight:800; }
+
+/* — Sort control — */
+.dsf-sort{ position:relative; display:inline-flex; align-items:center; flex-shrink:0; }
+.dsf-sort-field{
+  display:inline-flex; align-items:center; gap:8px;
+  height:36px; padding:0 10px 0 12px;
+  background:rgba(255,255,255,0.05); border:1px solid var(--line); border-radius:8px;
+  color:var(--t1); font-family:inherit; font-size:13px; font-weight:500; cursor:pointer;
+  transition:border-color .12s;
+}
+.dsf-sort-field:hover{ border-color:var(--line-strong); }
+.dsf-sort.is-open .dsf-sort-field{ border-color:rgba(43,127,255,0.55); background:rgba(43,127,255,0.06); }
+.dsf-sort-lead{ color:var(--t3); display:inline-flex; }
+
+/* — Grid/List view toggle — */
+.dsf-view{ display:inline-flex; gap:8px; }
+.dsf-view-btn{ width:36px; height:36px; display:inline-flex; align-items:center; justify-content:center; border-radius:8px; background:rgba(255,255,255,0.05); border:1px solid var(--line); color:var(--t2); cursor:pointer; transition:border-color .12s, color .12s; }
+.dsf-view-btn:hover{ border-color:var(--line-strong); color:var(--t1); }
+.dsf-view-btn.is-active{ background:var(--accent); border-color:var(--accent); color:#fff; }
+
+/* — Light mode — */
+html.theme-light .dsf-search,
+html.theme-light .dsf-drop-trigger,
+html.theme-light .dsf-sort-field,
+html.theme-light .dsf-allfilters,
+html.theme-light .dsf-view-btn{ background:#fff; border-color:rgba(15,23,42,0.14); }
+html.theme-light .dsf-menu{ background:#fff; border-color:rgba(15,23,42,0.12); box-shadow:0 16px 40px rgba(15,23,42,0.16); }
+html.theme-light .dsf-menu-count{ background:rgba(15,23,42,0.06); }
+html.theme-light .dsf-chip{ background:#E9F1FF; border-color:#6BA2FF; color:#0A2A5E; }
+html.theme-light .dsf-chip-x{ color:#2563EB; }
+html.theme-light .dsf-chip-x:hover{ background:#2563EB; color:#fff; }
+html.theme-light .dsf-view-btn.is-active{ color:#fff; }
+
 </style>
 </head>
 <body>
@@ -9766,6 +9894,7 @@ function _filteredRequests() {
 }
 
 function renderRequestsInbox() {
+  dsfBind(renderRequestsInbox);
   const isUser = state.persona === 'user';
   const pool = _inboxPool();
   const counts = {
@@ -9788,12 +9917,26 @@ function renderRequestsInbox() {
   const inboxPage = Math.min(Math.max(1, inboxState.page || 1), inboxPages);
   const inboxVisible = filtered.slice((inboxPage-1)*INBOX_PAGE_SIZE, (inboxPage-1)*INBOX_PAGE_SIZE + INBOX_PAGE_SIZE);
 
-  const tab = (label, key, count, accent) => `
-    <button class="inbox-tab ${inboxState.filter===key?'is-active':''}" type="button" onclick="setInboxFilter('${key}')">
-      <span>${escapeHtml(label)}</span>
-      ${count !== null ? `<span class="inbox-tab-count ${accent||''}">${count}</span>` : ''}
-    </button>
-  `;
+  const _statusMeta = [
+    { key:'pending',     label:'Pending',     count:counts.pending },
+    { key:'quoted',      label:'Quoted',      count:counts.quoted },
+    { key:'in_progress', label:'In progress', count:counts.in_progress },
+    { key:'done',        label:'Delivered',   count:counts.done },
+    { key:'rejected',    label:'Rejected',    count:counts.rejected }
+  ];
+  const _statusLabel = (k) => (_statusMeta.find(s => s.key === k) || {}).label || '';
+  const statusChips = inboxState.filter !== 'all'
+    ? [{ label: _statusLabel(inboxState.filter), onremove: "setInboxFilter('all')" }] : [];
+  const statusOptions = [
+    { label:'All statuses', selected: inboxState.filter === 'all', onclick: "dsfPickSingle();setInboxFilter('all')" },
+    ..._statusMeta.map(s => ({ label:s.label, count:s.count, selected: inboxState.filter === s.key, onclick: `dsfPickSingle();setInboxFilter('${s.key}')` }))
+  ];
+  const inboxFilterBar = `
+    <div class="dsf-bar"><div class="dsf-left">
+      ${dsfSearch('inboxSearchInput', 'Search vendor, requester, scope…', inboxState.search, 'setInboxSearch(this.value)')}
+      ${dsfDrop('inboxStatus', 'Status', statusChips, statusOptions)}
+      ${inboxState.filter !== 'all' ? dsfClear("setInboxFilter('all')") : ''}
+    </div></div>`;
 
   $('content').innerHTML = `
     <div class="breadcrumb"><a href="#/integrations">Integrations</a><span class="crumb-sep">›</span><span class="crumb-current">Requests</span></div>
@@ -9810,21 +9953,7 @@ function renderRequestsInbox() {
         </button>
       </header>
 
-      <div class="inbox-toolbar">
-        <div class="inbox-tabs">
-          ${tab('All',         'all',         counts.all,         '')}
-          ${tab('Pending',     'pending',     counts.pending,     'is-warn')}
-          ${tab('Quoted',      'quoted',      counts.quoted,      'is-purple')}
-          ${tab('In progress', 'in_progress', counts.in_progress, 'is-cyan')}
-          ${tab('Delivered',   'done',        counts.done,        'is-ok')}
-          ${counts.rejected > 0 ? tab('Rejected', 'rejected', counts.rejected, 'is-bad') : ''}
-        </div>
-        <label class="inbox-search">
-          <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><circle cx="6" cy="6" r="4"/><path d="M9.5 9.5L12 12" stroke-linecap="round"/></svg>
-          <input id="inboxSearchInput" type="text" placeholder="Search vendor, requester, scope…" value="${escapeHtml(inboxState.search||'')}" oninput="setInboxSearch(this.value)"/>
-          <kbd class="inbox-search-kbd">⌘K</kbd>
-        </label>
-      </div>
+      ${inboxFilterBar}
 
       ${(!isUser && selectedCount > 0) ? `
         <div class="inbox-bulkbar">
@@ -10660,8 +10789,8 @@ function _peopleFiltered() {
 }
 
 function setUsersSearch(v) { _usersUiState.search = v; _usersUiState.page = 1; _paintUsersTable(); setTimeout(()=>{ const el = document.getElementById('usersSearchInput'); if (el) { el.focus(); el.setSelectionRange(v.length, v.length); }}, 0); }
-function setUsersDept(v)   { _usersUiState.dept   = v; _usersUiState.page = 1; _paintUsersTable(); }
-function setUsersFilter(v) { _usersUiState.filter = v; _usersUiState.page = 1; _paintUsersTable(); }
+function setUsersDept(v)   { _usersUiState.dept   = v; _usersUiState.page = 1; renderUsersHome(); }
+function setUsersFilter(v) { _usersUiState.filter = v; _usersUiState.page = 1; renderUsersHome(); }
 function setUsersPage(p)   { _usersUiState.page = p; _paintUsersTable(); }
 function setUsersSort(k)   { sortToggle(_usersUiState, k, k==='access'?'desc':'asc'); _usersUiState.page = 1; _paintUsersTable(); }
 
@@ -10794,6 +10923,7 @@ function _wsActivity(wsId) {
 }
 
 function renderWorkspaces() {
+  dsfBind(renderWorkspaces);
   const q = _wsToolbar.search;
   const sort = _wsToolbar.sort || 'name';
   let filtered = MOCK_WORKSPACES.filter(w => {
@@ -10813,7 +10943,12 @@ function renderWorkspaces() {
   const wsPages = Math.max(1, Math.ceil(wsTotal / WS_PAGE_SIZE));
   const wsPage = Math.min(Math.max(1, _wsToolbar.page || 1), wsPages);
   const wsVisible = filtered.slice((wsPage-1)*WS_PAGE_SIZE, (wsPage-1)*WS_PAGE_SIZE + WS_PAGE_SIZE);
-  const sortBtn = (key, label) => `<button class="toolbar-sort-btn ${sort===key?'is-active':''}" type="button" onclick="setWsSort('${key}')">${label}</button>`;
+  const wsSortLabel = sort === 'members' ? 'Most members' : sort === 'integrations' ? 'Most integrations' : 'Name';
+  const wsSortOptions = [
+    { label:'Name',              selected: sort === 'name' || !sort, onclick:"dsfPickSingle();setWsSort('name')" },
+    { label:'Most members',      selected: sort === 'members',       onclick:"dsfPickSingle();setWsSort('members')" },
+    { label:'Most integrations', selected: sort === 'integrations',  onclick:"dsfPickSingle();setWsSort('integrations')" }
+  ];
 
   $('content').innerHTML = `
     <section class="surface">
@@ -10828,18 +10963,9 @@ function renderWorkspaces() {
         </div>
       </section>
 
-      <div class="toolbar">
-        <label class="toolbar-search">
-          <svg class="toolbar-search-ico" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/></svg>
-          <input id="wsSearchInput" type="text" placeholder="Search workspaces by name, owner, or description..." value="${escapeHtml(_wsToolbar.search)}" oninput="setWsSearch(this.value)" />
-          ${_wsToolbar.search ? `<button class="toolbar-search-clear" onclick="clearWsSearch()" aria-label="Clear search"><svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 3l10 10M13 3L3 13"/></svg></button>` : ''}
-        </label>
-        <div class="toolbar-sort" role="group" aria-label="Sort workspaces">
-          <span class="toolbar-sort-label">Sort</span>
-          ${sortBtn('name','Name')}
-          ${sortBtn('members','Most members')}
-          ${sortBtn('integrations','Most integrations')}
-        </div>
+      <div class="dsf-bar">
+        <div class="dsf-left">${dsfSearch('wsSearchInput', 'Search workspaces by name, owner, or description…', _wsToolbar.search, 'setWsSearch(this.value)')}</div>
+        <div class="dsf-right">${dsfSort('wsSort', wsSortLabel, wsSortOptions)}</div>
       </div>
 
       ${filtered.length === 0 ? `
@@ -11002,9 +11128,35 @@ function renderWorkspaceDetail(id) {
 }
 
 function renderUsersHome(userId) {
+  dsfBind(() => renderUsersHome());
   // If a userId is in the route, open the drawer after rendering the table
   const totalAccess = MOCK_PEOPLE.reduce((s, p) => s + _accessForUser(p.id).length, 0);
   const withAccess = MOCK_PEOPLE.filter(p => _accessForUser(p.id).length > 0).length;
+
+  const _roleEsc = (r) => String(r).replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+  const roleChips = _usersUiState.dept !== 'all' ? [{ label:_usersUiState.dept, onremove:"setUsersDept('all')" }] : [];
+  const roleOptions = _userDeptOptions().map(r => ({
+    label: r === 'all' ? 'All roles' : r,
+    selected: _usersUiState.dept === r,
+    onclick: `dsfPickSingle();setUsersDept('${_roleEsc(r)}')`
+  }));
+  const _accessMeta = [
+    { v:'has_access', label:'With access', count:withAccess },
+    { v:'no_access',  label:'No access',   count:MOCK_PEOPLE.length - withAccess }
+  ];
+  const accessLabel = _usersUiState.filter === 'has_access' ? 'With access' : _usersUiState.filter === 'no_access' ? 'No access' : '';
+  const accessChips = _usersUiState.filter !== 'all' ? [{ label:accessLabel, onremove:"setUsersFilter('all')" }] : [];
+  const accessOptions = [
+    { label:'All people', count:MOCK_PEOPLE.length, selected:_usersUiState.filter==='all', onclick:"dsfPickSingle();setUsersFilter('all')" },
+    ..._accessMeta.map(a => ({ label:a.label, count:a.count, selected:_usersUiState.filter===a.v, onclick:`dsfPickSingle();setUsersFilter('${a.v}')` }))
+  ];
+  const usersFilterBar = `
+    <div class="dsf-bar"><div class="dsf-left">
+      ${dsfSearch('usersSearchInput', 'Search by name or role…', _usersUiState.search, 'setUsersSearch(this.value)')}
+      ${dsfDrop('usersRole', 'Role', roleChips, roleOptions)}
+      ${dsfDrop('usersAccess', 'Access', accessChips, accessOptions)}
+      ${(_usersUiState.dept !== 'all' || _usersUiState.filter !== 'all') ? dsfClear("setUsersDept('all');setUsersFilter('all')") : ''}
+    </div></div>`;
 
   $('content').innerHTML = `
     <div class="users-wrap">
@@ -11020,20 +11172,7 @@ function renderUsersHome(userId) {
         </div>
       </header>
 
-      <div class="users-toolbar">
-        <label class="users-search">
-          <svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><circle cx="6" cy="6" r="4"/><path d="M9.5 9.5L12 12" stroke-linecap="round"/></svg>
-          <input id="usersSearchInput" type="text" placeholder="Search by name or role…" value="${escapeHtml(_usersUiState.search||'')}" oninput="setUsersSearch(this.value)"/>
-        </label>
-        <select class="users-select" onchange="setUsersDept(this.value)" aria-label="Filter by role">
-          ${_userDeptOptions().map(r => `<option value="${escapeHtml(r)}" ${_usersUiState.dept===r?'selected':''}>${r==='all'?'All roles':escapeHtml(r)}</option>`).join('')}
-        </select>
-        <div class="users-filters">
-          <button class="users-filter ${_usersUiState.filter==='all'?'is-on':''}" onclick="setUsersFilter('all')">All <span class="users-filter-badge">${MOCK_PEOPLE.length}</span></button>
-          <button class="users-filter ${_usersUiState.filter==='has_access'?'is-on':''}" onclick="setUsersFilter('has_access')">With access <span class="users-filter-badge">${withAccess}</span></button>
-          <button class="users-filter ${_usersUiState.filter==='no_access'?'is-on':''}" onclick="setUsersFilter('no_access')">No access <span class="users-filter-badge">${MOCK_PEOPLE.length - withAccess}</span></button>
-        </div>
-      </div>
+      ${usersFilterBar}
 
       <div id="usersTableWrap"></div>
     </div>
@@ -11144,6 +11283,7 @@ document.addEventListener('keydown', (e) => {
 });
 
 function renderDistribution() {
+  dsfBind(renderDistribution);
   const connected = INTEGRATIONS.filter(i => i.connected);
   const q = _distFilters.search;
   const filtered = connected.filter(i => {
@@ -11175,6 +11315,22 @@ function renderDistribution() {
     if (onCount === 0) unexposedAll++;
   });
 
+  const distStatusMeta = [
+    { v:'working', label:'Working',         count:workingCount },
+    { v:'needs',   label:'Needs attention', count:needsCount }
+  ];
+  const distStatusLabel = _distFilters.status==='working' ? 'Working' : _distFilters.status==='needs' ? 'Needs attention' : '';
+  const distChips = _distFilters.status !== 'all' ? [{ label:distStatusLabel, onremove:"distSetFilter('status','all')" }] : [];
+  const distOptions = [
+    { label:'All statuses', count:totalConn, selected:_distFilters.status==='all', onclick:"dsfPickSingle();distSetFilter('status','all')" },
+    ...distStatusMeta.map(s => ({ label:s.label, count:s.count, selected:_distFilters.status===s.v, onclick:`dsfPickSingle();distSetFilter('status','${s.v}')` }))
+  ];
+  const distManageBtn = `<button class="dist-manage-btn ${_distManage?'is-on':''}" type="button" onclick="distToggleManage()" title="${_distManage ? 'Exit manage mode' : 'Unlock the matrix to change exposure'}">
+          ${_distManage
+            ? '<svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2.5" y="6" width="9" height="6" rx="1.3"/><path d="M4.5 6V4.2a2.5 2.5 0 0 1 5 0V6" stroke-linecap="round"/></svg> Done'
+            : '<svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2.5" y="6" width="9" height="6" rx="1.3"/><path d="M4.5 6V4.2a2.5 2.5 0 0 1 4.7-.9" stroke-linecap="round"/></svg> Manage exposure'}
+        </button>`;
+
   const html = `
     <div class="dist-wrap">
       <div class="breadcrumb">
@@ -11193,21 +11349,13 @@ function renderDistribution() {
         </div>
       </header>
 
-      <div class="dist-toolbar">
-        <label class="dist-search">
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="7" cy="7" r="5"/><path d="M14 14l-3-3"/></svg>
-          <input id="distSearchInput" type="text" placeholder="Search integrations..." value="${escapeHtml(_distFilters.search)}" oninput="distSearchInput(this.value)"/>
-        </label>
-        <div class="dist-filters">
-          <button class="dist-filter ${_distFilters.status==='all'?'is-active':''}" onclick="distSetFilter('status','all')">All <span class="dist-filter-badge">${totalConn}</span></button>
-          <button class="dist-filter ${_distFilters.status==='working'?'is-active':''}" onclick="distSetFilter('status','working')">Working <span class="dist-filter-badge">${workingCount}</span></button>
-          ${needsCount > 0 ? `<button class="dist-filter is-warn ${_distFilters.status==='needs'?'is-active':''}" onclick="distSetFilter('status','needs')">Needs attention <span class="dist-filter-badge">${needsCount}</span></button>` : ''}
+      <div class="dsf-bar">
+        <div class="dsf-left">
+          ${dsfSearch('distSearchInput', 'Search integrations…', _distFilters.search, 'distSearchInput(this.value)')}
+          ${dsfDrop('distStatus', 'Status', distChips, distOptions)}
+          ${_distFilters.status !== 'all' ? dsfClear("distSetFilter('status','all')") : ''}
         </div>
-        <button class="dist-manage-btn ${_distManage?'is-on':''}" type="button" onclick="distToggleManage()" title="${_distManage ? 'Exit manage mode' : 'Unlock the matrix to change exposure'}">
-          ${_distManage
-            ? '<svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2.5" y="6" width="9" height="6" rx="1.3"/><path d="M4.5 6V4.2a2.5 2.5 0 0 1 5 0V6" stroke-linecap="round"/></svg> Done'
-            : '<svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2.5" y="6" width="9" height="6" rx="1.3"/><path d="M4.5 6V4.2a2.5 2.5 0 0 1 4.7-.9" stroke-linecap="round"/></svg> Manage exposure'}
-        </button>
+        <div class="dsf-right">${distManageBtn}</div>
       </div>
 
       ${_distManage ? `<div class="dist-manage-note"><svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="7" cy="7" r="5.5"/><path d="M7 4.2v3.2M7 9.6h.01"/></svg> Manage mode — every change applies to the whole tenant and is recorded in the audit log.</div>` : ''}
@@ -11334,6 +11482,7 @@ function wgSearchInput(value) {
   _wgFilters.search = (value || '').toLowerCase();
   _wgFilters.page = 1;
   renderWidgetsLibrary();
+  setTimeout(() => { const el = document.getElementById('wgSearchInput'); if (el) { el.focus(); el.setSelectionRange(el.value.length, el.value.length); } }, 0);
 }
 function setWgPage(p) { _wgFilters.page = p; renderWidgetsLibrary(); }
 
@@ -11395,6 +11544,7 @@ function widgetInstallToggle(widgetId) {
 }
 
 function renderWidgetsLibrary() {
+  dsfBind(renderWidgetsLibrary);
   const total = MOCK_WIDGET_TEMPLATES.length;
   const installedCount = MOCK_WIDGET_TEMPLATES.filter(w => w.installed).length;
   const blockedCount = MOCK_WIDGET_TEMPLATES.filter(w => widgetStatus(w) === 'blocked').length;
@@ -11418,6 +11568,19 @@ function renderWidgetsLibrary() {
   const wgPage = Math.min(Math.max(1, _wgFilters.page || 1), wgPages);
   const wgVisible = filtered.slice((wgPage-1)*WG_PAGE_SIZE, (wgPage-1)*WG_PAGE_SIZE + WG_PAGE_SIZE);
 
+  const wgCatLabel = (WG_CATEGORIES.find(c => c.id === _wgFilters.category) || {}).label || '';
+  const wgCatChips = _wgFilters.category !== 'all' ? [{ label:wgCatLabel, onremove:"wgSetFilter('category','all')" }] : [];
+  const wgCatOptions = WG_CATEGORIES.map(c => {
+    const count = c.id === 'all' ? MOCK_WIDGET_TEMPLATES.length : MOCK_WIDGET_TEMPLATES.filter(w => w.category === c.id).length;
+    return { label:c.label, count, selected:_wgFilters.category === c.id, onclick:`dsfPickSingle();wgSetFilter('category','${c.id}')` };
+  });
+  const wgFilterBar = `
+    <div class="dsf-bar"><div class="dsf-left">
+      ${dsfSearch('wgSearchInput', 'Search widgets…', _wgFilters.search, 'wgSearchInput(this.value)')}
+      ${dsfDrop('wgCategory', 'Category', wgCatChips, wgCatOptions)}
+      ${_wgFilters.category !== 'all' ? dsfClear("wgSetFilter('category','all')") : ''}
+    </div></div>`;
+
   $('content').innerHTML = `
     <div class="wg-wrap">
       <div class="breadcrumb">
@@ -11436,16 +11599,7 @@ function renderWidgetsLibrary() {
         </div>
       </header>
 
-      <div class="wg-toolbar">
-        <label class="wg-search">
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="7" cy="7" r="5"/><path d="M14 14l-3-3"/></svg>
-          <input type="text" placeholder="Search widgets..." value="${escapeHtml(_wgFilters.search)}" oninput="wgSearchInput(this.value)"/>
-        </label>
-        <div class="wg-filters">${WG_CATEGORIES.map(cat => {
-          const count = cat.id === 'all' ? MOCK_WIDGET_TEMPLATES.length : MOCK_WIDGET_TEMPLATES.filter(w => w.category === cat.id).length;
-          return `<button class="wg-filter ${_wgFilters.category===cat.id?'is-active':''}" onclick="wgSetFilter('category','${cat.id}')">${escapeHtml(cat.label)} <span class="wg-filter-badge">${count}</span></button>`;
-        }).join('')}</div>
-      </div>
+      ${wgFilterBar}
 
       <div class="wg-grid">
         ${filtered.length === 0 ? `
@@ -11499,6 +11653,7 @@ function renderWidgetsLibrary() {
 function route() {
   const hash = window.location.hash.replace(/^#\/?/, '') || 'integrations';
   const parts = hash.split('/');
+  _dsfOpen = null;   // drop any open DS-filter menu when the view changes
 
   // ── Route guards: end-users are silently redirected away from admin-only
   // surfaces (no access-denied page — that would reveal the surface exists). ──
@@ -11649,6 +11804,7 @@ function attentionBandHTML() {
 function toggleAttnBand() { state.attnExpanded = !state.attnExpanded; route(); }
 
 function renderHome() {
+  dsfBind(renderHome);
   const connected = INTEGRATIONS.filter(i=>i.connected);
 
   // Compute default homeTab the first time the user lands here
@@ -11816,35 +11972,30 @@ function renderHome() {
 
     <div class="mkt-section" id="catalogSection">
 
-      <div class="catalog-toolbar catalog-toolbar-simple" id="catalogToolbar">
-        <!-- Row 1: title + count + search + sort + All filters trigger -->
-        <div class="ct-header">
-          <div class="ct-title-group">
-            <div class="ct-title">${isFiltering ? 'Filtered results' : 'Browse all'}</div>
-            <div class="ct-count" id="ctCount">${filtered.length}</div>
+      ${(() => {
+        const af = activeFilterCount();
+        const sortLabel = state.sortBy==='alphabetical' ? 'A–Z' : state.sortBy==='recent' ? 'Recent' : 'Popular';
+        const sortOptions = [
+          { label:'Popular', selected:(state.sortBy||'popular')==='popular', onclick:"dsfPickSingle();setSort('popular')" },
+          { label:'A–Z',     selected:state.sortBy==='alphabetical',         onclick:"dsfPickSingle();setSort('alphabetical')" },
+          { label:'Recent',  selected:state.sortBy==='recent',               onclick:"dsfPickSingle();setSort('recent')" }
+        ];
+        return `<div class="dsf-bar" id="catalogToolbar">
+          <div class="dsf-left">
+            ${dsfSearch('catalogSearchInput', 'Search integrations…', state.search, 'setSearch(this.value)')}
+            ${activeChipsDSF()}
+            ${isFiltering ? dsfClear('clearFilters()') : ''}
           </div>
-          <div class="ct-search">
-            <svg class="ct-search-ic" width="13" height="13" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4" stroke="currentColor" stroke-width="1.3"/><path d="M9.5 9.5L12 12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
-            <input type="text" placeholder="Search integrations…" value="${escapeHtml(state.search)}" oninput="setSearch(this.value)"/>
-          </div>
-          <div class="ct-header-sort">
-            <button class="ct-header-sort-btn ${(state.sortBy||'popular')==='popular'?'active':''}" onclick="setSort('popular')">Popular</button>
-            <button class="ct-header-sort-btn ${state.sortBy==='alphabetical'?'active':''}" onclick="setSort('alphabetical')">A–Z</button>
-            <button class="ct-header-sort-btn ${state.sortBy==='recent'?'active':''}" onclick="setSort('recent')">Recent</button>
-          </div>
-          ${(() => {
-            const af = activeFilterCount();
-            return `<button class="ct-all-filters ${af>0?'has-active':''}" type="button" onclick="openFiltersSlideout()" aria-label="Open all filters">
-              <svg width="13" height="13" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M1.5 3h11M3.5 7h7M5.5 11h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          <div class="dsf-right">
+            ${dsfSort('catalogSort', sortLabel, sortOptions)}
+            <button class="dsf-allfilters ${af>0?'has-active':''}" type="button" onclick="openFiltersSlideout()" aria-label="Open all filters">
               <span>All filters</span>
-              ${af>0 ? `<span class="ct-af-badge">${af}</span>` : ''}
-            </button>`;
-          })()}
-        </div>
-
-        <!-- Active filter chips (only when filtering) -->
-        ${activeChipsHTML()}
-      </div>
+              <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M2 4h12M4 8h8M6 12h4"/></svg>
+              ${af>0 ? `<span class="dsf-allfilters-badge">${af}</span>` : ''}
+            </button>
+          </div>
+        </div>`;
+      })()}
 
       ${filtered.length===0 ? `
         <div class="empty-with-request">
@@ -12788,41 +12939,18 @@ function removeFilter(kind, value) {
   renderHome();
 }
 
-function activeChipsHTML() {
+// DS Filters chips for the marketplace bar (active slideout selections; search
+// is excluded because it has its own field). Each chip removes via removeFilter.
+function activeChipsDSF() {
   const chips = [];
-  if (state.search) chips.push({ key:'search', value:'', label:`Search: "${state.search}"`, icon:'<svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/></svg>' });
   if (state.activeSrc !== 'all') chips.push({ key:'src', value:'', label:`Source: ${state.activeSrc.charAt(0).toUpperCase()+state.activeSrc.slice(1)}` });
-  if (state.activeStudio) chips.push({ key:'studio', value:state.activeStudio, label:STUDIO_META[state.activeStudio].label, color:STUDIO_META[state.activeStudio].color });
-  state.activeCats.forEach(c => {
-    const cat = CATEGORIES.find(x => x.slug===c);
-    if (cat) chips.push({ key:'cat', value:c, label:cat.label, color:cat.color });
-  });
-  state.activeCaps.forEach(c => {
-    const meta = CAP_META[c];
-    if (meta) chips.push({ key:'cap', value:c, label:meta.label, color:meta.color });
-  });
-  state.activeStates.forEach(s => {
-    chips.push({ key:'state', value:s, label: s==='connected'?'Connected':'Not connected' });
-  });
-  if (chips.length === 0) return '';
-  return `
-    <div class="ct-active-row">
-      <span class="ct-label">Active</span>
-      <div class="ct-active-chips">
-        ${chips.map(c => `
-          <button class="ct-active-chip" style="${c.color?`--chip-color:${c.color}`:''}" onclick="removeFilter('${c.key}','${escapeHtml(c.value).replace(/'/g,'')}')">
-            ${escapeHtml(c.label)}
-            <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-          </button>
-        `).join('')}
-      </div>
-      <button class="ct-clear-inline" onclick="clearFilters()">
-        <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-        Clear all <span class="ct-clear-count">${chips.length}</span>
-      </button>
-    </div>
-  `;
+  if (state.activeStudio) chips.push({ key:'studio', value:state.activeStudio, label:STUDIO_META[state.activeStudio].label });
+  state.activeCats.forEach(c => { const cat = CATEGORIES.find(x => x.slug===c); if (cat) chips.push({ key:'cat', value:c, label:cat.label }); });
+  state.activeCaps.forEach(c => { const meta = CAP_META[c]; if (meta) chips.push({ key:'cap', value:c, label:meta.label }); });
+  state.activeStates.forEach(s => { chips.push({ key:'state', value:s, label: s==='connected'?'Connected':'Not connected' }); });
+  return chips.map(c => `<span class="dsf-chip" title="${escapeHtml(c.label)}"><span class="dsf-chip-l">${escapeHtml(dsfTrunc(c.label))}</span><button class="dsf-chip-x" type="button" onclick="removeFilter('${c.key}','${escapeHtml(c.value).replace(/'/g,'')}')" aria-label="Remove ${escapeHtml(c.label)} filter">×</button></span>`).join('');
 }
+
 
 /* ====================== DETAIL ====================== */
 
@@ -14699,6 +14827,62 @@ function sortCaret(st, key){
   return `<span class="sort-caret is-active" aria-hidden="true">${st.sortDir === 'asc' ? '↑' : '↓'}</span>`;
 }
 
+/* ── DS Filters Component — shared dropdown behavior + HTML builders (Figma 7996-4655) ── */
+let _dsfOpen = null;       // id of the currently open dropdown/sort menu, or null
+let _dsfRerender = null;   // re-render fn for the active view (set on each render via dsfBind)
+function dsfBind(fn){ _dsfRerender = fn; }
+function dsfToggle(id){ _dsfOpen = (_dsfOpen === id) ? null : id; if (_dsfRerender) _dsfRerender(); }
+function dsfCloseMenu(){ if (_dsfOpen !== null){ _dsfOpen = null; if (_dsfRerender) _dsfRerender(); } }
+function dsfPickSingle(){ _dsfOpen = null; }   // single-select: close before the handler re-renders
+function dsfTrunc(s){ s = String(s == null ? '' : s); return s.length > 14 ? s.slice(0,14).trim() + '…' : s; }
+const _DSF_CHEV  = '<svg class="dsf-chev" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg>';
+const _DSF_CHECK = '<svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.5 3.5L13 4.5"/></svg>';
+const _DSF_SORTIC = '<svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h8M4 8h5M4 12h3M11.5 5.5v6M11.5 11.5l2-2M11.5 11.5l-2-2"/></svg>';
+
+// Search box. oninput = full JS expression string using this.value (e.g. "setUsersSearch(this.value)").
+function dsfSearch(id, placeholder, value, oninput){
+  return `<label class="dsf-search">
+    <svg class="dsf-search-ic" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="7" cy="7" r="4.5"/><path d="M11 11l3 3"/></svg>
+    <input id="${id}" type="text" placeholder="${escapeHtml(placeholder)}" value="${escapeHtml(value||'')}" oninput="${oninput}" autocomplete="off"/>
+  </label>`;
+}
+
+// Filter dropdown. chips:[{label, full?, onremove}]  options:[{label, count?, selected, onclick}]
+// onclick strings are auto-wrapped with event.stopPropagation() so re-renders don't trip outside-click close.
+function dsfDrop(id, placeholder, chips, options){
+  const open = _dsfOpen === id;
+  const has = chips && chips.length > 0;
+  const MAX = 3;
+  const shown = has ? chips.slice(0, MAX) : [];
+  const extra = has ? chips.length - shown.length : 0;
+  const inner = has
+    ? shown.map(c => `<span class="dsf-chip" title="${escapeHtml(c.full || c.label)}"><span class="dsf-chip-l">${escapeHtml(dsfTrunc(c.label))}</span><button class="dsf-chip-x" type="button" onclick="event.stopPropagation();${c.onremove}" aria-label="Remove ${escapeHtml(c.label)} filter">×</button></span>`).join('')
+        + (extra > 0 ? `<span class="dsf-more">+${extra}</span>` : '')
+    : `<span class="dsf-drop-label">${escapeHtml(placeholder)}</span>`;
+  return `<div class="dsf-drop ${has ? 'has-value' : ''} ${open ? 'is-open' : ''}">
+    <button class="dsf-drop-trigger" type="button" onclick="event.stopPropagation();dsfToggle('${id}')" aria-haspopup="listbox" aria-expanded="${open}">${inner}${_DSF_CHEV}</button>
+    <div class="dsf-menu" role="listbox">${options.map(o => `<button class="dsf-menu-item ${o.selected ? 'is-sel' : ''}" type="button" role="option" aria-selected="${!!o.selected}" onclick="event.stopPropagation();${o.onclick}"><span class="dsf-menu-check">${o.selected ? _DSF_CHECK : ''}</span><span class="dsf-menu-lbl">${escapeHtml(o.label)}</span>${o.count != null ? `<span class="dsf-menu-count">${o.count}</span>` : ''}</button>`).join('')}</div>
+  </div>`;
+}
+
+// Sort dropdown. options:[{label, selected, onclick}]
+function dsfSort(id, currentLabel, options){
+  const open = _dsfOpen === id;
+  return `<div class="dsf-sort ${open ? 'is-open' : ''}">
+    <button class="dsf-sort-field" type="button" onclick="event.stopPropagation();dsfToggle('${id}')" aria-haspopup="listbox" aria-expanded="${open}"><span class="dsf-sort-lead">${_DSF_SORTIC}</span><span>${escapeHtml(currentLabel)}</span>${_DSF_CHEV}</button>
+    <div class="dsf-menu dsf-menu-right" role="listbox">${options.map(o => `<button class="dsf-menu-item ${o.selected ? 'is-sel' : ''}" type="button" role="option" aria-selected="${!!o.selected}" onclick="event.stopPropagation();${o.onclick}"><span class="dsf-menu-check">${o.selected ? _DSF_CHECK : ''}</span><span class="dsf-menu-lbl">${escapeHtml(o.label)}</span></button>`).join('')}</div>
+  </div>`;
+}
+
+// Clear-filters link. onclick = full JS expression string.
+function dsfClear(onclick){ return `<button class="dsf-clear" type="button" onclick="${onclick}">Clear filters</button>`; }
+
+// Close open menu on outside click / Escape (triggers + items call stopPropagation, so these fire only outside).
+document.addEventListener('click', function(e){
+  if (_dsfOpen !== null && !e.target.closest('.dsf-drop') && !e.target.closest('.dsf-sort')) dsfCloseMenu();
+});
+document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && _dsfOpen !== null) dsfCloseMenu(); });
+
 function instanceLogsHTML(i, inst) {
   const s = instanceLogsState;
   const allLogs = generateMockLogs(inst.id);
@@ -15960,6 +16144,7 @@ function auditEventAgeDays(ts) {
 }
 
 function renderAudit() {
+  dsfBind(renderAudit);
   let events = AUDIT_EVENTS;
   if (auditFilters.severity.size>0) events = events.filter(e=>auditFilters.severity.has(e.sev));
   if (auditFilters.dateRange && auditFilters.dateRange !== 'all') {
@@ -15982,6 +16167,23 @@ function renderAudit() {
   const auditPage = Math.min(Math.max(1, auditFilters.page || 1), auditPages);
   const auditVisible = events.slice((auditPage - 1) * AUDIT_PAGE_SIZE, (auditPage - 1) * AUDIT_PAGE_SIZE + AUDIT_PAGE_SIZE);
 
+  const _dateLabels = { '7d':'Last 7 days', '30d':'Last 30 days', '90d':'Last 90 days', 'all':'All time' };
+  const dateOptions = ['7d','30d','90d','all'].map(v => ({
+    label: _dateLabels[v], selected: auditFilters.dateRange === v,
+    onclick: `dsfPickSingle();auditFilters.dateRange='${v}';auditFilters.page=1;renderAudit()`
+  }));
+  const _sevLabel = (s) => s === 'info' ? 'Info' : s === 'warn' ? 'Warning' : 'Critical';
+  const sevChips = [...auditFilters.severity].map(s => ({ label:_sevLabel(s), onremove:`toggleAuditSev('${s}')` }));
+  const sevOptions = ['info','warn','crit'].map(s => ({ label:_sevLabel(s), selected:auditFilters.severity.has(s), onclick:`toggleAuditSev('${s}')` }));
+  const auditSearchOn = "auditFilters.search=this.value;auditFilters.page=1;renderAudit();setTimeout(()=>{const i=document.getElementById('auditSearchInput');if(i){i.focus();i.setSelectionRange(this.value.length,this.value.length)}},0)";
+  const auditFilterBar = `
+    <div class="dsf-bar"><div class="dsf-left">
+      ${dsfSearch('auditSearchInput', 'Search by event, actor, resource…', auditFilters.search, auditSearchOn)}
+      ${dsfDrop('auditDate', _dateLabels[auditFilters.dateRange] || 'Date range', [], dateOptions)}
+      ${dsfDrop('auditSev', 'Severity', sevChips, sevOptions)}
+      ${auditFilters.severity.size > 0 ? dsfClear("auditClearFilters()") : ''}
+    </div></div>`;
+
   $('content').innerHTML = `
     <div class="breadcrumb">
       <span class="crumb-current">Audit log</span>
@@ -16001,25 +16203,7 @@ function renderAudit() {
     </div>
 
     <div class="section">
-      <div class="audit-filters">
-        <div class="audit-filter">
-          <span>Date range</span>
-          <select class="audit-select" onchange="auditFilters.dateRange=this.value;auditFilters.page=1;renderAudit()">
-            <option value="7d" ${auditFilters.dateRange==='7d'?'selected':''}>Last 7 days</option>
-            <option value="30d" ${auditFilters.dateRange==='30d'?'selected':''}>Last 30 days</option>
-            <option value="90d" ${auditFilters.dateRange==='90d'?'selected':''}>Last 90 days</option>
-            <option value="all" ${auditFilters.dateRange==='all'?'selected':''}>All time</option>
-          </select>
-        </div>
-        <div class="audit-sev" role="group" aria-label="Filter by severity">
-          ${['info','warn','crit'].map(sev=>`<button class="audit-sev-btn ${auditFilters.severity.has(sev)?'is-active':''}" type="button" onclick="toggleAuditSev('${sev}')">${sev==='info'?'Info':sev==='warn'?'Warning':'Critical'}</button>`).join('')}
-        </div>
-        <label class="audit-search">
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/></svg>
-          <input type="text" placeholder="Search by event, actor, resource…" value="${escapeHtml(auditFilters.search)}" oninput="auditFilters.search=this.value;auditFilters.page=1;renderAudit();setTimeout(()=>{const i=document.querySelector('.audit-search input');if(i){i.focus();i.setSelectionRange(this.value.length,this.value.length)}},0)"/>
-        </label>
-        <span class="audit-count">${events.length === AUDIT_EVENTS.length ? `${AUDIT_EVENTS.length} events` : `${events.length} of ${AUDIT_EVENTS.length} events`}</span>
-      </div>
+      ${auditFilterBar}
 
       ${events.length===0 ? `
         <div class="empty"><div class="empty-h">No events match these filters</div><div class="empty-p">Try widening the date range.</div></div>
@@ -16029,6 +16213,7 @@ function renderAudit() {
 }
 
 function setAuditLogPage(p){ auditFilters.page = p; renderAudit(); }
+function auditClearFilters(){ auditFilters.severity.clear(); auditFilters.page = 1; renderAudit(); }
 
 function auditTable(events, full, sortable) {
   const sh = (key, label, extra) => sortable
