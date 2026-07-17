@@ -1515,161 +1515,6 @@ body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(-
 
 
 
-/* ============ INTERACTIVE TOUR ============ */
-/* Backdrop is transparent — it only captures clicks for dismiss.
-   The visible dimming is done by the target's own box-shadow spotlight below. */
-.ds-tour-backdrop{
-  position:fixed;inset:0;z-index:400;
-  background:transparent;
-  display:none;
-}
-.ds-tour-backdrop.is-active{display:block}
-
-/* Spotlight effect: a huge outer box-shadow on the target creates a clear
-   cutout around it while dimming everything else. No blur — the target
-   stays crisp and the eye is forced to it. */
-.ds-tour-target-glow{
-  position:relative;z-index:401 !important;
-  pointer-events:none !important;
-  box-shadow:
-    0 0 0 3px rgba(43,127,255,0.75),     /* solid inner ring */
-    0 0 28px 6px rgba(43,127,255,0.45),  /* glow halo */
-    0 0 0 9999px rgba(4,8,18,0.68) !important;  /* dim everything outside the target */
-  border-radius:10px;
-  transition:box-shadow .35s cubic-bezier(.2,.8,.2,1);
-  animation:dsTourGlowPulse 1.6s ease-in-out infinite;
-}
-@keyframes dsTourGlowPulse{
-  0%,100%{ box-shadow:
-    0 0 0 3px rgba(43,127,255,0.75),
-    0 0 28px 6px rgba(43,127,255,0.45),
-    0 0 0 9999px rgba(4,8,18,0.68); }
-  50%{ box-shadow:
-    0 0 0 4px rgba(43,127,255,0.85),
-    0 0 36px 10px rgba(43,127,255,0.55),
-    0 0 0 9999px rgba(4,8,18,0.68); }
-}
-
-.ds-tour-pop{
-  position:fixed;z-index:402;
-  width:340px;max-width:calc(100vw - 32px);
-  background:#0c1428;
-  border:1px solid rgba(43,127,255,0.45);
-  border-radius:14px;
-  box-shadow:0 24px 60px -16px rgba(0,0,0,0.7), 0 0 0 1px rgba(43,127,255,0.15);
-  padding:18px 20px 14px;
-  animation:dsTourPop 280ms cubic-bezier(.2,.8,.2,1);
-}
-@keyframes dsTourPop{
-  from{opacity:0;transform:translateY(6px) scale(.97)}
-  to{opacity:1;transform:translateY(0) scale(1)}
-}
-.ds-tour-pop-h{
-  display:flex;align-items:center;justify-content:space-between;
-  margin-bottom:8px;
-  cursor:grab;
-  user-select:none;
-  -webkit-user-select:none;
-}
-.ds-tour-pop-h:active{cursor:grabbing}
-.ds-tour-pop.is-dragging{
-  transition:none !important;
-  cursor:grabbing;
-}
-.ds-tour-pop.is-dragging .ds-tour-pop-h{cursor:grabbing}
-/* Visual hint that the header is a drag handle */
-.ds-tour-pop-h::after{
-  content:'';
-  position:absolute;
-  top:6px;left:50%;transform:translateX(-50%);
-  width:36px;height:3px;border-radius:2px;
-  background:rgba(255,255,255,0.10);
-  transition:background .12s;
-  pointer-events:none;
-}
-.ds-tour-pop-h:hover::after{background:rgba(43,127,255,0.45)}
-.ds-tour-pop-h{position:relative;padding-top:8px}
-.ds-tour-pop-step{
-  display:inline-flex;align-items:center;gap:6px;
-  padding:2px 9px;border-radius:99px;
-  background:rgba(43,127,255,0.12);color:var(--blue);
-  border:1px solid rgba(43,127,255,0.32);
-  font-size:10.5px;font-weight:800;letter-spacing:.04em;
-}
-.ds-tour-pop-close{
-  background:transparent;border:none;cursor:pointer;
-  width:24px;height:24px;border-radius:6px;
-  color:var(--t3);display:flex;align-items:center;justify-content:center;
-  transition:background .12s, color .12s;
-}
-.ds-tour-pop-close:hover{background:var(--hover);color:var(--t1)}
-.ds-tour-pop-title{
-  font-size:15px;font-weight:800;color:var(--t1);letter-spacing:-.01em;
-  margin-bottom:6px;line-height:1.3;
-}
-.ds-tour-pop-body{
-  font-size:12.5px;color:var(--t2);line-height:1.55;
-  margin-bottom:14px;
-}
-.ds-tour-pop-body b{color:var(--t1);font-weight:600}
-.ds-tour-pop-body code{
-  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;
-  background:rgba(43,127,255,0.10);padding:1px 5px;border-radius:4px;color:var(--cyan);
-}
-.ds-tour-pop-f{
-  display:flex;align-items:center;justify-content:space-between;
-  gap:10px;padding-top:10px;border-top:1px solid var(--line);
-}
-.ds-tour-pop-skip{
-  background:transparent;border:none;
-  color:var(--t3);font-family:inherit;font-size:11.5px;font-weight:500;cursor:pointer;
-  padding:4px 6px;border-radius:5px;
-  transition:color .12s;
-}
-.ds-tour-pop-skip:hover{color:var(--t2)}
-.ds-tour-pop-nav{display:flex;align-items:center;gap:8px}
-.ds-tour-pop-back{
-  background:transparent;border:1px solid var(--line-strong);
-  color:var(--t2);font-family:inherit;font-size:11.5px;font-weight:600;
-  padding:5px 11px;border-radius:7px;cursor:pointer;
-  transition:border-color .12s, color .12s;
-}
-.ds-tour-pop-back:hover{border-color:var(--blue);color:var(--blue)}
-.ds-tour-pop-next{
-  display:inline-flex;align-items:center;gap:5px;
-  padding:6px 13px;
-  background:linear-gradient(135deg, #2B7FFF 0%, #1E63CC 100%);
-  color:#fff;border:none;border-radius:7px;
-  font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;
-  box-shadow:0 4px 12px -4px rgba(43,127,255,0.45);
-  transition:transform .12s, box-shadow .12s;
-}
-.ds-tour-pop-next:hover{transform:translateY(-1px);box-shadow:0 6px 16px -4px rgba(43,127,255,0.55)}
-
-.ds-tour-pop-arrow{
-  position:absolute;width:14px;height:14px;
-  background:#0c1428;
-  border-left:1px solid rgba(43,127,255,0.45);
-  border-top:1px solid rgba(43,127,255,0.45);
-}
-.ds-tour-pop-arrow.top   { top:-8px;    transform:rotate(45deg) }
-.ds-tour-pop-arrow.bottom{ bottom:-8px; transform:rotate(225deg) }
-.ds-tour-pop-arrow.left  { left:-8px;   transform:rotate(-45deg) }
-.ds-tour-pop-arrow.right { right:-8px;  transform:rotate(135deg) }
-
-/* Tour trigger button in the sidebar Demo controls */
-.ssb-demo-tour{
-  display:flex;align-items:center;gap:8px;width:100%;
-  margin-top:6px;padding:8px 10px;
-  background:rgba(43,127,255,0.07);
-  border:1px solid rgba(43,127,255,0.32);
-  border-radius:7px;
-  color:var(--blue);font-family:inherit;font-size:11.5px;font-weight:700;
-  cursor:pointer;
-  transition:background .12s, border-color .12s, transform .12s;
-}
-.ssb-demo-tour:hover{background:rgba(43,127,255,0.14);border-color:rgba(43,127,255,0.55);transform:translateY(-1px)}
-.ssb-demo-tour-ic{flex-shrink:0;color:currentColor}
 
 /* ============ WIZARD MICRO-ANIMATIONS ============ */
 @media (prefers-reduced-motion: no-preference) {
@@ -6363,10 +6208,6 @@ html.theme-light .notif-bell-dot{border-color:#FFFFFF}
           <option value="education">Education</option>
         </select>
       </div>
-      <button class="ssb-demo-tour" onclick="startDsTour()" title="Walk through the onboarding flow">
-        <svg class="ssb-demo-tour-ic" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="6.5"/><path d="M5.5 7l2.5 2.5L11 5.5"/></svg>
-        Take the guided tour
-      </button>
       <button class="ssb-demo-btn" onclick="resetOnboarding()" title="Show first time setup">
         <svg class="ssb-demo-btn-ic" width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8a6 6 0 0 1 10.5-4M14 8a6 6 0 0 1-10.5 4"/><path d="M12 2v3h-3M4 14v-3h3"/></svg>
         Reset to first time setup
@@ -6422,26 +6263,6 @@ html.theme-light .notif-bell-dot{border-color:#FFFFFF}
   </div>
 </div>
 
-<!-- Interactive tour overlay -->
-<div class="ds-tour-backdrop" id="dsTourBackdrop" onclick="endDsTour()"></div>
-<div class="ds-tour-pop" id="dsTourPop" style="display:none;left:50%;top:50%;transform:translate(-50%,-50%)">
-  <div class="ds-tour-pop-arrow" id="dsTourArrow" style="display:none"></div>
-  <div class="ds-tour-pop-h" onmousedown="dsTourDragStart(event)" ontouchstart="dsTourDragStartTouch(event)">
-    <span class="ds-tour-pop-step" id="dsTourStep">Step 1 of 12</span>
-    <button class="ds-tour-pop-close" onclick="endDsTour()" aria-label="Close tour">
-      <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-    </button>
-  </div>
-  <div class="ds-tour-pop-title" id="dsTourTitle">Welcome to Data Studio</div>
-  <div class="ds-tour-pop-body" id="dsTourBody">A guided tour of the new onboarding flow.</div>
-  <div class="ds-tour-pop-f">
-    <button class="ds-tour-pop-skip" onclick="endDsTour()">Skip tour</button>
-    <div class="ds-tour-pop-nav">
-      <button class="ds-tour-pop-back" id="dsTourBack" onclick="prevDsTour()" style="display:none">&larr; Back</button>
-      <button class="ds-tour-pop-next" id="dsTourNext" onclick="nextDsTour()">Next &rarr;</button>
-    </div>
-  </div>
-</div>
 
 
 
@@ -16989,268 +16810,6 @@ const DS_TOUR_STEPS = [
   }
 ];
 
-let dsTourIdx = -1;
-
-function startDsTour() {
-  track('tour_started', { surface: 'data-studio' });
-  dsTourIdx = -1;
-  $('dsTourBackdrop').classList.add('is-active');
-  $('dsTourPop').style.display = 'block';
-  nextDsTour();
-}
-
-function endDsTour() {
-  track('tour_ended', { last_step: dsTourIdx + 1, completed: dsTourIdx >= DS_TOUR_STEPS.length - 1 });
-  dsTourIdx = -1;
-  $('dsTourBackdrop').classList.remove('is-active');
-  $('dsTourPop').style.display = 'none';
-  document.querySelectorAll('.ds-tour-target-glow').forEach(el => el.classList.remove('ds-tour-target-glow'));
-}
-
-function nextDsTour() {
-  if (dsTourIdx < DS_TOUR_STEPS.length - 1) {
-    dsTourIdx += 1;
-    paintDsTour();
-  } else {
-    endDsTour();
-  }
-}
-
-function prevDsTour() {
-  if (dsTourIdx > 0) {
-    dsTourIdx -= 1;
-    paintDsTour();
-  }
-}
-
-function paintDsTour() {
-  const step = DS_TOUR_STEPS[dsTourIdx];
-  if (!step) return endDsTour();
-
-  // Run any setup action for this step (may re-render the page)
-  if (typeof step.setup === 'function') {
-    try { step.setup(); } catch (e) { /* ignore */ }
-  }
-
-  // Update popover content
-  $('dsTourStep').textContent = 'Step ' + (dsTourIdx + 1) + ' of ' + DS_TOUR_STEPS.length;
-  $('dsTourTitle').textContent = step.title;
-  $('dsTourBody').innerHTML = step.body || '';
-  $('dsTourBack').style.display = dsTourIdx === 0 ? 'none' : 'inline-flex';
-  $('dsTourNext').textContent = (dsTourIdx === DS_TOUR_STEPS.length - 1) ? 'Done' : 'Next →';
-
-  // Clear previous glow + position popover
-  document.querySelectorAll('.ds-tour-target-glow').forEach(el => el.classList.remove('ds-tour-target-glow'));
-
-  // Defer positioning so DOM updates from setup() have a chance to paint
-  setTimeout(() => positionDsTour(step), 60);
-}
-
-function positionDsTour(step) {
-  const pop = $('dsTourPop');
-  const arrow = $('dsTourArrow');
-  pop.style.transition = 'top .25s, left .25s, transform .25s';
-
-  // If no target, center the popover
-  if (!step.target) {
-    pop.style.left = '50%';
-    pop.style.top = '50%';
-    pop.style.transform = 'translate(-50%, -50%)';
-    arrow.style.display = 'none';
-    return;
-  }
-
-  // Find the target element
-  let target = null;
-  if (step.targetFirst) {
-    // Comma-separated selectors, pick the first that matches
-    const selectors = step.target.split(',').map(s => s.trim());
-    for (const sel of selectors) {
-      target = document.querySelector(sel);
-      if (target) break;
-    }
-  } else {
-    target = document.querySelector(step.target);
-  }
-
-  if (!target) {
-    // Element not visible — center the popover
-    pop.style.left = '50%';
-    pop.style.top = '50%';
-    pop.style.transform = 'translate(-50%, -50%)';
-    arrow.style.display = 'none';
-    return;
-  }
-
-  // Scroll into view if requested
-  if (step.scrollToTarget) {
-    target.scrollIntoView({ block: 'center', behavior: 'smooth' });
-  }
-
-  // Apply glow class
-  target.classList.add('ds-tour-target-glow');
-  if (step.pulse) {
-    // Already has glow; could add a pulse animation but keeping it simple
-  }
-
-  // Position popover near the target
-  const rect = target.getBoundingClientRect();
-  const popW = pop.offsetWidth || 340;
-  const popH = pop.offsetHeight || 200;
-  const margin = 16;
-
-  // Prefer below target; fallback to above; fallback to right; fallback to centered
-  const spaceBelow = window.innerHeight - rect.bottom;
-  const spaceAbove = rect.top;
-  const spaceRight = window.innerWidth - rect.right;
-
-  let top, left, arrowSide = 'top';
-
-  if (spaceBelow >= popH + margin) {
-    top = rect.bottom + margin;
-    left = Math.max(margin, Math.min(window.innerWidth - popW - margin, rect.left + rect.width / 2 - popW / 2));
-    arrowSide = 'top';
-  } else if (spaceAbove >= popH + margin) {
-    top = rect.top - popH - margin;
-    left = Math.max(margin, Math.min(window.innerWidth - popW - margin, rect.left + rect.width / 2 - popW / 2));
-    arrowSide = 'bottom';
-  } else if (spaceRight >= popW + margin) {
-    top = Math.max(margin, Math.min(window.innerHeight - popH - margin, rect.top + rect.height / 2 - popH / 2));
-    left = rect.right + margin;
-    arrowSide = 'left';
-  } else {
-    top = (window.innerHeight - popH) / 2;
-    left = (window.innerWidth - popW) / 2;
-    arrowSide = 'none';
-  }
-
-  pop.style.left = left + 'px';
-  pop.style.top = top + 'px';
-  pop.style.transform = 'none';
-
-  // Position arrow
-  if (arrowSide === 'none') {
-    arrow.style.display = 'none';
-  } else {
-    arrow.style.display = 'block';
-    arrow.className = 'ds-tour-pop-arrow ' + arrowSide;
-    if (arrowSide === 'top' || arrowSide === 'bottom') {
-      const arrowLeft = Math.max(20, Math.min(popW - 28, rect.left + rect.width / 2 - left - 7));
-      arrow.style.left = arrowLeft + 'px';
-      arrow.style.right = 'auto';
-      arrow.style.top = arrowSide === 'top' ? '-8px' : 'auto';
-      arrow.style.bottom = arrowSide === 'bottom' ? '-8px' : 'auto';
-    } else if (arrowSide === 'left' || arrowSide === 'right') {
-      const arrowTop = Math.max(20, Math.min(popH - 28, rect.top + rect.height / 2 - top - 7));
-      arrow.style.top = arrowTop + 'px';
-      arrow.style.bottom = 'auto';
-      arrow.style.left = arrowSide === 'left' ? '-8px' : 'auto';
-      arrow.style.right = arrowSide === 'right' ? '-8px' : 'auto';
-    }
-  }
-}
-
-// Keep popover positioned on window resize
-window.addEventListener('resize', () => {
-  if (dsTourIdx >= 0) {
-    const step = DS_TOUR_STEPS[dsTourIdx];
-    if (step) positionDsTour(step);
-  }
-});
-
-/* ============ TOUR POPOVER DRAG ============ */
-let _dsTourDrag = null;
-
-function dsTourDragStart(e) {
-  // Don't start drag if the click landed on an interactive element (buttons, etc.)
-  if (e.target.closest('button, a, input, select, textarea')) return;
-  const pop = document.getElementById('dsTourPop');
-  if (!pop) return;
-  const rect = pop.getBoundingClientRect();
-  _dsTourDrag = { startX: e.clientX, startY: e.clientY, popX: rect.left, popY: rect.top };
-  // Pin the popover to its current pixel position so the drag math is consistent.
-  pop.style.left = rect.left + 'px';
-  pop.style.top = rect.top + 'px';
-  pop.style.transform = 'none';
-  pop.classList.add('is-dragging');
-  document.addEventListener('mousemove', dsTourDragMove);
-  document.addEventListener('mouseup', dsTourDragEnd);
-  e.preventDefault();
-}
-
-function dsTourDragMove(e) {
-  if (!_dsTourDrag) return;
-  const pop = document.getElementById('dsTourPop');
-  const dx = e.clientX - _dsTourDrag.startX;
-  const dy = e.clientY - _dsTourDrag.startY;
-  let nextLeft = _dsTourDrag.popX + dx;
-  let nextTop  = _dsTourDrag.popY + dy;
-  // Clamp inside the viewport with an 8px margin
-  const popW = pop.offsetWidth;
-  const popH = pop.offsetHeight;
-  nextLeft = Math.max(8, Math.min(window.innerWidth - popW - 8, nextLeft));
-  nextTop  = Math.max(8, Math.min(window.innerHeight - popH - 8, nextTop));
-  pop.style.left = nextLeft + 'px';
-  pop.style.top  = nextTop + 'px';
-  // Hide the arrow once moved — it no longer points to the target
-  const arrow = document.getElementById('dsTourArrow');
-  if (arrow) arrow.style.display = 'none';
-}
-
-function dsTourDragEnd() {
-  if (!_dsTourDrag) return;
-  _dsTourDrag = null;
-  const pop = document.getElementById('dsTourPop');
-  if (pop) pop.classList.remove('is-dragging');
-  document.removeEventListener('mousemove', dsTourDragMove);
-  document.removeEventListener('mouseup', dsTourDragEnd);
-}
-
-/* Touch variants */
-function dsTourDragStartTouch(e) {
-  if (e.target.closest('button, a, input, select, textarea')) return;
-  if (!e.touches || !e.touches[0]) return;
-  const t = e.touches[0];
-  const pop = document.getElementById('dsTourPop');
-  if (!pop) return;
-  const rect = pop.getBoundingClientRect();
-  _dsTourDrag = { startX: t.clientX, startY: t.clientY, popX: rect.left, popY: rect.top };
-  pop.style.left = rect.left + 'px';
-  pop.style.top = rect.top + 'px';
-  pop.style.transform = 'none';
-  pop.classList.add('is-dragging');
-  document.addEventListener('touchmove', dsTourDragMoveTouch, { passive: false });
-  document.addEventListener('touchend', dsTourDragEndTouch);
-  e.preventDefault();
-}
-
-function dsTourDragMoveTouch(e) {
-  if (!_dsTourDrag || !e.touches || !e.touches[0]) return;
-  const t = e.touches[0];
-  const pop = document.getElementById('dsTourPop');
-  const dx = t.clientX - _dsTourDrag.startX;
-  const dy = t.clientY - _dsTourDrag.startY;
-  let nextLeft = _dsTourDrag.popX + dx;
-  let nextTop  = _dsTourDrag.popY + dy;
-  const popW = pop.offsetWidth;
-  const popH = pop.offsetHeight;
-  nextLeft = Math.max(8, Math.min(window.innerWidth - popW - 8, nextLeft));
-  nextTop  = Math.max(8, Math.min(window.innerHeight - popH - 8, nextTop));
-  pop.style.left = nextLeft + 'px';
-  pop.style.top  = nextTop + 'px';
-  const arrow = document.getElementById('dsTourArrow');
-  if (arrow) arrow.style.display = 'none';
-  e.preventDefault();
-}
-
-function dsTourDragEndTouch() {
-  if (!_dsTourDrag) return;
-  _dsTourDrag = null;
-  const pop = document.getElementById('dsTourPop');
-  if (pop) pop.classList.remove('is-dragging');
-  document.removeEventListener('touchmove', dsTourDragMoveTouch);
-  document.removeEventListener('touchend', dsTourDragEndTouch);
-}
 
 
 /* ====================== BOOT ====================== */
@@ -17282,6 +16841,283 @@ function toggleTheme() {
     <!-- Body injected by openTplModal() -->
   </div>
 </div>
+
+<!-- ===== AIMS-OS Demo WalkMe (guided tour) ===== -->
+<style>
+/* Floating trigger (bottom-left; label swaps Demo <-> Continue) */
+.tour-trigger{
+  position:fixed; bottom:18px; left:18px; z-index:80;
+  display:inline-flex; align-items:center; gap:0; padding:0; height:38px; width:38px;
+  border-radius:9999px; background:linear-gradient(135deg,#06B6D4 0%,#A78BFA 100%);
+  color:#fff; border:none; cursor:pointer; font-family:inherit; font-size:12.5px; font-weight:600;
+  white-space:nowrap; overflow:hidden;
+  box-shadow:0 8px 24px rgba(6,182,212,.36), 0 2px 8px rgba(0,0,0,.28);
+  transition:width .22s cubic-bezier(.18,.84,.34,1.1), gap .22s, padding .22s, transform .15s, box-shadow .15s;
+}
+.tour-trigger:hover, .tour-trigger:focus-visible{
+  width:112px; gap:6px; padding:0 16px 0 12px; transform:translateY(-2px);
+  box-shadow:0 14px 32px rgba(6,182,212,.50), 0 4px 12px rgba(0,0,0,.36); outline:none;
+}
+.tour-trigger svg{flex-shrink:0; margin-left:1px}
+.tour-trigger-pulse{position:absolute; inset:0; border-radius:inherit; border:2px solid rgba(6,182,212,.6); animation:tourPulse 2s ease-out infinite; pointer-events:none}
+.tour-trigger.seen .tour-trigger-pulse{display:none}
+.tour-trigger.tour-active{display:none}
+@keyframes tourPulse{0%{transform:scale(1);opacity:.8}100%{transform:scale(1.25);opacity:0}}
+@media (max-width:520px){.tour-trigger{bottom:14px; left:14px}}
+
+/* Interactive mask = 4 dim strips around the target (leaves a clickable hole) */
+.tour-mask{position:fixed; z-index:9000; background:rgba(4,8,18,.55); pointer-events:auto; display:none}
+.tour-mask.active{display:block}
+html.theme-light .tour-mask{background:rgba(15,23,42,.32)}
+
+/* Spotlight ring — sits over the hole, never blocks clicks */
+.tour-spotlight{
+  position:fixed; z-index:9001; pointer-events:none; border-radius:14px; border:2px solid var(--cyan,#06B6D4);
+  box-shadow:0 0 0 4px rgba(6,182,212,.18), 0 0 32px rgba(6,182,212,.55), 0 0 64px rgba(6,182,212,.25);
+  background:transparent; transition:all .28s cubic-bezier(.4,0,.2,1); opacity:0;
+}
+.tour-spotlight.active{opacity:1; animation:tourSpotlightPulse 2s ease-in-out infinite}
+@keyframes tourSpotlightPulse{
+  0%,100%{box-shadow:0 0 0 4px rgba(6,182,212,.18), 0 0 32px rgba(6,182,212,.55), 0 0 64px rgba(6,182,212,.25)}
+  50%{box-shadow:0 0 0 6px rgba(6,182,212,.28), 0 0 48px rgba(6,182,212,.70), 0 0 96px rgba(6,182,212,.35)}
+}
+html.theme-light .tour-spotlight{border-color:var(--accent,#2B7FFF); box-shadow:0 0 0 4px rgba(43,127,255,.18), 0 0 32px rgba(43,127,255,.50), 0 0 64px rgba(43,127,255,.20)}
+
+/* Popover */
+.tour-popover{
+  position:fixed; z-index:9002; width:360px; max-width:calc(100vw - 32px);
+  background:linear-gradient(180deg, rgba(20,28,48,.98) 0%, rgba(13,19,35,.98) 100%);
+  border:1px solid var(--line-strong,rgba(255,255,255,.14)); border-radius:var(--r12,12px); backdrop-filter:blur(24px) saturate(1.8);
+  box-shadow:0 16px 48px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.04); padding:18px 20px;
+  opacity:0; transform:scale(.96) translateY(4px); pointer-events:none;
+  transition:opacity .2s ease-out, transform .25s cubic-bezier(.34,1.56,.64,1);
+}
+.tour-popover.active{opacity:1; transform:scale(1) translateY(0); pointer-events:auto}
+html.theme-light .tour-popover{background:linear-gradient(180deg,#FFF 0%,#FAFBFC 100%); box-shadow:0 16px 48px rgba(15,23,42,.18), 0 0 0 1px rgba(15,23,42,.04)}
+/* Responsive: dock as a bottom sheet on narrow screens */
+.tour-popover.is-sheet{left:8px !important; right:8px; top:auto !important; bottom:8px; width:auto; max-width:none}
+.tour-popover-header{display:flex; align-items:center; gap:8px; margin-bottom:8px}
+.tour-popover-step{font-size:10.5px; font-weight:700; letter-spacing:.10em; text-transform:uppercase; color:var(--cyan,#06B6D4); padding:2px 8px; border-radius:10px; background:rgba(6,182,212,.10); border:1px solid rgba(6,182,212,.25)}
+.tour-popover-restart{background:transparent; border:none; cursor:pointer; color:var(--t3,rgba(255,255,255,.38)); font-size:11px; padding:4px 6px; border-radius:5px; font-family:inherit}
+.tour-popover-restart:hover{background:var(--hover,rgba(255,255,255,.04)); color:var(--t1,rgba(255,255,255,.92))}
+.tour-popover-skip{margin-left:auto; background:transparent; border:none; cursor:pointer; color:var(--t3,rgba(255,255,255,.38)); font-size:11px; padding:4px 8px; border-radius:5px; font-family:inherit}
+.tour-popover-skip:hover{background:var(--hover,rgba(255,255,255,.04)); color:var(--t1,rgba(255,255,255,.92))}
+.tour-popover-title{font-size:16px; font-weight:700; color:var(--t1,rgba(255,255,255,.92)); line-height:1.3; margin-bottom:8px}
+.tour-popover-body{font-size:13px; line-height:1.6; color:var(--t2,rgba(255,255,255,.60)); margin-bottom:16px}
+.tour-popover-body strong,.tour-popover-body b{color:var(--t1,rgba(255,255,255,.92)); font-weight:600}
+.tour-popover-body code{font-family:'SF Mono',Menlo,monospace; font-size:12px; background:rgba(6,182,212,.10); color:var(--cyan,#06B6D4); padding:1.5px 5px; border-radius:4px}
+.tour-popover-footer{display:flex; align-items:center; gap:10px; padding-top:12px; border-top:1px solid var(--line,rgba(255,255,255,.10))}
+.tour-progress{display:inline-flex; gap:4px; flex:1}
+.tour-progress-dot{width:6px; height:6px; border-radius:50%; background:var(--hover-strong,rgba(255,255,255,.08)); transition:background .15s, transform .15s}
+.tour-progress-dot.current{background:var(--cyan,#06B6D4); transform:scale(1.4)}
+.tour-progress-dot.done{background:rgba(6,182,212,.45)}
+.tour-btn{padding:7px 14px; font-size:12.5px; font-weight:600; border-radius:var(--r6,6px); cursor:pointer; border:none; font-family:inherit; transition:.14s}
+.tour-btn-prev{background:transparent; color:var(--t2,rgba(255,255,255,.60)); border:1px solid var(--line,rgba(255,255,255,.10))}
+.tour-btn-prev:hover{background:var(--hover,rgba(255,255,255,.04)); color:var(--t1,rgba(255,255,255,.92))}
+.tour-btn-next{background:linear-gradient(135deg,#06B6D4 0%,#155DFC 100%); color:#fff; box-shadow:0 2px 8px rgba(6,182,212,.30)}
+.tour-btn-next:hover{transform:translateY(-1px)}
+
+/* Visually-hidden live region (screen-reader step announcements) */
+.tour-sr-only{position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0}
+
+/* Accessibility: honor reduced-motion */
+@media (prefers-reduced-motion: reduce){
+  .tour-spotlight, .tour-spotlight.active{animation:none; transition:none}
+  .tour-popover{transition:none; transform:none}
+  .tour-trigger-pulse{display:none}
+}
+</style>
+
+
+
+<button class="tour-trigger" id="tourTrigger" onclick="startTour()" aria-label="Start product demo">
+  <span class="tour-trigger-pulse"></span>
+  <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 2l11 6-11 6V2z" fill="currentColor"/></svg>
+  <span class="tour-trigger-label">Demo</span>
+</button>
+<div class="tour-mask" id="tourMaskT"></div>
+<div class="tour-mask" id="tourMaskR"></div>
+<div class="tour-mask" id="tourMaskB"></div>
+<div class="tour-mask" id="tourMaskL"></div>
+<div class="tour-spotlight" id="tourSpotlight"></div>
+<div class="tour-popover" id="tourPopover" role="dialog" aria-modal="true" aria-labelledby="tourTitle"></div>
+<div class="tour-sr-only" id="tourLive" aria-live="polite" aria-atomic="true"></div>
+
+
+
+<script>
+/* --- Author these for THIS surface. target = real selector; route = real hash. --- */
+const TOUR_STEPS = DS_TOUR_STEPS;
+
+const TOUR_LS_STEP = 'aims-tour-step';   // resume pointer
+const TOUR_LS_DONE = 'aims-tour-seen';   // completed once
+let tourState = { active:false, stepIndex:0 };
+let _tourLastFocus = null;
+
+function _tourSave(){ try{ localStorage.setItem(TOUR_LS_STEP, String(tourState.stepIndex)); }catch(e){} }
+function _tourClearProgress(){ try{ localStorage.removeItem(TOUR_LS_STEP); localStorage.setItem(TOUR_LS_DONE,'1'); }catch(e){} }
+
+function startTour(){                 // resume where left off, else step 1
+  let i = 0;
+  try{ const s = localStorage.getItem(TOUR_LS_STEP); if (s!=null && +s>0 && +s<TOUR_STEPS.length) i = +s; }catch(e){}
+  startTourAt(i);
+}
+function restartTour(){ startTourAt(0); }
+function startTourAt(i){
+  tourState = { active:true, stepIndex: Math.max(0, Math.min(i|0, TOUR_STEPS.length-1)) };
+  _tourLastFocus = document.activeElement;
+  const t = document.getElementById('tourTrigger'); if (t) t.classList.add('tour-active');
+  paintTourStep();
+}
+function endTour(finished){
+  tourState.active = false;
+  const t = document.getElementById('tourTrigger'); if (t){ t.classList.remove('tour-active'); t.classList.add('seen'); }
+  ['tourMaskT','tourMaskR','tourMaskB','tourMaskL'].forEach(id=>{ const e=document.getElementById(id); if(e) e.classList.remove('active'); });
+  const sp=document.getElementById('tourSpotlight'); if(sp) sp.classList.remove('active');
+  const po=document.getElementById('tourPopover'); if(po) po.classList.remove('active');
+  finished ? _tourClearProgress() : _tourSave();
+  const sw=document.getElementById('studioSwitcher'); if(sw){ sw.classList.remove('open'); sw.setAttribute('aria-hidden','true'); }
+  _tourRefreshTriggerLabel();
+  if (_tourLastFocus && _tourLastFocus.focus){ try{ _tourLastFocus.focus(); }catch(e){} }
+}
+function tourNext(){ if (tourState.stepIndex>=TOUR_STEPS.length-1){ endTour(true); return; } tourState.stepIndex++; _tourSave(); paintTourStep(); }
+function tourPrev(){ if (tourState.stepIndex<=0) return; tourState.stepIndex--; _tourSave(); paintTourStep(); }
+
+function paintTourStep(){
+  if (!tourState.active) return;
+  const step = TOUR_STEPS[tourState.stepIndex];
+  const isFirst = tourState.stepIndex===0, isLast = tourState.stepIndex===TOUR_STEPS.length-1;
+
+  /* Optional per-step setup() — drive app state (open a wizard, seed data, navigate) before painting */
+  if (typeof step.setup === 'function') { try { step.setup(); } catch(e){} }
+
+  /* --- Orchestration hooks (all guarded — drop the ones this surface lacks) --- */
+  if (step.mode && typeof state==='object' && state.mode!==step.mode){
+    state.mode=step.mode; try{ localStorage.setItem('aims_mode',step.mode); }catch(e){}
+    document.documentElement.classList.toggle('mode-operate', step.mode==='operate');
+    if (typeof paintModeToggle==='function') paintModeToggle();
+  }
+  if (step.persona && typeof state==='object' && state.persona!==step.persona){
+    state.persona=step.persona; try{ localStorage.setItem('aims_persona',step.persona); }catch(e){}
+    if (typeof paintPersonaPill==='function') paintPersonaPill();
+  }
+  const sw=document.getElementById('studioSwitcher');
+  if (sw){ if (step.openSwitcher){ sw.classList.add('open'); sw.setAttribute('aria-hidden','false'); }
+           else if (sw.classList.contains('open')){ sw.classList.remove('open'); sw.setAttribute('aria-hidden','true'); } }
+  if (step.route && location.hash!==step.route){ location.hash=step.route; }
+  else if (step.route && step.mode && typeof route==='function'){ route(); }
+  if (step.detailTab && typeof setDetailTab==='function'){
+    setTimeout(()=>{ const slug=location.hash.split('/')[2]; if (slug) setDetailTab(slug, step.detailTab); }, 100);
+  }
+
+  setTimeout(()=>{
+    const popover=document.getElementById('tourPopover'), spotlight=document.getElementById('tourSpotlight');
+    popover.innerHTML = `
+      <div class="tour-popover-header">
+        <span class="tour-popover-step">Step ${tourState.stepIndex+1} of ${TOUR_STEPS.length}</span>
+        ${!isFirst ? `<button class="tour-popover-restart" onclick="restartTour()">Restart</button>` : ''}
+        <button class="tour-popover-skip" onclick="endTour(false)">Skip tour</button>
+      </div>
+      <div class="tour-popover-title" id="tourTitle">${step.title}</div>
+      <div class="tour-popover-body">${step.body}</div>
+      <div class="tour-popover-footer">
+        <div class="tour-progress">${TOUR_STEPS.map((_,i)=>`<div class="tour-progress-dot ${i===tourState.stepIndex?'current':i<tourState.stepIndex?'done':''}"></div>`).join('')}</div>
+        ${!isFirst ? `<button class="tour-btn tour-btn-prev" onclick="tourPrev()">← Back</button>` : ''}
+        <button class="tour-btn tour-btn-next" onclick="${isLast?'endTour(true)':'tourNext()'}">${isLast?'Finish':'Next →'}</button>
+      </div>`;
+
+    const targetEl = step.target ? document.querySelector(step.target) : null;
+    if (targetEl){
+      if (step.scrollToTarget){
+        const sc=document.querySelector('.content'); const r=targetEl.getBoundingClientRect();
+        if (sc){ sc.scrollBy({ top:r.top - sc.getBoundingClientRect().top - 80, behavior:'smooth' }); }
+        else { targetEl.scrollIntoView({ behavior:'smooth', block:'start' }); }
+      }
+      const place = ()=>{ _tourPlace(targetEl.getBoundingClientRect(), popover, spotlight); };
+      setTimeout(place, step.scrollToTarget ? 700 : 50);
+      if (step.scrollToTarget) setTimeout(place, 1100);
+    } else {
+      _tourMaskFull(); spotlight.classList.remove('active'); _tourCenter(popover);
+    }
+
+    // a11y: announce + move focus into popover
+    const live=document.getElementById('tourLive'); if (live) live.textContent=`Step ${tourState.stepIndex+1} of ${TOUR_STEPS.length}. ${step.title}`;
+    const nextBtn=popover.querySelector('.tour-btn-next'); if (nextBtn) setTimeout(()=>nextBtn.focus(), 60);
+  }, (step.route || step.setup) ? 250 : 50);
+}
+
+/* Position spotlight ring + 4-strip mask (click-through hole) + popover */
+function _tourPlace(rect, popover, spotlight){
+  const pad=6;
+  spotlight.style.left=(rect.left-pad)+'px'; spotlight.style.top=(rect.top-pad)+'px';
+  spotlight.style.width=(rect.width+pad*2)+'px'; spotlight.style.height=(rect.height+pad*2)+'px';
+  spotlight.classList.add('active');
+  _tourMask(rect, pad);
+  if (window.innerWidth < 560){ popover.classList.add('is-sheet'); popover.classList.add('active'); return; }
+  popover.classList.remove('is-sheet');
+  const pw=360, ph=popover.offsetHeight||280, m=16, W=window.innerWidth, H=window.innerHeight;
+  let top, left;
+  if (rect.bottom+ph+m < H){ top=rect.bottom+16; left=Math.min(Math.max(rect.left,16), W-pw-16); }
+  else if (rect.top-ph-m > 0){ top=rect.top-ph-16; left=Math.min(Math.max(rect.left,16), W-pw-16); }
+  else { top=(H-ph)/2; left=(W-pw)/2; }
+  popover.style.left=left+'px'; popover.style.top=top+'px'; popover.classList.add('active');
+}
+function _tourMask(rect, pad){
+  const W=window.innerWidth, H=window.innerHeight;
+  const top=Math.max(0,rect.top-pad), bot=Math.min(H,rect.bottom+pad), lft=Math.max(0,rect.left-pad), rgt=Math.min(W,rect.right+pad);
+  const set=(id,l,t,w,h)=>{ const e=document.getElementById(id); e.style.left=l+'px'; e.style.top=t+'px'; e.style.width=Math.max(0,w)+'px'; e.style.height=Math.max(0,h)+'px'; e.classList.add('active'); };
+  set('tourMaskT',0,0,W,top);
+  set('tourMaskB',0,bot,W,H-bot);
+  set('tourMaskL',0,top,lft,bot-top);
+  set('tourMaskR',rgt,top,W-rgt,bot-top);
+}
+function _tourMaskFull(){
+  const T=document.getElementById('tourMaskT'); T.style.left='0'; T.style.top='0'; T.style.width='100vw'; T.style.height='100vh'; T.classList.add('active');
+  ['tourMaskR','tourMaskB','tourMaskL'].forEach(id=>{ const e=document.getElementById(id); e.classList.remove('active'); });
+}
+function _tourCenter(popover){
+  if (window.innerWidth < 560){ popover.classList.add('is-sheet'); popover.classList.add('active'); return; }
+  popover.classList.remove('is-sheet');
+  popover.style.left=((window.innerWidth-360)/2)+'px'; popover.style.top=((window.innerHeight-(popover.offsetHeight||280))/2)+'px';
+  popover.classList.add('active');
+}
+
+/* Keyboard nav (arrows / esc) */
+document.addEventListener('keydown',(e)=>{
+  if (!tourState.active) return;
+  if (e.key==='Escape'){ endTour(false); }
+  else if (e.key==='ArrowRight'){ e.preventDefault(); tourNext(); }
+  else if (e.key==='ArrowLeft'){ e.preventDefault(); tourPrev(); }
+});
+/* Focus-trap: keep Tab inside the popover while the tour is active */
+document.addEventListener('keydown',(e)=>{
+  if (!tourState.active || e.key!=='Tab') return;
+  const po=document.getElementById('tourPopover');
+  const f=po.querySelectorAll('button,[href],input,select,textarea,[tabindex]:not([tabindex="-1"])');
+  if (!f.length) return;
+  const first=f[0], last=f[f.length-1];
+  if (e.shiftKey && document.activeElement===first){ e.preventDefault(); last.focus(); }
+  else if (!e.shiftKey && document.activeElement===last){ e.preventDefault(); first.focus(); }
+});
+
+/* Trigger label reflects resume state ("Continue" vs "Demo") */
+function _tourRefreshTriggerLabel(){
+  const t=document.getElementById('tourTrigger'); if (!t) return;
+  const label=t.querySelector('.tour-trigger-label');
+  let saved=null; try{ saved=localStorage.getItem(TOUR_LS_STEP); }catch(e){}
+  if (saved!=null && +saved>0 && +saved<TOUR_STEPS.length){ if (label) label.textContent='Continue'; t.classList.add('seen'); }
+  else { if (label) label.textContent='Demo'; try{ if (localStorage.getItem(TOUR_LS_DONE)) t.classList.add('seen'); }catch(e){} }
+}
+
+/* Init: deep-link ?tour=N (1-based) auto-starts at that step; else set label */
+(function tourInit(){
+  _tourRefreshTriggerLabel();
+  try{
+    const q=new URLSearchParams(window.location.search).get('tour');
+    if (q!=null){ const n=parseInt(q,10); if (!isNaN(n)){ startTourAt(Math.max(0,n-1)); } }
+  }catch(e){}
+})();
+</script>
 
 </body>
 </html>
