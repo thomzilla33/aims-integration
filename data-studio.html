@@ -21,6 +21,22 @@
   --grad-app:linear-gradient(135deg,#10B981 0%,#06B6D4 100%);
 }
 
+/* ── LIGHT MODE — white topbar + dark rail + light content (AI Workers std) ── */
+html.theme-light{
+  --bg:#E4ECF7; --bg2:#FFFFFF; --bg3:#F1F5F9;
+  --t1:#0F172A; --t2:#475569; --t3:#64748B;
+  --line:rgba(15,23,42,0.10); --line-strong:rgba(15,23,42,0.16);
+  --hover:rgba(15,23,42,0.03); --hover-strong:rgba(15,23,42,0.06);
+  --shell-topbar-bg:rgba(255,255,255,0.85);
+}
+/* keep the left rail dark in light mode by re-scoping tokens onto the container */
+html.theme-light .ssb{
+  --bg:#0a0d1a; --bg2:#0f172e; --bg3:#0d1323;
+  --t1:#F1F5F9; --t2:#94A3B8; --t3:#64748B;
+  --line:rgba(255,255,255,0.08); --line-strong:rgba(255,255,255,0.14);
+  --hover:rgba(255,255,255,0.04); --hover-strong:rgba(255,255,255,0.08);
+}
+
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%; overflow:hidden}
 body{font-family:'Inter',system-ui,sans-serif; background:var(--bg); color:var(--t1); font-size:14px}
@@ -6145,6 +6161,15 @@ html.theme-light .notif-bell-dot{border-color:#FFFFFF}
   <!-- Sub-sidebar -->
   <aside class="ssb">
     <div class="ssb-scroll">
+      <div class="ssb-group">
+        <span class="ssb-grp-label">Model</span>
+        <a class="ssb-item" href="data-studio-models.html" style="text-decoration:none">
+          <span class="ssb-item-ico"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg></span>
+          <span class="ssb-item-label">Models</span>
+          <span style="font-size:11px; color:var(--t3); margin-left:auto">↗</span>
+        </a>
+      </div>
+
       <div class="ssb-group">
         <span class="ssb-grp-label">Configure</span>
         <button class="ssb-item" data-route="connections" onclick="navigate('connections')">
