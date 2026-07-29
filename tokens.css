@@ -1,0 +1,208 @@
+/* ============================================================================
+   AIMS-OS Prototype Design Tokens — canonical, LLM-readable source of truth
+   ----------------------------------------------------------------------------
+   THREE LAYERS (never skip a layer):
+
+     Layer 1  --ds-*        Primitives. Raw values. The ONLY place a literal
+                            (#hex, px, ms, number) is allowed to live.
+     Layer 2  semantic      Project aliases (--t1, --primary, --line, --space-3,
+                            --tag-*…). Reference Layer 1 with a fallback equal to
+                            the current shipped value:  --color: var(--ds-x, #fff)
+     Layer 3  components     The .css / <style> rules in each prototype. They may
+                            reference ONLY Layer 2 aliases — never Layer 1, never
+                            a raw literal.
+
+   The prototypes are single-file HTML; each already defines Layer 2 inline in a
+   <style> :root block. This file is the CANONICAL definition of those aliases —
+   keep the two in sync, and <link> this file into any NEW prototype so it needs
+   no inline :root. Dark is the default theme; .theme-light overrides.
+
+   Enforcement: scripts/token-audit.js  ·  Docs: specs/tokens/token-reference.md
+   ============================================================================ */
+
+/* ========================================================================== */
+/* LAYER 1 — PRIMITIVES ( --ds-* ) — the only home for raw values             */
+/* ========================================================================== */
+:root {
+  /* ---- Palette: brand ---- */
+  --ds-blue-600:      #2173ff;
+  --ds-blue-500:      #2b7fff;   /* primary */
+  --ds-blue-500-a15:  rgba(43,127,255,.15);
+  --ds-cyan-400:      #38bdf8;
+  --ds-cyan-600:      #0284c7;
+
+  /* ---- Palette: status ---- */
+  --ds-green-300:     #6ee7b7;
+  --ds-green-ink:     #003328;   /* success fg, light */
+  --ds-green-bg-d:    #0a1f1a;   /* success bg, dark  */
+  --ds-green-bg-l:    #e5fdf8;   /* success bg, light */
+  --ds-red-400:       #ff6467;
+  --ds-red-ink:       #5f2120;   /* error fg, light */
+  --ds-red-bg-d:      #2d1515;
+  --ds-red-bg-l:      #fdeded;
+  --ds-amber-300:     #fcd34d;
+  --ds-amber-ink:     #663c00;
+
+  /* ---- Palette: neutrals (dark theme reference) ---- */
+  --ds-ink-900:       #0b1120;   /* app canvas, dark */
+  --ds-ink-800:       #131C2E;   /* raised surface, dark */
+  --ds-white:         #ffffff;
+  --ds-white-a90:     rgba(255,255,255,.90);
+  --ds-white-a60:     rgba(255,255,255,.60);
+  --ds-white-a30:     rgba(255,255,255,.30);
+  --ds-white-a10:     rgba(255,255,255,.10);
+  --ds-white-a05:     rgba(255,255,255,.05);
+  --ds-white-a04:     rgba(255,255,255,.04);
+  --ds-slate-900:     #1a1a1a;   /* text primary, light */
+  --ds-slate-700:     #2a2a2a;   /* text secondary, light */
+  --ds-slate-500:     #475569;   /* muted-but-legible, light */
+  --ds-slate-300:     #bababa;   /* placeholder, light */
+  --ds-slate-a14:     rgba(15,23,42,.14);
+  --ds-slate-a08:     rgba(15,23,42,.08);
+  --ds-slate-a03:     rgba(15,23,42,.03);
+
+  /* ---- Spacing scale (8-step, 4px base) ---- */
+  --ds-space-1:  4px;
+  --ds-space-2:  8px;
+  --ds-space-3:  12px;
+  --ds-space-4:  16px;
+  --ds-space-5:  20px;
+  --ds-space-6:  24px;
+  --ds-space-7:  32px;
+  --ds-space-8:  48px;
+
+  /* ---- Typography ---- */
+  --ds-font-sans:  Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --ds-font-mono:  ui-monospace, "SF Mono", Menlo, Monaco, monospace;
+  --ds-text-xs:   11px;
+  --ds-text-sm:   12px;
+  --ds-text-base: 13px;
+  --ds-text-md:   14px;
+  --ds-text-lg:   16px;
+  --ds-text-xl:   20px;
+  --ds-text-2xl:  24px;
+  --ds-fw-regular:  400;
+  --ds-fw-medium:   500;
+  --ds-fw-semibold: 600;
+  --ds-fw-bold:     700;
+  --ds-lh-tight: 1.3;
+  --ds-lh-normal: 1.5;
+  --ds-lh-relaxed: 1.6;
+
+  /* ---- Radius ---- */
+  --ds-radius-sm: 6px;
+  --ds-radius-md: 8px;
+  --ds-radius-lg: 12px;
+  --ds-radius-pill: 999px;
+
+  /* ---- Elevation (shadows) ---- */
+  --ds-shadow-1: 0 1px 2px rgba(0,0,0,.20);
+  --ds-shadow-2: 0 4px 12px rgba(0,0,0,.28);
+  --ds-shadow-3: 0 16px 48px rgba(0,0,0,.55);
+
+  /* ---- Z-index scale ---- */
+  --ds-z-base:      1;
+  --ds-z-sticky:    10;
+  --ds-z-dropdown:  50;
+  --ds-z-scrim:     100;
+  --ds-z-slideout:  150;
+  --ds-z-modal:     200;
+  --ds-z-toast:     300;
+
+  /* ---- Motion ---- */
+  --ds-dur-fast:   120ms;
+  --ds-dur-normal: 200ms;
+  --ds-dur-slow:   280ms;
+  --ds-ease-standard: cubic-bezier(.4,0,.2,1);
+  --ds-ease-emphasized: cubic-bezier(.34,1.56,.64,1);
+}
+
+/* ========================================================================== */
+/* LAYER 2 — SEMANTIC ALIASES — reference Layer 1 with current-value fallback  */
+/* These names already exist inline in each prototype; this is the canonical   */
+/* definition. Components (Layer 3) reference ONLY these.                       */
+/* ========================================================================== */
+:root {
+  /* text */
+  --t1:                 var(--ds-white-a90, rgba(255,255,255,.9));
+  --t2:                 var(--ds-white-a60, rgba(255,255,255,.6));
+  --t3:                 var(--ds-white-a30, rgba(255,255,255,.3));
+  --muted:              var(--ds-white-a05, rgba(255,255,255,.05));
+  --field-text:         var(--t1);
+  --field-placeholder:  var(--ds-white-a30, rgba(255,255,255,.3));
+  --field-text-error:   var(--ds-red-400, #ff6467);
+
+  /* surfaces / background */
+  --surface:            var(--ds-ink-900, #0b1120);
+  --bg2:                var(--surface);
+  --surface-raised:     var(--ds-ink-800, #131C2E);
+  --card-bg:            var(--ds-white, #ffffff);
+  --hover:              var(--ds-white-a04, rgba(255,255,255,.04));
+  --field-bg:           var(--ds-white-a10, rgba(255,255,255,.1));
+
+  /* borders */
+  --line:               var(--ds-white-a10, rgba(255,255,255,.1));
+  --line-strong:        var(--field-border-hover);
+  --card-border:        var(--ds-slate-a08, rgba(15,23,42,.08));
+  --field-border:       var(--ds-white-a10, rgba(255,255,255,.1));
+
+  /* brand / interactive */
+  --primary:            var(--ds-blue-500, #2b7fff);
+  --accent:             var(--ds-blue-500-a15, rgba(43,127,255,.15));
+  --cyan:               var(--ds-cyan-400, #38bdf8);
+
+  /* status — tags */
+  --tag-informative-fg: var(--ds-white-a90, rgba(255,255,255,.8));
+  --tag-informative-bg: var(--ds-blue-500-a15, rgba(21,93,252,.15));
+  --tag-informative-bd: var(--ds-blue-500, #2b7fff);
+  --tag-success-fg:     var(--ds-green-300, #6ee7b7);
+  --tag-success-bg:     var(--ds-green-bg-d, #0a1f1a);
+  --tag-error-fg:       var(--ds-red-400, #ff6467);
+  --tag-error-bg:       var(--ds-red-bg-d, #2d1515);
+  --tag-error-bd:       var(--ds-red-400, #ff6467);
+  --tag-alert-fg:       var(--ds-amber-300, #fcd34d);
+
+  /* spacing aliases */
+  --space-1: var(--ds-space-1, 4px);
+  --space-2: var(--ds-space-2, 8px);
+  --space-3: var(--ds-space-3, 12px);
+  --space-4: var(--ds-space-4, 16px);
+  --space-5: var(--ds-space-5, 20px);
+  --space-6: var(--ds-space-6, 24px);
+  --space-7: var(--ds-space-7, 32px);
+  --space-8: var(--ds-space-8, 48px);
+
+  /* radius aliases (legacy names --r6/--r8/--r12 kept for the existing rules) */
+  --r6:  var(--ds-radius-sm, 6px);
+  --r8:  var(--ds-radius-md, 8px);
+  --r12: var(--ds-radius-lg, 12px);
+
+  /* typography aliases */
+  --font-sans: var(--ds-font-sans);
+  --font-mono: var(--ds-font-mono);
+}
+
+/* ========================================================================== */
+/* LIGHT THEME — override the Layer 1 primitives that differ; Layer 2 & 3      */
+/* inherit automatically.                                                       */
+/* ========================================================================== */
+.theme-light {
+  --ds-blue-500:      #2173ff;
+  --ds-cyan-400:      #0284c7;
+  --ds-white-a90:     #1a1a1a;   /* text primary → dark ink on light */
+  --ds-white-a60:     #2a2a2a;
+  --ds-white-a30:     #475569;   /* placeholder legible on light (was #bababa) */
+  --ds-white-a05:     var(--ds-slate-a03, rgba(15,23,42,.03));
+  --ds-white-a04:     var(--ds-slate-a03, rgba(15,23,42,.03));
+  --ds-white-a10:     var(--ds-slate-a14, rgba(15,23,42,.14));
+  --ds-ink-900:       #eef2f8;   /* app canvas → light */
+  --ds-ink-800:       #EBF2FF;
+  --ds-green-300:     var(--ds-green-ink, #003328);
+  --ds-green-bg-d:    var(--ds-green-bg-l, #e5fdf8);
+  --ds-red-400:       var(--ds-red-ink, #5f2120);
+  --ds-red-bg-d:      var(--ds-red-bg-l, #fdeded);
+  --ds-amber-300:     var(--ds-amber-ink, #663c00);
+  --card-bg:          var(--ds-white, #ffffff);
+  --field-bg:         var(--ds-white, #ffffff);
+  --shadow-tint:      rgba(15,23,42,.12);
+}
