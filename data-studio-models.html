@@ -3258,8 +3258,7 @@ function entityOverviewTab(e){
       </div>
       <div class="ent-gov-r so-fields">
         <div class="so-field"><span class="so-field-l">Owner</span><span class="so-field-v"><span class="mtbl-inline">${av(own,'sm')}${escapeHtml(own.n)}</span></span></div>
-        <div class="so-field"><span class="so-field-l">Stewards</span><span class="so-field-v"><span class="mtbl-inline">${av(own,'sm')}${escapeHtml(own.n)}</span><span style="color:var(--t3);font-size:12px;margin-left:6px">+1 steward</span></span></div>
-        <div class="so-field"><span class="so-field-l">Category</span><span class="so-field-v">${cat}</span></div>
+                <div class="so-field"><span class="so-field-l">Category</span><span class="so-field-v">${cat}</span></div>
         <div class="so-field"><span class="so-field-l">Domain</span><span class="so-field-v">${escapeHtml(e.domain||'—')}</span></div>
         <div class="so-field"><span class="so-field-l">Sensitivity</span><span class="so-field-v">${_sensDot(sens)}${sens}</span></div>
         <div class="so-field"><span class="so-field-l">Last modified</span><span class="so-field-v">${escapeHtml(own.n)} · ${escapeHtml(e.updated||'—')}</span></div>
@@ -3354,7 +3353,7 @@ function _etTblCard(e,t){
 }
 function _tableExists(id){ return !!(typeof _table==='function'?_table(id):TABLES.find(t=>t.id===id)); }
 /* ── Relationships tab: Diagram / Cards / Table (port of TfdRelationshipsTab) ── */
-let _relViewMode='diagram';
+let _relViewMode='table';
 function setRelView(kind,id,v){ _relViewMode=v; if(kind==='table') renderTableDetail(id); else if(kind==='entity') renderEntityDetail(id); else renderReferenceDetail(id); }
 function _cardShort(k){ k=(k||'').toLowerCase(); if(k.indexOf('many-to-many')>=0) return 'N:M'; if(k.indexOf('one-to-many')>=0) return '1:N'; if(k.indexOf('many-to-one')>=0) return 'N:1'; if(k.indexOf('one-to-one')>=0) return '1:1'; return (k||'—').toUpperCase(); }
 const _ICO_DIAG='<svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="4" cy="4" r="2"/><circle cx="4" cy="12" r="2"/><circle cx="12" cy="8" r="2"/><path d="M6 4h2a2 2 0 0 1 2 2M6 12h2a2 2 0 0 0 2-2"/></svg>';
@@ -3378,7 +3377,7 @@ function _relDiagram(centerLabel, rels){
 }
 function _relView(kind, obj, centerLabel, rels){
   const id=obj.id, v=_relViewMode;
-  const seg=(mode,label,ic)=>`<button class="rel-vw-btn ${v===mode?'on':''}" onclick="setRelView('${kind}','${id}','${mode}')">${ic}<span>${label}</span></button>`;
+  const seg=(mode,label,ic)=>`<button class="rel-vw-btn ${v===mode?'on':''}"${mode==='diagram'?' data-version="v2"':''} onclick="setRelView('${kind}','${id}','${mode}')">${ic}<span>${label}</span></button>`;
   const toolbar=`<div class="ttd-head"><div class="ttd-head-l"><label class="dsf-search" style="max-width:220px;height:34px">${_HIC.search}<input type="text" placeholder="Search relationships…" oninput="toast('Search — prototype')" autocomplete="off"></label></div><div class="ttd-head-r"><div class="rel-vw">${seg('diagram','Diagram',_ICO_DIAG)}${seg('cards','Cards',_ICO_CARDS)}${seg('table','Table',_ICO_TBL2)}</div><button class="btn btn-primary" style="height:34px" onclick="_relAdd('${kind}','${id}')"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M2 6h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg> Add relationship</button></div></div>`;
   let body;
   if(!rels.length){ body=`<div class="placeholder" style="padding:38px">No relationships yet. Connect <b>${escapeHtml(centerLabel)}</b> to another ${kind==='reference'?'list':kind} via a foreign key.</div>`; }
@@ -3388,7 +3387,7 @@ function _relView(kind, obj, centerLabel, rels){
   return toolbar+body;
 }
 /* ── Entity Relationships tab — rich (diagram + list · scope · incoming · new-rel slideout) ── */
-const _erState={ent:null,search:'',dir:'all',card:'all',scope:'all',view:'diagramlist'};
+const _erState={ent:null,search:'',dir:'all',card:'all',scope:'all',view:'list'};
 const _ERUR='<svg class="erel-ur" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11l6-6M6 5h5v5"/></svg>';
 const _ERSWAP='<svg width="15" height="12" viewBox="0 0 16 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h10M10 2l2 2-2 2M14 8H4M6 6l-2 2 2 2"/></svg>';
 function _erReset(id){ if(_erState.ent!==id){ _erState.ent=id; _erState.search=''; _erState.dir='all'; _erState.card='all'; _erState.scope='all'; _erState.view='diagramlist'; } }
@@ -3412,7 +3411,7 @@ function relsTab(e){
   const dc=st.dir!=='all'?{label:st.dir,onremove:"erSet('dir','all')"}:null;
   const cc=st.card!=='all'?{label:st.card,onremove:"erSet('card','all')"}:null;
   const sc=st.scope!=='all'?{label:st.scope==='intra'?'Intra-model':'Cross-model',onremove:"erSet('scope','all')"}:null;
-  const seg=(v,l)=>`<button class="rel-vw-btn ${st.view===v?'on':''}" onclick="erView('${v}')">${l}</button>`;
+  const seg=(v,l)=>`<button class="rel-vw-btn ${st.view===v?'on':''}"${(v==='diagram'||v==='diagramlist')?' data-version="v2"':''} onclick="erView('${v}')">${l}</button>`;
   const toolbar=`<div class="tbar md-tbar">
       <label class="dsf-search">${_MDIC.search}<input id="erSearch" type="text" placeholder="Search related entity or nav name…" value="${escapeHtml(st.search)}" oninput="erSet('search',this.value)" autocomplete="off"></label>
       ${dsfDrop('erDir','Direction',dc,[{label:'All directions',selected:st.dir==='all',onclick:"dsfPickSingle();erSet('dir','all')"}].concat(['Bidirectional','Unidirectional'].map(x=>({label:x,selected:st.dir===x,onclick:`dsfPickSingle();erSet('dir','${x}')`}))))}
@@ -4546,7 +4545,6 @@ function openColumn(tableId, colName){
         <div class="so-field"><span class="so-field-l">Masking</span><span class="so-field-v">${c.sens==='PII'?'Last 4 shown':c.sens?'Fully masked':'None'}</span></div>
       </div></div>
       <div class="so-sec"><div class="so-sec-h">Display</div><div class="so-fields"><div class="so-field"><span class="so-field-l">Format</span><span class="so-field-v">${escapeHtml(c.fmt||'Default')}</span></div></div></div>
-      <div class="so-sec"><div class="so-sec-h">References</div><div style="font-size:12.5px;color:var(--field-placeholder)">Where this column is used (queries · widgets · metrics) — <span style="color:var(--field-text)">V1.5</span></div></div>
     </div>
     <div class="so-foot"><button class="btn btn-danger" style="margin-right:auto" onclick="confirmDeleteColumn('${tableId}','${colName}')">${_RM_IC.del} Delete</button><button class="btn" onclick="closeSlideout()">Close</button><button class="btn btn-primary" onclick="openEditColumn('${tableId}','${colName}')">Edit column</button></div>`;
   $('slideout').classList.add('open'); $('slideout').setAttribute('aria-hidden','false'); $('scrim').classList.add('open');
@@ -4818,9 +4816,11 @@ function openRecord(tid, idx){
     <div class="so-body"><div class="so-fields">
       ${allCols.map(c=>`<div class="so-field"><span class="so-field-l">${escapeHtml(c.d)}${c.system?' <span class="so-locked" style="font-size:10px">sys</span>':''}</span><span class="so-field-v ${c.t==='UUID'||c.t==='Reference'?'mono':''}">${c.system?_fmtVal(c,_mockVal(c,idx)):_fmtVal(c,r[c.n])}</span></div>`).join('')}
     </div></div>
-    <div class="so-foot"><button class="btn" onclick="closeSlideout()">Close</button><button class="btn btn-primary" onclick="openEditRecord('${tid}',${idx})">Edit record</button></div>`;
+    <div class="so-foot"><button class="btn btn-danger" style="margin-right:auto" onclick="_deleteRecord('${tid}',${idx})">${_RM_IC.del} Delete row</button><button class="btn" onclick="_dupRecord('${tid}',${idx})">${_RM_IC.dup} Duplicate</button><button class="btn" onclick="closeSlideout()">Close</button><button class="btn btn-primary" onclick="openEditRecord('${tid}',${idx})">Edit record</button></div>`;
   $('slideout').classList.add('open'); $('slideout').setAttribute('aria-hidden','false'); $('scrim').classList.add('open');
 }
+function _deleteRecord(tid,idx){ const t=_table(tid); const rows=_mockRows(t); if(idx<0||idx>=rows.length) return; rows.splice(idx,1); closeSlideout(); toast('Record deleted','ok'); renderTableDetail(tid); }
+function _dupRecord(tid,idx){ const t=_table(tid); const rows=_mockRows(t); const r=rows[idx]; if(!r) return; const c=JSON.parse(JSON.stringify(r)); c.__id=_mockId(rows.length); rows.splice(idx+1,0,c); closeSlideout(); toast('Record duplicated','ok'); renderTableDetail(tid); }
 function _recField(c, val){
   const v=val==null?'':val;
   if(c.t==='Enum'&&c.ev) return `<select class="mselect" id="rf_${c.n}">${c.ev.map(e=>`<option value="${e[0]}" ${e[0]===v?'selected':''}>${escapeHtml(e[1])}</option>`).join('')}</select>`;
@@ -6373,8 +6373,7 @@ function _mdAbout(m){
     </div>
     <div class="md-form-row">
       <div class="mfield"><label class="mfield-l">Owner</label><select class="mselect" onchange="mdSetOwner('${m.id}',this.value)">${_mdOwners().map(k=>`<option value="${k}" ${k===m.owner?'selected':''}>${escapeHtml(P(k).n)}</option>`).join('')}</select></div>
-      <div class="mfield"><label class="mfield-l">Stewards</label><div class="md-stewards">${stewards.map(k=>`<span class="md-steward-chip">${av(P(k),'sm')}${escapeHtml(P(k).n)}<button class="md-tag-x" onclick="mdRemoveSteward('${m.id}','${k}')" aria-label="Remove steward">×</button></span>`).join('')}<button class="md-add-steward" onclick="mdAddSteward('${m.id}')">${_MDIC.plus} Add steward</button></div></div>
-    </div></div>`;
+          </div></div>`;
 }
 function _mdCount(el){ const c=$('mdDescCount'); if(c){ const n=el.value.length; c.textContent=n+' / 180'; c.classList.toggle('over',n>180); } }
 function _mdActivity(m,md){
@@ -7594,14 +7593,11 @@ function openRowMenu(surface,id,btn){
   const cfg=_surfCfg(surface); const row=cfg.arr.find(r=>r.id===id); if(!row) return;
   const isPub=row.status===cfg.published;
   const item=(ic,label,act,danger)=>`<button class="rowmenu-item ${danger?'danger':''}" onclick="${act}">${ic}${label}</button>`;
+  // V1: card kebab keeps only "Open" (go to details). Duplicate / Export / Publish / Archive / Delete
+  // are deferred — destructive actions live inside the detail, not on the card.
+  void isPub;
   const html=[
     item(_RM_IC.open,'Open',`_rowAct('${surface}','${id}','open')`),
-    item(_RM_IC.dup,'Duplicate',`_rowAct('${surface}','${id}','duplicate')`),
-    item(_RM_IC.exp,'Export JSON',`_rowAct('${surface}','${id}','export')`),
-    '<div class="rowmenu-sep"></div>',
-    isPub ? item(_RM_IC.arch,'Archive',`_rowAct('${surface}','${id}','archive')`) : item(_RM_IC.pub,'Publish',`_rowAct('${surface}','${id}','publish')`),
-    '<div class="rowmenu-sep"></div>',
-    item(_RM_IC.del,'Delete',`_rowAct('${surface}','${id}','delete')`,true),
   ].join('');
   const div=document.createElement('div'); div.id='rowmenu'; div.className='rowmenu'; div.innerHTML=html;
   document.body.appendChild(div);
@@ -7915,8 +7911,7 @@ function renderFromScratch(){
         </div>
         <div class="fs-grid">
           <div class="fs-field"><label class="fs-l">Owner <span class="fs-req">*</span></label><div class="fs-owner">${av(P(fsState.owner),'sm')}<span class="fs-owner-n">${escapeHtml(P(fsState.owner).n)}</span><span class="fs-you">You</span><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="margin-left:auto;color:var(--t3)"><path d="M4 6l4 4 4-4"/></svg></div><div class="fs-help">Responsible person or team. Defaults to you.</div></div>
-          <div class="fs-field"><label class="fs-l">Stewards</label><button class="md-add-steward" onclick="toast('Add stewards')"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M2 6h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg> Add stewards</button><div class="fs-help">People who review quality and approve changes.</div></div>
-        </div>
+                  </div>
       </section>
       <div class="fs-foot">
         <button class="btn" onclick="navigate('models/new')">Cancel</button>
@@ -8265,8 +8260,7 @@ function renderEntFromScratch(){
         </div>
         <div class="fs-grid">
           <div class="fs-field"><label class="fs-l">Owner <span class="fs-req">*</span></label><div class="fs-owner">${av(P(efsState.owner),'sm')}<span class="fs-owner-n">${escapeHtml(P(efsState.owner).n)}</span><span class="fs-you">You</span><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="margin-left:auto;color:var(--t3)"><path d="M4 6l4 4 4-4"/></svg></div><div class="fs-help">Responsible person or team. Defaults to you.</div></div>
-          <div class="fs-field"><label class="fs-l">Stewards</label><button class="md-add-steward" onclick="toast('Add stewards')"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M2 6h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg> Add stewards</button><div class="fs-help">People who review quality and approve changes.</div></div>
-        </div>
+                  </div>
       </section>
       <div class="fs-foot">
         <button class="btn" onclick="navigate('entities/new')">Cancel</button>
@@ -8591,8 +8585,7 @@ function renderTblFromScratch(){
         <div class="fs-field"><div class="fs-l-row"><label class="fs-l">Tags</label><button class="fs-ai-link" onclick="tfsSuggestTags()"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"><path d="M8 2l1.2 3.1L12.3 6 9.2 7.2 8 10.3 6.8 7.2 3.7 6l3.1-.9L8 2Z"/></svg>Suggest tags</button></div><div class="fs-tagbox">${tfsState.tags.map(t=>`<span class="md-tag-chip">${escapeHtml(t)}<button class="md-tag-x" onclick="tfsTagDel('${escapeHtml(t)}')" aria-label="Remove">×</button></span>`).join('')}<input class="md-tag-in" placeholder="Add tags…" onkeydown="if(event.key==='Enter'){event.preventDefault();tfsTagAdd(this.value);this.value='';}"></div><div class="fs-help">Free-form labels for classification.</div></div>
         <div class="fs-grid">
           <div class="fs-field"><label class="fs-l">Owner <span class="fs-req">*</span></label><div class="fs-owner">${av(P(tfsState.owner),'sm')}<span class="fs-owner-n">${escapeHtml(P(tfsState.owner).n)}</span><span class="fs-you">You</span><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="margin-left:auto;color:var(--t3)"><path d="M4 6l4 4 4-4"/></svg></div><div class="fs-help">Responsible person or team. Defaults to you.</div></div>
-          <div class="fs-field"><label class="fs-l">Stewards</label><button class="md-add-steward" onclick="toast('Add stewards')"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M2 6h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg> Add stewards</button><div class="fs-help">People who review quality and approve changes.</div></div>
-        </div>
+                  </div>
         <div class="fs-field"><label class="fs-l">Icon</label><div class="fs-icon-sel" onclick="toast('Icon picker')"><span class="fs-icon-tile">${_COL_IC}</span><span class="fs-icon-name">ViewTable</span><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" style="margin-left:6px;color:var(--t3)"><circle cx="8" cy="8" r="2"/><path d="M8 2.4v1.6M8 12v1.6M13.6 8H12M4 8H2.4M11.9 4.1l-1.1 1.1M5.2 10.8l-1.1 1.1M11.9 11.9l-1.1-1.1M5.2 5.2L4.1 4.1"/></svg></div><div class="fs-help">Visual identifier for the table.</div></div>
       </section>
       <div class="fs-foot">
@@ -8908,8 +8901,7 @@ function renderRefFromScratch(){
         <div class="fs-field"><div class="fs-l-row"><label class="fs-l">Tags</label><button class="fs-ai-link" onclick="rfsSuggestTags()"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"><path d="M8 2l1.2 3.1L12.3 6 9.2 7.2 8 10.3 6.8 7.2 3.7 6l3.1-.9L8 2Z"/></svg>Suggest tags</button></div><div class="fs-tagbox">${rfsState.tags.map(t=>`<span class="md-tag-chip">${escapeHtml(t)}<button class="md-tag-x" onclick="rfsTagDel('${escapeHtml(t)}')" aria-label="Remove">×</button></span>`).join('')}<input class="md-tag-in" placeholder="Add tags…" onkeydown="if(event.key==='Enter'){event.preventDefault();rfsTagAdd(this.value);this.value='';}"></div><div class="fs-help">Free-form labels for classification.</div></div>
         <div class="fs-grid">
           <div class="fs-field"><label class="fs-l">Owner <span class="fs-req">*</span></label><div class="fs-owner">${av(P(rfsState.owner),'sm')}<span class="fs-owner-n">${escapeHtml(P(rfsState.owner).n)}</span><span class="fs-you">You</span><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="margin-left:auto;color:var(--t3)"><path d="M4 6l4 4 4-4"/></svg></div><div class="fs-help">Responsible person or team. Defaults to you.</div></div>
-          <div class="fs-field"><label class="fs-l">Stewards</label><button class="md-add-steward" onclick="toast('Add stewards')"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M2 6h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg> Add stewards</button><div class="fs-help">People who review quality and approve changes.</div></div>
-        </div>
+                  </div>
       </section>
       <div class="fs-foot">
         <button class="btn" onclick="navigate('reference/new')">Cancel</button>

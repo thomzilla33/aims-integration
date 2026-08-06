@@ -59,9 +59,9 @@ Earlier this map scoped **V1 as read-only browse.** That is **wrong.** Per Edgar
 
 ---
 
-## 3. The big V1 surfaces the prototype still needs (build items)
+## 3. The big V1 surfaces — built in the prototype; Edgardo's V1 refinements applied
 
-These are **V1** per Edgardo but not yet built as functional flows in the prototype. They are the bulk of the work.
+These are **V1** per Edgardo. The `data-studio-models.html` prototype **already has all three as functional flows** — it evolved after the walkthrough. Edgardo's specific V1 refinements have been applied (b1–b8): removed "Stewards" from create; column Edit modal with locked internal name (no "all" toggle); removed the column References tab; add-row form already excludes system/audit fields; data-row Delete + Duplicate + Edit + next-nav; relationships default to **list** with the diagram gated out of V1; list-card kebab trimmed to **Open**; card click opens the full detail (preview bypassed).
 
 ### 3.1 Column detail editor (Tables & Reference)
 - Click a column → **full column screen** with tabs **Schema · Rules · Sensitivity · Display** *(Reference tab = later)*.
@@ -95,11 +95,11 @@ These are **V1** per Edgardo but not yet built as functional flows in the protot
 | 4 lists + search + filters + pagination | ✅ | V1 ✓ |
 | Card → detail navigation | ✅ | V1 ✓ (ensure card click = full detail, not preview) |
 | Create-from-scratch (New) | ✅ (now un-gated to V1) | **remove "Stewards"** |
-| Entity Tables / Relationships tabs | ✅ (read-only) | V1 — **need authoring** (§3.3) |
-| Table Columns / Data / Relationships tabs | ✅ (read-only) | V1 — **need column editor §3.1, data authoring §3.2, rel authoring §3.3** |
-| Column detail editor | ⬜ | **V1 — missing (§3.1)** |
-| Data add/edit/delete rows | ⬜ | **V1 — missing (§3.2)** |
-| Relationship create/edit/delete | ⬜ | **V1 — missing (§3.3)** |
+| Entity Tables / Relationships tabs | ✅ authoring | V1 ✓ (rel diagram gated out of V1) |
+| Table Columns / Data / Relationships tabs | ✅ authoring | V1 ✓ (column editor, data add/edit/delete, rel create/edit/delete) |
+| Column detail editor | ✅ | V1 ✓ — Edit modal, internal name locked, References tab removed |
+| Data add/edit/delete rows | ✅ | V1 ✓ — add-row hides system fields; row Delete + Duplicate + Edit + next |
+| Relationship create/edit/delete | ✅ | V1 ✓ — list mode; diagram deferred to Full vision |
 | Privileges tab | ✅ (gated V1.2) | V1.2 — make view-only |
 | API tab | ✅ full builder (gated Full vision) | **V1.2 = 5 defaults enable/disable + description only**; the builder is Full vision |
 | Publish | ✅ (gated V1.2) | V1.2 ✓ (out of V1) |
