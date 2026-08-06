@@ -2852,7 +2852,7 @@ html:not(.theme-light) .mdw-seg.on{background:var(--surface-raised,#131C2E)}
   <span class="vtoggle-lbl">Scope</span>
   <div class="vtoggle-seg">
     <button id="scope-v1" class="on" onclick="setScope('v1')">V1</button>
-    <button id="scope-v1.5" onclick="setScope('v1.5')">V1.5</button>
+    <button id="scope-v1.5" onclick="setScope('v1.5')">V1.2</button>
     <button id="scope-v2" onclick="setScope('v2')">Full vision</button>
   </div>
   <button class="vtoggle-cl" onclick="showScopeChangelog()" title="Scope changelog — what each tier ships" aria-label="Scope changelog"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 3.5h7M5.5 8h7M5.5 12.5h4"/><circle cx="2.7" cy="3.5" r="1"/><circle cx="2.7" cy="8" r="1"/><circle cx="2.7" cy="12.5" r="1"/></svg></button>
@@ -2888,47 +2888,38 @@ html:not(.theme-light) .mdw-seg.on{background:var(--surface-raised,#131C2E)}
 </style>
 <script>
 window.SCOPE_CHANGELOG=[
- {tier:'v1',name:'V1 · Foundation',sub:'Browse &amp; understand the model',target:'This sprint',
+ {tier:'v1',name:'V1 · Foundation',sub:'Browse &amp; author the model',target:'This sprint',
   nw:[
-    'Four lists — Models · Entities · Tables · Reference Data (list / grid / table · filters · sort · pagination)',
-    'Entity detail (read-only) — Overview · Tables · Relationships',
-    'Table detail (read-only) — Overview · Columns · Data · Relationships',
-    'Reference detail (read-only) — Overview · Data · Referenced-by · Columns',
-    'Model detail — browse entities / tables / components',
-    'Column display — data type · enum · default · sensitivity · system/audit fields',
-    'Relationships — logical (Entity↔Entity) + physical (Table↔Table) + diagram',
-    'Slide-out previews · empty &amp; zero-result states'
+    'Four lists — Models · Entities · Tables · Reference Data (search · filters · pagination)',
+    'Create from scratch — New model · entity · table · reference · column (no "Stewards")',
+    'Card click → full editable detail (Overview = basic info block only)',
+    'Entity detail — Tables · Relationships',
+    'Table &amp; Reference detail — Columns · Relationships · Data',
+    'Model detail — Entities · Tables (associate an orphan or create new)',
+    'Column detail editor — Schema · Rules · Sensitivity · Display (Edit button; internal name locked; system columns collapsed)',
+    'Data authoring — add / edit / delete rows (dynamic form; id + audit fields hidden) · dynamic per-column filters',
+    'Relationship authoring — list mode · create (1-1 / 1-N / N-N) · edit (on-delete / on-update / description) · delete'
   ],
   up:[],
-  rm:['All authoring, governance &amp; advanced surfaces — deferred to V1.5 / Full vision']},
- {tier:'v1.5',name:'V1.5 · Expansion',sub:'Author &amp; govern',target:'Next sprint',
+  rm:['Publish / versioning · SlideOut preview (nice-to-have) · Marketplace · Create-with-AI · diagrams — later']},
+ {tier:'v1.5',name:'V1.2 · Expansion',sub:'Govern',target:'Next sprint',
   nw:[
-    'Create / publish — New model · entity · table · reference (minimum-creation rules)',
-    'Privileges — module capability · standard per-entity · custom · Manage roles',
-    'History &amp; audit — version history + rollback',
-    'Table Indexes (author) · Reference Settings (external sync + manual override)',
-    'Column editors — enum values · typed default values · sensitivity',
-    'Reference item import / export',
-    'Edit / deprecate / delete · create-time validation (naming · uniqueness · obligation)'
+    'Publish / save-to-version (edit → draft is V1; publish lands here)',
+    'Privileges tab — view-only standard privileges (system-generated)',
+    'API contracts — the 5 default virtual endpoints: enable / disable + description only'
   ],
-  up:[
-    'Detail views gain authoring tabs — Privileges · History · Indexes · Settings',
-    'Publish shows a classified change list (additive / breaking / migrating)'
-  ],
-  rm:['API builder · AI modeling · association · catalog install · impact/migration — Full vision']},
- {tier:'v2',name:'Full vision',sub:'The complete experience',target:'Q4 2026',
+  up:['Entity detail gains Privileges + API tabs'],
+  rm:['Custom endpoints · custom privileges · API request/response customization — Full vision']},
+ {tier:'v2',name:'Full vision',sub:'The complete experience',target:'Later',
   nw:[
-    'API contract — two-pane builder (5 defaults + custom variants · access control · request/response · predefined filters · related entities · OpenAPI) — built',
+    'API contract two-pane builder — custom endpoints · request/response customization · predefined filters · OpenAPI',
+    'Marketplace — catalog Profile · Implement vs Clone install',
     'AI-assisted (ORI) modeling — describe → suggested entities / tables / columns / relationships',
-    'Standalone state &amp; association — Promote · Demote · Detach · associate into a model',
-    'Pre-built element catalog — Implement vs Clone install with preview &amp; conflict handling',
-    'Impact analysis + migration plan on publish',
-    'Cross-model relationships',
-    'Saved filter sets · bulk actions',
-    'Handoff to Admin Studio'
+    'Diagrams (relationships) · rich SlideOut previews',
+    'Custom privileges (tied to custom endpoints) · Reference-usage ("referenced by") · Indexes · Settings · History (generic screen)'
   ],
   up:['Every tab &amp; action unlocked'],
-  rm:['Nothing cut here. Deferred (no tier): sandbox &amp; release bundles · real persistence · physical migration execution']}
+  rm:['—']}
 ];
 window.showScopeChangelog=function(){
   var cur=(typeof SCOPE!=='undefined')?SCOPE:'v1';
@@ -3003,7 +2994,7 @@ const ENTITIES = [
     desc:'The cost-center hierarchy used to allocate journal lines and drive management reporting.',
     tables:[{id:'cost_center',alias:'Cost center',role:'Primary',cols:9,rows:'1.4K'}],
     rels:[{t:'Journal Entry',k:'one-to-many',s:false}], cperms:[], cprivs:[], ceps:[] },
-  { id:'product', name:'Product', model:'inventory_stock', domain:'Internal', status:'Pending changes', updated:'5h ago', owner:'dn', collab:['mr','sm'], external:1, records:'62K', tags:['ops','catalog'],
+  { id:'product', name:'Product', model:'inventory_stock', domain:'Internal', status:'Draft', updated:'5h ago', owner:'dn', collab:['mr','sm'], external:1, records:'62K', tags:['ops','catalog'],
     desc:'The product / SKU catalog with variants, pricing and reorder thresholds. Pending changes awaiting review.',
     tables:[{id:'product',alias:'Product',role:'Primary',cols:20,rows:'62K'},{id:'product_variant',alias:'Product variant',role:'Secondary',cols:10,rows:'240K'}],
     rels:[{t:'Warehouse',k:'many-to-many',s:false}], cperms:[{n:'Edit price',c:'Data'}], cprivs:[{n:'Catalog manager',p:[['Edit price','data'],['Update','']]}], ceps:[] },
@@ -4204,7 +4195,7 @@ const TABLES = [
     {n:'debit',d:'Debit',t:'Decimal',sens:'Financial',desc:'Debit amount.'},
     {n:'credit',d:'Credit',t:'Decimal',sens:'Financial',desc:'Credit amount.'},
   ]},
-  {id:'cost_center', alias:'Cost center', model:'general_ledger', entity:'Cost Center', entityId:'cost_center', role:'Primary', status:'Archived', updated:'May 18, 2026', owner:'dp', collab:['em'], rows:'1.4K', tags:['finance'],
+  {id:'cost_center', alias:'Cost center', model:'general_ledger', entity:'Cost Center', entityId:'cost_center', role:'Primary', status:'Deprecated', updated:'May 18, 2026', owner:'dp', collab:['em'], rows:'1.4K', tags:['finance'],
    desc:'The primary table backing the Cost Center entity. Kept read-only for audit; replaced by the current finance dimension.', cols:[
     {n:'code',d:'Code',t:'Text',uq:1,req:1,desc:'Cost center code.'},
     {n:'name',d:'Name',t:'Text',desc:'Cost center name.'},
@@ -4273,7 +4264,7 @@ const TABLES = [
     {n:'status',d:'Status',t:'Enum',desc:'Approval state.',ev:[EV('draft','Draft',''),EV('approved','Approved',''),EV('retired','Retired','')]},
     {n:'effective_date',d:'Effective date',t:'Date',desc:'When the policy takes effect.'},
   ]},
-  {id:'partner', alias:'Partner', model:'partner_network', entity:'Partner', entityId:'partner', role:'Primary', status:'Archived', updated:'May 24, 2026', owner:'sc', collab:['mr'], rows:'12K', tags:['partners'],
+  {id:'partner', alias:'Partner', model:'partner_network', entity:'Partner', entityId:'partner', role:'Primary', status:'Deprecated', updated:'May 24, 2026', owner:'sc', collab:['mr'], rows:'12K', tags:['partners'],
    desc:'The primary table backing the Partner entity. Superseded by the accounts hierarchy in CRM Core.', cols:[
     {n:'name',d:'Name',t:'Text',req:1,desc:'Partner name.'},
     {n:'type',d:'Type',t:'Enum',desc:'Partner type.',ev:[EV('reseller','Reseller',''),EV('referral','Referral',''),EV('technology','Technology','')]},
@@ -4910,7 +4901,7 @@ const REFDATA = [
     RV('service_email','Service email','Transactional — always on.',true,'2022-05-25'),
     RV('legacy_optout','Legacy opt-out','Pre-GDPR flag.',false,'2018-01-01','2022-05-25'),
   ]},
-  {id:'cost_centers_2024', name:'Cost centers (2024)', category:'Finance', origin:'From catalog', status:'Archived', updated:'May 22, 2026', owner:'em', collab:['dp'], fields:6, referencedBy:0, tags:['finance'],
+  {id:'cost_centers_2024', name:'Cost centers (2024)', category:'Finance', origin:'From catalog', status:'Deprecated', updated:'May 22, 2026', owner:'em', collab:['dp'], fields:6, referencedBy:0, tags:['finance'],
    desc:'Archived 2024 cost-center hierarchy kept read-only for audit. Replaced by the current finance dimension.',
    usedBy:[], values:[
     RV('cc_1000','Sales','2024 sales cost center.',false,'2024-01-01','2024-12-31'),
@@ -5560,7 +5551,7 @@ function saveNewTable(){
 const SCOPE_TIERS = ['v1','v1.5','v2'];
 let SCOPE = 'v1';
 /* Which detail tabs belong to which scope (untagged = V1 · browse). Authoring/govern → V1.5, API builder → Full vision. */
-const TAB_VER = { privileges:'v1.5', history:'v1.5', settings:'v1.5', indexes:'v1.5', api:'v2' };
+const TAB_VER = { privileges:'v1.5', history:'v2', settings:'v2', indexes:'v2', api:'v2' };
 function vcallout(tier,text){ return `<div class="vcallout" data-version="${tier}"><span class="vcallout-tag">${tier==='v2'?'Full vision':tier==='v1.5'?'V1.5':'V1'}</span><span>${text}</span></div>`; }
 /* coming-soon annotation — shown at scopes BELOW `tier`, hidden once you reach the tier that ships it */
 function vsoon(tier,text){ return `<div class="vcallout vcallout-soon" data-soon="${tier}"><span class="vcallout-tag">${tier==='v2'?'Full vision':tier==='v1.5'?'V1.5':'V1'} · coming</span><span>${text}</span></div>`; }
@@ -5570,7 +5561,7 @@ function applyScope(){
   /* coming-soon callouts: visible only BELOW their tier, hidden once you reach it (where the real feature lives) */
   document.querySelectorAll('[data-soon]').forEach(el=>{ const ti=SCOPE_TIERS.indexOf(el.getAttribute('data-soon')); el.style.display = (ti>si)?'':'none'; });
   SCOPE_TIERS.forEach(t=>{ const b=$('scope-'+t); if(b) b.classList.toggle('on', t===SCOPE); });
-  const foot=document.querySelector('.sb-foot'); if(foot) foot.textContent = (SCOPE==='v1'?'V1 · Foundation':SCOPE==='v1.5'?'V1.5 · Expansion':'Full vision')+' scope';
+  const foot=document.querySelector('.sb-foot'); if(foot) foot.textContent = (SCOPE==='v1'?'V1 · Foundation':SCOPE==='v1.5'?'V1.2 · Expansion':'Full vision')+' scope';
 }
 function setScope(t){ SCOPE=t; applyScope(); }
 /* Draggable Scope toggle — so it never blocks proto functionality underneath it */
@@ -5647,7 +5638,7 @@ const MODELS=[
    desc:'Physical and digital assets, custody chains and depreciation schedules for the operations team.'},
   {id:'general_ledger', name:'General Ledger', origin:'Implemented', category:'Finance', status:'Published', entities:12, version:'v5.1', owner:'em', collab:['dp'], updated:'May 18, 2026', tags:['finance','core','gold'],
    desc:'Chart of accounts, journals, cost centers and fiscal periods. The accounting backbone synced from the marketplace.'},
-  {id:'inventory_stock', name:'Inventory & Stock', origin:'Implemented', category:'Operations', status:'Pending changes', entities:9, version:'v2.1', owner:'dn', collab:['mr','sm'], updated:'5h ago', tags:['ops','inventory'],
+  {id:'inventory_stock', name:'Inventory & Stock', origin:'Implemented', category:'Operations', status:'Draft', entities:9, version:'v2.1', owner:'dn', collab:['mr','sm'], updated:'5h ago', tags:['ops','inventory'],
    desc:'Warehouses, SKUs, lots and stock movements with reorder thresholds. Pending changes awaiting review.'},
   {id:'iot_telemetry', name:'IoT Telemetry', origin:'Implemented', category:'IoT', status:'Published', entities:6, version:'v1.3', owner:'jc', collab:['tk'], updated:'May 20, 2026', tags:['iot','streaming'],
    desc:'Devices, sensor streams, readings and alert thresholds. High-volume time-series ingest from the field.'},
@@ -5678,7 +5669,7 @@ function pageShell(active){
   const tab=(id,label)=>`<button class="mtab ${active===id?'active':''}" onclick="navigate('${id}')">${label}</button>`;
   const ACT={models:['New model','models/new'],entities:['New entity','entities/new'],tables:['New table','tables/new'],reference:['New reference list','reference/new']};
   const a=ACT[active]||ACT.models;
-  return `<div class="page-head"><h1 class="page-h1">Models</h1><button class="btn btn-primary" data-version="v1.5" onclick="navigate('${a[1]}')">${_MDIC.plus} ${a[0]}</button></div>
+  return `<div class="page-head"><h1 class="page-h1">Models</h1><button class="btn btn-primary" onclick="navigate('${a[1]}')">${_MDIC.plus} ${a[0]}</button></div>
     <div class="mtabs mtabs-lg">${tab('models','Models')}${tab('entities','Entities')}${tab('tables','Tables')}${tab('reference','Reference Data')}</div>`;
 }
 

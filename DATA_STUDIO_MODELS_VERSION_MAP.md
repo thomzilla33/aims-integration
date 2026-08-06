@@ -1,407 +1,143 @@
-# Data Studio — Models · Version Map & Completion Guide
+# Data Studio — Models · Version Map & Engineering Handoff
 
 > **Prototype:** `data-studio-models.html` (single-file vanilla HTML/CSS/JS)
-> **Spec of record:** *Data Studio — Models Section: Functional Definition* **v3.0** (17 sections)
-> **Scope engine:** `SCOPE_TIERS = ['v1','v1.5','v2']` · `SCOPE='v1'` (default) · `TAB_VER` gating · draggable Scope toggle + live Scope-changelog
-> **Purpose of this file:** one place that says, for **each version**, exactly *what it must include*, *what is already built*, and *what is left to build to complete the prototype* — mapped section-by-section to the Functional Definition.
+> **Canonical scope source:** **Edgardo Sierra product walkthrough** (transcript). This overrides earlier assumed scope.
+> **Scope engine in the prototype:** draggable Scope toggle **V1 · V1.2 · Full vision** + live Scope-changelog (`window.SCOPE_CHANGELOG`) + `[data-version]` gating.
+> **States:** `Published · Draft · Deprecated` (only these three).
 
 ---
 
-## 0. How to use this document
+## 0. The one correction that changes everything
 
-- **Section 1** — the three-tier scope ladder and what each tier *promises*.
-- **Section 3** — the master matrix: every Functional-Definition area × tier × build status. Read this first for the big picture.
-- **Sections 4–6** — one deep block per version: everything it includes, current status, the **"To complete" checklist**, and **acceptance criteria**.
-- **Section 7** — how the prototype is currently *tagged* (`data-version`) and where tagging is missing.
-- **Section 8** — the ordered roadmap to finish the prototype.
+Earlier this map scoped **V1 as read-only browse.** That is **wrong.** Per Edgardo, **V1 includes authoring** — create-from-scratch and full editing of the core objects (tables, columns, entities, relationships, data rows). Only **Publish/versioning, API, custom privileges, Marketplace, Create-with-AI, diagrams and the rich SlideOut preview** are deferred.
 
-**Status legend:** ✅ Built · 🟡 Partial (exists but shallow / missing sub-features) · ⬜ Pending (not built)
-
-**Tier philosophy** (from the `aims-os-feature-versioning` skill):
-
-| Tier | Name | Means |
+| Tier | Name | What it means |
 |---|---|---|
-| **V1** | Foundation | Minimum functional scope. The core journey: **browse & understand** the model. No authoring. |
-| **V1.5** | Expansion | Adds depth: **author & govern** — create/publish, privileges, history, indexes, settings. |
-| **Full vision (V2)** | Complete | The whole product as designed — **API builder, AI modeling, association, catalog install, impact analysis, handoff**. |
+| **V1** | Foundation | Browse **and author** the model: the 4 lists + create-from-scratch + full editable detail (incl. the column editor, data-row authoring, relationship authoring). |
+| **V1.2** | Expansion | Govern: **Publish**, **Privileges** (view-only), **API** (5 default endpoints, enable/disable + description). |
+| **Full vision** | Complete | API builder (custom endpoints), Marketplace, AI/ORI modeling, diagrams, custom privileges, rich previews, reference-usage, indexes, settings, history. |
+
+**Build order for engineering (reverse of display — entities are composed of tables):**
+`Tables → Reference Data → Entities → Models`. **Marketplace last** (Start-from-Scratch must exist first to feed it). Navigation stays as-is.
 
 ---
 
-## 1. The scope ladder (what each tier promises)
+## 1. Rules that apply to ALL four areas (Models · Entities · Tables · Reference)
 
-This mirrors the live **Scope changelog** already inside the prototype (`window.SCOPE_CHANGELOG`).
+**V1**
+- List with **search + filters + pagination**. The prototype's specific filters are illustrative — real filters TBD by design.
+- **Click the card → go straight to the full editable detail** (the Overview). *(Danilo/Thomas: the card click = the "open" action.)*
+- **New button → a Marketplace modal**, but in V1 **only "Start from Scratch"** is required (Marketplace catalog + Create-with-AI = later).
+- **Create from Scratch**: keep **Owner · Category · Tags · Description** + name→autogenerates. **Remove "Stewards" everywhere** (deprecated concept). AI-suggested fields = later.
+- Overview tab = **just the basic info block** (no widgets, no filters).
 
-### V1 · Foundation — *Browse & understand the model*
-Models · Entities · Tables · Reference Data lists (list / grid / table · filters · pagination) · Entity/Table/Reference/Model **read-only** detail views · slide-out previews. **No authoring, no governance, no API builder.**
-
-### V1.5 · Expansion — *Author & govern*
-Create / publish (model · entity · table · reference) · Privileges (standard + custom · manage roles) · History + rollback · Table Indexes · Reference Settings · Edit / deprecate actions. Detail views gain their **authoring tabs**.
-
-### Full vision (V2) — *The complete experience*
-API contract two-pane builder · AI-assisted (ORI) modeling · standalone state + association · pre-built catalog install (Implement / Clone) · impact analysis + migration plan · cross-model relationships · saved filters · bulk actions · handoff to Admin Studio.
-
----
-
-## 2. Object model recap (containment — drives navigation)
-
-```
-Model
- └── Entity                     (business object; has Records metric)
-      ├── Primary table          (1, required)
-      └── Secondary table(s)     (0..n)
-           └── Column            (type · enum · default · sensitivity · system/audit fields)
- └── Reference Data (list)       (flexible schema, Key field, Items, Origins)
-Relationships                    logical (Entity↔Entity) · physical (Table↔Table) · reference↔reference
-Cross-cutting                    Privileges · API contract · Lifecycle/versioning · Standalone+Association · Pre-built catalog
-```
-
-The **four sidebar tabs** (§17.3) map to the top level: **Models · Entities · Tables · Reference Data**.
+**Deferred (NOT V1)**
+- **SlideOut preview** (the eye → side panel) — nice-to-have; if built, text-only first.
+- **Publish / versioning** — editing saves to **Draft** in V1; **publish is V1.2**.
+- Card 3-dot kebab actions (clone / export / delete). Destructive actions live *inside* the detail, not on the card.
 
 ---
 
-## 3. Master coverage matrix
+## 2. Per-area scope
 
-Functional-Definition area → tier it belongs to → current build status in the prototype.
+### Models
+- **V1:** list + create-from-scratch. Detail tabs → **Entities · Tables** (+ Overview basic block). "Add entity" = **associate an orphan** entity OR **create new** (→ Start-from-Scratch).
+- **Later:** History.
 
-| # | Functional-Definition area | Tier | Status | Where it lives / note |
-|---|---|---|---|---|
-| §1 | Introduction / purpose | — | n/a | Context only |
-| §2 | Object model & containment | V1 | ✅ | Nav + hierarchy reflected |
-| §3 | **Model** (attributes, composition) | V1 | ✅ | `renderModelDetail` |
-| §3.4 | Automatic behaviors on publish | V1.5 | 🟡 | `openPublish` shows an impact list; behaviors not fully modeled |
-| §4 | **Entity** (detail, primary/secondary) | V1 | ✅ | `renderEntityDetail` — Overview/Tables/Relationships |
-| §4.4 | Records (business metric) | V1 | ✅ | Shown in header |
-| §4.5 | Entity privileges & API | V1.5 / V2 | ✅ | `privTab` + `apiTab` |
-| §5 | **Table** (roles, attributes) | V1 | ✅ | `renderTableDetail` |
-| §5.4 | System columns (audit fields) | V1 | ✅ | Columns list |
-| §5.5 | Table data editability / manual override | V1.5 | 🟡 | Data tab renders; inline edit shallow |
-| §5.6 | Indexes | V1.5 | ✅ | Indexes tab (`data-version="v1.5"`) |
-| §6 | **Column** (types) | V1 | ✅ | `columnsTab` |
-| §6.4 | Enum values | V1.5 | 🟡 | Present in data; **no enum-value editor popup** |
-| §6.5 | Column default values | V1.5 | 🟡 | Displayed; editor shallow |
-| §6.6 | Sensitivity | V1 | ✅ | Sensitivity dot/label |
-| §7 | **Relationships** (logical + physical) | V1 | ✅ | `relsTab` + diagram |
-| §7 | Cross-model relationships | V2 | ⬜ | Advanced — not built |
-| §8 | **Reference Data** (schema, items, origins) | V1 | ✅ | Reference detail |
-| §8.5 | External sync + manual override | V1.5 | 🟡 | Settings tab exists; sync shallow |
-| §8.6 | Item import / export | V1.5 | 🟡 | Import/export UI present; flow shallow |
-| §8.7 | Referenced-by | V1 | ✅ | Referenced-by tab |
-| §8.8 | History | V1.5 | ✅ | `_historyTab` |
-| §9 | **Standalone state & association** | V2 | 🟡 | Association surfaces present; **Promote/Demote/Detach not built** |
-| §10 | **Pre-built element catalog** | V2 | 🟡 | Marketplace/catalog present; **Implement/Clone install-modal shallow** |
-| §11.1 | Object creation (minimum reqs) | V1.5 | ✅ | `openCreateEntity` + create modals |
-| §11.2 | AI-assisted creation (ORI) | V2 | ⬜ | Not built |
-| §12 | **API contract** (5 defaults + custom + access control) | V2 | ✅ | **two-pane builder — `apiTab` / `_apiRight`** |
-| §13 | **Privilege system** (module/standard/custom) | V1.5 | ✅ | `privTab` |
-| §14.1–14.3 | Lifecycle states · draft/publish · schema-change classification | V1.5 | 🟡 | States + publish modeled; classification shallow |
-| §14.4 | **Impact analysis & migration plan** | V2 | 🟡 | Basic impact list only; **no migration plan** |
-| §14.5 | Auditing & history | V1.5 | ✅ | `_historyTab` + rollback |
-| §14.6 | Sandbox & release bundles | V2 | ⬜ | Reference only — not built |
-| §15 | System conventions & limits (naming, uniqueness, integrity) | V1.5 | 🟡 | Internal-name lock shown; validation surfaces partial |
-| §17.1–17.3 | Navigation · transversal patterns · four tabs | V1 | ✅ | Shell + DS filters + pagination |
-| §17.4–17.6 | Entity/Table/Reference Full Detail | V1/V1.5 | ✅ | Detail views + tabs |
-| §17.7 | Standalone association surfaces | V2 | 🟡 | See §9 |
-| §17.8 | API contract surfaces | V2 | ✅ | two-pane builder |
-| §17.9 | Privilege enforced on API endpoints | V2 | ✅ | Access-control chips per endpoint |
+### Entities
+- **V1:** list + create. Detail tabs → **Tables · Relationships** (+ Overview basic block).
+- **V1.2:** **Privileges** tab (view-only standard privileges) · **API** tab (5 default endpoints — enable/disable + description only).
+- **Full vision:** API two-pane builder (custom endpoints) · custom privileges.
+
+### Tables
+- **V1:** list + create. Detail tabs → **Columns · Relationships · Data** (+ Overview basic block).
+- **Later:** Indexes · Settings (undefined) · History (generic screen, not Data Studio).
+
+### Reference Data
+- **V1:** list + create. Detail tabs → **Columns · Relationships · Data** (+ Overview basic block). Mandatory columns = **Label · Code · Description · Status**. Column has **no Reference sub-tab**.
+- **Later:** "Referenced by" (dictionary-usage shortcut) · Settings · History.
 
 ---
 
-## 4. V1 — Foundation · *Browse & understand*
+## 3. The big V1 surfaces the prototype still needs (build items)
 
-**Release target:** This sprint
+These are **V1** per Edgardo but not yet built as functional flows in the prototype. They are the bulk of the work.
 
-**Goal:** a non-authoring user can open Data Studio → Models and fully **understand** any model: its entities, tables, columns, relationships, reference lists — with list/grid/table views, filters, pagination, and slide-out previews. Nothing is editable.
+### 3.1 Column detail editor (Tables & Reference)
+- Click a column → **full column screen** with tabs **Schema · Rules · Sensitivity · Display** *(Reference tab = later)*.
+- **Edit button** enables field editing (NOT the "select all" toggle — that toggle does not ship).
+- **Internal name is never editable** (display name can change; internal is locked after creation).
+- **System columns collapsed** by default in the list (view-only: see where used, config, duplicate — no edit).
+- A **column config pop-up** for info too long to sit in the table row.
+- Column list actions: **Create** (minimal detail → then edit) · **Edit** · **Duplicate** · **Delete**.
+- Column detail menu: **Detach + Publish** only.
 
-### Must include
+### 3.2 Data authoring (Tables & Reference)
+- Infinite table, lateral scroll, column-visibility picker, pagination.
+- **Dynamic filters per column** (by column type — not a fixed filter set).
+- **Add row → dynamic form** built from the table's columns, **omitting `id`, `created_at`, `updated_at` and all system/mandatory fields** (managed internally).
+- **Row detail** as a form (view a full record).
+- Row menu: **Delete row · Duplicate row** (+ Edit; + next-record navigation).
 
-**Navigation & shell (§17.1–17.3)**
-- ✅ Four sidebar tabs: Models · Entities · Tables · Reference Data
-- ✅ List / Grid / Table view switch · DS filters toolbar (search + dropdowns + chips + sort) · pagination
-- ✅ Breadcrumbs, detail headers (internal-name + lock + status pill + kebab), transversal tab bar
-
-**Model (§3)** — ✅ browse a model: its entities, tables, components; attributes.
-
-**Entity Full Detail (§4, §17.4)** — read-only tabs:
-- ✅ Overview · ✅ Tables (primary/secondary) · ✅ Relationships (list + diagram)
-- *(Privileges · API contracts · History appear but belong to higher tiers — see §7 tagging)*
-
-**Table Full Detail (§5, §17.5)** — read-only:
-- ✅ Overview · ✅ Columns (type · default · sensitivity · system/audit fields) · ✅ Data (sample) · ✅ Relationships
-
-**Column (§6)** — ✅ display all attributes, data types, enum presence, default value, sensitivity dot.
-
-**Relationships (§7)** — ✅ logical (Entity↔Entity) and physical (Table↔Table), including the diagram view.
-
-**Reference Data Full Detail (§8, §17.6)** — read-only:
-- ✅ Overview · ✅ Data (items) · ✅ Referenced-by (§8.7) · ✅ Columns
-
-**Transversal (§17.2)** — ✅ slide-out previews (eye action), toasts, empty states, dark + light parity.
-
-### To complete (V1)
-V1 is **feature-complete** in the prototype. Only polish remains:
-- ⬜ Confirm every **read-only** guarantee at scope `v1` — no create/edit/publish control is reachable (New button is `data-version="v1.5"`; verify no stray edit affordances leak at v1).
-- ⬜ Empty-state + zero-results copy audit across all four lists.
-
-### Acceptance criteria
-- [ ] At scope **V1**, every list, detail view, tab (Overview/Tables/Relationships/Data/Columns/Referenced-by), diagram and slide-out renders with realistic 50–100-record data.
-- [ ] No authoring control (New / Edit / Publish / Delete / API builder) is visible or reachable at V1.
-- [ ] Filters, sort, pagination and view-switch work on all four lists.
-- [ ] Dark and light both pass.
+### 3.3 Relationship authoring (Tables & Entities)
+- **List mode only** (no diagram in V1).
+- **Table relationships:** two sections — *incoming* (others → me, read-only; edit at the source table) and *outgoing* (me → others, editable).
+- **Create** in **3 cardinalities** (1-1 · 1-N · N-N): target table, target column, my column, **on-delete** (Cascade / Restrict / Set-null / No-action), **on-update**, optional/required (`Required` removes nullability).
+- **Edit** limited to on-delete / on-update / description (type, table, column locked). **Delete** available.
+- **Entity relationships** are entity↔entity: cardinality + **strength (strong / weak)** + composition + direction. Mandatory fields gate the Create button.
 
 ---
 
-## 5. V1.5 — Expansion · *Author & govern*
+## 4. What the prototype already has vs. Edgardo's V1
 
-**Release target:** Next sprint
-
-**Goal:** a modeler can **create, edit, publish, and govern** — the detail views unlock their authoring tabs. Everything V1 has, plus authoring depth (still short of the API builder and AI).
-
-### Must include
-
-**Object creation (§11.1)**
-- ✅ New model · entity · table · reference-list (minimum creation requirements + create modals)
-- ✅ New button gated `data-version="v1.5"`
-
-**Draft & publication (§14.1–14.2, §3.4)**
-- ✅ Lifecycle states (Draft / Pending changes / Published) + publish flow (`openPublish`)
-- 🟡 **Automatic behaviors on publish (§3.4)** — surface the full list of what publish does (index rebuilds, schema apply to physical tenant tables, etc.); currently a short static impact list.
-- 🟡 **Schema change classification (§14.3)** — label each pending change as additive / breaking / data-migrating.
-
-**Privilege system (§13, §17.9 read side)**
-- ✅ Standard privileges per entity · custom privileges · Manage roles (`privTab`)
-
-**Table depth (§5.5, §5.6)**
-- ✅ Indexes tab (author) · 🟡 Table data manual override / inline edit (deepen editability)
-
-**Column depth (§6.4–6.6)**
-- 🟡 **Enum-value editor** (add/reorder/deprecate enum items in a popup) — *not built*
-- 🟡 **Default-value editor** per column (typed) — *shallow*
-- ✅ Sensitivity assignment
-
-**Reference data depth (§8.5, §8.6)**
-- 🟡 External synchronization + manual override (Settings tab exists; sync flow shallow)
-- 🟡 Item import / export flow (UI present; wire the modal steps)
-
-**History & audit (§14.5, §8.8)**
-- ✅ Version history + rollback (`_historyTab`) on entity / table / reference
-
-**System conventions (§15)**
-- ✅ Internal-name lock (immutable after creation) shown
-- 🟡 Validation surfaces for naming / structural-uniqueness / obligation rules (§15.3) — add inline validation on create/edit
-
-### To complete (V1.5)
-1. ⬜ **Enum-value editor popup** on `columnsTab` (line ~4481): add / rename / reorder / deprecate enum items.
-2. ⬜ **Column default-value editor** (typed input matching column type) — reuse the API builder's default-value popup pattern (`apiDefVal`) for consistency.
-3. ⬜ **Publish upgrade (§3.4 + §14.3):** turn `openPublish`'s static impact list into a real change list with per-change **classification badges** (additive / breaking / migrating).
-4. 🟡 **Inline-edit-everywhere** on Columns + Table Data (make the shallow edit affordances functional).
-5. 🟡 **Reference import/export + external-sync** flows (wire the Settings-tab steps end to end).
-6. ⬜ **Create/edit validation** (§15.3): duplicate-name, missing-primary-table, obligation rules.
-
-### Acceptance criteria
-- [ ] At scope **V1.5**, all V1 content **plus** Create/Publish, Privileges, History, Indexes, Reference Settings tabs are visible and functional.
-- [ ] A user can create an entity → add columns (with types, enums, defaults, sensitivity) → set privileges → publish, seeing a classified impact list.
-- [ ] History shows the change and offers rollback.
-- [ ] Dark and light both pass.
-
----
-
-## 6. Full vision (V2) · *The complete experience*
-
-**Release target:** Q4 2026
-
-**Goal:** the product as designed — the API contract builder, AI-assisted modeling, standalone/association, catalog install, impact analysis + migration, cross-model relationships, and the Admin Studio handoff.
-
-### Must include
-
-**API contract (§12, §17.8, §17.9)** — ✅ **DONE (two-pane builder)**
-- ✅ Base-URL banner + enabled count
-- ✅ Left: endpoints grouped by operation (5 defaults Create/Read/Update/Delete/List + custom variants; method badges, paths, privilege chips, enabled dots) + "**+ New custom endpoint**" → 5-base selector
-- ✅ Right per endpoint: **Access control** (OR-logic privileges), **Request body** (include toggle + default-value popup: *system default* / *fallback ⇢* / *hardcoded ⚑*), **Response fields** (include toggles), **Predefined filters** (field/op/value + AND/OR, List/Read only), **Related entities** (none/reference/embed/expandable), generated **OpenAPI** block
-- ✅ Custom-endpoint rename / duplicate / delete
-- Symbols: `apiTab` · `_apiEndpoints` · `_apiC` · `_apiRight` · `apiCreateCustom` · `_apiDvSave` · `_API_OPS`
-- Tagged `data-version="v2"` (via `TAB_VER.api`)
-- ⬜ *Optional polish:* copy-OpenAPI button; per-endpoint "Try it"/example payload; explicit ≥1-privilege obligation warning.
-
-**AI-assisted creation / ORI (§11.2)** — ⬜ *not built*
-- ⬜ "Describe the entity you need" → AI-suggested entities/tables/columns/relationships with accept/reject.
-
-**Standalone state & association (§9, §17.7)** — 🟡
-- ✅ Association surfaces + standalone concept present
-- ⬜ **Promote / Demote / Detach** actions (0 hits in code) — build the state transitions + confirmation modals.
-- ⬜ Standalone-element association slide-out (associate a standalone table/entity into a model).
-
-**Pre-built element catalog (§10)** — 🟡
-- ✅ Catalog / marketplace surface + Implement/Clone concepts present
-- ⬜ **Element-detail + install modal depth**: Implement vs Clone choice, preview of what gets created, conflict handling.
-
-**Lifecycle — impact & sandbox (§14.4, §14.6)** — 🟡/⬜
-- 🟡 **Impact analysis + migration plan (§14.4):** extend the publish impact list into a full downstream-impact view (affected endpoints, privileges, agents, dashboards) + a migration plan.
-- ⬜ **Sandbox & release bundles (§14.6):** reference-level scaffold + callout.
-
-**Advanced relationships (§7)** — ⬜ cross-model / cross-entity relationships.
-
-**Power-user surfaces** — ⬜ saved filters · bulk actions · **handoff to Admin Studio** (0 hits — build the handoff entry point).
-
-### To complete (Full vision)
-1. ✅ ~~API contract two-pane builder~~ **(done)**
-2. ⬜ **Promote / Demote / Detach** + standalone association slide-out (§9, §17.7).
-3. 🟡 **Catalog element-detail + Implement/Clone install modal** (§10).
-4. 🟡 **Impact analysis + migration plan** slide-out (§14.4) — build on `openPublish`.
-5. ⬜ **AI/ORI modeling** entry point (§11.2).
-6. ⬜ **Cross-model relationships** in `relsTab`.
-7. ⬜ **Saved filters + bulk actions** on the four lists.
-8. ⬜ **Handoff to Admin Studio** action.
-9. ⬜ **Sandbox / release bundles** scaffold (§14.6).
-
-### Acceptance criteria
-- [ ] At scope **Full vision**, every tab and action is unlocked; the API builder is reachable on entity detail.
-- [ ] Every §12/§17.8 sub-surface works (already verified for the API builder).
-- [ ] Promote/Demote/Detach transition an element and reflect in its status + history.
-- [ ] Catalog install (Implement/Clone) previews and creates the elements.
-- [ ] Publish shows a full impact + migration plan.
-- [ ] Dark and light both pass.
-
----
-
-## 7. Current `data-version` tagging state & gaps
-
-**Engine:** `applyScope()` shows any `[data-version]` element whose tier index ≤ the selected tier; `deferred` never shows. A `MutationObserver` re-applies scope after every re-render.
-
-**Currently tagged:**
-
-| Element | Tag | Correct? |
+| Surface | In prototype | vs. canonical V1 |
 |---|---|---|
-| New button (create) | `v1.5` | ✅ |
-| Detail tabs via `TAB_VER` → `privileges`, `history`, `settings`, `indexes` | `v1.5` | ✅ |
-| Detail tab `api` (API contracts) | `v2` | ✅ |
-| 3 × `vcallout('v1.5', …)` + 1 × `vcallout('v2', …)` | — | ✅ deferred-feature callouts |
-
-**Tagging gaps to close (so scope truly gates the experience):**
-- ⬜ **Edit / deprecate / delete** row actions and detail-kebab items → tag `v1.5` (authoring).
-- ⬜ **Enum editor / default-value editor** (once built) → `v1.5`.
-- ⬜ **Publish button + impact/migration** → `v1.5` (publish) / `v2` (migration plan).
-- ⬜ **Promote / Demote / Detach / Associate**, **Catalog install**, **AI/ORI**, **Saved filters / bulk / Admin-Studio handoff**, **cross-model relationships** → `v2`.
-- ⬜ Add **`vcallout`** placeholders at V1/V1.5 for each deferred V2 surface so engineers see *what's coming* without it being live.
-
----
-
-## 8. Completion roadmap (ordered)
-
-Do these in order; each is a self-contained slab that can be verified at its own scope.
-
-| # | Item | Tier | Status | Effort |
-|---|---|---|---|---|
-| 1 | ✅ API contract two-pane builder | V2 | **Done** | — |
-| 2 | Enum-value editor + column default-value editor | V1.5 | ⬜ | S–M |
-| 3 | Publish upgrade: change list + classification + impact/migration plan (§3.4/§14.3/§14.4) | V1.5→V2 | 🟡→⬜ | M |
-| 4 | Inline-edit-everywhere (Columns + Table Data) | V1.5 | 🟡 | M |
-| 5 | Reference import/export + external-sync flows | V1.5 | 🟡 | M |
-| 6 | Promote / Demote / Detach + standalone association (§9, §17.7) | V2 | ⬜ | M |
-| 7 | Catalog element-detail + Implement/Clone install modal (§10) | V2 | 🟡 | M |
-| 8 | AI/ORI modeling entry point (§11.2) | V2 | ⬜ | M–L |
-| 9 | Cross-model relationships (§7) | V2 | ⬜ | M |
-| 10 | Saved filters + bulk actions | V2 | ⬜ | S–M |
-| 11 | Handoff to Admin Studio | V2 | ⬜ | S |
-| 12 | Sandbox / release bundles scaffold (§14.6) | V2 | ⬜ | S |
-| 13 | Close all `data-version` tagging gaps (§7 above) | all | ⬜ | S |
-| 14 | Create/edit validation surfaces (§15.3) | V1.5 | ⬜ | S |
-
-**Effort:** S ≈ ½ day · M ≈ 1–2 days · L ≈ 3+ days (prototype-level, single-file).
+| 4 lists + search + filters + pagination | ✅ | V1 ✓ |
+| Card → detail navigation | ✅ | V1 ✓ (ensure card click = full detail, not preview) |
+| Create-from-scratch (New) | ✅ (now un-gated to V1) | **remove "Stewards"** |
+| Entity Tables / Relationships tabs | ✅ (read-only) | V1 — **need authoring** (§3.3) |
+| Table Columns / Data / Relationships tabs | ✅ (read-only) | V1 — **need column editor §3.1, data authoring §3.2, rel authoring §3.3** |
+| Column detail editor | ⬜ | **V1 — missing (§3.1)** |
+| Data add/edit/delete rows | ⬜ | **V1 — missing (§3.2)** |
+| Relationship create/edit/delete | ⬜ | **V1 — missing (§3.3)** |
+| Privileges tab | ✅ (gated V1.2) | V1.2 — make view-only |
+| API tab | ✅ full builder (gated Full vision) | **V1.2 = 5 defaults enable/disable + description only**; the builder is Full vision |
+| Publish | ✅ (gated V1.2) | V1.2 ✓ (out of V1) |
+| SlideOut preview | ✅ (shows at V1) | **defer — nice-to-have, not V1** |
+| States | Published/Draft/Deprecated ✅ | ✓ |
 
 ---
 
-## 9. Changelog
+## 5. Acceptance criteria per tier
 
-> One block per tier · one entry per view · release target always filled. Mirrors the live in-app Scope-changelog (`window.SCOPE_CHANGELOG`).
+**V1** — a modeler can, at scope V1:
+- [ ] Browse all 4 lists (search · filter · paginate) and open any item's **full editable detail** from the card.
+- [ ] **Create** a table / reference / entity / model / column **from scratch** (no Stewards).
+- [ ] Edit a **column** end-to-end (Schema · Rules · Sensitivity · Display; internal name locked; system columns collapsed).
+- [ ] **Add / edit / delete data rows** (dynamic form hides id + audit fields; dynamic per-column filters).
+- [ ] **Create / edit / delete relationships** (3 cardinalities; on-delete/on-update; list mode).
+- [ ] No Publish, no API builder, no custom privileges, no Marketplace, no diagrams.
 
-### V1 — Foundation
-**Release target:** This sprint
+**V1.2** — plus: Publish/save-to-version · Privileges (view-only) · API (5 defaults enable/disable + description).
 
-**New in this version:**
-- Sidebar: four tabs — Models · Entities · Tables · Reference Data
-- All four lists: list / grid / table views · DS filters (search + dropdowns + chips) · sort · pagination
-- Entity detail (read-only): Overview · Tables · Relationships
-- Table detail (read-only): Overview · Columns · Data · Relationships
-- Reference detail (read-only): Overview · Data · Referenced-by · Columns
-- Model detail: browse entities / tables / components
-- Columns: display data type · enum · default · sensitivity · system/audit fields
-- Relationships: logical + physical + diagram view
-- Transversal: slide-out previews · empty & zero-result states · dark + light
-
-**Updated in this version:**
-- n/a — this is the first version
-
-**Removed / not included:**
-- New / Create — deferred to V1.5 (tagged `data-version="v1.5"`)
-- Publish button + unpublished-changes hint — deferred to V1.5 (tagged)
-- Privileges · History · Indexes · Reference Settings tabs — deferred to V1.5 (tagged via `TAB_VER`)
-- API contracts tab — deferred to Full vision (tagged `data-version="v2"`)
-- Everything in Full vision — see V2 callouts (`data-soon="v2"`)
+**Full vision** — plus: API two-pane builder + custom endpoints · Marketplace (Profile + Implement/Clone) · AI/ORI modeling · diagrams · custom privileges · reference-usage · indexes · settings · history.
 
 ---
 
-### V1.5 — Expansion
-**Release target:** Next sprint
+## 6. In-prototype scope mechanics
 
-**New in this version:**
-- Create flows: New model · entity · table · reference (minimum-creation rules + validation)
-- Publish: button + unpublished-changes hint become visible; publish modal
-- Privileges tab: module capability · standard per-entity · custom · Manage roles
-- History tab: version history + rollback (entity / table / reference)
-- Table detail: Indexes tab (author)
-- Reference detail: Settings tab (external sync + manual override) · item import / export
-- Columns: enum-value editor + typed default-value editor + sensitivity assignment *(to build — see §5 checklist)*
-
-**Updated in this version:**
-- Entity / Table / Reference detail: authoring tabs appear (Privileges · History · Indexes · Settings)
-- Publish modal: gains a classified change list — additive / breaking / migrating *(to build)*
-- Lists: row-level Edit / deprecate / delete actions appear
-
-**Removed / not included:**
-- API contract builder — still Full vision
-- AI/ORI modeling · association · catalog install · impact/migration — still Full vision
+- **Toggle** V1 · V1.2 · Full vision (`setScope`) + Scope-changelog drawer (`showScopeChangelog`, data in `window.SCOPE_CHANGELOG`). Middle tier label = **V1.2** (engine key stays `v1.5`).
+- `applyScope()` shows any `[data-version]` element whose tier ≤ selected; a `MutationObserver` re-applies after re-render.
+- **Tagged today:** `TAB_VER = { privileges:'v1.5' (V1.2), history:'v2', settings:'v2', indexes:'v2', api:'v2' }`; Publish button → `v1.5` (V1.2); New → **V1 (un-gated)**.
+- **Tagging still to add** (behavior work): gate the **SlideOut preview** out of V1; make **card click open the full detail** (not the preview) at V1.
 
 ---
 
-### Full vision (V2)
-**Release target:** Q4 2026
-
-**New in this version:**
-- Entity detail: **API contracts tab — two-pane builder** (5 defaults + custom variants · access control · request/response customization · predefined filters · related entities · OpenAPI) — **built**
-- Entity detail: AI-assisted (ORI) modeling entry point *(to build — replaces the `data-soon` callout)*
-- Entity / Table: Standalone state + association — Promote · Demote · Detach · associate into a model *(to build)*
-- Catalog: pre-built element detail + Implement vs Clone install modal *(to build)*
-- Publish: impact analysis + migration plan *(to build)*
-- Relationships: cross-model relationships *(to build — replaces the `data-soon` callout)*
-- Lists: saved filter sets + bulk actions *(to build)*
-- Handoff to Admin Studio *(to build)*
-
-**Updated in this version:**
-- Entity detail: API tab unlocks (was `data-soon` callouts at V1/V1.5)
-- Every tab and action across the four surfaces is unlocked
-
-**Removed / not included:**
-- _None cut here._ Deferred with no tier: sandbox & release bundles · real persistence · physical migration execution.
+## 7. Deferred / out of scope
+- Marketplace catalog · Create-with-AI · AI/ORI modeling · diagrams · rich SlideOut previews · custom endpoints/privileges · reference-usage view · indexes · settings.
+- History (generic screen, not Data Studio).
+- Real backend / persistence / publish execution.
 
 ---
 
-## 10. In-prototype versioning mechanics (implementation reference)
-
-- **Toggle:** draggable Scope control (`setScope('v1'|'v1.5'|'v2')`) + Scope-changelog drawer (`showScopeChangelog`, data in `window.SCOPE_CHANGELOG`).
-- **`applyScope()`** shows any `[data-version]` element whose tier ≤ selected tier; a `MutationObserver` on `#content` re-applies after every re-render.
-- **`[data-version="…"]`** — element belongs to that tier and above (real feature).
-- **`[data-soon="v2"]`** — *coming-soon* callout: visible **below** the tier, hidden once you reach it (where the real feature lives). Helper: `vsoon(tier,text)`.
-- **`vcallout(tier,text)`** — tier annotation shown at-or-above the tier.
-- **Tagged today:** New button · Publish button + hint · Privileges/History/Indexes/Settings tabs (`TAB_VER`) → `v1.5`; API tab → `v2`; V2 coming-soon callouts on Entity Overview (AI, association) + Relationships (cross-model).
-
----
-
-## 11. Deferred / explicitly out of scope
-
-- **Sandbox & release bundles (§14.6)** — reference-only in the doc; scaffold + callout, don't build the full flow.
-- **Real backend / persistence** — the prototype mutates in-memory only; scope resets on reload.
-- **Physical migration execution** — visualize the plan; execution is engineering's, not the prototype's.
-
----
-
-*Generated 2026-08-05. Keep this file next to `data-studio-models.html`; update the status columns as slabs land. The live Scope-changelog (`window.SCOPE_CHANGELOG`) should stay in sync with §1 here.*
+*Canonical V1 per Edgardo Sierra's walkthrough. Keep this file next to `data-studio-models.html`; the live Scope-changelog (`window.SCOPE_CHANGELOG`) mirrors §0–§2. Next: hand to Michael for visual; engineering builds §3 in the order Tables → Reference → Entities → Models.*
