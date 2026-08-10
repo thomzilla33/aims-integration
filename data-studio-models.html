@@ -3274,8 +3274,8 @@ function entityOverviewTab(e){
   return `<div class="dsec ent-ident">${gov}</div>
     <div class="ov-flabel" style="margin:2px 0 9px">Key metrics</div>
     <div class="md-tiles">${tiles.join('')}</div>
-    ${internal}
-    ${_ovActivity('entity',e)}
+    <div data-version="v2">${internal}
+    ${_ovActivity('entity',e)}</div>
     ${vsoon('v2','AI-assisted (ORI) modeling — describe a change and get suggested tables, columns and relationships.')}
     ${vsoon('v2','Standalone state &amp; association — promote / demote / detach this entity and associate it across models.')}`;
 }
@@ -3541,7 +3541,7 @@ function privTab(e){
       <div class="priv-sec-sub">Predefined system privileges every entity has. Assign which roles hold them; the privileges themselves can’t be edited.</div>
       <div class="priv-list">${_STD_PRIV_DEFS.map(p=>_entStdPrivRow(e,p)).join('')}</div>
     </div>
-    <div class="dsec">
+    <div class="dsec" data-version="v2">
       <div class="priv-sec-h"><div class="dsec-t">Custom privileges <span class="dsec-count">${cprivs.length}</span></div>
         <div class="priv-sec-actions"><label class="dsf-search" style="max-width:220px;height:34px">${_MDIC.search}<input id="cpSearch" type="text" placeholder="Search privileges…" value="${escapeHtml(_cpSearch)}" oninput="cpSearch(this.value)" autocomplete="off"></label>
           <button class="btn btn-primary" onclick="openCreateCustomPriv('${e.id}')">${_MDIC.plus} New custom privilege</button></div></div>
@@ -3562,7 +3562,7 @@ function _entStdPrivRow(e,p){
       <div class="priv-row-tx"><div class="priv-row-top"><span class="priv-row-name">${p.n}</span><span class="priv-sym">${p.k}</span></div>
         <div class="priv-row-desc">${p.desc}</div></div></div>
     <div class="priv-row-r"><div class="priv-roles">${_roleRow(roles)}</div>
-      <button class="btn priv-manage" onclick="openManageRoles('${e.id}','${p.k}')">${_MDIC.gear} Manage roles</button></div></div>`;
+      <button class="btn priv-manage" data-version="v2" onclick="openManageRoles('${e.id}','${p.k}')">${_MDIC.gear} Manage roles</button></div></div>`;
 }
 function _entCustPrivRow(e,pv,idx){
   return `<div class="priv-row">
@@ -3705,7 +3705,23 @@ function _apiC(e,ep){
 function _apiCtx(k){ const e=_entById(detailState.id); const ep=_apiEndpoints(e).find(x=>x.key===k); return {e,ep,c:ep?_apiC(e,ep):null}; }
 
 /* ── render: shell ── */
+function _apiSimpleView(e){
+  // V1.2 API surface — the 5 default virtual endpoints, enable/disable + description only.
+  const eps=_apiEndpoints(e).filter(x=>!x.custom);
+  const onCount=eps.filter(x=>_apiC(e,x).enabled).length;
+  return `<div class="dsec">
+    <div class="api2-base" style="margin-bottom:14px"><span class="api2-base-l">Base URL</span><code>${escapeHtml(_apiBase(e))}</code><span class="api2-base-tag">v1</span><span class="api2-base-hint">${onCount} of ${eps.length} endpoints enabled</span></div>
+    <div class="priv-sec-sub" style="margin-bottom:10px">Auto-generated endpoints for ${escapeHtml(e.name)}. Toggle each on or off and set its description — the request/response builder and custom endpoints are Full vision.</div>
+    <div class="priv-list">${eps.map(ep=>{ const c=_apiC(e,ep); return `<div class="priv-row">
+      <div class="priv-row-l"><span class="method m-${ep.method.toLowerCase()}">${ep.method}</span>
+        <div class="priv-row-tx"><div class="priv-row-top"><span class="priv-row-name">${escapeHtml(ep.name)}</span><span style="font-size:10px;font-weight:600;color:var(--t3);border:1px solid var(--line);border-radius:5px;padding:1px 6px;text-transform:uppercase;letter-spacing:.03em">Default</span></div>
+          <div class="priv-row-desc"><code class="ep-path">${escapeHtml(ep.path)}</code> · ${escapeHtml(c.desc||'')}</div></div></div>
+      <div class="priv-row-r"><label class="apsw sm" title="${c.enabled?'Enabled':'Disabled'}"><input type="checkbox" ${c.enabled?'checked':''} onchange="apiToggleEnabled('${ep.key}')"><span class="apsw-tr"></span></label></div>
+    </div>`; }).join('')}</div>
+    ${vcallout('v2','Custom endpoints · request/response customization · predefined filters · OpenAPI — the full two-pane builder is Full vision.')}</div>`;
+}
 function apiTab(e){
+  if(SCOPE!=='v2') return _apiSimpleView(e);
   if(_apiState.entId!==e.id){ _apiState.entId=e.id; _apiState.sel='d_create'; _apiState.privPanel=null; }
   const eps=_apiEndpoints(e);
   if(!eps.find(x=>x.key===_apiState.sel)) _apiState.sel=eps[0].key;
@@ -5551,7 +5567,7 @@ function saveNewTable(){
 const SCOPE_TIERS = ['v1','v1.5','v2'];
 let SCOPE = 'v1';
 /* Which detail tabs belong to which scope (untagged = V1 · browse). Authoring/govern → V1.5, API builder → Full vision. */
-const TAB_VER = { privileges:'v1.5', history:'v2', settings:'v2', indexes:'v2', api:'v2' };
+const TAB_VER = { privileges:'v1.5', history:'v2', settings:'v2', indexes:'v2', api:'v1.5' };
 function vcallout(tier,text){ return `<div class="vcallout" data-version="${tier}"><span class="vcallout-tag">${tier==='v2'?'Full vision':tier==='v1.5'?'V1.5':'V1'}</span><span>${text}</span></div>`; }
 /* coming-soon annotation — shown at scopes BELOW `tier`, hidden once you reach the tier that ships it */
 function vsoon(tier,text){ return `<div class="vcallout vcallout-soon" data-soon="${tier}"><span class="vcallout-tag">${tier==='v2'?'Full vision':tier==='v1.5'?'V1.5':'V1'} · coming</span><span>${text}</span></div>`; }
