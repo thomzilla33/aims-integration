@@ -2891,23 +2891,23 @@ window.SCOPE_CHANGELOG=[
  {tier:'v1',name:'V1 · Foundation',sub:'Browse &amp; author the model',target:'This sprint',
   nw:[
     'Four lists — Models · Entities · Tables · Reference Data (search · filters · pagination)',
-    'Create from scratch — New model · entity · table · reference · column (no "Stewards")',
     'Card click → full detail page (read-only; Overview = basic info block)',
     'Entity detail — Tables · Relationships',
     'Table &amp; Reference detail — Columns · Relationships · Data',
     'Model detail — Entities · Tables'
   ],
   up:[],
-  rm:['V1 is read-only browse — ALL editing moves to V1.2: side panels (detail views · relationship form · filters · quick-preview) AND create / edit / delete dialogs (columns · rows · relationships · reference items · indexes)','Publish / versioning · Marketplace · Create-with-AI · diagrams — later']},
+  rm:['V1 is read-only browse — ALL editing moves to V1.2: the New button (create from scratch) · side panels (detail views · relationship form · filters · quick-preview) · create / edit / delete dialogs (columns · rows · relationships · reference items · indexes)','Publish / versioning · Marketplace · Create-with-AI · diagrams — later']},
  {tier:'v1.5',name:'V1.2 · Expansion',sub:'Govern',target:'Next sprint',
   nw:[
     'Publish / save-to-version (edit → draft is V1; publish lands here)',
     'Privileges tab — view-only standard privileges (system-generated)',
     'API contracts — the 5 default virtual endpoints: enable / disable + description only',
     'Side panels (slide-outs) — column · row · relationship detail views · entity-relationship form · per-column & saved filters · quick-preview panels',
-    'Editing dialogs — create / edit / delete columns · rows · relationships · reference items · indexes'
+    'Editing dialogs — create / edit / delete columns · rows · relationships · reference items · indexes',
+    'Create from scratch — the New button: New model · entity · table · reference (no "Stewards")'
   ],
-  up:['Entity detail gains Privileges + API tabs','All editing unlocks — side panels AND create/edit/delete dialogs (V1 is read-only browse)'],
+  up:['Entity detail gains Privileges + API tabs','All editing unlocks — the New button, side panels AND create/edit/delete dialogs (V1 is read-only browse)'],
   rm:['Custom endpoints · custom privileges · API request/response customization — Full vision']},
  {tier:'v2',name:'Full vision',sub:'The complete experience',target:'Later',
   nw:[
@@ -5776,7 +5776,7 @@ function pageShell(active){
   const tab=(id,label)=>`<button class="mtab ${active===id?'active':''}" onclick="navigate('${id}')">${label}</button>`;
   const ACT={models:['New model','models/new'],entities:['New entity','entities/new'],tables:['New table','tables/new'],reference:['New reference list','reference/new']};
   const a=ACT[active]||ACT.models;
-  return `<div class="page-head"><h1 class="page-h1">Models</h1><button class="btn btn-primary" onclick="navigate('${a[1]}')">${_MDIC.plus} ${a[0]}</button></div>
+  return `<div class="page-head"><h1 class="page-h1">Models</h1><button class="btn btn-primary" data-version="v1.5" onclick="navigate('${a[1]}')">${_MDIC.plus} ${a[0]}</button></div>
     <div class="mtabs mtabs-lg">${tab('models','Models')}${tab('entities','Entities')}${tab('tables','Tables')}${tab('reference','Reference Data')}</div>`;
 }
 
@@ -9123,7 +9123,8 @@ function route(){
   _dsfOpen = null; _pgnOpenId = null; _mktModel = null; closeSlideout(); closeModal();
   const parts = (location.hash.replace(/^#\/?/,'') || 'models').split('/');
   const r = parts[0];
-  if(SCOPE!=='v2' && parts[1]==='new' && parts[2]!=='scratch') parts[2]='scratch'; // V1/V1.2: New = Start from scratch only (Marketplace catalog + Create-with-AI are Full vision)
+  if(SCOPE==='v1' && parts[1]==='new'){ toast('Creating opens from V1.2 — switch scope to try it'); location.hash='#/'+r; return; } // V1 is read-only browse — no create
+  if(SCOPE!=='v2' && parts[1]==='new' && parts[2]!=='scratch') parts[2]='scratch'; // V1.2: New = Start from scratch only (Marketplace catalog + Create-with-AI are Full vision)
   if(r==='models' && parts[1]==='new'){ if(parts[2]==='scratch') renderFromScratch(); else if(parts[2]==='ai'){ _aiReset(); renderAIAssist(); } else { renderModels(); openMarketplaceModal(); } }
   else if(r==='models' && parts[1]){ if(modelDetailState.id!==parts[1]) modelDetailState.tab='overview'; modelDetailState.id=parts[1]; renderModelDetail(parts[1]); }
   else if(r==='models'){ renderModels(); }
