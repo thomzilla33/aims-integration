@@ -2892,23 +2892,22 @@ window.SCOPE_CHANGELOG=[
   nw:[
     'Four lists — Models · Entities · Tables · Reference Data (search · filters · pagination)',
     'Create from scratch — New model · entity · table · reference · column (no "Stewards")',
-    'Card click → full editable detail (Overview = basic info block only)',
+    'Card click → full detail page (read-only; Overview = basic info block)',
     'Entity detail — Tables · Relationships',
     'Table &amp; Reference detail — Columns · Relationships · Data',
-    'Model detail — Entities · Tables (associate an orphan or create new)',
-    'Column & data authoring — add / edit / delete columns and rows via dialog (id + audit fields hidden)',
-    'Relationship authoring — list mode · create (1-1 / 1-N / N-N) · edit (on-delete / on-update / description) · delete via dialog'
+    'Model detail — Entities · Tables'
   ],
   up:[],
-  rm:['All side panels / slide-outs → V1.2 — column · row · relationship detail views · entity-relationship form · per-column & saved filters · quick-preview panels','Publish / versioning · Marketplace · Create-with-AI · diagrams — later']},
+  rm:['V1 is read-only browse — ALL editing moves to V1.2: side panels (detail views · relationship form · filters · quick-preview) AND create / edit / delete dialogs (columns · rows · relationships · reference items · indexes)','Publish / versioning · Marketplace · Create-with-AI · diagrams — later']},
  {tier:'v1.5',name:'V1.2 · Expansion',sub:'Govern',target:'Next sprint',
   nw:[
     'Publish / save-to-version (edit → draft is V1; publish lands here)',
     'Privileges tab — view-only standard privileges (system-generated)',
     'API contracts — the 5 default virtual endpoints: enable / disable + description only',
-    'Side panels (slide-outs) — column · row · relationship detail views · entity-relationship form · per-column & saved filters · quick-preview panels'
+    'Side panels (slide-outs) — column · row · relationship detail views · entity-relationship form · per-column & saved filters · quick-preview panels',
+    'Editing dialogs — create / edit / delete columns · rows · relationships · reference items · indexes'
   ],
-  up:['Entity detail gains Privileges + API tabs','All side panels / slide-outs become available (V1 is panel-free)'],
+  up:['Entity detail gains Privileges + API tabs','All editing unlocks — side panels AND create/edit/delete dialogs (V1 is read-only browse)'],
   rm:['Custom endpoints · custom privileges · API request/response customization — Full vision']},
  {tier:'v2',name:'Full vision',sub:'The complete experience',target:'Later',
   nw:[
@@ -3601,7 +3600,7 @@ function openManageRoles(entId,key){
     <div class="modal-body"><div class="cp-hint" style="margin-bottom:12px">Select which roles hold this privilege.</div>
       <div class="mr-list">${_ROLE_POOL.map(r=>`<label class="mr-opt"><input type="checkbox" class="mr-cb" value="${escapeHtml(r)}" ${current.has(r)?'checked':''}><span>${escapeHtml(r)}</span></label>`).join('')}</div></div>
     <div class="modal-foot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveManageRoles()">Save roles</button></div></div>`;
-  $('modalScrim').classList.add('open');
+  _modalOpen();
 }
 function saveManageRoles(){ const d=_mrDraft; if(!d) return; const e=_entById(d.entId); if(!e) return;
   const roles=[...document.querySelectorAll('.mr-cb')].filter(cb=>cb.checked).map(cb=>cb.value);
@@ -3630,7 +3629,7 @@ function _renderCreateCustomPriv(){ const d=_cpDraft; if(!d) return; const e=_en
       ${picker}${permsBody}
     </div>
     <div class="modal-foot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary" ${canCreate?'':'disabled style="opacity:.5;cursor:not-allowed"'} onclick="saveCreateCustomPriv()">Create privilege</button></div></div>`;
-  $('modalScrim').classList.add('open'); setTimeout(()=>{const el=$('cp_name'); if(el&&!d.name)el.focus();},50);
+  _modalOpen(); setTimeout(()=>{const el=$('cp_name'); if(el&&!d.name)el.focus();},50);
 }
 function _cpSetName(v){ _cpDraft.name=v; if(!_cpDraft.symEdited){ const s=_cpSym(_entById(_cpDraft.entId),v); _cpDraft.sym=s; const el=$('cp_sym'); if(el)el.value=s; } _cpUpdateCreateBtn(); }
 function _cpUpdateCreateBtn(){ const btn=document.querySelector('#modalScrim .modal-foot .btn-primary'); if(!btn)return; const ok=!!((_cpDraft.name||'').trim()&&_cpDraft.perms.length); btn.disabled=!ok; btn.style.opacity=ok?'':'.5'; btn.style.cursor=ok?'':'not-allowed'; }
@@ -3905,7 +3904,7 @@ function apiDefVal(k,f){
     </div>
     <div class="modal-foot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="_apiDvSave('${_jsq(k)}','${_jsq(f)}')">Save</button></div>
   </div>`;
-  $('modalScrim').classList.add('open');
+  _modalOpen();
 }
 function _apiDvMode(m){ const inp=$('apdvVal'); if(inp){ inp.disabled=(m==='none'); if(m!=='none') inp.focus(); } }
 function _apiDvSave(k,f){ const {c}=_apiCtx(k); if(!c)return; const m=(document.querySelector('input[name=apdvm]:checked')||{}).value||'none'; const v=($('apdvVal')||{}).value||''; c.req[f].def={mode:m,val:m==='none'?'':v}; if(m!=='none') c.req[f].include=true; closeModal(); renderEntityDetail(detailState.id); }
@@ -3925,9 +3924,10 @@ function openPublish(id){
     </div>
     <div class="modal-foot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="confirmPublish('${id}')">Publish changes</button></div>
   </div>`;
-  $('modalScrim').classList.add('open');
+  _modalOpen();
 }
 function closeModal(){ $('modalScrim').classList.remove('open'); $('modalScrim').innerHTML=''; }
+function _modalOpen(){ if(SCOPE==='v1'){ toast('Editing dialogs open from V1.2 — switch scope to try them'); return; } const ms=$('modalScrim'); ms.classList.add('open'); }
 function confirmPublish(id){ const e=ENTITIES.find(x=>x.id===id); if(e) e.status='Published'; closeModal(); toast('“'+(e?e.name:'Entity')+'” published','ok'); renderEntityDetail(id); }
 
 /* ══════════════════════════════════════════════════════════════
@@ -3987,7 +3987,7 @@ function confirmRemoveRel(id,idx){ const e=_entById(id); if(!e) return; const r=
   $('modalScrim').innerHTML=`<div class="modal"><div class="modal-head"><div class="modal-ic" style="background:var(--tag-error-bg,rgba(224,82,82,0.14));color:var(--tag-error-fg,#f87171);border-color:var(--tag-error-bd,rgba(224,82,82,0.3))">${_RM_IC.del}</div><div class="modal-title">Remove relationship?</div></div>
     <div class="modal-body">This removes the link <b>${escapeHtml(e.name)} → ${escapeHtml(r.t)}</b>. This can't be undone.</div>
     <div class="modal-foot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-danger" onclick="_removeRel('${id}',${idx})">Remove</button></div></div>`;
-  $('modalScrim').classList.add('open');
+  _modalOpen();
 }
 function _removeRel(id,idx){ const e=_entById(id); if(!e) return; (e.rels||[]).splice(idx,1); _entEdited(e); closeModal(); closeSlideout(); toast('Relationship removed','ok'); renderEntityDetail(id); }
 
@@ -4018,7 +4018,7 @@ function confirmRemovePerm(id,idx){ const e=_entById(id); if(!e) return; const p
   $('modalScrim').innerHTML=`<div class="modal"><div class="modal-head"><div class="modal-ic" style="background:var(--tag-error-bg,rgba(224,82,82,0.14));color:var(--tag-error-fg,#f87171);border-color:var(--tag-error-bd,rgba(224,82,82,0.3))">${_RM_IC.del}</div><div class="modal-title">Remove “${escapeHtml(p.n)}”?</div></div>
     <div class="modal-body">This removes the custom permission from <b>${escapeHtml(e.name)}</b>. Privileges that reference it keep their other permissions.</div>
     <div class="modal-foot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-danger" onclick="_removeCustomPerm('${id}',${idx})">Remove</button></div></div>`;
-  $('modalScrim').classList.add('open');
+  _modalOpen();
 }
 function _removeCustomPerm(id,idx){ const e=_entById(id); if(!e) return; (e.cperms||[]).splice(idx,1); _entEdited(e); closeModal(); toast('Permission removed','ok'); renderEntityDetail(id); }
 
@@ -4054,7 +4054,7 @@ function confirmRemovePriv(id,idx){ const e=_entById(id); if(!e) return; const p
   $('modalScrim').innerHTML=`<div class="modal"><div class="modal-head"><div class="modal-ic" style="background:var(--tag-error-bg,rgba(224,82,82,0.14));color:var(--tag-error-fg,#f87171);border-color:var(--tag-error-bd,rgba(224,82,82,0.3))">${_RM_IC.del}</div><div class="modal-title">Remove “${escapeHtml(pv.n)}”?</div></div>
     <div class="modal-body">This removes the custom privilege from <b>${escapeHtml(e.name)}</b>. This can't be undone.</div>
     <div class="modal-foot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-danger" onclick="_removeCustomPriv('${id}',${idx})">Remove</button></div></div>`;
-  $('modalScrim').classList.add('open');
+  _modalOpen();
 }
 function _removeCustomPriv(id,idx){ const e=_entById(id); if(!e) return; (e.cprivs||[]).splice(idx,1); _entEdited(e); closeModal(); toast('Privilege removed','ok'); renderEntityDetail(id); }
 
@@ -4093,7 +4093,7 @@ function confirmRemoveEntTbl(id,idx){ const e=_entById(id); if(!e) return; const
   $('modalScrim').innerHTML=`<div class="modal"><div class="modal-head"><div class="modal-ic" style="background:var(--tag-error-bg,rgba(224,82,82,0.14));color:var(--tag-error-fg,#f87171);border-color:var(--tag-error-bd,rgba(224,82,82,0.3))">${_RM_IC.del}</div><div class="modal-title">Remove “${escapeHtml(t.alias)}”?</div></div>
     <div class="modal-body">This removes the table from <b>${escapeHtml(e.name)}</b>. This can't be undone.</div>
     <div class="modal-foot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-danger" onclick="_removeEntTbl('${id}',${idx})">Remove table</button></div></div>`;
-  $('modalScrim').classList.add('open');
+  _modalOpen();
 }
 function _removeEntTbl(id,idx){ const e=_entById(id); if(!e) return; const t=(e.tables||[])[idx]; const nm=t?t.alias:'Table'; (e.tables||[]).splice(idx,1); _entEdited(e); closeModal(); toast('“'+nm+'” removed','ok'); renderEntityDetail(id); }
 let _toastTimer;
@@ -4484,7 +4484,7 @@ function openCreateIndex(tableId){
       <div class="mfield"><label class="mfield-l">WHERE clause <span style="color:var(--field-placeholder);font-weight:400">· partial index only</span></label><input class="minput" id="niWhere" placeholder="status = 'active'" autocomplete="off"></div>
     </div></div>
     <div class="modal-foot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveNewIndex('${tableId}')">Add index</button></div></div>`;
-  $('modalScrim').classList.add('open'); setTimeout(()=>{const el=$('niName'); if(el)el.focus();},50);
+  _modalOpen(); setTimeout(()=>{const el=$('niName'); if(el)el.focus();},50);
 }
 function saveNewIndex(tableId){
   const t=_table(tableId); if(!t) return; _tblIndexes(t);
@@ -4502,7 +4502,7 @@ function confirmRemoveIndex(tid,name){ const t=_table(tid); if(!t) return; _tblI
   $('modalScrim').innerHTML=`<div class="modal"><div class="modal-head"><div class="modal-ic" style="background:var(--tag-error-bg,rgba(224,82,82,0.14));color:var(--tag-error-fg,#f87171);border-color:var(--tag-error-bd,rgba(224,82,82,0.3))">${_RM_IC.del}</div><div class="modal-title">Delete index?</div></div>
     <div class="modal-body">This drops <code>${escapeHtml(name)}</code>. Queries relying on it may slow down until another index covers them.</div>
     <div class="modal-foot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-danger" onclick="_removeIndex('${tid}','${name}')">Delete index</button></div></div>`;
-  $('modalScrim').classList.add('open');
+  _modalOpen();
 }
 function _removeIndex(tid,name){ const t=_table(tid); if(!t) return; _tblIndexes(t); t._idx=(t._idx||[]).filter(i=>i.name!==name);
   if(t.status==='Published') t.status='Draft'; closeModal(); toast('Index “'+name+'” deleted','ok'); renderTableDetail(tid); }
@@ -4587,7 +4587,7 @@ function confirmDeleteColumn(tableId,colName){ const t=_table(tableId); const c=
   $('modalScrim').innerHTML=`<div class="modal"><div class="modal-head"><div class="modal-ic" style="background:var(--tag-error-bg,rgba(224,82,82,0.14));color:var(--tag-error-fg,#f87171);border-color:var(--tag-error-bd,rgba(224,82,82,0.3))">${_RM_IC.del}</div><div class="modal-title">Delete “${escapeHtml(c.d)}”?</div></div>
     <div class="modal-body">This drops the column <code>${escapeHtml(t.id)}.${escapeHtml(c.n)}</code> from the schema. On publish it runs against the physical tenant table and <b>can't be undone</b>.</div>
     <div class="modal-foot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-danger" onclick="_deleteColumn('${tableId}','${colName}')">Delete column</button></div></div>`;
-  $('modalScrim').classList.add('open');
+  _modalOpen();
 }
 function _deleteColumn(tableId,colName){ const t=_table(tableId); if(!t) return; const c=t.cols.find(x=>x.n===colName); const nm=c?c.d:colName;
   t.cols=t.cols.filter(x=>x.n!==colName); t.rels=(t.rels||[]).filter(r=>r.via!==colName); t._rows=null;
@@ -4611,7 +4611,7 @@ function openCreateColumn(tableId){
       <div class="mfield"><label class="mfield-l">Description <span style="color:var(--field-placeholder);font-weight:400">· required for the LLM</span></label><textarea class="mtextarea" id="ncDesc" placeholder="What this column holds and how it's used."></textarea></div>
     </div></div>
     <div class="modal-foot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveNewColumn('${tableId}')">Add column</button></div></div>`;
-  $('modalScrim').classList.add('open'); setTimeout(()=>{const el=$('ncName'); if(el)el.focus();},50);
+  _modalOpen(); setTimeout(()=>{const el=$('ncName'); if(el)el.focus();},50);
 }
 function saveNewColumn(tableId){
   const t=_table(tableId); const name=($('ncName').value||'').trim().toLowerCase().replace(/\s+/g,'_');
@@ -4635,7 +4635,7 @@ function openEditColumn(tableId, colName){
       <div class="mfield"><label class="mfield-l">Description</label><textarea class="mtextarea" id="ecDesc">${escapeHtml(c.desc||'')}</textarea></div>
     </div></div>
     <div class="modal-foot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveColumn('${tableId}','${colName}')">Save changes</button></div></div>`;
-  $('modalScrim').classList.add('open');
+  _modalOpen();
 }
 function saveColumn(tableId, colName){
   const t=_table(tableId); const c=t.cols.find(x=>x.n===colName); if(!c) return;
@@ -4660,7 +4660,7 @@ function openPublishTable(id){
     <div class="modal-body">Publishing applies your column changes to the live schema. This alters a <b>physical tenant table</b> — some changes can't be undone.
       <div class="impact"><div class="impact-row"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#4ade80" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.5 3.5L13 4.5"/></svg><span>Apply pending column additions / edits</span></div><div class="impact-row"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#facc15" stroke-width="1.6"><circle cx="8" cy="8" r="6"/><path d="M8 5v3.5M8 11h.01" stroke-linecap="round"/></svg><span>May rebuild indexes — can take ~30s</span></div></div>
     </div><div class="modal-foot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="confirmPublishTable('${id}')">Publish changes</button></div></div>`;
-  $('modalScrim').classList.add('open');
+  _modalOpen();
 }
 function confirmPublishTable(id){ const t=_table(id); if(t) t.status='Published'; closeModal(); toast('“'+(t?t.alias:'Table')+'” published','ok'); renderTableDetail(id); }
 
@@ -4693,7 +4693,7 @@ function openAddRelationship(tid){
      <div class="mfield"><label class="mfield-l">Description</label><input class="minput" id="arDesc" placeholder="What this relationship represents…" autocomplete="off"></div>
    </div></div>
    <div class="modal-foot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveRelationship('${tid}')">Add relationship</button></div></div>`;
-  $('modalScrim').classList.add('open');
+  _modalOpen();
   setTimeout(()=>{const sel=$('arTarget'),via=$('arVia'); const upd=()=>{ if(via&&!via.value) via.value=sel.value+'_id'; }; if(sel){sel.onchange=upd; upd();}},30);
 }
 function saveRelationship(tid){
@@ -4742,7 +4742,7 @@ function openEditTblRel(id,i){ const t=_table(id); if(!t) return; const r=(t.rel
      <div class="mfield"><label class="mfield-l">Description</label><input class="minput" id="erDesc" value="${escapeHtml(r.desc||'')}" placeholder="What this relationship represents…" autocomplete="off"></div>
    </div></div>
    <div class="modal-foot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveEditTblRel('${id}',${i})">Save changes</button></div></div>`;
-  $('modalScrim').classList.add('open');
+  _modalOpen();
 }
 function saveEditTblRel(id,i){ const t=_table(id); if(!t) return; const r=(t.rels||[])[i]; if(!r) return;
   r.onDelete=$('erDel').value; r.onUpdate=$('erUpd').value; r.req=!!($('erReq')&&$('erReq').value); r.desc=($('erDesc')?$('erDesc').value.trim():'');
@@ -4753,7 +4753,7 @@ function confirmRemoveTblRel(id,i){ const t=_table(id); if(!t) return; const r=(
   $('modalScrim').innerHTML=`<div class="modal"><div class="modal-head"><div class="modal-ic" style="background:var(--tag-error-bg,rgba(224,82,82,0.14));color:var(--tag-error-fg,#f87171);border-color:var(--tag-error-bd,rgba(224,82,82,0.3))">${_RM_IC.del}</div><div class="modal-title">Remove relationship?</div></div>
     <div class="modal-body">This removes the link <b>${escapeHtml(t.alias)} → ${escapeHtml(tgt?tgt.alias:_refId(r.target))}</b> and its <code>${escapeHtml(r.via)}</code> foreign key column. This can't be undone.</div>
     <div class="modal-foot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-danger" onclick="_removeTblRel('${id}',${i})">Remove</button></div></div>`;
-  $('modalScrim').classList.add('open');
+  _modalOpen();
 }
 function _removeTblRel(id,i){ const t=_table(id); if(!t) return; const r=(t.rels||[])[i]; if(!r) return;
   t.rels.splice(i,1); t.cols=t.cols.filter(c=>!(c.t==='Reference'&&c.n===r.via&&c.ref===r.target)); t._rows=null;
@@ -4860,7 +4860,7 @@ function openTblBulkDelete(id,n){
   $('modalScrim').innerHTML=`<div class="modal"><div class="modal-head"><div class="modal-ic"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 1.5 1 13.5h14L8 1.5Z"/><path d="M8 6.5v3M8 11.5h.01" stroke-linecap="round"/></svg></div><div class="modal-title">Delete ${n} record${n===1?'':'s'}?</div></div>
     <div class="modal-body">This permanently removes the selected record${n===1?'':'s'} from live tenant data. This can't be undone.</div>
     <div class="modal-foot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary" style="background:var(--field-text-error,#dc2626);border-color:transparent" onclick="dataSelClear('${id}');closeModal();toast('${n} record${n===1?'':'s'} deleted','ok')">Delete</button></div></div>`;
-  $('modalScrim').classList.add('open');
+  _modalOpen();
 }
 function dataTab(t){
   const s=dataState; const rows=_mockRows(t); const q=(s.search||'').toLowerCase(); const per=s.perPage||25;
@@ -4936,7 +4936,7 @@ function openAddRecord(tid){
   $('modalScrim').innerHTML=`<div class="modal" style="max-height:86vh;overflow:auto"><div class="modal-head"><div class="modal-ic" style="background:var(--tag-informative-bg);color:var(--tag-informative-fg);border-color:var(--tag-informative-bd)"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 3v10M3 8h10" stroke-linecap="round"/></svg></div><div class="modal-title">Add record to ${escapeHtml(t.alias)}</div></div>
     <div class="modal-body">${_recordForm(t,null)}</div>
     <div class="modal-foot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveRecord('${tid}',-1)">Add record</button></div></div>`;
-  $('modalScrim').classList.add('open');
+  _modalOpen();
 }
 function openEditRecord(tid, idx){
   const t=_table(tid); const r=_mockRows(t)[idx]; if(!r) return;
@@ -4944,7 +4944,7 @@ function openEditRecord(tid, idx){
   $('modalScrim').innerHTML=`<div class="modal" style="max-height:86vh;overflow:auto"><div class="modal-head"><div class="modal-ic" style="background:var(--tag-informative-bg);color:var(--tag-informative-fg);border-color:var(--tag-informative-bd)"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M11 2.5l2.5 2.5L6 12.5 3 13l.5-3L11 2.5Z" stroke-linejoin="round"/></svg></div><div class="modal-title">Edit record</div></div>
     <div class="modal-body">${_recordForm(t,r)}</div>
     <div class="modal-foot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveRecord('${tid}',${idx})">Save changes</button></div></div>`;
-  $('modalScrim').classList.add('open');
+  _modalOpen();
 }
 function saveRecord(tid, idx){
   const t=_table(tid); const rows=_mockRows(t);
@@ -5248,7 +5248,7 @@ function _detailDelete(surface,id){ const cfg=_surfCfg(surface); if(!cfg) return
   $('modalScrim').innerHTML=`<div class="modal"><div class="modal-head"><div class="modal-ic" style="background:var(--tag-error-bg,rgba(224,82,82,0.14));color:var(--tag-error-fg,#f87171);border-color:var(--tag-error-bd,rgba(224,82,82,0.3))">${_RM_IC.del}</div><div class="modal-title">Delete “${escapeHtml(nm)}”?</div></div>
     <div class="modal-body">${blocked?`This ${label} can't be deleted — <b>${blocked} column${blocked===1?'':'s'}</b> still reference it. Remove those references first.`:`This permanently removes the ${label} from the prototype. This can't be undone.`}</div>
     <div class="modal-foot"><button class="btn" onclick="closeModal()">${blocked?'Close':'Cancel'}</button>${blocked?'':`<button class="btn btn-danger" onclick="_detailDoDelete('${surface}','${id}')">Delete ${label}</button>`}</div></div>`;
-  $('modalScrim').classList.add('open');
+  _modalOpen();
 }
 function _detailDoDelete(surface,id){ const cfg=_surfCfg(surface); if(!cfg) return; const i=cfg.arr.findIndex(r=>r.id===id); if(i<0) return; const nm=cfg.arr[i][cfg.nameKey];
   cfg.arr.splice(i,1); if(surface==='models') _mdReset&&_mdReset(id);
@@ -5413,7 +5413,7 @@ function openRefItemDelete(refId, code){
   $('modalScrim').innerHTML=`<div class="modal"><div class="modal-head"><div class="modal-ic"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 1.5 1 13.5h14L8 1.5Z"/><path d="M8 6.5v3M8 11.5h.01" stroke-linecap="round"/></svg></div><div class="modal-title">Delete “${escapeHtml(v.label)}”?</div></div>
     <div class="modal-body">Removes <code>${escapeHtml(v.code)}</code> from <b>${escapeHtml(r.name)}</b>.${r.referencedBy>0?` <span style="color:var(--field-text-error,#dc2626)">${r.referencedBy} columns reference this list.</span>`:''}</div>
     <div class="modal-foot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary" style="background:var(--field-text-error,#dc2626);border-color:transparent" onclick="_delRefItem('${refId}','${escapeHtml(code)}')">Delete</button></div></div>`;
-  $('modalScrim').classList.add('open');
+  _modalOpen();
 }
 function _delRefItem(refId,code){ const r=_ref(refId); r.values=r.values.filter(v=>v.code!==code); if(r.status==='Published') r.status='Draft'; closeModal(); toast('Item deleted','ok'); renderReferenceDetail(refId); }
 function toggleRefValueActive(refId, code){
@@ -5497,7 +5497,7 @@ function openRefBulkStatus(id){
   $('modalScrim').innerHTML=`<div class="modal"><div class="modal-head"><div class="modal-ic" style="background:var(--tag-informative-bg);color:var(--tag-informative-fg);border-color:var(--tag-informative-bd)"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2 8h8M10 5l3 3-3 3"/></svg></div><div class="modal-title">Change status · ${n} item${n===1?'':'s'}</div></div>
     <div class="modal-body"><div class="mform"><div class="mfield"><label class="mfield-l">New status</label><select class="mselect" id="bulkStatus"><option value="Active">Active</option><option value="Deprecated">Deprecated</option><option value="Archived">Archived</option></select></div><div style="font-size:12.5px;color:var(--t2);margin-top:6px">Applies to the ${n} selected item${n===1?'':'s'}. Deprecated / Archived items stay for history but are hidden from new records.</div></div></div>
     <div class="modal-foot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="applyRefBulkStatus('${id}')">Apply</button></div></div>`;
-  $('modalScrim').classList.add('open');
+  _modalOpen();
 }
 function applyRefBulkStatus(id){ const r=_ref(id); const sel=refDetailState.sel||new Set(); const n=sel.size; const active=($('bulkStatus').value==='Active'); r.values.forEach(v=>{ if(sel.has(v.code)) v.active=active; }); if(r.status==='Published') r.status='Draft'; refDetailState.sel=new Set(); closeModal(); toast('Status updated for '+n+' item'+(n===1?'':'s'),'ok'); renderReferenceDetail(id); }
 /* ── Reference Data: bulk delete ── */
@@ -5506,7 +5506,7 @@ function openRefBulkDelete(id){
   $('modalScrim').innerHTML=`<div class="modal"><div class="modal-head"><div class="modal-ic"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 1.5 1 13.5h14L8 1.5Z"/><path d="M8 6.5v3M8 11.5h.01" stroke-linecap="round"/></svg></div><div class="modal-title">Delete ${n} item${n===1?'':'s'}?</div></div>
     <div class="modal-body">This removes the selected value${n===1?'':'s'} from <b>${escapeHtml(r.name)}</b>.${r.referencedBy>0?` <span style="color:var(--field-text-error,#dc2626)">${r.referencedBy} columns reference this list — records using ${n===1?'it':'them'} would fail validation.</span>`:''}</div>
     <div class="modal-foot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary" style="background:var(--field-text-error,#dc2626);border-color:transparent" onclick="applyRefBulkDelete('${id}')">Delete</button></div></div>`;
-  $('modalScrim').classList.add('open');
+  _modalOpen();
 }
 function applyRefBulkDelete(id){ const r=_ref(id); const sel=refDetailState.sel||new Set(); const n=sel.size; r.values=r.values.filter(v=>!sel.has(v.code)); if(r.status==='Published') r.status='Draft'; refDetailState.sel=new Set(); closeModal(); toast(n+' item'+(n===1?'':'s')+' deleted','ok'); renderReferenceDetail(id); }
 /* ── Reference Data: import wizard (5 steps) ── */
@@ -5529,7 +5529,7 @@ function _renderImport(id){
   $('modalScrim').innerHTML=`<div class="modal modal-imp"><div class="modal-head"><div class="modal-title">Import ${noun} · ${escapeHtml(name)}</div><button class="so-close" onclick="closeModal()" aria-label="Close">✕</button></div>
     <div class="modal-body">${stepper}<div class="imp-body">${body}</div></div>
     <div class="modal-foot"><button class="btn" onclick="${st===0?'closeModal()':`_impNav('${id}',-1)`}">${st===0?'Cancel':'Back'}</button><button class="btn btn-primary" onclick="${isLast?`_impFinish('${id}')`:`_impNav('${id}',1)`}">${isLast?('Import 15 '+noun):'Continue'}</button></div></div>`;
-  $('modalScrim').classList.add('open');
+  _modalOpen();
 }
 function _impFinish(id){ const kind=_impState.kind||'reference'; if(kind==='table'){ closeModal(); toast('Imported 15 records','ok'); renderTableDetail(id); return; } const r=_ref(id); [['emea','EMEA region'],['apac','APAC region'],['latam','LATAM region']].forEach(a=>{ if(!r.values.find(v=>v.code===a[0])) r.values.push(RV(a[0],a[1],'Imported region.',true,'')); }); if(r.status==='Published') r.status='Draft'; closeModal(); toast('Imported 15 items','ok'); renderReferenceDetail(id); }
 function openEditRefValue(refId, code){ openRefItem(refId,'edit',code); }
@@ -5566,7 +5566,7 @@ function openImportRef(refId){
       <div style="font-size:12px;color:var(--t2);margin-top:12px;display:flex;gap:8px;align-items:flex-start"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="var(--primary)" stroke-width="1.6" style="flex-shrink:0;margin-top:1px"><circle cx="8" cy="8" r="6"/><path d="M8 7.5v3.5M8 5h.01" stroke-linecap="round"/></svg><span>Rows are matched by <b>code</b> — existing codes update in place, new codes are added. Integration-fed reference data arrives through <b>Sources</b> instead.</span></div>
     </div>
     <div class="modal-foot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="_impRun('${refId}')">Import</button></div></div>`;
-  $('modalScrim').classList.add('open');
+  _modalOpen();
 }
 function _impPick(){ toast('File picker — mock (prototype)'); }
 function _impRun(refId){
@@ -5586,7 +5586,7 @@ function openCreateReference(){
       <div style="font-size:12px;color:var(--t2);display:flex;gap:8px;align-items:flex-start"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="var(--primary)" stroke-width="1.6" style="flex-shrink:0;margin-top:1px"><circle cx="8" cy="8" r="6"/><path d="M8 7.5v3.5M8 5h.01" stroke-linecap="round"/></svg><span>Starts empty with the standard <b>code · label · description · active · validity</b> schema. Add values or import them next.</span></div>
     </div></div>
     <div class="modal-foot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveNewReference()">Create</button></div></div>`;
-  $('modalScrim').classList.add('open');
+  _modalOpen();
   setTimeout(()=>{const nm=$('crName'),cd=$('crCode'); if(nm){nm.focus(); nm.oninput=()=>{ if(cd) cd.value=nm.value.trim().toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,''); };}},50);
 }
 function saveNewReference(){
@@ -5611,7 +5611,7 @@ function openCreateEntity(){
       <div style="font-size:12px;color:var(--t2);display:flex;gap:8px;align-items:flex-start"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="var(--primary)" stroke-width="1.6" style="flex-shrink:0;margin-top:1px"><circle cx="8" cy="8" r="6"/><path d="M8 7.5v3.5M8 5h.01" stroke-linecap="round"/></svg><span>A <b>primary table</b> is created automatically — every entity needs at least one. Publish when you're ready to apply it to the live schema.</span></div>
     </div></div>
     <div class="modal-foot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveNewEntity()">Create entity</button></div></div>`;
-  $('modalScrim').classList.add('open');
+  _modalOpen();
   setTimeout(()=>{const nm=$('ceName'),cd=$('ceCode'); if(nm){nm.focus(); nm.oninput=()=>{ if(cd) cd.value='ent_'+_slug(nm.value); };}},50);
 }
 function saveNewEntity(){
@@ -5637,7 +5637,7 @@ function openCreateTable(){
       <div style="font-size:12px;color:var(--t2);display:flex;gap:8px;align-items:flex-start"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="var(--primary)" stroke-width="1.6" style="flex-shrink:0;margin-top:1px"><circle cx="8" cy="8" r="6"/><path d="M8 7.5v3.5M8 5h.01" stroke-linecap="round"/></svg><span>The <b>7 system columns</b> (id, tenant, audit) are added automatically. Add your own columns next.</span></div>
     </div></div>
     <div class="modal-foot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveNewTable()">Create table</button></div></div>`;
-  $('modalScrim').classList.add('open');
+  _modalOpen();
   setTimeout(()=>{const nm=$('ctName'),cd=$('ctCode'); if(nm){nm.focus(); nm.oninput=()=>{ if(cd) cd.value=_slug(nm.value); };}},50);
 }
 function saveNewTable(){
@@ -6437,7 +6437,7 @@ function mdDelete(id){ const m=_model(id); const nm=m?m.name:'Model'; closeSlide
   $('modalScrim').innerHTML=`<div class="modal"><div class="modal-head"><div class="modal-ic"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 1.5 1 13.5h14L8 1.5Z"/><path d="M8 6.5v3M8 11.5h.01" stroke-linecap="round"/></svg></div><div class="modal-title">Delete “${escapeHtml(nm)}”?</div></div>
     <div class="modal-body">This permanently removes the model and its entities, tables and components. This can't be undone.</div>
     <div class="modal-foot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary" style="background:var(--field-text-error,#dc2626);border-color:transparent" onclick="_mdDoDelete('${id}')">Delete model</button></div></div>`;
-  $('modalScrim').classList.add('open');
+  _modalOpen();
 }
 function _mdDoDelete(id){ const i=MODELS.findIndex(x=>x.id===id); if(i>=0) MODELS.splice(i,1); closeModal(); toast('Model deleted','ok'); location.hash='#/models'; }
 function _mdRefocus(fid,v){ setTimeout(()=>{ const el=$(fid); if(el){ el.focus(); el.setSelectionRange(v.length,v.length); } },0); }
@@ -6876,7 +6876,7 @@ function _renderMdwPrivForm(){
       ${d.perms.length?`<div class="mdw-perm-chips">${d.perms.map((p,i)=>`<span class="perm-chip ${p[1]}">${escapeHtml(p[0])}<button class="md-tag-x" onclick="_mdwPrivDraft.perms.splice(${i},1);_renderMdwPrivForm()" aria-label="Remove">×</button></span>`).join('')}</div>`:`<div class="mdw-perm-empty">${_MDIC.lock}<div style="font-weight:600;color:var(--t2);margin-top:6px">No permissions yet</div><div style="font-size:12px;color:var(--t3)">This privilege won't grant anything until it includes at least one permission.</div></div>`}
     </div>
     <div class="modal-foot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveMdwPriv()">${d.idx!=null?'Save changes':'Create privilege'}</button></div></div>`;
-  $('modalScrim').classList.add('open'); setTimeout(()=>{const el=$('cp_name'); if(el&&!d.name)el.focus();},50);
+  _modalOpen(); setTimeout(()=>{const el=$('cp_name'); if(el&&!d.name)el.focus();},50);
 }
 function saveMdwPriv(){
   const d=_mdwPrivDraft; if(!d) return; const c=_mdCtx(d.mid); const e=c.md.ents.find(x=>x.id===d.eid); const cprivs=_mdwEnsureCprivs(c.m,e);
@@ -6910,7 +6910,7 @@ function _renderPermBrowser(){
         ${p.subs.length?`<div class="pb-sub-h">Sub-permissions <span class="mdw-rel-h-c">${p.subs.length}</span></div>${subs}`:'<div class="pb-nosubs">No sub-permissions.</div>'}
       </div></div>
     <div class="pb-foot"><span class="pb-foot-n">${b.sel.size} permission${b.sel.size===1?'':'s'} selected</span><div><button class="btn" onclick="_renderMdwPrivForm()">Cancel</button><button class="btn btn-primary" ${b.sel.size?'':'disabled style="opacity:.5"'} onclick="_permBrowserApply()">${_MDIC.plus} Add permissions</button></div></div></div>`;
-  $('modalScrim').classList.add('open');
+  _modalOpen();
 }
 function _permToggle(k){ const s=_permBrowse.sel; s.has(k)?s.delete(k):s.add(k); _renderPermBrowser(); }
 function _permBrowserApply(){ const b=_permBrowse; const d=_mdwPrivDraft; b.sel.forEach(k=>{ if(!d.perms.find(p=>p[0]===k)) d.perms.push([k, k.includes('PII')?'data':'api']); }); _permBrowse=null; _renderMdwPrivForm(); }
@@ -7335,7 +7335,7 @@ function confirmAssociateEntities(mid){ const ids=[..._assocSel]; if(!ids.length
     <div class="modal-body">You're about to associate ${picks.length} standalone entit${picks.length===1?'y':'ies'} to <b>${escapeHtml(m.name)}</b>. This changes their status from Standalone to being contained in ${escapeHtml(m.name)}.
       <div class="assoc-chips">${chips}</div></div>
     <div class="modal-foot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="_doAssociate('${mid}')">Confirm and associate</button></div></div>`;
-  $('modalScrim').classList.add('open');
+  _modalOpen();
 }
 function _doAssociate(mid){
   const c=_mdCtx(mid); if(!c) return; const {m,md}=c; const ids=[..._assocSel];
@@ -7364,7 +7364,7 @@ function openCreateEntityModal(mid){
       <div style="font-size:12px;color:var(--t2);display:flex;gap:8px;align-items:flex-start"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="var(--primary)" stroke-width="1.6" style="flex-shrink:0;margin-top:1px"><circle cx="8" cy="8" r="6"/><path d="M8 7.5v3.5M8 5h.01" stroke-linecap="round"/></svg><span>An entity groups the tables, columns and relationships for one business concept — add its columns after creating.</span></div>
     </div></div>
     <div class="modal-foot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveMdEntity('${mid}','')">${_MDIC.plus} Create entity</button></div></div>`;
-  $('modalScrim').classList.add('open'); setTimeout(()=>{const el=$('mde_name'); if(el)el.focus();},50);
+  _modalOpen(); setTimeout(()=>{const el=$('mde_name'); if(el)el.focus();},50);
 }
 function openMdEntityForm(id,entId){
   const c=_mdCtx(id); if(!c) return; const {m}=c; const e=entId?_mdEnt(id,entId):null; const owners=_mdOwners();
@@ -7480,7 +7480,7 @@ function confirmMdRemoveEnt(id,entId){ const e=_mdEnt(id,entId); if(!e) return; 
   $('modalScrim').innerHTML=`<div class="modal"><div class="modal-head"><div class="modal-ic" style="background:var(--tag-error-bg,rgba(224,82,82,0.14));color:var(--tag-error-fg,#f87171);border-color:var(--tag-error-bd,rgba(224,82,82,0.3))">${_RM_IC.del}</div><div class="modal-title">Remove “${escapeHtml(e.name)}”?</div></div>
     <div class="modal-body">This removes the entity and its ${e.tables} table${e.tables===1?'':'s'} from <b>${escapeHtml(mn)}</b>. This can't be undone.</div>
     <div class="modal-foot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-danger" onclick="_mdRemoveEnt('${id}','${entId}')">Remove entity</button></div></div>`;
-  $('modalScrim').classList.add('open');
+  _modalOpen();
 }
 function _mdRemoveEnt(id,entId){ const c=_mdCtx(id); if(!c) return; const {m,md}=c; const e=md.ents.find(x=>x.id===entId); const nm=e?e.name:'Entity';
   md.ents=md.ents.filter(x=>x.id!==entId); md.tables=md.tables.filter(t=>t.entityId!==entId);
@@ -7544,7 +7544,7 @@ function confirmMdRemoveTbl(id,tblId){ const c=_mdCtx(id); if(!c) return; const 
   $('modalScrim').innerHTML=`<div class="modal"><div class="modal-head"><div class="modal-ic" style="background:var(--tag-error-bg,rgba(224,82,82,0.14));color:var(--tag-error-fg,#f87171);border-color:var(--tag-error-bd,rgba(224,82,82,0.3))">${_RM_IC.del}</div><div class="modal-title">Remove “${escapeHtml(t.name)}”?</div></div>
     <div class="modal-body">This removes the table from <b>${escapeHtml(c.m.name)}</b>. This can't be undone.</div>
     <div class="modal-foot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-danger" onclick="_mdRemoveTbl('${id}','${tblId}')">Remove table</button></div></div>`;
-  $('modalScrim').classList.add('open');
+  _modalOpen();
 }
 function _mdRemoveTbl(id,tblId){ const c=_mdCtx(id); if(!c) return; const {m,md}=c; const t=md.tables.find(x=>x.id===tblId); const nm=t?t.name:'Table';
   md.tables=md.tables.filter(x=>x.id!==tblId); _mdSync(m,md); closeModal(); closeSlideout(); toast('“'+nm+'” removed','ok'); renderModelDetail(id); }
@@ -7611,7 +7611,7 @@ function confirmMdRemoveComp(id,sub,idx){ const c=_mdCtx(id); if(!c) return; con
   $('modalScrim').innerHTML=`<div class="modal"><div class="modal-head"><div class="modal-ic" style="background:var(--tag-error-bg,rgba(224,82,82,0.14));color:var(--tag-error-fg,#f87171);border-color:var(--tag-error-bd,rgba(224,82,82,0.3))">${_RM_IC.del}</div><div class="modal-title">Remove “${escapeHtml(x.name)}”?</div></div>
     <div class="modal-body">This removes the component from <b>${escapeHtml(c.m.name)}</b>. This can't be undone.</div>
     <div class="modal-foot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-danger" onclick="_mdRemoveComp('${id}','${sub}',${idx})">Remove</button></div></div>`;
-  $('modalScrim').classList.add('open');
+  _modalOpen();
 }
 function _mdRemoveComp(id,sub,idx){ const c=_mdCtx(id); if(!c) return; const {m,md}=c; const x=md[sub][idx]; const nm=x?x.name:'Component';
   md[sub].splice(idx,1); _mdSync(m,md); closeModal(); closeSlideout(); toast('“'+nm+'” removed','ok'); renderModelDetail(id); }
@@ -7626,7 +7626,7 @@ function openCreateModel(){
       <div style="font-size:12px;color:var(--t2);display:flex;gap:8px;align-items:flex-start"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="var(--primary)" stroke-width="1.6" style="flex-shrink:0;margin-top:1px"><circle cx="8" cy="8" r="6"/><path d="M8 7.5v3.5M8 5h.01" stroke-linecap="round"/></svg><span>A model is a container — add entities, tables and reference data to it after creating.</span></div>
     </div></div>
     <div class="modal-foot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveNewModel()">Create model</button></div></div>`;
-  $('modalScrim').classList.add('open'); setTimeout(()=>{const el=$('nmName'); if(el)el.focus();},50);
+  _modalOpen(); setTimeout(()=>{const el=$('nmName'); if(el)el.focus();},50);
 }
 function saveNewModel(){
   const name=($('nmName').value||'').trim(); if(!name){ toast('Enter a name'); return; }
@@ -7744,7 +7744,7 @@ function _rowConfirmDelete(surface,id){
   $('modalScrim').innerHTML=`<div class="modal"><div class="modal-head"><div class="modal-ic" style="background:var(--tag-error-bg,rgba(224,82,82,0.14));color:var(--tag-error-fg,#f87171);border-color:var(--tag-error-bd,rgba(224,82,82,0.3))"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4.5h10M6 4.5V3h4v1.5M4.5 4.5l.5 8a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1l.5-8"/></svg></div><div class="modal-title">Delete ${escapeHtml(nm)}?</div></div>
     <div class="modal-body">This removes <b>${escapeHtml(nm)}</b> from the prototype. This can't be undone.</div>
     <div class="modal-foot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-danger" onclick="_rowDelete('${surface}','${id}')">Delete</button></div></div>`;
-  $('modalScrim').classList.add('open');
+  _modalOpen();
 }
 function _rowDelete(surface,id){ const cfg=_surfCfg(surface), i=cfg.arr.findIndex(r=>r.id===id); if(i<0) return; const nm=cfg.arr[i][cfg.nameKey]; cfg.arr.splice(i,1); closeModal(); toast('“'+nm+'” deleted','ok'); cfg.render(); }
 
@@ -7908,7 +7908,7 @@ function openMarketplaceModal(){
     <div class="mkt-modal-body" id="mktBody"></div>
     <div class="mkt-modal-foot" id="mktFoot"></div>
   </div>`;
-  $('modalScrim').classList.add('open');
+  _modalOpen();
   _dsfRerender=_renderMktBody;
   _renderMktBody();
 }
@@ -8219,7 +8219,7 @@ function openEntityMarketplaceModal(mid){
     <div class="mkt-modal-body" id="emktBody"></div>
     <div class="mkt-modal-foot" id="emktFoot"></div>
   </div>`;
-  $('modalScrim').classList.add('open');
+  _modalOpen();
   _dsfRerender=_renderEmktBody;
   _renderEmktBody();
 }
@@ -8549,7 +8549,7 @@ function openTableMarketplaceModal(mid){
     <div class="mkt-modal-body" id="tmktBody"></div>
     <div class="mkt-modal-foot" id="tmktFoot"></div>
   </div>`;
-  $('modalScrim').classList.add('open');
+  _modalOpen();
   _dsfRerender=_renderTmktBody;
   _renderTmktBody();
 }
@@ -8869,7 +8869,7 @@ function openRefMarketplaceModal(){
     <div class="mkt-modal-body" id="rmktBody"></div>
     <div class="mkt-modal-foot" id="rmktFoot"></div>
   </div>`;
-  $('modalScrim').classList.add('open');
+  _modalOpen();
   _dsfRerender=_renderRmktBody;
   _renderRmktBody();
 }
