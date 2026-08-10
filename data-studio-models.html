@@ -2896,19 +2896,19 @@ window.SCOPE_CHANGELOG=[
     'Entity detail — Tables · Relationships',
     'Table &amp; Reference detail — Columns · Relationships · Data',
     'Model detail — Entities · Tables (associate an orphan or create new)',
-    'Column detail editor — Schema · Rules · Sensitivity · Display (Edit button; internal name locked; system columns collapsed)',
-    'Data authoring — add / edit / delete rows (dynamic form; id + audit fields hidden) · dynamic per-column filters',
-    'Relationship authoring — list mode · create (1-1 / 1-N / N-N) · edit (on-delete / on-update / description) · delete'
+    'Column & data authoring — add / edit / delete columns and rows via dialog (id + audit fields hidden)',
+    'Relationship authoring — list mode · create (1-1 / 1-N / N-N) · edit (on-delete / on-update / description) · delete via dialog'
   ],
   up:[],
-  rm:['Publish / versioning · SlideOut preview (nice-to-have) · Marketplace · Create-with-AI · diagrams — later']},
+  rm:['All side panels / slide-outs → V1.2 — column · row · relationship detail views · entity-relationship form · per-column & saved filters · quick-preview panels','Publish / versioning · Marketplace · Create-with-AI · diagrams — later']},
  {tier:'v1.5',name:'V1.2 · Expansion',sub:'Govern',target:'Next sprint',
   nw:[
     'Publish / save-to-version (edit → draft is V1; publish lands here)',
     'Privileges tab — view-only standard privileges (system-generated)',
-    'API contracts — the 5 default virtual endpoints: enable / disable + description only'
+    'API contracts — the 5 default virtual endpoints: enable / disable + description only',
+    'Side panels (slide-outs) — column · row · relationship detail views · entity-relationship form · per-column & saved filters · quick-preview panels'
   ],
-  up:['Entity detail gains Privileges + API tabs'],
+  up:['Entity detail gains Privileges + API tabs','All side panels / slide-outs become available (V1 is panel-free)'],
   rm:['Custom endpoints · custom privileges · API request/response customization — Full vision']},
  {tier:'v2',name:'Full vision',sub:'The complete experience',target:'Later',
   nw:[
@@ -3171,8 +3171,7 @@ function openPreview(id){ navigate('entities/'+id); return;
       <button class="btn" onclick="closeSlideout()">Close</button>
       <button class="btn btn-primary" onclick="closeSlideout();navigate('entities/${e.id}')">Open entity →</button>
     </div>`;
-  $('slideout').classList.add('open'); $('slideout').setAttribute('aria-hidden','false');
-  $('scrim').classList.add('open');
+  _soOpen();
 }
 let _soClearTimer;
 function closeSlideout(){ const so=$('slideout'); so.classList.remove('open'); so.setAttribute('aria-hidden','true'); $('scrim').classList.remove('open');
@@ -4581,7 +4580,7 @@ function openColumn(tableId, colName){
       <div class="so-sec"><div class="so-sec-h">Display</div><div class="so-fields"><div class="so-field"><span class="so-field-l">Format</span><span class="so-field-v">${escapeHtml(c.fmt||'Default')}</span></div></div></div>
     </div>
     <div class="so-foot"><button class="btn btn-danger" style="margin-right:auto" onclick="confirmDeleteColumn('${tableId}','${colName}')">${_RM_IC.del} Delete</button><button class="btn" onclick="_dupColumn('${tableId}','${colName}')">Duplicate</button><button class="btn" onclick="closeSlideout()">Close</button><button class="btn btn-primary" onclick="openEditColumn('${tableId}','${colName}')">Edit column</button></div>`;
-  $('slideout').classList.add('open'); $('slideout').setAttribute('aria-hidden','false'); $('scrim').classList.add('open');
+  _soOpen();
 }
 function confirmDeleteColumn(tableId,colName){ const t=_table(tableId); const c=t?t.cols.find(x=>x.n===colName):null; if(!c) return;
   if(c.pk){ toast('Can’t delete the primary key column'); return; }
@@ -4849,7 +4848,7 @@ function openTblFilters(id){
       </div>`).join('')}
     </div></div>
     <div class="so-foot"><button class="btn" onclick="clearTblFilters('${id}')">Clear all</button><button class="btn btn-primary" onclick="applyTblFilters('${id}')">Apply filters</button></div>`;
-  $('slideout').classList.add('open'); $('slideout').setAttribute('aria-hidden','false'); $('scrim').classList.add('open');
+  _soOpen();
 }
 function applyTblFilters(id){ const t=_table(id); const out={}; t.cols.forEach(c=>{ const f=_readColFilter(c); if(f) out[c.n]=f; }); dataState.colFilters=out; dataState.page=1; closeSlideout(); renderTableDetail(id); }
 function clearTblFilters(id){ dataState.colFilters={}; dataState.page=1; closeSlideout(); renderTableDetail(id); }
@@ -4918,7 +4917,7 @@ function openRecord(tid, idx){
       ${allCols.map(c=>`<div class="so-field"><span class="so-field-l">${escapeHtml(c.d)}${c.system?' <span class="so-locked" style="font-size:10px">sys</span>':''}</span><span class="so-field-v ${c.t==='UUID'||c.t==='Reference'?'mono':''}">${c.system?_fmtVal(c,_mockVal(c,idx)):_fmtVal(c,r[c.n])}</span></div>`).join('')}
     </div></div>
     <div class="so-foot"><button class="btn btn-danger" style="margin-right:auto" onclick="_deleteRecord('${tid}',${idx})">${_RM_IC.del} Delete row</button><button class="btn" onclick="_dupRecord('${tid}',${idx})">${_RM_IC.dup} Duplicate</button><button class="btn" onclick="closeSlideout()">Close</button><button class="btn btn-primary" onclick="openEditRecord('${tid}',${idx})">Edit record</button></div>`;
-  $('slideout').classList.add('open'); $('slideout').setAttribute('aria-hidden','false'); $('scrim').classList.add('open');
+  _soOpen();
 }
 function _deleteRecord(tid,idx){ const t=_table(tid); const rows=_mockRows(t); if(idx<0||idx>=rows.length) return; rows.splice(idx,1); closeSlideout(); toast('Record deleted','ok'); renderTableDetail(tid); }
 function _dupRecord(tid,idx){ const t=_table(tid); const rows=_mockRows(t); const r=rows[idx]; if(!r) return; const c=JSON.parse(JSON.stringify(r)); c.__id=_mockId(rows.length); rows.splice(idx+1,0,c); closeSlideout(); toast('Record duplicated','ok'); renderTableDetail(tid); }
@@ -5386,7 +5385,7 @@ function openRefByDetail(refId,i){
       </div></div>
     </div>
     <div class="so-foot"><button class="btn" onclick="closeSlideout()">Close</button><button class="btn btn-primary" onclick="closeSlideout();navigate('tables/${x.tableId}')">Open table</button></div>`;
-  $('slideout').classList.add('open'); $('slideout').setAttribute('aria-hidden','false'); $('scrim').classList.add('open');
+  _soOpen();
 }
 
 /* Reference value — slide-out + create/edit */
@@ -5407,7 +5406,7 @@ function openRefValue(refId, code){
       </div><div style="font-size:12px;color:var(--field-text);margin-top:10px;line-height:1.5">${escapeHtml(v.description||'No description.')}</div></div>
     </div>
     <div class="so-foot"><button class="btn" onclick="toggleRefValueActive('${refId}','${escapeHtml(v.code)}')">${v.active?'Deactivate':'Reactivate'}</button><button class="btn" style="color:var(--field-text-error,#dc2626)" onclick="openRefItemDelete('${refId}','${escapeHtml(v.code)}')">Delete</button><span style="flex:1"></span><button class="btn btn-primary" onclick="openEditRefValue('${refId}','${escapeHtml(v.code)}')">Edit item</button></div>`;
-  $('slideout').classList.add('open'); $('slideout').setAttribute('aria-hidden','false'); $('scrim').classList.add('open');
+  _soOpen();
 }
 function openRefItemDelete(refId, code){
   const r=_ref(refId); const v=r.values.find(x=>x.code===code); if(!v) return; closeSlideout();
@@ -5458,7 +5457,7 @@ function openRefItem(refId, mode, code){
       }).join('')}
     </div>
     <div class="so-foot"><button class="btn" onclick="closeSlideout()">Cancel</button><button class="btn btn-primary" onclick="saveRefItem('${refId}','${mode}','${code||''}')"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M2 6h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>${mode==='edit'?'Save changes':'Create item'}</button></div>`;
-  $('slideout').classList.add('open'); $('slideout').setAttribute('aria-hidden','false'); $('scrim').classList.add('open');
+  _soOpen();
   setTimeout(()=>{const el=$('ri_label'); if(el)el.focus();},60);
 }
 function saveRefItem(refId, mode, code){
@@ -5485,7 +5484,7 @@ function openRefFilters(id){
       <div class="flt-sec"><div class="flt-sec-h">Description</div>${radio('fltDesc','descFilter','all',df,'Any')}${radio('fltDesc','descFilter','has',df,'Has description')}${radio('fltDesc','descFilter','missing',df,'Missing description')}</div>
     </div>
     <div class="so-foot"><button class="btn" onclick="clearRefFilters('${id}')">Clear all</button><button class="btn btn-primary" onclick="applyRefFilters('${id}')">Apply filters</button></div>`;
-  $('slideout').classList.add('open'); $('slideout').setAttribute('aria-hidden','false'); $('scrim').classList.add('open');
+  _soOpen();
 }
 /* ── Reference Data: overflow kebab (import / export) ── */
 function _refDataKebab(btn,id){ _openPop(btn, `
@@ -6105,7 +6104,7 @@ function openModelPreview(id){
       ${m.tags&&m.tags.length?`<div class="so-sec"><div class="so-sec-h">Tags</div><div style="display:flex;flex-wrap:wrap;gap:6px">${m.tags.map(t=>`<span class="tag">${escapeHtml(t)}</span>`).join('')}</div></div>`:''}
     </div>
     <div class="so-foot mp-foot"><button class="btn" onclick="closeSlideout()">Close</button><button class="btn btn-primary" onclick="closeSlideout();navigate('models/${m.id}')"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h7v7M13 3L7 9"/><path d="M10 13H3V6"/></svg> Open model</button></div>`;
-  $('slideout').classList.add('open'); $('slideout').setAttribute('aria-hidden','false'); $('scrim').classList.add('open');
+  _soOpen();
   _diagInit();
 }
 
@@ -6431,7 +6430,7 @@ function openModelSettings(id){
       </div>
     </div></div>
     <div class="so-foot"><span style="flex:1"></span><button class="btn btn-primary" onclick="closeSlideout()">Done</button></div>`;
-  $('slideout').classList.add('open'); $('slideout').setAttribute('aria-hidden','false'); $('scrim').classList.add('open');
+  _soOpen();
 }
 function mdArchive(id){ const m=_model(id); if(m) m.status='Deprecated'; closeSlideout(); toast('“'+(m?m.name:'Model')+'” deprecated','ok'); renderModelDetail(id); }
 function mdDelete(id){ const m=_model(id); const nm=m?m.name:'Model'; closeSlideout();
@@ -6629,7 +6628,7 @@ function openHistEvent(kind,id,idx){
       <div class="hist-immutable">${_HIC.shield} This audit entry is immutable and retained for 7 years for compliance.</div>
     </div>
     <div class="so-foot"><button class="btn" onclick="closeSlideout()">Close</button><button class="btn btn-primary" onclick="toast('Audit record exported','ok')">Export record</button></div>`;
-  $('slideout').classList.add('open'); $('slideout').setAttribute('aria-hidden','false'); $('scrim').classList.add('open');
+  _soOpen();
 }
 
 /* ── shared: mini table + view toggle (grid/table) ── */
@@ -7266,7 +7265,7 @@ function _mdSync(m,md){
   m.entities=md.ents.length; _mdEdited(m);
 }
 function _mdColNames(n){ const base=['id','name','code','status','description','created_at','updated_at','owner_id','external_id','is_active','notes','type','source','region','amount','priority']; return base.slice(0,Math.max(1,Math.min(base.length,n||6))); }
-function _soOpen(){ $('slideout').classList.add('open'); $('slideout').setAttribute('aria-hidden','false'); $('scrim').classList.add('open'); }
+function _soOpen(){ if(SCOPE==='v1'){ toast('Side panels open from V1.2 — switch scope to preview them'); return; } const so=$('slideout'); so.classList.add('open'); so.setAttribute('aria-hidden','false'); $('scrim').classList.add('open'); }
 function _mdKebab(btn,items){
   closeRowMenu();
   const it=x=> x==='sep' ? '<div class="rowmenu-sep"></div>' : `<button class="rowmenu-item ${x.danger?'danger':''}" onclick="closeRowMenu();${x.act}">${x.ic}${x.label}</button>`;
@@ -7670,7 +7669,7 @@ function openFilters(surface){
   const cfg=_fltCfg(surface); const st=cfg.state;
   _fltDraft={surface}; cfg.groups.forEach(g=>{ _fltDraft[g.key]= g.multi ? (st[g.key]||[]).slice() : (st[g.key]||'all'); });
   _renderFilters();
-  $('slideout').classList.add('open'); $('slideout').setAttribute('aria-hidden','false'); $('scrim').classList.add('open');
+  _soOpen();
 }
 function _renderFilters(){
   const cfg=_fltCfg(_fltDraft.surface), d=_fltDraft;
