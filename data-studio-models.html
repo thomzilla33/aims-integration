@@ -7261,13 +7261,11 @@ function mdBackToComps(mid){ modelDetailState.comp.selIdx=null; modelDetailState
 function mdCompWsTab(mid,t){ modelDetailState.comp.wsub=t; renderModelDetail(mid); }
 function _mdCompWorkspace(m,md,sub,idx){
   const x=md[sub][idx]; const wsub=modelDetailState.comp.wsub||'overview';
-  const rail=['widgets','queries','metrics','datasets'].map(s=>{ const arr=md[s]; if(!arr.length) return '';
-    return `<div class="mdw-rail-grp">${_COMP_GRP[s]}<span class="mdw-rail-grpc">${arr.length}</span></div>`+arr.map((it,i)=>`<button class="mdw-rail-item ${(s===sub&&i===idx)?'on':''}" onclick="mdSelectComp('${m.id}','${s}',${i})"><span class="mdw-rail-ic">${_COMP_IC[s]}</span><span class="mdw-rail-name">${escapeHtml(it.name)}</span></button>`).join(''); }).join('');
   const tabs=[['overview','Overview'],['preview','Preview'],['lineage','Lineage']];
   const body=wsub==='preview'?_mdcwPreview(m,sub,x):wsub==='lineage'?_mdcwLineage(m,md,sub,x):_mdcwOverview(m,md,sub,idx,x);
   return `<div class="mdw">
-    <aside class="mdw-rail"><div class="mdw-rail-h"><button class="mdw-browse" onclick="mdBackToComps('${m.id}')">${_CHEVL} Browse</button></div><div class="mdw-rail-list">${rail}</div></aside>
     <section class="mdw-main">
+      <button class="mdw-browse" style="margin-bottom:10px" onclick="mdBackToComps('${m.id}')">${_CHEVL} Components</button>
       <div class="mdw-head"><div class="mdw-head-l"><span class="mdw-title">${escapeHtml(x.name)}</span><span class="chip">${_COMP_IC[sub]}${_COMP_KIND[sub]}</span></div>
         <button class="btn btn-primary" onclick="openMdCompForm('${m.id}','${sub}',${idx})">${_MDIC.edit} Edit</button></div>
       <div class="mdw-tabs">${tabs.map(([tid,l])=>`<button class="mdw-tab ${wsub===tid?'on':''}" onclick="mdCompWsTab('${m.id}','${tid}')">${l}</button>`).join('')}</div>
