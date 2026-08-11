@@ -7001,9 +7001,10 @@ function _mdTablesTab(m,md){
       <button class="btn btn-primary" onclick="openMdAddTable('${m.id}')">${_MDIC.plus} Add table</button>
     </div>${body}`;
 }
+function _mdTblClick(m,t){ return _table(t.code) ? `navigate('tables/${t.code}')` : `mdSelectTbl('${m.id}','${t.id}')`; }
 function _mdTblRow(m,t){
   return `<div class="md-trow">
-    <div class="md-trow-h" onclick="mdSelectTbl('${m.id}','${t.id}')">
+    <div class="md-trow-h" onclick="${_mdTblClick(m,t)}">
       <span class="md-trow-ic">${_MDIC.tbl}</span><span class="md-trow-av">${av(P(t.owner),'sm')}</span>
       <span class="md-trow-name">${escapeHtml(t.name)}</span><code class="md-code">${escapeHtml(t.code)}</code>
       ${_entityChip(t.entityId,t.entity)}<span class="mini-badge ${t.role==='Primary'?'mb-primary':'mb-secondary'}">${escapeHtml(t.role)}</span>${t.pii?_piiBadge():''}
@@ -7013,7 +7014,7 @@ function _mdTblRow(m,t){
     <div class="md-trow-foot"><span class="lrow-metric">${_MDIC.col}${t.cols} columns</span><span class="lrow-sep">·</span><span class="lrow-metric">${_MDIC.rel}${t.rel} relations</span><span class="lrow-sep">·</span><span>${escapeHtml(P(t.owner).n)}</span></div></div>`;
 }
 function _mdTblCard(m,t){
-  return `<div class="mcard" onclick="mdSelectTbl('${m.id}','${t.id}')">
+  return `<div class="mcard" onclick="${_mdTblClick(m,t)}">
     <div class="mcard-top"><div style="display:flex;align-items:center;gap:8px;min-width:0"><div class="mcard-title">${escapeHtml(t.name)}</div><span class="mini-badge ${t.role==='Primary'?'mb-primary':'mb-secondary'}">${escapeHtml(t.role)}</span></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0">${_stateTag(t.status)}<button class="md-cardkb" onclick="event.stopPropagation();_mdTblMenu('${m.id}','${t.id}',this)" aria-label="Table actions">${_MDIC.dots}</button></div></div>
     <div class="mcard-subtitle">${escapeHtml(t.entity)}</div>
     <div class="mcard-desc">${escapeHtml(t.desc)}</div>
