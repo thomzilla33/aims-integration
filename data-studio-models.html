@@ -9274,6 +9274,7 @@ try{
   if(localStorage.getItem('dsm-collapsed')==='1'){ document.body.classList.add('sb-collapsed'); const b=$('sbToggle'); if(b){ b.title='Expand sidebar'; b.setAttribute('aria-label','Expand sidebar'); } }
 }catch(e){}
 _themeIcon();
+try{ const _qsScope=new URLSearchParams(location.search).get('scope'); if(_qsScope && SCOPE_TIERS.indexOf(_qsScope)>=0) SCOPE=_qsScope; }catch(e){} // deep-link: ?scope=v1.5 opens the authoring tier
 route();
 
 /* Re-apply scope after every dynamic re-render of the content area */
