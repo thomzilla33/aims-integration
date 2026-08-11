@@ -6135,7 +6135,7 @@ function _erModelNodes(m, md){
   return {nodes, edges, note: md.ents.length>4?`Showing 4 of ${md.ents.length} entities`:''};
 }
 function openModelPreview(id){
-  if(SCOPE==='v1'){ navigate('models/'+id); return; } // V1: card click → full detail (preview slideout is V1.2+)
+  navigate('models/'+id); return; // card click → full detail, single click (all scopes; Edgardo: click → detail, not preview)
   const m=_model(id); if(!m) return;
   const e=m.entities; const md=_md(m); const er=_erModelNodes(m, md);
   const stats=[['Entities',md.counts.entities],['Tables',md.counts.tables],['Relations',md.relations],['Components',md.counts.components]];
@@ -6226,7 +6226,7 @@ function _pvHead3(icon,name,status,subtitle){ return `<div class="so-head mp-hea
     <div class="mp-head-r"><button class="so-close" onclick="closeSlideout()" aria-label="Close">✕</button></div>
   </div>`; }
 function openEntityPreview(id){
-  if(SCOPE==='v1'){ navigate('entities/'+id); return; } // V1: card click → full detail (preview slideout is V1.2+)
+  navigate('entities/'+id); return; // card click → full detail, single click (all scopes; Edgardo: click → detail, not preview)
   const e=ENTITIES.find(x=>x.id===id); if(!e) return;
   const tbls=e.tables||[]; const rels=e.rels||[];
   const cols=tbls.reduce((n,t)=>n+(t.cols||0),0); const added=1+(cols%4);
@@ -6246,7 +6246,7 @@ function openEntityPreview(id){
   _soOpen(); setTimeout(_diagInit,0);
 }
 function openTablePreview(id){
-  if(SCOPE==='v1'){ navigate('tables/'+id); return; } // V1: card click → full detail (preview slideout is V1.2+)
+  navigate('tables/'+id); return; // card click → full detail, single click (all scopes; Edgardo: click → detail, not preview)
   const t=_table(id); if(!t) return;
   const out=(t.rels||[]).map(r=>({target:(_table(r.target)||{}).alias||_relTargetName(r.target)||r.target,cardShort:_cardShort(r.kind),strong:true,dir:'Outgoing',del:'Restrict'}));
   const inc=TABLES.filter(x=>x.id!==t.id).flatMap(x=>(x.rels||[]).filter(r=>_refId(r.target)===t.id).map(r=>({target:x.alias,cardShort:_cardShort(_invKind(r.kind)),strong:true,dir:'Incoming',del:'Restrict'})));
