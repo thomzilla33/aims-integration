@@ -6433,51 +6433,6 @@ function _mdDiagram(m, md){
   </div>`;
 }
 
-/* ── Model DETAIL — Relationships tab (entity↔entity · list mode) ── */
-let _mdRelSearch='';
-function mdRelSearch(v){ _mdRelSearch=v; renderModelDetail(modelDetailState.id); _mdRefocus('mdRelSearch',v); }
-function _mdRelationshipsTab(m,md){
-  const ents=_modelEntities(m.id);
-  const rows=[]; ents.forEach(e=>{ (e.rels||[]).forEach((rel,idx)=>{ rows.push({e, r:_entRelEnrich(e,rel), idx}); }); });
-  const q=_mdRelSearch.trim().toLowerCase();
-  const shown=q?rows.filter(({r})=>(r.t||'').toLowerCase().includes(q)):rows;
-  const gt='grid-template-columns:minmax(0,1fr) minmax(0,1fr) 96px 100px 120px';
-  const toolbar=`<div class="tbar md-tbar">
-      <label class="dsf-search">${_MDIC.search}<input id="mdRelSearch" type="text" placeholder="Search related entity…" value="${escapeHtml(_mdRelSearch)}" oninput="mdRelSearch(this.value)" autocomplete="off"></label>
-      <span class="tbar-spring"></span>
-      <button class="btn btn-primary" onclick="_mdNewRel('${m.id}',this)">${_MDIC.plus} New relationship</button>
-    </div>`;
-  let body;
-  if(!rows.length) body=`<div class="empty"><div class="empty-t">No relationships yet</div>Connect two entities with a relationship to see it here.</div>`;
-  else if(!shown.length) body=`<div class="empty"><div class="empty-t">No relationships match</div>Try a different search.</div>`;
-  else body=`<div class="ttd-table"><div class="ttd-thead cv-thead" style="${gt}"><span class="cv-th">Source</span><span class="cv-th">Related</span><span class="cv-th">Cardinality</span><span class="cv-th">Strength</span><span class="cv-th">Direction</span></div>${shown.map(({e,r,idx})=>`<div class="ttd-tr cv-static" style="${gt};cursor:pointer" onclick="openEntRelForm('${e.id}',${idx})"><span class="cv-td"><span class="cv-field-d">${escapeHtml(e.name)}</span></span><span class="cv-td"><span class="cv-field-d">${escapeHtml(r.t)}</span></span><span class="cv-td"><span class="card-badge">${_cardShort(r.k)}</span></span><span class="cv-td">${r.s?'<span class="cv-yes">Strong</span>':'<span class="cv-no">Weak</span>'}</span><span class="cv-td">${escapeHtml(r.dir||'Uni')}</span></div>`).join('')}</div>`;
-  return toolbar+body;
-}
-function _mdNewRel(mid,btn){
-  const ents=_modelEntities(mid);
-  const html=ents.length
-    ? ents.map(e=>`<button class="pop-item" onclick="_closePop();openEntRelForm('${e.id}',null)">${_MDIC.ent} ${escapeHtml(e.name)}</button>`).join('')
-    : `<div style="padding:12px 14px;font-size:12px;color:var(--t3)">No entities in this model yet.</div>`;
-  _openPop(btn, html);
-}
-
-/* ── Model DETAIL — Reference Data tab (view + navigate) ── */
-let _mdRefSearch='';
-function mdRefSearch(v){ _mdRefSearch=v; renderModelDetail(modelDetailState.id); _mdRefocus('mdRefSearch',v); }
-function _mdRefLists(m){ let l=REFDATA.filter(r=>r.category===m.category); if(!l.length) l=REFDATA.slice(0,4); return l; }
-function _mdReferenceTab(m,md){
-  const lists=_mdRefLists(m);
-  const q=_mdRefSearch.trim().toLowerCase();
-  const shown=q?lists.filter(r=>r.name.toLowerCase().includes(q)||r.id.toLowerCase().includes(q)):lists;
-  const toolbar=`<div class="tbar md-tbar">
-      <label class="dsf-search">${_MDIC.search}<input id="mdRefSearch" type="text" placeholder="Search reference lists…" value="${escapeHtml(_mdRefSearch)}" oninput="mdRefSearch(this.value)" autocomplete="off"></label>
-    </div>`;
-  const note=`<div style="font-size:12px;color:var(--t2);margin:2px 0 12px">Reference lists used across this model.</div>`;
-  const body=shown.length
-    ? `<div class="lrows">${shown.map(r=>`<div class="lrow" onclick="navigate('reference/${r.id}')"><div class="lrow-top">${_catIcon(r.category)}<span class="lrow-title">${escapeHtml(r.name)}</span><code class="md-code">${escapeHtml(r.id)}</code><span class="lrow-right">${_stPill(r.status)}<span class="lrow-time">${escapeHtml(r.category)}</span></span></div></div>`).join('')}</div>`
-    : `<div class="empty"><div class="empty-t">No reference lists</div>None are associated with this model yet.</div>`;
-  return toolbar+note+body;
-}
 
 /* ── Model DETAIL — render ── */
 function renderModelDetail(id){
@@ -6485,13 +6440,13 @@ function renderModelDetail(id){
   if(!m.internal) m.internal=_slug(m.name);
   _dsfRerender=()=>renderModelDetail(modelDetailState.id);
   const md=_md(m); const tab=modelDetailState.tab; const pending=m.status!=='Published';
-  const tabs=[['overview','Overview',null],['entities','Entities',md.counts.entities],['tables','Tables',md.counts.tables],['relationships','Relationships',md.relations],['reference','Reference Data',_mdRefLists(m).length],['components','Components',md.counts.components]];
+  const tabs=[['overview','Overview',null],['entities','Entities',md.counts.entities],['tables','Tables',md.counts.tables],['components','Components',md.counts.components]];
   const tabEff=(TAB_VER[tab] && SCOPE_TIERS.indexOf(TAB_VER[tab])>SCOPE_TIERS.indexOf(SCOPE))?'overview':tab; // gated model tab (Components=v2) → overview below its tier
   const acts=`<span class="md-userav" title="You">SB</span>
     <button class="btn md-hbtn" onclick="setModelTab('overview');modelDetailState.sec.about=true;renderModelDetail('${id}')">${_MDIC.edit} Edit</button>
     <button class="btn btn-primary md-hbtn" data-version="v1.5" onclick="publishModel('${id}')">${_MDIC.pub} Publish</button>
     <button class="md-icobtn" onclick="event.stopPropagation();openRowMenu('models','${id}',this)" aria-label="More actions">${_MDIC.dots}</button>`;
-  const body = tabEff==='entities'?_mdEntitiesTab(m,md) : tabEff==='tables'?_mdTablesTab(m,md) : tabEff==='relationships'?_mdRelationshipsTab(m,md) : tabEff==='reference'?_mdReferenceTab(m,md) : tabEff==='components'?_mdComponentsTab(m,md) : _mdOverview(m,md);
+  const body = tabEff==='entities'?_mdEntitiesTab(m,md) : tabEff==='tables'?_mdTablesTab(m,md) : tabEff==='components'?_mdComponentsTab(m,md) : _mdOverview(m,md);
   $('content').innerHTML=`
     <div class="md-crumbrow">${_crumbs([{label:'Models',href:'#/models'},{label:m.name}])}<div class="md-pageacts">${acts}</div></div>
     <div class="detail-head md-head"><div class="dh-l">
