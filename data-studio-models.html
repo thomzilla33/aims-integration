@@ -3021,7 +3021,7 @@ const ENTITIES = [
     rels:[{t:'Account',k:'many-to-one',s:false}], cperms:[], cprivs:[], ceps:[] },
 ];
 
-const listState = { search:'', model:'all', domain:'all', status:'all', owner:'all', view:'list', page:1, perPage:9 };
+const listState = { search:'', model:'all', domain:'all', status:'all', owner:'all', tag:'all', view:'list', page:1, perPage:9 };
 function eListPage(p){ listState.page=p; renderEntities(); }
 function eListPer(n){ listState.perPage=+n; listState.page=1; renderEntities(); }
 let _dsfOpen = null;
@@ -3046,7 +3046,7 @@ function setSearch(v){ listState.search=v; listState.page=1; renderEntities(); s
 function eSet(k,v){ listState[k]=v; if(k!=='page') listState.page=1; renderEntities(); }
 function _saveView(s,v){ try{ localStorage.setItem('dsm-view-'+s, v); }catch(e){} }
 function eView(v){ listState.view=v; _saveView('entities',v); renderEntities(); }
-function clearFilters(){ listState.model='all'; listState.domain='all'; listState.status='all'; listState.owner='all'; listState.tags=[]; listState.page=1; renderEntities(); }
+function clearFilters(){ listState.model='all'; listState.domain='all'; listState.status='all'; listState.owner='all'; listState.tag='all'; listState.tags=[]; listState.page=1; renderEntities(); }
 document.addEventListener('click', e=>{ if(_dsfOpen && !e.target.closest('.dsf-drop')){ _dsfOpen=null; _dsfRerender(); } });
 
 /* ── DS Pagination component (port of design-system/pagination.tsx) ── */
@@ -3086,6 +3086,7 @@ function _filtered(){
     if(listState.domain!=='all' && e.domain!==listState.domain) return false;
     if(listState.status!=='all' && e.status!==listState.status) return false;
     if(listState.owner!=='all' && e.owner!==listState.owner) return false;
+    if(listState.tag!=='all' && !(e.tags||[]).includes(listState.tag)) return false;
     if(listState.tags&&listState.tags.length && !listState.tags.some(t=>(e.tags||[]).includes(t))) return false;
     if(q && !(e.name.toLowerCase().includes(q) || e.desc.toLowerCase().includes(q) || (_model(e.model)||{name:''}).name.toLowerCase().includes(q))) return false;
     return true;
@@ -3104,7 +3105,8 @@ function renderEntities(){
   const dc=listState.domain!=='all'?{label:listState.domain,onremove:"eSet('domain','all')"}:null;
   const stc=listState.status!=='all'?{label:listState.status,onremove:"eSet('status','all')"}:null;
   const oc=listState.owner!=='all'?{label:P(listState.owner).n,onremove:"eSet('owner','all')"}:null;
-  const filtering=listState.model!=='all'||listState.domain!=='all'||listState.status!=='all'||listState.owner!=='all';
+  const tgc=listState.tag!=='all'?{label:listState.tag,onremove:"eSet('tag','all')"}:null;
+  const filtering=listState.model!=='all'||listState.domain!=='all'||listState.status!=='all'||listState.owner!=='all'||listState.tag!=='all';
   const _per=listState.perPage, _total=filtered.length, _pages=Math.max(1,Math.ceil(_total/_per));
   const _page=Math.min(Math.max(1,listState.page),_pages);
   const _vis=filtered.slice((_page-1)*_per,(_page-1)*_per+_per);
@@ -3116,6 +3118,7 @@ function renderEntities(){
       ${dsfDrop('fDomain','Domain', dc, [{label:'All domains',selected:listState.domain==='all',onclick:"dsfPickSingle();eSet('domain','all')"}].concat(domains.map(d=>({label:d,count:ENTITIES.filter(e=>e.domain===d).length,selected:listState.domain===d,onclick:`dsfPickSingle();eSet('domain','${d}')`}))))}
       ${dsfDrop('fStatus','Status', stc, [{label:'All statuses',selected:listState.status==='all',onclick:"dsfPickSingle();eSet('status','all')"}].concat(['Published','Draft','Deprecated'].map(s=>({label:s,selected:listState.status===s,onclick:`dsfPickSingle();eSet('status','${s}')`}))))}
       ${dsfDrop('fOwner','Owner', oc, [{label:'All owners',selected:listState.owner==='all',onclick:"dsfPickSingle();eSet('owner','all')"}].concat(owners.map(o=>({label:P(o).n,selected:listState.owner===o,onclick:`dsfPickSingle();eSet('owner','${o}')`}))))}
+      ${dsfDrop('fTag','Tags', tgc, [{label:'All tags',selected:listState.tag==='all',onclick:"dsfPickSingle();eSet('tag','all')"}].concat([...new Set(ENTITIES.flatMap(e=>e.tags||[]))].map(tg=>({label:tg,count:ENTITIES.filter(e=>(e.tags||[]).includes(tg)).length,selected:listState.tag===tg,onclick:`dsfPickSingle();eSet('tag','${tg}')`}))))}
       <button class="flt-btn" onclick="openFilters('entities')"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 4h12M4 8h8M6 12h4"/></svg> Filters${_fltCount('entities')?` <span class="flt-badge">${_fltCount('entities')}</span>`:''}</button>
       ${filtering ? `<button class="dsf-clear" onclick="clearFilters()">Clear</button>` : ''}
       <span class="tbar-spring"></span>
@@ -3332,7 +3335,7 @@ function tablesTab(e){
       <button class="flt-btn" onclick="toast('More table filters — prototype')"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 4h12M4 8h8M6 12h4"/></svg> Filters</button>
       <span class="tbar-spring"></span>
       ${viewToggle(st,'etView')}
-      <button class="btn btn-primary" onclick="openEntTableForm('${e.id}')">${_MDIC.plus} Add table</button>
+      <button class="btn btn-primary" onclick="_addEntTableMenu('${e.id}',this)">${_MDIC.plus} Add table ${_MDIC.chevd}</button>
     </div>${body}${pgn}`;
 }
 function _etTblRow(e,t,idx){
@@ -4098,6 +4101,34 @@ function confirmRemoveEntTbl(id,idx){ const e=_entById(id); if(!e) return; const
   _modalOpen();
 }
 function _removeEntTbl(id,idx){ const e=_entById(id); if(!e) return; const t=(e.tables||[])[idx]; const nm=t?t.alias:'Table'; (e.tables||[]).splice(idx,1); _entEdited(e); closeModal(); toast('“'+nm+'” removed','ok'); renderEntityDetail(id); }
+/* Add-table split menu: Associate (slideout of existing tables) vs New table (slideout form) */
+function _addEntTableMenu(eid,btn){ _openPop(btn, `
+  <button class="pop-item" onclick="_closePop();openAssociateTables('${eid}')">${_HIC.link} Associate table</button>
+  <button class="pop-item" onclick="_closePop();openEntTableForm('${eid}')">${_MDIC.plus} New table</button>`); }
+function _assocTablePool(eid){ const e=_entById(eid); if(!e) return []; const have=new Set((e.tables||[]).map(t=>t.id)); return TABLES.filter(t=>t.model===e.model && !have.has(t.id)); }
+function openAssociateTables(eid){
+  const e=_entById(eid); if(!e) return; const pool=_assocTablePool(eid);
+  const card=t=>`<div class="ase-card">
+      <span class="ase-ic">${_MDIC.tbl}</span>
+      <div class="ase-b"><div class="ase-top"><span class="ase-name">${escapeHtml(t.alias)}</span><span class="mini-badge ${t.role==='Primary'?'mb-primary':'mb-secondary'}">${escapeHtml(t.role)}</span>${_stPill(t.status)}<span class="ase-time">${escapeHtml(t.updated)}</span></div>
+        <div class="ase-desc">${escapeHtml(t.desc)}</div>
+        <div class="ase-meta"><span class="ase-owner">${av(P(t.owner),'sm')}${escapeHtml(P(t.owner).n)}</span><span class="ase-m"><b>${escapeHtml((_model(t.model)||{}).name||t.model)}</b></span><span class="ase-m"><b>${t.cols.length}</b> column${t.cols.length===1?'':'s'}</span></div>
+      </div>
+      <button class="btn btn-primary" style="align-self:center;flex-shrink:0" onclick="_assocTableDo('${eid}','${t.id}')">${_HIC.link} Associate</button></div>`;
+  $('slideout').innerHTML=`
+    <div class="so-head"><div><div class="so-title">Associate table</div><div class="so-internal" style="max-width:420px;white-space:normal;line-height:1.5">Add an existing table from this model to ${escapeHtml(e.name)}.</div></div><button class="so-close" onclick="closeSlideout()" aria-label="Close">✕</button></div>
+    <div class="so-body">
+      <div class="ase-list">${pool.map(card).join('')||'<div class="placeholder" style="padding:36px">No other tables in this model are available to associate.</div>'}</div>
+    </div>
+    <div class="so-foot"><span style="flex:1"></span><button class="btn" onclick="closeSlideout()">Done</button></div>`;
+  _soOpen();
+}
+function _assocTableDo(eid,tid){ const e=_entById(eid); const t=_table(tid); if(!e||!t) return; e.tables=e.tables||[];
+  if(e.tables.some(x=>x.id===t.id)){ toast('“'+t.alias+'” is already associated'); return; }
+  const hasPrimary=e.tables.some(x=>x.role==='Primary');
+  e.tables.push({id:t.id, alias:t.alias, role:hasPrimary?'Secondary':(t.role||'Secondary'), cols:(t.cols?t.cols.length:8), rows:t.rows||'0'});
+  _entEdited(e); closeSlideout(); toast('Table “'+t.alias+'” associated to “'+e.name+'”','ok'); renderEntityDetail(eid);
+}
 let _toastTimer;
 function toast(msg, kind){
   let t=$('toast'); if(!t){ t=document.createElement('div'); t.id='toast'; document.body.appendChild(t); }
@@ -4307,14 +4338,15 @@ function _typeCls(t){ return {Text:'t-text',Integer:'t-num',Decimal:'t-num',Bool
 function _sensCls(s){ return s==='PII'?'pii':s==='Financial'?'fin':'conf'; }
 
 /* Tables LIST */
-const tablesListState = { search:'', model:'all', entity:'all', type:'all', status:'all', view:'list', page:1, perPage:9 };
+const tablesListState = { search:'', model:'all', entity:'all', type:'all', status:'all', tag:'all', view:'list', page:1, perPage:9 };
 function tlSearch(v){ tablesListState.search=v; tablesListState.page=1; renderTablesList(); setTimeout(()=>{const el=$('tblSearch'); if(el){el.focus(); el.setSelectionRange(v.length,v.length);}},0); }
 function tlEntity(v){ tablesListState.entity=v; tablesListState.page=1; renderTablesList(); }
 function tlModel(v){ tablesListState.model=v; tablesListState.page=1; renderTablesList(); }
 function tlType(v){ tablesListState.type=v; tablesListState.page=1; renderTablesList(); }
 function tlStatus(v){ tablesListState.status=v; tablesListState.page=1; renderTablesList(); }
+function tlTag(v){ tablesListState.tag=v; tablesListState.page=1; renderTablesList(); }
 function tlView(v){ tablesListState.view=v; _saveView('tables',v); renderTablesList(); }
-function tlClear(){ tablesListState.model='all'; tablesListState.entity='all'; tablesListState.type='all'; tablesListState.status='all'; tablesListState.tags=[]; tablesListState.page=1; renderTablesList(); }
+function tlClear(){ tablesListState.model='all'; tablesListState.entity='all'; tablesListState.type='all'; tablesListState.status='all'; tablesListState.tag='all'; tablesListState.tags=[]; tablesListState.page=1; renderTablesList(); }
 function tlListPage(p){ tablesListState.page=p; renderTablesList(); }
 function tlListPer(n){ tablesListState.perPage=+n; tablesListState.page=1; renderTablesList(); }
 function _tablesFiltered(){
@@ -4324,6 +4356,7 @@ function _tablesFiltered(){
     if(tablesListState.entity!=='all' && t.entityId!==tablesListState.entity) return false;
     if(tablesListState.type!=='all' && t.role!==tablesListState.type) return false;
     if(tablesListState.status!=='all' && t.status!==tablesListState.status) return false;
+    if(tablesListState.tag!=='all' && !(t.tags||[]).includes(tablesListState.tag)) return false;
     if(tablesListState.tags&&tablesListState.tags.length && !tablesListState.tags.some(x=>(t.tags||[]).includes(x))) return false;
     if(q && !(t.id.toLowerCase().includes(q)||t.alias.toLowerCase().includes(q)||t.entity.toLowerCase().includes(q)||t.desc.toLowerCase().includes(q))) return false;
     return true;
@@ -4340,7 +4373,8 @@ function renderTablesList(){
   const ec=tablesListState.entity!=='all'?{label:(ENTITIES.find(e=>e.id===tablesListState.entity)||{}).name||tablesListState.entity, onremove:"tlEntity('all')"}:null;
   const tc=tablesListState.type!=='all'?{label:tablesListState.type,onremove:"tlType('all')"}:null;
   const stc=tablesListState.status!=='all'?{label:tablesListState.status, onremove:"tlStatus('all')"}:null;
-  const filtering=tablesListState.model!=='all'||tablesListState.entity!=='all'||tablesListState.type!=='all'||tablesListState.status!=='all';
+  const tgc=tablesListState.tag!=='all'?{label:tablesListState.tag, onremove:"tlTag('all')"}:null;
+  const filtering=tablesListState.model!=='all'||tablesListState.entity!=='all'||tablesListState.type!=='all'||tablesListState.status!=='all'||tablesListState.tag!=='all';
   const _per=tablesListState.perPage, _total=filtered.length, _pages=Math.max(1,Math.ceil(_total/_per));
   const _page=Math.min(Math.max(1,tablesListState.page),_pages);
   const _vis=filtered.slice((_page-1)*_per,(_page-1)*_per+_per);
@@ -4352,6 +4386,7 @@ function renderTablesList(){
       ${dsfDrop('tblEntity','Entity', ec, [{label:'All entities',selected:tablesListState.entity==='all',onclick:"dsfPickSingle();tlEntity('all')"}].concat(ents.map(e=>({label:e.name,selected:tablesListState.entity===e.id,onclick:`dsfPickSingle();tlEntity('${e.id}')`}))))}
       ${dsfDrop('tblType','Type', tc, [{label:'All types',selected:tablesListState.type==='all',onclick:"dsfPickSingle();tlType('all')"},{label:'Primary',count:TABLES.filter(t=>t.role==='Primary').length,selected:tablesListState.type==='Primary',onclick:"dsfPickSingle();tlType('Primary')"},{label:'Secondary',count:TABLES.filter(t=>t.role==='Secondary').length,selected:tablesListState.type==='Secondary',onclick:"dsfPickSingle();tlType('Secondary')"}])}
       ${dsfDrop('tblStatus','Status', stc, [{label:'All statuses',selected:tablesListState.status==='all',onclick:"dsfPickSingle();tlStatus('all')"}].concat(['Published','Draft','Deprecated'].map(s=>({label:s,count:TABLES.filter(t=>t.status===s).length,selected:tablesListState.status===s,onclick:`dsfPickSingle();tlStatus('${s}')`}))))}
+      ${dsfDrop('tblTag','Tags', tgc, [{label:'All tags',selected:tablesListState.tag==='all',onclick:"dsfPickSingle();tlTag('all')"}].concat([...new Set(TABLES.flatMap(t=>t.tags||[]))].map(tg=>({label:tg,count:TABLES.filter(t=>(t.tags||[]).includes(tg)).length,selected:tablesListState.tag===tg,onclick:`dsfPickSingle();tlTag('${tg}')`}))))}
       <button class="flt-btn" onclick="openFilters('tables')"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 4h12M4 8h8M6 12h4"/></svg> Filters${_fltCount('tables')?` <span class="flt-badge">${_fltCount('tables')}</span>`:''}</button>
       ${filtering?`<button class="dsf-clear" onclick="tlClear()">Clear</button>`:''}
       <span class="tbar-spring"></span>
@@ -4866,7 +4901,8 @@ function openTblBulkDelete(id,n){
 }
 function dataTab(t){
   const s=dataState; const rows=_mockRows(t); const q=(s.search||'').toLowerCase(); const per=s.perPage||25;
-  const cols=t.cols; // A1: render all columns with lateral scroll (was slice(0,6))
+  const _dh=(dataState.hidden=dataState.hidden||{}); const hid=_dh[t.id]=_dh[t.id]||new Set();
+  const cols=t.cols.filter(c=>!hid.has(c.n)); // A1: render all columns with lateral scroll (was slice(0,6)); hidden columns excluded via the Columns chooser
   let filtered=q?rows.filter(r=>Object.values(r).some(v=>String(v).toLowerCase().includes(q))):rows.slice();
   const _cfs=Object.entries(s.colFilters||{}).filter(([,f])=>_cfActive(f)); // A4: per-column filters (AND across columns)
   if(_cfs.length) filtered=filtered.filter(r=>_cfs.every(([col,f])=>_matchColFilter(r[col],f)));
@@ -4887,6 +4923,7 @@ function dataTab(t){
      <div class="ttd-head-r">
        <span class="ttd-fresh">Updated ${escapeHtml(t.updated)}</span>
        <button class="tb-ico ttd-iconbtn" title="Refresh data" aria-label="Refresh" onclick="dataRefresh('${t.id}')"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3v3h-3M3 13v-3h3M13 6A5 5 0 0 0 4 4.5M3 10a5 5 0 0 0 9 1.5"/></svg></button>
+       <button class="tb-ico ttd-iconbtn" title="Columns" aria-label="Columns" onclick="_colChooser(this,'${t.id}')"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="2.5" width="11" height="11" rx="1.5"/><path d="M7 2.5v11M11 2.5v11"/></svg></button>
        <button class="tb-ico ttd-iconbtn" title="More" aria-label="More" onclick="_tblDataKebab(this,'${t.id}')"><svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><circle cx="3" cy="8" r="1.3"/><circle cx="8" cy="8" r="1.3"/><circle cx="13" cy="8" r="1.3"/></svg></button>
        <button class="btn btn-primary" style="height:34px" onclick="openAddRecord('${t.id}')"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M2 6h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg> Add record</button>
      </div>
@@ -4908,6 +4945,11 @@ function dataTab(t){
      <div class="ttd-pager"><button class="ttd-pg-btn" ${page<=1?'disabled':''} onclick="dataSetPage('${t.id}',${page-1})"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M10 4L6 8l4 4"/></svg> Previous</button><span class="ttd-pg-ind">Page ${page} of ${pages}</span><button class="ttd-pg-btn" ${page>=pages?'disabled':''} onclick="dataSetPage('${t.id}',${page+1})">Next <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4l4 4-4 4"/></svg></button></div>
    </div>`;
 }
+function _colChooser(btn,tid){ const t=_table(tid); if(!t) return; const _dh=(dataState.hidden=dataState.hidden||{}); const hid=_dh[tid]=_dh[tid]||new Set();
+  const html=t.cols.map(c=>`<button class="pop-item" onclick="_toggleCol('${tid}','${escapeHtml(c.n)}')"><span class="mv-check ${hid.has(c.n)?'':'on'}" style="pointer-events:none">${hid.has(c.n)?'':'<svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.5 3.5L13 4.5"/></svg>'}</span>${escapeHtml(c.d||c.n)}</button>`).join('');
+  _openPop(btn, html);
+}
+function _toggleCol(tid,name){ const _dh=(dataState.hidden=dataState.hidden||{}); const hid=_dh[tid]=_dh[tid]||new Set(); if(hid.has(name)) hid.delete(name); else hid.add(name); _closePop(); renderTableDetail(tid); }
 function openRecord(tid, idx){
   const t=_table(tid); const rows=_mockRows(t); const r=rows[idx]; if(!r) return;
   const allCols=SYSTEM_COLS.map(c=>({...c,system:true})).concat(t.cols);
@@ -5087,11 +5129,11 @@ function _originBadge(o){ return `<span class="chip">${o==='From catalog'?'<svg 
 function _refUsedBy(id){ const r=_ref(id); return (r&&r.usedBy)||[]; }
 
 /* Reference LIST */
-const refListState = { search:'', category:'all', status:'all', origin:'all', view:'list', page:1, perPage:9 };
+const refListState = { search:'', category:'all', status:'all', origin:'all', tag:'all', view:'list', page:1, perPage:9 };
 function rlSearch(v){ refListState.search=v; refListState.page=1; renderReferenceList(); setTimeout(()=>{const el=$('refSearch'); if(el){el.focus(); el.setSelectionRange(v.length,v.length);}},0); }
 function rlSet(k,v){ refListState[k]=v; if(k!=='page') refListState.page=1; renderReferenceList(); }
 function rlView(v){ refListState.view=v; _saveView('reference',v); renderReferenceList(); }
-function rlClear(){ refListState.category='all'; refListState.status='all'; refListState.origin='all'; refListState.tags=[]; refListState.page=1; renderReferenceList(); }
+function rlClear(){ refListState.category='all'; refListState.status='all'; refListState.origin='all'; refListState.tag='all'; refListState.tags=[]; refListState.page=1; renderReferenceList(); }
 function rlListPage(p){ refListState.page=p; renderReferenceList(); }
 function rlListPer(n){ refListState.perPage=+n; refListState.page=1; renderReferenceList(); }
 function _refFiltered(){
@@ -5100,6 +5142,7 @@ function _refFiltered(){
     if(refListState.category!=='all' && r.category!==refListState.category) return false;
     if(refListState.status!=='all' && r.status!==refListState.status) return false;
     if(refListState.origin!=='all' && r.origin!==refListState.origin) return false;
+    if(refListState.tag!=='all' && !(r.tags||[]).includes(refListState.tag)) return false;
     if(refListState.tags&&refListState.tags.length && !refListState.tags.some(x=>(r.tags||[]).includes(x))) return false;
     if(q && !(r.name.toLowerCase().includes(q)||r.id.toLowerCase().includes(q)||r.desc.toLowerCase().includes(q))) return false;
     return true;
@@ -5112,7 +5155,8 @@ function renderReferenceList(){
   const cc=refListState.category!=='all'?{label:refListState.category, onremove:"rlSet('category','all')"}:null;
   const stc=refListState.status!=='all'?{label:refListState.status, onremove:"rlSet('status','all')"}:null;
   const oc=refListState.origin!=='all'?{label:refListState.origin, onremove:"rlSet('origin','all')"}:null;
-  const filtering=refListState.category!=='all'||refListState.status!=='all'||refListState.origin!=='all';
+  const tgc=refListState.tag!=='all'?{label:refListState.tag, onremove:"rlSet('tag','all')"}:null;
+  const filtering=refListState.category!=='all'||refListState.status!=='all'||refListState.origin!=='all'||refListState.tag!=='all';
   const _per=refListState.perPage, _total=filtered.length, _pages=Math.max(1,Math.ceil(_total/_per));
   const _page=Math.min(Math.max(1,refListState.page),_pages);
   const _vis=filtered.slice((_page-1)*_per,(_page-1)*_per+_per);
@@ -5123,6 +5167,7 @@ function renderReferenceList(){
       ${dsfDrop('rlCat','Category', cc, [{label:'All categories',selected:refListState.category==='all',onclick:"dsfPickSingle();rlSet('category','all')"}].concat(cats.map(c=>({label:c,count:REFDATA.filter(r=>r.category===c).length,selected:refListState.category===c,onclick:`dsfPickSingle();rlSet('category','${c}')`}))))}
       ${dsfDrop('rlStatus','Status', stc, [{label:'All statuses',selected:refListState.status==='all',onclick:"dsfPickSingle();rlSet('status','all')"}].concat(['Published','Draft','Deprecated'].map(s=>({label:s,count:REFDATA.filter(r=>r.status===s).length,selected:refListState.status===s,onclick:`dsfPickSingle();rlSet('status','${s}')`}))))}
       ${dsfDrop('rlOrigin','Origin', oc, [{label:'All origins',selected:refListState.origin==='all',onclick:"dsfPickSingle();rlSet('origin','all')"}].concat(['Custom','From catalog'].map(o=>({label:o,count:REFDATA.filter(r=>r.origin===o).length,selected:refListState.origin===o,onclick:`dsfPickSingle();rlSet('origin','${o}')`}))))}
+      ${dsfDrop('rlTag','Tags', tgc, [{label:'All tags',selected:refListState.tag==='all',onclick:"dsfPickSingle();rlSet('tag','all')"}].concat([...new Set(REFDATA.flatMap(r=>r.tags||[]))].map(tg=>({label:tg,count:REFDATA.filter(r=>(r.tags||[]).includes(tg)).length,selected:refListState.tag===tg,onclick:`dsfPickSingle();rlSet('tag','${tg}')`}))))}
       <button class="flt-btn" onclick="openFilters('reference')"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 4h12M4 8h8M6 12h4"/></svg> Filters${_fltCount('reference')?` <span class="flt-badge">${_fltCount('reference')}</span>`:''}</button>
       ${filtering?`<button class="dsf-clear" onclick="rlClear()">Clear</button>`:''}
       <span class="tbar-spring"></span>
@@ -5792,11 +5837,11 @@ function viewToggle(state, fn){
 }
 
 /* Models render */
-const modelsState={ search:'', category:'all', origin:'all', status:'all', owner:'all', view:'grid', page:1, perPage:9, sortCol:'name', sortDir:'asc', sel:new Set() };
+const modelsState={ search:'', category:'all', origin:'all', status:'all', owner:'all', tag:'all', view:'grid', page:1, perPage:9, sortCol:'name', sortDir:'asc', sel:new Set() };
 function mSearch(v){ modelsState.search=v; modelsState.page=1; renderModels(); setTimeout(()=>{const el=$('mdlSearch'); if(el){el.focus(); el.setSelectionRange(v.length,v.length);}},0); }
 function mSet(k,v){ modelsState[k]=v; modelsState.page=1; renderModels(); }
 function mView(v){ modelsState.view=v; _saveView('models',v); renderModels(); }
-function mClear(){ modelsState.category='all'; modelsState.origin='all'; modelsState.status='all'; modelsState.owner='all'; modelsState.page=1; renderModels(); }
+function mClear(){ modelsState.category='all'; modelsState.origin='all'; modelsState.status='all'; modelsState.owner='all'; modelsState.tag='all'; modelsState.page=1; renderModels(); }
 function mSort(col){ if(modelsState.sortCol===col){ modelsState.sortDir=modelsState.sortDir==='asc'?'desc':'asc'; } else { modelsState.sortCol=col; modelsState.sortDir='asc'; } renderModels(); }
 function mPerPage(n){ modelsState.perPage=+n; modelsState.page=1; renderModels(); }
 function mTablePage(p){ modelsState.page=p; renderModels(); }
@@ -5813,6 +5858,7 @@ function _modelsFiltered(){
     if(modelsState.origin!=='all' && m.origin!==modelsState.origin) return false;
     if(modelsState.status!=='all' && m.status!==modelsState.status) return false;
     if(modelsState.owner!=='all' && m.owner!==modelsState.owner) return false;
+    if(modelsState.tag!=='all' && !(m.tags||[]).includes(modelsState.tag)) return false;
     if(q && !(m.name.toLowerCase().includes(q)||m.desc.toLowerCase().includes(q)||m.category.toLowerCase().includes(q))) return false;
     return true;
   });
@@ -5827,7 +5873,8 @@ function renderModels(){
   const oriChip=modelsState.origin!=='all'?{label:modelsState.origin,onremove:"mSet('origin','all')"}:null;
   const stChip=modelsState.status!=='all'?{label:modelsState.status,onremove:"mSet('status','all')"}:null;
   const ownChip=modelsState.owner!=='all'?{label:P(modelsState.owner).n,onremove:"mSet('owner','all')"}:null;
-  const filtering=modelsState.category!=='all'||modelsState.origin!=='all'||modelsState.status!=='all'||modelsState.owner!=='all';
+  const tagChip=modelsState.tag!=='all'?{label:modelsState.tag,onremove:"mSet('tag','all')"}:null;
+  const filtering=modelsState.category!=='all'||modelsState.origin!=='all'||modelsState.status!=='all'||modelsState.owner!=='all'||modelsState.tag!=='all';
   const _per=modelsState.perPage, _total=alpha.length, _pages=Math.max(1,Math.ceil(_total/_per));
   const _page=Math.min(Math.max(1,modelsState.page),_pages);
   const _vis=alpha.slice((_page-1)*_per,(_page-1)*_per+_per);
@@ -5844,6 +5891,7 @@ function renderModels(){
       ${dsfDrop('mOri','Origin',oriChip,[{label:'All origins',selected:modelsState.origin==='all',onclick:"dsfPickSingle();mSet('origin','all')"}].concat(['Custom','Implemented','Cloned'].map(o=>({label:o,count:MODELS.filter(m=>m.origin===o).length,selected:modelsState.origin===o,onclick:`dsfPickSingle();mSet('origin','${o}')`}))))}
       ${dsfDrop('mSt','Status',stChip,[{label:'All statuses',selected:modelsState.status==='all',onclick:"dsfPickSingle();mSet('status','all')"}].concat(['Published','Draft','Deprecated'].map(s=>({label:s,selected:modelsState.status===s,onclick:`dsfPickSingle();mSet('status','${s}')`}))))}
       ${dsfDrop('mOwn','Owner',ownChip,[{label:'All owners',selected:modelsState.owner==='all',onclick:"dsfPickSingle();mSet('owner','all')"}].concat(owners.map(o=>({label:P(o).n,selected:modelsState.owner===o,onclick:`dsfPickSingle();mSet('owner','${o}')`}))))}
+      ${dsfDrop('mTag','Tags',tagChip,[{label:'All tags',selected:modelsState.tag==='all',onclick:"dsfPickSingle();mSet('tag','all')"}].concat([...new Set(MODELS.flatMap(m=>m.tags||[]))].map(tg=>({label:tg,count:MODELS.filter(m=>(m.tags||[]).includes(tg)).length,selected:modelsState.tag===tg,onclick:`dsfPickSingle();mSet('tag','${tg}')`}))))}
       ${filtering?`<button class="dsf-clear" onclick="mClear()">Clear filters</button>`:''}
       <span class="tbar-spring"></span>
       ${viewToggle(modelsState,'mView')}
@@ -6385,19 +6433,65 @@ function _mdDiagram(m, md){
   </div>`;
 }
 
+/* ── Model DETAIL — Relationships tab (entity↔entity · list mode) ── */
+let _mdRelSearch='';
+function mdRelSearch(v){ _mdRelSearch=v; renderModelDetail(modelDetailState.id); _mdRefocus('mdRelSearch',v); }
+function _mdRelationshipsTab(m,md){
+  const ents=_modelEntities(m.id);
+  const rows=[]; ents.forEach(e=>{ (e.rels||[]).forEach((rel,idx)=>{ rows.push({e, r:_entRelEnrich(e,rel), idx}); }); });
+  const q=_mdRelSearch.trim().toLowerCase();
+  const shown=q?rows.filter(({r})=>(r.t||'').toLowerCase().includes(q)):rows;
+  const gt='grid-template-columns:minmax(0,1fr) minmax(0,1fr) 96px 100px 120px';
+  const toolbar=`<div class="tbar md-tbar">
+      <label class="dsf-search">${_MDIC.search}<input id="mdRelSearch" type="text" placeholder="Search related entity…" value="${escapeHtml(_mdRelSearch)}" oninput="mdRelSearch(this.value)" autocomplete="off"></label>
+      <span class="tbar-spring"></span>
+      <button class="btn btn-primary" onclick="_mdNewRel('${m.id}',this)">${_MDIC.plus} New relationship</button>
+    </div>`;
+  let body;
+  if(!rows.length) body=`<div class="empty"><div class="empty-t">No relationships yet</div>Connect two entities with a relationship to see it here.</div>`;
+  else if(!shown.length) body=`<div class="empty"><div class="empty-t">No relationships match</div>Try a different search.</div>`;
+  else body=`<div class="ttd-table"><div class="ttd-thead cv-thead" style="${gt}"><span class="cv-th">Source</span><span class="cv-th">Related</span><span class="cv-th">Cardinality</span><span class="cv-th">Strength</span><span class="cv-th">Direction</span></div>${shown.map(({e,r,idx})=>`<div class="ttd-tr cv-static" style="${gt};cursor:pointer" onclick="openEntRelForm('${e.id}',${idx})"><span class="cv-td"><span class="cv-field-d">${escapeHtml(e.name)}</span></span><span class="cv-td"><span class="cv-field-d">${escapeHtml(r.t)}</span></span><span class="cv-td"><span class="card-badge">${_cardShort(r.k)}</span></span><span class="cv-td">${r.s?'<span class="cv-yes">Strong</span>':'<span class="cv-no">Weak</span>'}</span><span class="cv-td">${escapeHtml(r.dir||'Uni')}</span></div>`).join('')}</div>`;
+  return toolbar+body;
+}
+function _mdNewRel(mid,btn){
+  const ents=_modelEntities(mid);
+  const html=ents.length
+    ? ents.map(e=>`<button class="pop-item" onclick="_closePop();openEntRelForm('${e.id}',null)">${_MDIC.ent} ${escapeHtml(e.name)}</button>`).join('')
+    : `<div style="padding:12px 14px;font-size:12px;color:var(--t3)">No entities in this model yet.</div>`;
+  _openPop(btn, html);
+}
+
+/* ── Model DETAIL — Reference Data tab (view + navigate) ── */
+let _mdRefSearch='';
+function mdRefSearch(v){ _mdRefSearch=v; renderModelDetail(modelDetailState.id); _mdRefocus('mdRefSearch',v); }
+function _mdRefLists(m){ let l=REFDATA.filter(r=>r.category===m.category); if(!l.length) l=REFDATA.slice(0,4); return l; }
+function _mdReferenceTab(m,md){
+  const lists=_mdRefLists(m);
+  const q=_mdRefSearch.trim().toLowerCase();
+  const shown=q?lists.filter(r=>r.name.toLowerCase().includes(q)||r.id.toLowerCase().includes(q)):lists;
+  const toolbar=`<div class="tbar md-tbar">
+      <label class="dsf-search">${_MDIC.search}<input id="mdRefSearch" type="text" placeholder="Search reference lists…" value="${escapeHtml(_mdRefSearch)}" oninput="mdRefSearch(this.value)" autocomplete="off"></label>
+    </div>`;
+  const note=`<div style="font-size:12px;color:var(--t2);margin:2px 0 12px">Reference lists used across this model.</div>`;
+  const body=shown.length
+    ? `<div class="lrows">${shown.map(r=>`<div class="lrow" onclick="navigate('reference/${r.id}')"><div class="lrow-top">${_catIcon(r.category)}<span class="lrow-title">${escapeHtml(r.name)}</span><code class="md-code">${escapeHtml(r.id)}</code><span class="lrow-right">${_stPill(r.status)}<span class="lrow-time">${escapeHtml(r.category)}</span></span></div></div>`).join('')}</div>`
+    : `<div class="empty"><div class="empty-t">No reference lists</div>None are associated with this model yet.</div>`;
+  return toolbar+note+body;
+}
+
 /* ── Model DETAIL — render ── */
 function renderModelDetail(id){
   const m=_model(id); if(!m){ location.hash='#/models'; return; }
   if(!m.internal) m.internal=_slug(m.name);
   _dsfRerender=()=>renderModelDetail(modelDetailState.id);
   const md=_md(m); const tab=modelDetailState.tab; const pending=m.status!=='Published';
-  const tabs=[['overview','Overview',null],['entities','Entities',md.counts.entities],['tables','Tables',md.counts.tables],['components','Components',md.counts.components]];
+  const tabs=[['overview','Overview',null],['entities','Entities',md.counts.entities],['tables','Tables',md.counts.tables],['relationships','Relationships',md.relations],['reference','Reference Data',_mdRefLists(m).length],['components','Components',md.counts.components]];
   const tabEff=(TAB_VER[tab] && SCOPE_TIERS.indexOf(TAB_VER[tab])>SCOPE_TIERS.indexOf(SCOPE))?'overview':tab; // gated model tab (Components=v2) → overview below its tier
   const acts=`<span class="md-userav" title="You">SB</span>
     <button class="btn md-hbtn" onclick="setModelTab('overview');modelDetailState.sec.about=true;renderModelDetail('${id}')">${_MDIC.edit} Edit</button>
     <button class="btn btn-primary md-hbtn" data-version="v1.5" onclick="publishModel('${id}')">${_MDIC.pub} Publish</button>
     <button class="md-icobtn" onclick="event.stopPropagation();openRowMenu('models','${id}',this)" aria-label="More actions">${_MDIC.dots}</button>`;
-  const body = tabEff==='entities'?_mdEntitiesTab(m,md) : tabEff==='tables'?_mdTablesTab(m,md) : tabEff==='components'?_mdComponentsTab(m,md) : _mdOverview(m,md);
+  const body = tabEff==='entities'?_mdEntitiesTab(m,md) : tabEff==='tables'?_mdTablesTab(m,md) : tabEff==='relationships'?_mdRelationshipsTab(m,md) : tabEff==='reference'?_mdReferenceTab(m,md) : tabEff==='components'?_mdComponentsTab(m,md) : _mdOverview(m,md);
   $('content').innerHTML=`
     <div class="md-crumbrow">${_crumbs([{label:'Models',href:'#/models'},{label:m.name}])}<div class="md-pageacts">${acts}</div></div>
     <div class="detail-head md-head"><div class="dh-l">
