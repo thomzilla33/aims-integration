@@ -6726,7 +6726,7 @@ function _mdEntitiesTab(m,md){
       <button class="btn btn-primary" onclick="_addEntityMenu('${m.id}',this)">${_MDIC.plus} Add entity ${_MDIC.chevd}</button>
     </div>${body}`;
 }
-function _mdEntClick(e){ return `mdSelectEnt('${modelDetailState.id}','${e.id}')`; }
+function _mdEntClick(e){ return _entById(e.id) ? `navigate('entities/${e.id}')` : `mdSelectEnt('${modelDetailState.id}','${e.id}')`; }
 function mdSelectEnt(mid,eid){ modelDetailState.tab='entities'; modelDetailState.ent.selEntId=eid; modelDetailState.ent.subtab='overview'; renderModelDetail(mid); }
 function mdBackToEntities(mid){ modelDetailState.ent.selEntId=null; renderModelDetail(mid); }
 function mdEntWsTab(mid,t){ modelDetailState.ent.subtab=t; renderModelDetail(mid); if(t==='diagram') setTimeout(_diagInit,0); }
@@ -6790,7 +6790,7 @@ function _mdwOverview(m,md,e){
       <span class="lrow-ic" style="width:34px;height:34px;flex-shrink:0">${_MDIC.ent}</span>
       <div style="flex:1;min-width:0"><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span class="dh-title" style="font-size:20px">${escapeHtml(e.name)}</span><span class="mdw-badges"><span class="chip">${escapeHtml(m.category)}</span>${_modelChip(m.id)}${e.pii?_piiBadge():''}</span></div>
         <div style="font-size:13px;color:var(--t2);line-height:1.6;margin-top:10px">${escapeHtml(e.desc)}</div>
-        <div class="lrow-foot" style="margin-left:0;margin-top:12px"><span class="lrow-owner">${av(P(e.owner),'sm')}${escapeHtml(P(e.owner).n)}</span>${stewards.length?`<span class="lrow-sep">·</span>${avStack(stewards,3)}<span style="font-size:12px;color:var(--t3)">+${stewards.length} steward${stewards.length===1?'':'s'}</span>`:''}<span class="lrow-sep">·</span><span style="font-size:12px;color:var(--t3)">Updated ${escapeHtml(e.updated)}</span></div>
+        <div class="lrow-foot" style="margin-left:0;margin-top:12px"><span class="lrow-owner">${av(P(e.owner),'sm')}${escapeHtml(P(e.owner).n)}</span><span class="lrow-sep">·</span><span style="font-size:12px;color:var(--t3)">Updated ${escapeHtml(e.updated)}</span></div>
       </div></div>
     <div data-version="v2"><div class="mdw-sec-t">Key metrics</div><div class="md-tiles mdw-metrics">${metrics.join('')}</div>
     ${_mdwActivity(m,e)}</div>`;
