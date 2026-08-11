@@ -1916,7 +1916,7 @@ html:not(.theme-light) .diag-legend{background:var(--surface-raised,#131C2E)}
 
 /* components tab */
 .md-comp{display:flex; flex-direction:column; gap:14px}
-.md-comp-tabs{display:flex; gap:6px; flex-wrap:wrap; border-bottom:1px solid var(--card-border,var(--line)); padding-bottom:10px}
+.md-comp-tabs{display:flex; gap:6px; flex-wrap:wrap; margin:6px 0 18px}
 .md-comp-tab{display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border:1px solid transparent; background:transparent; color:var(--t2); font-family:inherit; font-size:13px; font-weight:500; border-radius:9px; cursor:pointer}
 .md-comp-tab:hover{background:var(--hover); color:var(--t1)}
 .md-comp-tab.on{background:var(--tag-informative-bg,rgba(37,99,235,0.1)); color:var(--primary); font-weight:600}
@@ -7234,13 +7234,13 @@ function _mdComponentsTab(m,md){
         `<span class="mtbl-name">${escapeHtml(x.name)}</span>`, escapeHtml(_mdCompSub(st.sub,x)), escapeHtml(x.entity), `<span class="mtbl-inline">${av(P(x.owner),'sm')}${escapeHtml(P(x.owner).n)}</span>`]))
     : `<div class="mcard-grid md-comp-grid">${rows.map(x=>_mdCompCard(m.id,st.sub,x,data.indexOf(x))).join('')}</div>`;
   return `<div class="md-comp">
-    <div class="md-comp-tabs">${subs.map(([id,label,cnt])=>`<button class="md-comp-tab ${st.sub===id?'on':''}" onclick="mdComp('sub','${id}')"><span class="md-comp-navic">${_COMP_IC[id]}</span><span>${label}</span><span class="md-comp-navcnt">${cnt}</span></button>`).join('')}</div>
     <div class="md-comp-main">
       <div class="md-comp-head"><p>${escapeHtml(desc)}</p></div>
       <div class="tbar md-tbar">
         <label class="dsf-search">${_MDIC.search}<input id="mdCompSearch" type="text" placeholder="Search ${title.toLowerCase()}…" value="${escapeHtml(st.search)}" oninput="mdComp('search',this.value)" autocomplete="off"></label>
         ${dsfDrop('mdCompEn','Source entity',enChip,[{label:'All entities',selected:enSel==='all',onclick:"dsfPickSingle();mdComp('ent','all')"}].concat(ents.map(e=>({label:e,count:data.filter(x=>x.entity===e).length,selected:enSel===e,onclick:`dsfPickSingle();mdComp('ent','${_jsq(e)}')`}))))}
       </div>
+      <div class="md-comp-tabs">${subs.map(([id,label,cnt])=>`<button class="md-comp-tab ${st.sub===id?'on':''}" onclick="mdComp('sub','${id}')"><span class="md-comp-navic">${_COMP_IC[id]}</span><span>${label}</span><span class="md-comp-navcnt">${cnt}</span></button>`).join('')}</div>
       ${cards}</div></div>`;
 }
 const _COMP_SING={widgets:'widget',queries:'query',metrics:'metric',datasets:'dataset'};
