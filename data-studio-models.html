@@ -7240,9 +7240,6 @@ function _mdComponentsTab(m,md){
       <div class="tbar md-tbar">
         <label class="dsf-search">${_MDIC.search}<input id="mdCompSearch" type="text" placeholder="Search ${title.toLowerCase()}…" value="${escapeHtml(st.search)}" oninput="mdComp('search',this.value)" autocomplete="off"></label>
         ${dsfDrop('mdCompEn','Source entity',enChip,[{label:'All entities',selected:enSel==='all',onclick:"dsfPickSingle();mdComp('ent','all')"}].concat(ents.map(e=>({label:e,count:data.filter(x=>x.entity===e).length,selected:enSel===e,onclick:`dsfPickSingle();mdComp('ent','${_jsq(e)}')`}))))}
-        <span class="tbar-spring"></span>
-        ${_mdViewToggle2(st.view,'mdCompView')}
-        <button class="btn btn-primary" onclick="openMdAddComp('${m.id}')">${_MDIC.plus} Add ${_COMP_SING[st.sub]}</button>
       </div>
       ${cards}</div></div>`;
 }
