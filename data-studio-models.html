@@ -6278,7 +6278,7 @@ function _refItemsSection(r){
     <a class="pv-viewall" onclick="closeSlideout();navigate('reference/${r.id}');setTimeout(()=>setRefTab('data'),40)">View all items ›</a>`;
 }
 function openRefPreview(id){
-  if(SCOPE==='v1'){ navigate('reference/'+id); return; } // V1: card click → full detail (preview slideout is V1.2+)
+  navigate('reference/'+id); return; // card click → full detail, single click (all scopes; Edgardo: click → detail, not preview)
   const r=_ref(id); if(!r) return;
   const vals=r.values||[]; const active=vals.filter(v=>v.active).length;
   const stats=[['Items',vals.length],['Referenced by',r.referencedBy||0],['Active',active],['Fields',r.fields||_REF_SCHEMA.length]];
