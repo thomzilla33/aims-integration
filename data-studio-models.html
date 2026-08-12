@@ -7316,7 +7316,7 @@ function _mdEntitiesTab(m,md){
   const owners=[...new Set(md.ents.map(e=>e.owner))]; const rows=_mdEntFilter(md);
   const stc=st.status!=='all'?{label:st.status,onremove:"mdEnt('status','all')"}:null;
   const oc=st.owner!=='all'?{label:P(st.owner).n,onremove:"mdEnt('owner','all')"}:null;
-  const body = rows.length===0 ? `<div class="empty"><div class="empty-t">No entities match</div>Try a different search or clear the filters.</div>`
+  const body = rows.length===0 ? (md.ents.length===0 ? `<div class="empty"><div class="empty-t">No entities yet</div>Add your first entity to this model.</div>` : `<div class="empty"><div class="empty-t">No entities match</div>Try a different search or clear the filters.</div>`)
     : st.view==='table' ? _mdMiniTable(['Entity','Status','Tables','Columns','Owner','Updated'], rows.map(e=>[
         `<span class="mtbl-name">${escapeHtml(e.name)}${e.pii?' '+_piiBadge():''}</span>`, _stPill(e.status), e.tables, e.cols,
         `<span class="mtbl-inline">${av(P(e.owner),'sm')}${escapeHtml(P(e.owner).n)}</span>`, `<span class="mtbl-date">${escapeHtml(e.updated)}</span>`]))
@@ -7605,7 +7605,7 @@ function _mdTablesTab(m,md){
   const tc=st.type!=='all'?{label:st.type,onremove:"mdTbl('type','all')"}:null;
   const ec=st.entity!=='all'?{label:(ents.find(e=>e.id===st.entity)||{}).name||st.entity,onremove:"mdTbl('entity','all')"}:null;
   const stc=st.status!=='all'?{label:st.status,onremove:"mdTbl('status','all')"}:null;
-  const body = rows.length===0 ? `<div class="empty"><div class="empty-t">No tables match</div>Try a different search or clear the filters.</div>`
+  const body = rows.length===0 ? (md.tables.length===0 ? `<div class="empty"><div class="empty-t">No tables yet</div>Add your first table to this model.</div>` : `<div class="empty"><div class="empty-t">No tables match</div>Try a different search or clear the filters.</div>`)
     : st.view==='table' ? _mdMiniTable(['Table','Code','Entity','Type','Status','Columns','Updated'], rows.map(t=>[
         `<span class="mtbl-name">${escapeHtml(t.name)}</span>`, `<code class="md-code">${escapeHtml(t.code)}</code>`, escapeHtml(t.entity),
         `<span class="mini-badge ${t.role==='Primary'?'mb-primary':'mb-secondary'}">${escapeHtml(t.role)}</span>`, _stPill(t.status), t.cols, `<span class="mtbl-date">${escapeHtml(t.updated)}</span>`]))
@@ -8056,7 +8056,7 @@ function openCreateEntityModal(mid){
   $('modalScrim').innerHTML=`<div class="modal"><div class="modal-head"><div class="modal-ic" style="background:var(--tag-informative-bg);color:var(--tag-informative-fg);border-color:var(--tag-informative-bd)">${_MDIC.ent}</div><div class="modal-title">New entity</div></div>
     <div class="modal-body"><div class="mform">
       <div class="mfield"><label class="mfield-l">Name <span style="color:var(--field-text-error)">*</span></label><input class="minput" id="mde_name" placeholder="e.g. Contact" autocomplete="off"></div>
-      <div class="mrow"><div class="mfield"><label class="mfield-l">Owner</label><select class="mselect" id="mde_owner">${owners.map(k=>`<option value="${k}">${escapeHtml(P(k).n)}</option>`).join('')}</select></div>
+      <div class="mrow"><div class="mfield"><label class="mfield-l">Owner</label><select class="mselect" id="mde_owner">${owners.map(k=>`<option value="${k}" ${k==='sc'?'selected':''}>${escapeHtml(P(k).n)}${k==='sc'?' (You)':''}</option>`).join('')}</select></div>
         <div class="mfield"><label class="mfield-l">Status</label><select class="mselect" id="mde_status"><option>Draft</option><option>Published</option></select></div></div>
       <div class="mfield"><label class="mfield-l">Description <span style="color:var(--field-placeholder);font-weight:400">· required for the LLM</span></label><textarea class="mtextarea" id="mde_desc" placeholder="What this entity represents and who uses it."></textarea></div>
       <div class="mrow"><div class="mfield"><label class="mfield-l">Tables</label><select class="mselect" id="mde_tables"><option value="1">1 — primary only</option><option value="2">2 — primary + detail</option><option value="3">3 — primary + detail + link</option></select></div>
@@ -8073,7 +8073,7 @@ function openMdEntityForm(id,entId){
     <div class="so-body">
       ${_RIF('Name',null,`<input class="minput" id="mde_name" value="${e?escapeHtml(e.name):''}" placeholder="e.g. Contact" autocomplete="off">`,1,'string')}
       ${_RIF('Description',null,`<textarea class="mtextarea" id="mde_desc" placeholder="What this entity represents.">${e?escapeHtml(e.desc):''}</textarea>`)}
-      ${_RIF('Owner',null,`<select class="minput" id="mde_owner">${owners.map(k=>`<option value="${k}" ${e&&e.owner===k?'selected':''}>${escapeHtml(P(k).n)}</option>`).join('')}</select>`)}
+      ${_RIF('Owner',null,`<select class="minput" id="mde_owner">${owners.map(k=>`<option value="${k}" ${(e?e.owner===k:k==='sc')?'selected':''}>${escapeHtml(P(k).n)}${k==='sc'?' (You)':''}</option>`).join('')}</select>`)}
       ${_RIF('Status',null,`<select class="minput" id="mde_status">${['Draft','Published'].map(s=>`<option ${(e?e.status===s:s==='Draft')?'selected':''}>${s}</option>`).join('')}</select>`)}
       ${e?'':_RIF('Tables',null,`<select class="minput" id="mde_tables"><option value="1">1 — primary only</option><option value="2">2 — primary + detail</option><option value="3">3 — primary + detail + link</option></select>`,0,'1–3')}
       <label class="mde-check"><input type="checkbox" id="mde_pii" ${e&&e.pii?'checked':''}> Contains PII</label>
@@ -8276,7 +8276,7 @@ function openMdCompForm(id,sub,idx){
       ${_RIF('Name',null,`<input class="minput" id="mdk_name" value="${x?escapeHtml(x.name):''}" placeholder="e.g. Pipeline overview" autocomplete="off">`,1,'string')}
       ${_RIF('Source entity',null,`<select class="minput" id="mdk_entity">${ents.map(e=>`<option ${x&&x.entity===e?'selected':''}>${escapeHtml(e)}</option>`).join('')||'<option>—</option>'}</select>`)}
       ${extra}
-      ${_RIF('Owner',null,`<select class="minput" id="mdk_owner">${owners.map(k=>`<option value="${k}" ${x&&x.owner===k?'selected':''}>${escapeHtml(P(k).n)}</option>`).join('')}</select>`)}
+      ${_RIF('Owner',null,`<select class="minput" id="mdk_owner">${owners.map(k=>`<option value="${k}" ${(x?x.owner===k:k==='sc')?'selected':''}>${escapeHtml(P(k).n)}${k==='sc'?' (You)':''}</option>`).join('')}</select>`)}
     </div>
     <div class="so-foot"><button class="btn" onclick="closeSlideout()">Cancel</button><button class="btn btn-primary" onclick="saveMdComp('${id}','${sub}',${idx==null?'null':idx})">${_MDIC.plus}${x?'Save changes':'Add '+singular}</button></div>`;
   _soOpen(); setTimeout(()=>{const el=$('mdk_name'); if(el)el.focus();},60);
