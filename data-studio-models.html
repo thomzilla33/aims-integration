@@ -1066,7 +1066,7 @@ html.theme-light .tb-search kbd{background:rgba(15,23,42,0.05)}
 .main{flex:1; min-width:0; margin-left:266px; padding:24px clamp(24px,3vw,56px) 48px; max-width:2400px}
 
 /* ── MODELS SUB-NAV ── */
-.mtabs{display:flex; gap:2px; margin-bottom:18px; border-bottom:1px solid var(--line)}
+.mtabs{display:flex; gap:2px; margin-bottom:18px}  /* DS tabs: no full-width divider, only the active underline */
 .mtab{position:relative; padding:10px 16px; background:transparent; border:none; border-bottom:2px solid transparent; color:var(--field-supporting);
   font-family:inherit; font-size:14px; font-weight:500; cursor:pointer; margin-bottom:-1px; border-radius:8px 8px 0 0; transition:color .15s, background .15s}
 .mtab:hover{color:var(--foreground); background:var(--tabs-hover-bg)}
@@ -1863,6 +1863,11 @@ html:not(.theme-light) .diag-legend{background:var(--surface-raised,#131C2E)}
 
 /* About form */
 .md-about{display:flex; flex-direction:column; gap:16px; padding-top:6px}
+.md-sec-h-static{cursor:default}
+.md-ro{font-size:14px; color:var(--t1); padding:9px 0 4px; min-height:22px; line-height:1.5}
+.md-ro-desc{white-space:pre-wrap}
+.md-tagbox-ro{border:none; padding:6px 0 0; min-height:auto; display:flex; gap:6px; flex-wrap:wrap; background:none}
+.md-tag-chip-ro{display:inline-flex; align-items:center; height:24px; padding:0 10px; border-radius:8px; font-size:12px; font-weight:600; background:var(--tag-informative-bg); color:var(--tag-informative-fg); border:1px solid var(--tag-informative-bd)}
 .md-form-row{display:grid; grid-template-columns:1fr 1fr; gap:20px}
 .md-name-input{display:flex; align-items:center; border:1px solid var(--field-border); border-radius:9px; background:var(--field-bg); overflow:hidden}
 .md-name-pre{padding:0 2px 0 12px; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:13px; color:var(--t3)}
@@ -2673,7 +2678,7 @@ html:not(.theme-light) .er-card{fill:var(--surface-raised,#131C2E); stroke:var(-
 .mdw-head{display:flex; align-items:center; justify-content:space-between; gap:12px}
 .mdw-head-l{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
 .mdw-title{font-size:18px; font-weight:700; color:var(--t1)}
-.mdw-tabs{display:flex; gap:2px; border-bottom:1px solid var(--card-border,var(--line)); margin:12px 0 16px}
+.mdw-tabs{display:flex; gap:2px; margin:12px 0 16px}  /* DS sub-tabs: active underline only, no full-width divider */
 .mdw-tab{border:none; background:transparent; padding:9px 13px; font-size:13px; font-weight:600; color:var(--t3); cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-1px}
 .mdw-tab:hover{color:var(--t1)}
 .mdw-tab.on{color:var(--primary); border-bottom-color:var(--primary)}
@@ -6815,19 +6820,21 @@ function renderModelDetail(id){
   const md=_md(m); const tab=modelDetailState.tab; const pending=m.status!=='Published';
   const tabs=[['overview','Overview',null],['entities','Entities',md.counts.entities],['tables','Tables',md.counts.tables],['components','Components',md.counts.components]];
   const tabEff=(TAB_VER[tab] && SCOPE_TIERS.indexOf(TAB_VER[tab])>SCOPE_TIERS.indexOf(SCOPE))?'overview':tab; // gated model tab (Components=v2) → overview below its tier
-  const acts=`<span class="md-userav" title="You">SB</span>
-    <button class="btn md-hbtn" onclick="setModelTab('overview');modelDetailState.sec.about=true;renderModelDetail('${id}')">${_MDIC.edit} Edit</button>
-    <button class="btn btn-primary md-hbtn" data-version="v1.5" onclick="publishModel('${id}')">${_MDIC.pub} Publish</button>
-    <button class="md-icobtn" onclick="event.stopPropagation();openRowMenu('models','${id}',this)" aria-label="More actions">${_MDIC.dots}</button>`;
+  const editing=modelDetailState.editing;
+  // DS header actions — one prioritized set: primary Edit · gated Publish · secondary Settings · tertiary overflow menu (Open/Duplicate/Export/Delete)
+  const acts=`<button class="btn md-hbtn" data-version="v1.5" onclick="publishModel('${id}')">${_MDIC.pub} Publish</button>
+    <button class="btn btn-primary md-hbtn" onclick="mdToggleEdit('${id}')">${editing?'Done editing':`${_MDIC.edit} Edit`}</button>
+    <button class="btn md-settings md-hbtn" onclick="openModelSettings('${id}')">${_MDIC.gear} Settings</button>
+    <button class="md-icobtn" onclick="event.stopPropagation();_modelHeadMenu(this,'${id}')" aria-label="More actions">${_MDIC.dots}</button>`;
   const body = tabEff==='entities'?_mdEntitiesTab(m,md) : tabEff==='tables'?_mdTablesTab(m,md) : tabEff==='components'?_mdComponentsTab(m,md) : _mdOverview(m,md);
   $('content').innerHTML=`
-    <div class="md-crumbrow">${_crumbs([{label:'Models',href:'#/models'},{label:m.name}])}<div class="md-pageacts">${acts}</div></div>
+    <div class="md-crumbrow">${_crumbs([{label:'Models',href:'#/models'},{label:m.name}])}</div>
     <div class="detail-head md-head"><div class="dh-l">
       <div class="dh-title-row"><span class="dh-title">${escapeHtml(m.name)}</span>${_stPill(m.status)}<span class="chip md-origin-chip">${escapeHtml(m.origin)}</span></div>
       <div class="rfd-internal"><code>model.${escapeHtml(m.internal)}</code><span class="rfd-lock" title="Internal name — cannot be changed after creation"><svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="7" width="10" height="6" rx="1.3"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg></span></div>
       <div class="dh-desc" style="margin-top:8px">${escapeHtml(m.desc)}</div>
       <div class="md-meta"><span class="lrow-owner">${av(P(m.owner),'sm')}${escapeHtml(P(m.owner).n)}</span><span class="md-dot">·</span><span>${escapeHtml(m.origin)}</span>${m.tags&&m.tags.length?`<span class="md-dot">·</span>${m.tags.map(t=>`<span class="tag">${escapeHtml(t)}</span>`).join('')}`:''}</div>
-    </div><div class="dh-actions"><button class="btn md-settings" onclick="openModelSettings('${id}')">${_MDIC.gear} Settings</button><button class="btn" style="width:40px;padding:0" aria-label="More actions" onclick="_detailKebab(this,'models','${id}')"><svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><circle cx="3" cy="8" r="1.3"/><circle cx="8" cy="8" r="1.3"/><circle cx="13" cy="8" r="1.3"/></svg></button></div></div>
+    </div><div class="dh-actions">${acts}</div></div>
     <div class="mtabs md-tabs">${tabs.map(([tid,label,c])=>`<button class="mtab ${tabEff===tid?'active':''}" ${TAB_VER[tid]?`data-version="${TAB_VER[tid]}"`:''} onclick="setModelTab('${tid}')">${label}${c!=null?`<span class="mtab-c">${c}</span>`:''}</button>`).join('')}</div>
     <div id="mpanel">${body}</div>`;
   if(tab==='overview' && modelDetailState.sec.diagram && md.counts.entities) _diagInit();
@@ -6835,6 +6842,14 @@ function renderModelDetail(id){
   if(tab==='tables' && modelDetailState.tbl.selTblId && modelDetailState.tbl.subtab==='relationships') setTimeout(_diagInit,0);
 }
 function setModelTab(t){ modelDetailState.tab=t; _dsfOpen=null; if(t==='entities') modelDetailState.ent.selEntId=null; if(t==='tables') modelDetailState.tbl.selTblId=null; if(t==='components') modelDetailState.comp.selIdx=null; renderModelDetail(modelDetailState.id); }
+function mdToggleEdit(id){ modelDetailState.editing=!modelDetailState.editing; if(modelDetailState.editing) modelDetailState.tab='overview'; renderModelDetail(id); }
+/* Header overflow menu (DS): Open · Duplicate · Export · Delete — no red menu items per the DS menu component */
+function _modelHeadMenu(btn,id){ _openPop(btn, `
+  <button class="pop-item" onclick="_closePop();toast('Model opened','ok')">${_MDIC.open}Open</button>
+  <button class="pop-item" onclick="_closePop();_detailDup('models','${id}')"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="5" width="9" height="9" rx="1.5"/><path d="M11 5V3.5A1.5 1.5 0 0 0 9.5 2h-6A1.5 1.5 0 0 0 2 3.5v6A1.5 1.5 0 0 0 3.5 11H5"/></svg>Duplicate</button>
+  <button class="pop-item" onclick="_closePop();toast('Exported definition','ok')"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v8M5 7l3 3 3-3M3 13h10"/></svg>Export definition</button>
+  <div class="pop-sep"></div>
+  <button class="pop-item" onclick="_closePop();_detailDelete('models','${id}')"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h10M6 4V2.5h4V4M4.5 4l.5 9h6l.5-9"/></svg>Delete</button>`); }
 function mdSection(k){ modelDetailState.sec[k]=!modelDetailState.sec[k]; renderModelDetail(modelDetailState.id); }
 function publishModel(id){ const m=_model(id); if(m){ m.status='Published'; _mdReset(id); } toast('“'+(m?m.name:'Model')+'” published','ok'); renderModelDetail(id); }
 function openModelSettings(id){
@@ -6874,7 +6889,7 @@ function _mdSec(key,title,right,open,inner){
     <div class="md-sec-body">${inner}</div></section>`;
 }
 function _mdOverview(m,md){
-  const s=modelDetailState.sec;
+  const s=modelDetailState.sec; const editing=modelDetailState.editing;
   const tiles=[
     _mdTile(md.counts.entities,'Entities',_MDIC.ent,'entities'),
     _mdTile(md.counts.tables,'Tables',_MDIC.tbl,'tables'),
@@ -6883,7 +6898,7 @@ function _mdOverview(m,md){
     _mdTile(md.crossN,'Cross-model',_MDIC.open),
     `<div class="md-tile md-tile-pub"><div class="md-tile-l" style="margin:0 0 6px">Last published</div><div class="md-tile-pubv">1d ago · ${escapeHtml(P(m.owner).n)}</div>${md.draftEnts?`<a class="md-tile-warn" onclick="setModelTab('entities')">${_MDIC.warn}${md.draftEnts} draft entit${md.draftEnts===1?'y':'ies'} to publish</a>`:`<span class="md-tile-ok">All entities published</span>`}</div>`,
   ];
-  return `${_mdSec('about','About this model',`<span style="font-size:11.5px;color:var(--t3)">Changes save automatically</span>`,s.about,_mdAbout(m))}
+  return `<section class="md-sec"><div class="md-sec-h md-sec-h-static"><span class="md-sec-t">About this model</span>${editing?`<span style="font-size:11.5px;color:var(--t3)">Changes save automatically</span>`:''}</div><div class="md-sec-body">${_mdAbout(m)}</div></section>
     <div data-version="v2"><div class="md-tiles">${tiles.join('')}</div>
     ${_mdSec('diagram','Model diagram',`${md.counts.entities} entities · ${md.relations} relations`,s.diagram, md.counts.entities?_mdDiagram(m,md):'<div class="placeholder" style="padding:28px">No entities to diagram yet.</div>')}
     ${_mdSec('activity','Recent activity','',s.activity,_mdActivity(m,md))}</div>`;
@@ -6897,19 +6912,37 @@ function mdRemoveTag(id,t){ const m=_model(id); m.tags=(m.tags||[]).filter(x=>x!
 function mdSetOwner(id,k){ const m=_model(id); m.owner=k; _mdEdited(m); renderModelDetail(id); }
 function mdAddSteward(id){ const m=_model(id); m.collab=m.collab||[]; const avail=_mdOwners().filter(k=>k!==m.owner&&!m.collab.includes(k)); if(!avail.length){ toast('Everyone is already a steward'); return; } m.collab.push(avail[0]); _mdEdited(m); renderModelDetail(id); }
 function mdRemoveSteward(id,k){ const m=_model(id); m.collab=(m.collab||[]).filter(x=>x!==k); _mdEdited(m); renderModelDetail(id); }
+const _LOCK_IC='<span class="so-locked" style="font-weight:400"><svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="7" width="10" height="6" rx="1.3"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>locked</span>';
 function _mdAbout(m){
+  const editing=modelDetailState.editing;
   const over=(m.desc||'').length; const lim=180; const cls=over>lim?'over':'';
   const cats=[m.category].concat(MD_CATS.filter(c=>c!==m.category));
-  const stewards=(m.collab||[]);
+  const tags=(m.tags||[]);
+  if(!editing){
+    // Read-only view state: fields not editable, tags have no remove (×) action.
+    return `<div class="md-about">
+      <div class="md-form-row">
+        <div class="mfield"><label class="mfield-l">Display name</label><div class="md-ro">${escapeHtml(m.name)}</div></div>
+        <div class="mfield"><label class="mfield-l">Internal name ${_LOCK_IC}</label><div class="md-ro mono">model.${escapeHtml(m.internal||_slug(m.name))}</div></div>
+      </div>
+      <div class="mfield"><label class="mfield-l">Description</label><div class="md-ro md-ro-desc">${m.desc?escapeHtml(m.desc):'<span style="color:var(--t3)">No description.</span>'}</div></div>
+      <div class="md-form-row">
+        <div class="mfield"><label class="mfield-l">Category</label><div class="md-ro">${escapeHtml(m.category)}</div></div>
+        <div class="mfield"><label class="mfield-l">Tags</label><div class="md-tagbox md-tagbox-ro">${tags.length?tags.map(t=>`<span class="md-tag-chip md-tag-chip-ro">${escapeHtml(t)}</span>`).join(''):'<span style="color:var(--t3);font-size:13px">No tags</span>'}</div></div>
+      </div>
+      <div class="md-form-row">
+        <div class="mfield"><label class="mfield-l">Owner</label><div class="md-ro" style="display:flex;align-items:center;gap:8px">${av(P(m.owner),'sm')}${escapeHtml(P(m.owner).n)}</div></div>
+      </div></div>`;
+  }
   return `<div class="md-about">
     <div class="md-form-row">
       <div class="mfield"><label class="mfield-l">Display name</label><input class="minput" value="${escapeHtml(m.name)}" onchange="mdSetField('${m.id}','name',this.value)"></div>
-      <div class="mfield"><label class="mfield-l">Internal name <span class="so-locked" style="font-weight:400"><svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="7" width="10" height="6" rx="1.3"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>locked</span></label><div class="md-name-input"><span class="md-name-pre">model.</span><input class="minput md-name-mono" value="${escapeHtml(m.internal||_slug(m.name))}" disabled style="opacity:.65"></div></div>
+      <div class="mfield"><label class="mfield-l">Internal name ${_LOCK_IC}</label><div class="md-name-input"><span class="md-name-pre">model.</span><input class="minput md-name-mono" value="${escapeHtml(m.internal||_slug(m.name))}" disabled style="opacity:.65"></div></div>
     </div>
     <div class="mfield"><label class="mfield-l">Description</label><textarea class="mtextarea" oninput="_mdCount(this)" onchange="mdSetField('${m.id}','desc',this.value)">${escapeHtml(m.desc||'')}</textarea><div class="md-field-foot"><span class="md-field-hint">Feeds the catalog and agent context.</span><span class="md-count ${cls}" id="mdDescCount">${over} / ${lim}</span></div></div>
     <div class="md-form-row">
       <div class="mfield"><label class="mfield-l">Category</label><select class="mselect" onchange="mdSetField('${m.id}','category',this.value)">${cats.map(c=>`<option ${c===m.category?'selected':''}>${escapeHtml(c)}</option>`).join('')}</select></div>
-      <div class="mfield"><label class="mfield-l">Tags</label><div class="md-tagbox">${(m.tags||[]).map(t=>`<span class="md-tag-chip">${escapeHtml(t)}<button class="md-tag-x" onclick="mdRemoveTag('${m.id}','${escapeHtml(t)}')" aria-label="Remove ${escapeHtml(t)}">×</button></span>`).join('')}<input id="mdTagIn" class="md-tag-in" placeholder="Add tag…" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();mdAddTag('${m.id}',this.value)}"></div></div>
+      <div class="mfield"><label class="mfield-l">Tags</label><div class="md-tagbox">${tags.map(t=>`<span class="md-tag-chip">${escapeHtml(t)}<button class="md-tag-x" onclick="mdRemoveTag('${m.id}','${escapeHtml(t)}')" aria-label="Remove ${escapeHtml(t)}">×</button></span>`).join('')}<input id="mdTagIn" class="md-tag-in" placeholder="Add tag…" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();mdAddTag('${m.id}',this.value)}"></div></div>
     </div>
     <div class="md-form-row">
       <div class="mfield"><label class="mfield-l">Owner</label><select class="mselect" onchange="mdSetOwner('${m.id}',this.value)">${_mdOwners().map(k=>`<option value="${k}" ${k===m.owner?'selected':''}>${escapeHtml(P(k).n)}</option>`).join('')}</select></div>
