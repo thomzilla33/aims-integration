@@ -1546,6 +1546,7 @@ html.theme-light .vw-seg button.on{color:#fff}  /* keep white icon in light them
 
 /* ── Model card grid ── */
 .mcard-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:16px}
+.mcard-grid.mcard-list{grid-template-columns:1fr}  /* List view = single-column separated cards (Entity List pattern), visually distinct from the Table view */
 .mcard{display:flex; flex-direction:column; gap:12px; padding:18px; border:1px solid var(--card-border,var(--line)); border-radius:14px; background:var(--card-bg,var(--bg2)); cursor:pointer; transition:border-color .12s, box-shadow .12s, transform .12s, background .12s}
 html:not(.theme-light) .mcard{background:var(--surface-raised)}  /* DS card container: distinct surface, not blended with the page bg */
 /* DS Card-grid layout: title + State tag · subtitle · desc · colored-icon metadata row */
@@ -2490,7 +2491,7 @@ html:not(.theme-light) .ref-vals{background:var(--surface-raised,#131C2E)}
 .rfb-usage-l{font-size:11px; color:var(--t3)}
 
 /* ── DS Pagination component (port of design-system/pagination.tsx) ── */
-.pgn2{display:flex; width:100%; padding:8px 0; margin-top:8px}
+.pgn2{display:flex; width:100%; padding:10px 0; margin-top:8px; position:sticky; bottom:0; background:var(--canvas); border-top:1px solid var(--line); z-index:5}  /* sticky pagination on long list views */
 .pgn2-bar{display:flex; align-items:center; justify-content:space-between; width:100%; gap:24px; height:32px; padding:4px 10px;
   background:var(--surface-floating-default,var(--card-bg)); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
   border:1px solid var(--card-border,var(--line)); border-radius:6px}
@@ -2510,8 +2511,8 @@ html:not(.theme-light) .ref-vals{background:var(--surface-raised,#131C2E)}
 .pgn2-right{display:flex; align-items:center; gap:12px; flex-shrink:0}
 .pgn2-range{font-size:12px; font-weight:500; color:var(--t1); white-space:nowrap}
 .pgn2-nav{display:flex; align-items:center; gap:12px}
-.pgn2-btn{width:24px; height:24px; display:inline-flex; align-items:center; justify-content:center; border:none; background:none; border-radius:4px; color:var(--t2); cursor:pointer; padding:0; transition:background .12s ease}
-.pgn2-btn:hover:not([disabled]){background:var(--hover)}
+.pgn2-btn{width:28px; height:28px; display:inline-flex; align-items:center; justify-content:center; border:1px solid var(--field-border); background:var(--field-bg); border-radius:7px; color:var(--t2); cursor:pointer; padding:0; transition:background .12s ease, border-color .12s ease}  /* secondary CTA (audit A1) */
+.pgn2-btn:hover:not([disabled]){background:var(--hover); border-color:var(--field-border-hover,var(--line-strong)); color:var(--t1)}
 .pgn2-btn[disabled]{opacity:.35; cursor:not-allowed}
 
 /* ── Topbar notification count + account menu (DS TopbarRightMenu) ── */
@@ -4695,7 +4696,7 @@ function setTableTab(t){ if(t!=='columns'){ _colFilter.sel=null; _colFilter.edit
 /* ── shared Overview primitives (tiles + recent activity) ── */
 const _ICO_COLS='<svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2.5" y="2.5" width="11" height="11" rx="1.6"/><path d="M6.5 2.5v11M10 2.5v11"/></svg>';
 const _PLUS='<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M2 6h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
-function _ovTile(v,l,sub,ic){ return `<div class="md-tile"><div class="md-tile-top"><span class="md-tile-v">${v}</span><span class="md-tile-ic">${ic}</span></div><div class="md-tile-l">${escapeHtml(l)}</div>${sub?`<div class="md-tile-sub" style="font-size:11px;color:var(--t3);margin-top:4px">${escapeHtml(sub)}</div>`:''}</div>`; }
+function _ovTile(v,l,sub,ic){ return `<div class="md-tile"><div class="md-tile-top"><span class="md-tile-v">${v}</span>${_hlic(ic,'informative','md')}</div><div class="md-tile-l">${escapeHtml(l)}</div>${sub?`<div class="md-tile-sub" style="font-size:11px;color:var(--t3);margin-top:4px">${escapeHtml(sub)}</div>`:''}</div>`; }
 function _ovActivity(kind,o){
   const ev=_histEvents(kind,o).slice(0,4);
   const fn=kind==='table'?'setTableTab':kind==='entity'?'setDetailTab':'setRefTab';
@@ -6460,7 +6461,7 @@ function renderModels(){
   const body = modelsState.view==='table'
     ? modelTableView(filtered)
     : modelsState.view==='list'
-    ? (_total===0?`<div class="empty" style="padding:44px">No models match.</div>`:`<div class="dtable">${_vis.map(modelRow).join('')}</div>`+_lpgn)
+    ? (_total===0?`<div class="empty" style="padding:44px">No models match.</div>`:`<div class="mcard-grid mcard-list">${_vis.map(modelCard).join('')}</div>`+_lpgn)
     : (_total===0?`<div class="empty" style="padding:44px">No models match your filters.</div>`:`<div class="mcard-grid">${_vis.map(modelCard).join('')}</div>`+_lpgn);
   $('content').innerHTML = pageShell('models') + `
     <div class="tbar">
@@ -6538,7 +6539,6 @@ function modelTableView(filtered){
   if(total===0) return `<div class="empty" style="padding:44px">No models match your filters.</div>`;
   return `<div class="mtbl-wrap"><table class="mtbl">
     <thead><tr>
-      <th class="mtbl-th mtbl-cbcol">${cb(allSel,`mSelAll(${JSON.stringify(pageIds).replace(/"/g,'&quot;')})`)}</th>
       ${th('name','Name')}${th('origin','Origin')}
       <th class="mtbl-th">Description</th>
       ${th('entities','Entities')}${th('status','Status')}${th('owner','Owner')}${th('updated','Last modified')}
@@ -6546,7 +6546,6 @@ function modelTableView(filtered){
     </tr></thead>
     <tbody>
       ${vis.map(m=>`<tr class="mtbl-r" onclick="openModelPreview('${m.id}')">
-        <td class="mtbl-cbcol">${cb(modelsState.sel.has(m.id),`mSelToggle('${m.id}')`)}</td>
         <td class="mtbl-name">${escapeHtml(m.name)}${m.origin==='Implemented'?'<span class="mtbl-dot" title="Implemented from marketplace"></span>':''}</td>
         <td>${_origin(m.origin)}</td>
         <td class="mtbl-desc">${escapeHtml(m.desc)}</td>
