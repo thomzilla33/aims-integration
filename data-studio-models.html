@@ -2581,6 +2581,8 @@ html.theme-light .tb-tip{background:#fff}
 .sens.pub{background:var(--muted); color:var(--t3); border:1px solid var(--field-border)}
 .cstr-fk{display:inline-flex; align-items:center; gap:4px; font-size:10.5px; font-weight:700; padding:2px 7px; border-radius:6px; background:var(--tag-purple-bg); color:var(--tag-purple-fg); border:1px solid var(--tag-purple-bd); white-space:nowrap; font-family:ui-monospace,Menlo,monospace}
 .cstr-fk svg{width:11px; height:11px; opacity:.85}
+.cstr-pk{display:inline-flex; align-items:center; gap:4px; font-size:10.5px; font-weight:700; padding:2px 7px; border-radius:6px; background:var(--tag-informative-bg); color:var(--tag-informative-fg); border:1px solid var(--tag-informative-bd); white-space:nowrap; font-family:ui-monospace,Menlo,monospace}
+.cstr-pk svg{width:11px; height:11px; opacity:.85}
 /* Columns tab — hover tooltip */
 #colTip{position:fixed; z-index:120; display:none; pointer-events:none; min-width:220px; max-width:320px; background:var(--surface-floating-default,var(--bg2)); border:1px solid var(--line-strong,var(--line)); border-radius:12px; box-shadow:0 16px 42px rgba(0,0,0,0.42); padding:13px 15px; backdrop-filter:blur(24px) saturate(1.4)}
 html.theme-light #colTip{background:#fff; box-shadow:0 12px 34px rgba(15,23,42,.14)}
@@ -4727,6 +4729,7 @@ function _fkTarget(c){
 }
 function _colConstraints(c){
   const parts=[];
+  if(c.pk) parts.push('<span class="cstr-pk"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="10" r="2.6"/><path d="M7.9 8.1l5.1-5.1M11 3l2 2M9.4 4.6l1.6 1.6"/></svg>PK</span>');
   if(c.t==='Reference'){ const tgt=_fkTarget(c); parts.push(`<span class="cstr-fk">${_HIC.link}FK${tgt?' → '+escapeHtml(tgt):''}</span>`); }
   if(c.uq) parts.push('<span class="flag on">Unique</span>');
   if(c.idx) parts.push('<span class="flag on">Index</span>');
@@ -4754,8 +4757,18 @@ function _colTipShow(rowEl){
   el.style.left=left+'px'; el.style.top=top+'px';
 }
 function _colTipHide(){ const el=$('colTip'); if(el) el.style.display='none'; }
+/* Column authoring works on both Tables (t.cols) and Reference lists (r.cols) — resolve the host object + its re-render generically so openColumn/edit/dup/delete/create work for either. */
+function _colObj(id){ return _table(id) || _ref(id); }
+function _colRerender(id){ if(_table(id)) renderTableDetail(id); else renderReferenceDetail(id); }
+function _refSeedCols(){ return [
+  {n:'label',       d:'Label',       t:'Text', req:1, desc:'Human-readable label shown in the UI and to the LLM.'},
+  {n:'code',        d:'Code',        t:'Text', pk:1, req:1, desc:'Stable internal code — safe to reference from other tables; never renamed.'},
+  {n:'description', d:'Description', t:'Text', desc:'What this value means — required so the LLM can reason about it.'},
+  {n:'status',      d:'Status',      t:'Enum', req:1, ev:[EV('Active','Active',''),EV('Deprecated','Deprecated',''),EV('Archived','Archived','')], desc:'Lifecycle state — Active values are selectable; Deprecated and Archived are kept for history.'},
+]; }
+function _refListCols(r){ if(!r.cols) r.cols=_refSeedCols(); return r.cols; }
 function _colRowMenu(tableId, colName, btn){
-  const t=_table(tableId); const c=t?t.cols.find(x=>x.n===colName):null; if(!c) return;
+  const t=_colObj(tableId); const c=t?t.cols.find(x=>x.n===colName):null; if(!c) return;
   const _cp='<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="5" width="9" height="9" rx="1.5"/><path d="M11 5V3.5A1.5 1.5 0 0 0 9.5 2h-6A1.5 1.5 0 0 0 2 3.5v6A1.5 1.5 0 0 0 3.5 11H5"/></svg>';
   _mdKebab(btn,[
     {ic:_MDIC.open, label:'Open',      act:`openColumn('${tableId}','${colName}')`},
@@ -4833,7 +4846,7 @@ function columnRow(t,c){
 
 /* Column detail slide-out */
 function openColumn(tableId, colName){
-  const t=_table(tableId); const c=t.cols.find(x=>x.n===colName); if(!c) return;
+  const t=_colObj(tableId); if(!t) return; const c=t.cols.find(x=>x.n===colName); if(!c) return;
   const flags=[c.pk&&'Primary',c.uq&&'Unique',c.req&&'Mandatory',c.idx&&'Indexed'].filter(Boolean);
   const yn=(v)=>v?'<span style="color:var(--tag-success-fg)">Yes</span>':'<span style="color:var(--field-placeholder)">No</span>';
   $('slideout').innerHTML=`
@@ -4861,22 +4874,22 @@ function openColumn(tableId, colName){
     <div class="so-foot"><button class="btn btn-danger" style="margin-right:auto" onclick="confirmDeleteColumn('${tableId}','${colName}')">${_RM_IC.del} Delete</button><button class="btn" onclick="_dupColumn('${tableId}','${colName}')">Duplicate</button><button class="btn" onclick="closeSlideout()">Close</button><button class="btn btn-primary" onclick="openEditColumn('${tableId}','${colName}')">Edit column</button></div>`;
   _soOpen();
 }
-function confirmDeleteColumn(tableId,colName){ const t=_table(tableId); const c=t?t.cols.find(x=>x.n===colName):null; if(!c) return;
+function confirmDeleteColumn(tableId,colName){ const t=_colObj(tableId); const c=t?t.cols.find(x=>x.n===colName):null; if(!c) return;
   if(c.pk){ toast('Can’t delete the primary key column'); return; }
   $('modalScrim').innerHTML=`<div class="modal"><div class="modal-head"><div class="modal-ic" style="background:var(--tag-error-bg,rgba(224,82,82,0.14));color:var(--tag-error-fg,#f87171);border-color:var(--tag-error-bd,rgba(224,82,82,0.3))">${_RM_IC.del}</div><div class="modal-title">Delete “${escapeHtml(c.d)}”?</div></div>
     <div class="modal-body">This drops the column <code>${escapeHtml(t.id)}.${escapeHtml(c.n)}</code> from the schema. On publish it runs against the physical tenant table and <b>can't be undone</b>.</div>
     <div class="modal-foot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-danger" onclick="_deleteColumn('${tableId}','${colName}')">Delete column</button></div></div>`;
   _modalOpen();
 }
-function _deleteColumn(tableId,colName){ const t=_table(tableId); if(!t) return; const c=t.cols.find(x=>x.n===colName); const nm=c?c.d:colName;
-  t.cols=t.cols.filter(x=>x.n!==colName); t.rels=(t.rels||[]).filter(r=>r.via!==colName); t._rows=null;
-  if(t.status==='Published') t.status='Draft'; closeModal(); closeSlideout(); toast('Column “'+nm+'” deleted','ok'); renderTableDetail(tableId);
+function _deleteColumn(tableId,colName){ const t=_colObj(tableId); if(!t) return; const c=t.cols.find(x=>x.n===colName); const nm=c?c.d:colName;
+  t.cols=t.cols.filter(x=>x.n!==colName); if(t.rels) t.rels=t.rels.filter(r=>r.via!==colName); t._rows=null;
+  if(t.status==='Published') t.status='Draft'; closeModal(); closeSlideout(); toast('Column “'+nm+'” deleted','ok'); _colRerender(tableId);
 }
-function _dupColumn(tableId,colName){ const t=_table(tableId); if(!t) return; const i=t.cols.findIndex(x=>x.n===colName); if(i<0) return; const c=t.cols[i];
+function _dupColumn(tableId,colName){ const t=_colObj(tableId); if(!t) return; const i=t.cols.findIndex(x=>x.n===colName); if(i<0) return; const c=t.cols[i];
   let base=c.n+'_copy', n=base, k=2; while(t.cols.some(x=>x.n===n)) n=base+'_'+(k++);
   const dup={...c, n, d:(c.d||c.n)+' (copy)', pk:false, uq:false}; // a copy is never the PK and starts non-unique to avoid clashes
   t.cols=[...t.cols.slice(0,i+1), dup, ...t.cols.slice(i+1)]; t._rows=null;
-  if(t.status==='Published') t.status='Draft'; closeSlideout(); toast('Column “'+(c.d||c.n)+'” duplicated','ok'); renderTableDetail(tableId);
+  if(t.status==='Published') t.status='Draft'; closeSlideout(); toast('Column “'+(c.d||c.n)+'” duplicated','ok'); _colRerender(tableId);
 }
 
 /* Create / edit column (modal + pre-save safety) */
@@ -4886,7 +4899,7 @@ let _ncEdited=false;
 function openCreateColumn(id){
   const t=_table(id); const r=t?null:_ref(id); const obj=t||r; if(!obj) return;
   _ncEdited=false;
-  const internal = t ? (t.code||t.id) : r.id;
+  const internal = t ? (t.code||t.id) : _refInternal(r);
   const info='<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 7.2v3.4M8 5.2h.01" stroke-linecap="round"/></svg>';
   const TYPES=['text','integer','decimal','boolean','date','timestamp','uuid','enum','reference','json','geo_point'];
   $('slideout').innerHTML=`
@@ -4909,18 +4922,19 @@ function _ncInternalIn(){ _ncEdited=true; _ncCheck(); }
 function _ncCheck(){ const d=$('ncDisplay'),i=$('ncInternal'),ty=$('ncType'),de=$('ncDesc'),b=$('ncCreate'),cnt=$('ncCount'); if(!b) return; if(cnt&&de) cnt.textContent=de.value.length+' chars'; const ok=!!(d&&i&&ty&&de&&d.value.trim()&&i.value.trim()&&ty.value&&de.value.trim()); b.disabled=!ok; }
 function _capColType(v){ return ({text:'Text',integer:'Integer',decimal:'Decimal',boolean:'Boolean',date:'Date',timestamp:'Timestamp',uuid:'UUID',enum:'Enum',reference:'Reference',json:'JSON',geo_point:'Geo point'})[v]||'Text'; }
 function _createColumn(id){
-  const t=_table(id); const r=t?null:_ref(id); const obj=t||r; if(!obj) return;
+  const obj=_colObj(id); if(!obj) return;
+  const cols = obj.cols || _refListCols(obj);   // reference lists seed their columns on first authoring
   const disp=($('ncDisplay').value||'').trim();
   const internal=($('ncInternal').value||'').trim().toLowerCase().replace(/\s+/g,'_');
   const typeRaw=$('ncType').value; const desc=($('ncDesc').value||'').trim();
   if(!disp||!internal||!typeRaw||!desc){ toast('Fill in all required fields'); return; }
-  if(t && t.cols.find(c=>c.n===internal)){ toast('A column with that name already exists'); return; }
+  if(cols.find(c=>c.n===internal)){ toast('A column with that name already exists'); return; }
   const col={ n:internal, d:disp, t:_capColType(typeRaw), req:false, uq:false, idx:false, pk:false, desc };
-  if(t){ t.cols.push(col); if(t.status==='Published') t.status='Draft'; closeSlideout(); toast('Column “'+disp+'” added','ok'); renderTableDetail(id); }
-  else { closeSlideout(); toast('Column “'+disp+'” added','ok'); renderReferenceDetail(id); }
+  cols.push(col); obj._rows=null; if(obj.status==='Published') obj.status='Draft';
+  closeSlideout(); toast('Column “'+disp+'” added','ok'); _colRerender(id);
 }
 function openEditColumn(tableId, colName){
-  const t=_table(tableId); const c=t.cols.find(x=>x.n===colName); if(!c) return;
+  const t=_colObj(tableId); if(!t) return; const c=t.cols.find(x=>x.n===colName); if(!c) return;
   $('modalScrim').innerHTML=`<div class="modal"><div class="modal-head"><div class="modal-ic" style="background:var(--tag-informative-bg);color:var(--tag-informative-fg);border-color:var(--tag-informative-bd)"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M11 2.5l2.5 2.5L6 12.5 3 13l.5-3L11 2.5Z" stroke-linejoin="round"/></svg></div><div class="modal-title">Edit ${escapeHtml(c.d)}</div></div>
     <div class="modal-body"><div class="mform">
       <div class="mfield"><label class="mfield-l">Internal name <span class="so-locked" style="font-weight:400">· locked</span></label><input class="minput" value="${escapeHtml(c.n)}" disabled style="opacity:.6"></div>
@@ -4935,12 +4949,12 @@ function openEditColumn(tableId, colName){
   _modalOpen();
 }
 function saveColumn(tableId, colName){
-  const t=_table(tableId); const c=t.cols.find(x=>x.n===colName); if(!c) return;
+  const t=_colObj(tableId); if(!t) return; const c=t.cols.find(x=>x.n===colName); if(!c) return;
   const nt=$('ecType').value; const orig=c.t;
   const apply=()=>{
     c.d=($('ecDisp').value||c.d).trim(); c.t=nt; c.sens=$('ecSens').value||null; c.desc=($('ecDesc').value||'').trim();
     c.pk=$('ecPk').checked||undefined; c.uq=$('ecUq').checked||undefined; c.req=$('ecReq').checked||undefined; c.idx=$('ecIdx').checked||undefined;
-    if(t.status==='Published') t.status='Draft'; closeModal(); toast('Column “'+c.d+'” updated','ok'); renderTableDetail(tableId);
+    if(t.status==='Published') t.status='Draft'; closeModal(); toast('Column “'+c.d+'” updated','ok'); _colRerender(tableId);
   };
   if(nt!==orig){
     // Pre-save safety check on type change
@@ -5563,7 +5577,7 @@ function renderReferenceDetail(id){
   const used=_refUsedBy(id);
   const pending = r.status!=='Published';
   const relN = r.referencedBy>0?1:0;
-  const cnt={ overview:null, data:r.values.length, refby:(r.referencedBy||used.length), columns:r.fields, relationships:relN, history:null, settings:null };
+  const cnt={ overview:null, data:r.values.length, refby:(r.referencedBy||used.length), columns:_refListCols(r).length, relationships:relN, history:null, settings:null };
   const tabs=[['overview','Overview'],['data','Data'],['refby','Referenced by'],['columns','Columns'],['relationships','Relationships'],['history','History'],['settings','Settings']];
   $('content').innerHTML=`
     ${_crumbs([{label:'Models',href:'#/models'},{label:'Reference Data',href:'#/reference'},{label:r.name}])}
@@ -5693,8 +5707,7 @@ function refSettingsTab(r){
 function refSetName(id,v){ const r=_ref(id); if(!r) return; v=(v||'').trim(); if(!v) return; if(!r.internal) r.internal=_refInternal(r); /* pin internal before rename — it's locked */ r.name=v; if(r.status==='Published') r.status='Draft'; renderReferenceDetail(id); }
 function refArchive(id){ const r=_ref(id); if(!r) return; r.status=r.status==='Deprecated'?'Draft':'Deprecated'; toast(r.status==='Deprecated'?'“'+r.name+'” deprecated':'“'+r.name+'” restored','ok'); renderReferenceDetail(id); }
 function refColumnsTab(r){
-  const schema=REF_SCHEMA.slice(0, r.fields||REF_SCHEMA.length);
-  return _colsView('reference', r, schema, false);
+  return _colsView('reference', r, _refListCols(r), true);   // reference columns author exactly like Tables (Add column · detail · edit · duplicate · delete)
 }
 function refRelationshipsTab(r,used){
   const shown=used.slice(0,6); const more=(r.referencedBy||used.length)-shown.length;
@@ -5811,7 +5824,7 @@ function openRefValue(refId, code){
         <div class="so-field"><span class="so-field-l">Valid to</span><span class="so-field-v">${escapeHtml(v.valid_to||'—')}</span></div>
       </div><div style="font-size:12px;color:var(--field-text);margin-top:10px;line-height:1.5">${escapeHtml(v.description||'No description.')}</div></div>
     </div>
-    <div class="so-foot"><button class="btn" onclick="toggleRefValueActive('${refId}','${escapeHtml(v.code)}')">${v.active?'Deactivate':'Reactivate'}</button><button class="btn" style="color:var(--field-text-error,#dc2626)" onclick="openRefItemDelete('${refId}','${escapeHtml(v.code)}')">Delete</button><span style="flex:1"></span><button class="btn btn-primary" onclick="openEditRefValue('${refId}','${escapeHtml(v.code)}')">Edit item</button></div>`;
+    <div class="so-foot"><button class="btn btn-danger" style="margin-right:auto" onclick="openRefItemDelete('${refId}','${escapeHtml(v.code)}')">${_RM_IC.del} Delete</button><button class="btn" onclick="toggleRefValueActive('${refId}','${escapeHtml(v.code)}')">${v.active?'Deactivate':'Reactivate'}</button><button class="btn" onclick="_dupRefItem('${refId}','${escapeHtml(v.code)}')">Duplicate</button><button class="btn btn-primary" onclick="openEditRefValue('${refId}','${escapeHtml(v.code)}')">Edit item</button></div>`;
   _soOpen();
 }
 function openRefItemDelete(refId, code){
@@ -5822,6 +5835,7 @@ function openRefItemDelete(refId, code){
   _modalOpen();
 }
 function _delRefItem(refId,code){ const r=_ref(refId); r.values=r.values.filter(v=>v.code!==code); if(r.status==='Published') r.status='Draft'; closeModal(); toast('Item deleted','ok'); renderReferenceDetail(refId); }
+function _dupRefItem(refId,code){ const r=_ref(refId); const vals=r.values; const i=vals.findIndex(x=>x.code===code); if(i<0) return; const src=vals[i]; let base=code+'_copy',u=base,k=2; while(vals.find(x=>x.code===u)) u=base+'_'+(k++); const clone=JSON.parse(JSON.stringify(src)); clone.code=u; clone.label=src.label+' (copy)'; vals.splice(i+1,0,clone); if(r.status==='Published') r.status='Draft'; closeSlideout(); toast('Item duplicated','ok'); renderReferenceDetail(refId); }
 function toggleRefValueActive(refId, code){
   const r=_ref(refId); const v=r.values.find(x=>x.code===code); if(!v) return;
   v.active=!v.active; if(r.status==='Published') r.status='Draft'; closeSlideout(); toast('“'+v.label+'” '+(v.active?'reactivated':'deactivated'),'ok'); renderReferenceDetail(refId);
