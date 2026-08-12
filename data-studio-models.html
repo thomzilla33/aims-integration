@@ -1901,11 +1901,31 @@ html:not(.theme-light) .diag-legend{background:var(--surface-raised,#131C2E)}
 /* sub-tab toolbar */
 .md-tbar{margin-bottom:18px}
 .md-pii-toggle{display:inline-flex; align-items:center; gap:6px; height:36px; padding:0 12px; border:1px solid var(--field-border); background:var(--field-bg); color:var(--t2); border-radius:9px; font-size:13px; font-weight:500; cursor:pointer}
+/* Quick-filter chips — separate row from dropdown filters (chip pattern, "All" default) */
+.md-qfilters{display:flex; align-items:center; gap:8px; margin:0 0 18px}
+.qf-chip{display:inline-flex; align-items:center; gap:5px; height:28px; padding:0 12px; border:1px solid var(--field-border); background:transparent; color:var(--t2); border-radius:999px; font-size:12.5px; font-weight:600; cursor:pointer; transition:all .12s}
+.qf-chip svg{width:12px; height:12px}
+.qf-chip:hover{border-color:var(--field-border-hover); color:var(--t1)}
+.qf-chip.on{background:var(--tag-informative-bg); border-color:var(--tag-informative-bd); color:var(--tag-informative-fg)}
 .md-pii-toggle:hover{color:var(--t1)}
 .md-pii-toggle.on{color:var(--tag-alert-fg,#d08700); border-color:var(--tag-alert-bd,rgba(208,135,0,0.4)); background:var(--tag-alert-bg,rgba(208,135,0,0.1))}
 
 /* PII badge */
-.pii-badge{display:inline-flex; align-items:center; gap:3px; font-size:10px; font-weight:700; letter-spacing:.02em; color:var(--tag-alert-fg,#d08700); background:var(--tag-alert-bg,rgba(208,135,0,0.12)); border-radius:6px; padding:2px 6px}
+.pii-badge{display:inline-flex; align-items:center; gap:3px; font-size:10px; font-weight:700; letter-spacing:.02em; color:var(--tag-alert-fg,#d08700); background:var(--tag-alert-bg,rgba(208,135,0,0.12)); border:1px solid var(--tag-alert-bd,#f59e0b); border-radius:6px; padding:2px 6px}
+/* DS ModalDialog — confirmation variant: HighlightIcon circle + centered title/description */
+.modal.ds-dialog{max-width:420px; text-align:center; position:relative; padding:28px 26px 22px}
+.ds-dialog-x{position:absolute; top:14px; right:14px; width:28px; height:28px; border:none; background:transparent; color:var(--t3); font-size:15px; border-radius:7px; cursor:pointer; display:inline-flex; align-items:center; justify-content:center}
+.ds-dialog-x:hover{background:var(--muted); color:var(--t1)}
+.ds-dialog-ic{width:44px; height:44px; border-radius:10px; display:inline-flex; align-items:center; justify-content:center; margin:0 auto 14px}
+.ds-dialog-ic svg{width:22px; height:22px}
+.ds-ic-alert{background:var(--tag-alert-bg); color:var(--tag-alert-fg)}
+.ds-ic-error{background:var(--tag-error-bg); color:var(--tag-error-fg)}
+.ds-ic-informative{background:var(--tag-informative-bg); color:var(--tag-informative-fg)}
+.ds-ic-success{background:var(--tag-success-bg); color:var(--tag-success-fg)}
+.ds-dialog-title{font-size:17px; font-weight:700; color:var(--t1); margin-bottom:8px; line-height:1.3}
+.ds-dialog-desc{font-size:13.5px; color:var(--t2); line-height:1.55; margin-bottom:20px}
+.ds-dialog-foot{display:flex; gap:10px; justify-content:center}
+.ds-dialog-foot .btn{flex:1; justify-content:center}
 
 /* entity / table / component grids in the model detail reuse the shared .mcard (DS Card-grid) */
 
@@ -7121,11 +7141,11 @@ function _mdEntitiesTab(m,md){
       <label class="dsf-search">${_MDIC.search}<input id="mdEntSearch" type="text" placeholder="Search entities…" value="${escapeHtml(st.search)}" oninput="mdEnt('search',this.value)" autocomplete="off"></label>
       ${dsfDrop('mdEntSt','Status',stc,[{label:'All statuses',selected:st.status==='all',onclick:"dsfPickSingle();mdEnt('status','all')"}].concat(['Published','Draft'].map(x=>({label:x,selected:st.status===x,onclick:`dsfPickSingle();mdEnt('status','${x}')`}))))}
       ${dsfDrop('mdEntOw','Owner',oc,[{label:'All owners',selected:st.owner==='all',onclick:"dsfPickSingle();mdEnt('owner','all')"}].concat(owners.map(o=>({label:P(o).n,selected:st.owner===o,onclick:`dsfPickSingle();mdEnt('owner','${o}')`}))))}
-      <button class="md-pii-toggle ${st.pii?'on':''}" onclick="mdEnt('pii',${st.pii?'false':'true'})">${_MDIC.lock} PII</button>
       <span class="tbar-spring"></span>
       ${viewToggle(st,'mdEntView')}
       <button class="btn btn-primary" onclick="_addEntityMenu('${m.id}',this)">${_MDIC.plus} Add entity ${_MDIC.chevd}</button>
-    </div>${body}`;
+    </div>
+    <div class="md-qfilters"><button class="qf-chip ${!st.pii?'on':''}" onclick="mdEnt('pii',false)">All</button><button class="qf-chip ${st.pii?'on':''}" onclick="mdEnt('pii',true)">${_MDIC.lock} PII</button></div>${body}`;
 }
 function _mdEntClick(e){ return _entById(e.id) ? `navigate('entities/${e.id}')` : `mdSelectEnt('${modelDetailState.id}','${e.id}')`; }
 function mdSelectEnt(mid,eid){ modelDetailState.tab='entities'; modelDetailState.ent.selEntId=eid; modelDetailState.ent.subtab='overview'; renderModelDetail(mid); }
@@ -7928,14 +7948,23 @@ function mdEntMenu(id,entId,btn){ const e=_mdEnt(id,entId); if(!e) return;
     {ic:_RM_IC.open,label:'Open full entity',act:`openMdEntityFull('${id}','${entId}')`},
     {ic:_MDIC.edit,label:'Edit',act:`openMdEditEntity('${id}','${entId}')`},
     'sep',
-    {ic:_RM_IC.del,label:'Remove from model',act:`confirmMdRemoveEnt('${id}','${entId}')`,danger:true},
+    {ic:_RM_IC.del,label:'Remove from model',act:`confirmMdRemoveEnt('${id}','${entId}')`},
   ]);
 }
-function confirmMdRemoveEnt(id,entId){ const e=_mdEnt(id,entId); if(!e) return; const mn=(_model(id)||{}).name||'this model';
-  $('modalScrim').innerHTML=`<div class="modal"><div class="modal-head"><div class="modal-ic" style="background:var(--tag-error-bg,rgba(224,82,82,0.14));color:var(--tag-error-fg,#f87171);border-color:var(--tag-error-bd,rgba(224,82,82,0.3))">${_RM_IC.del}</div><div class="modal-title">Remove “${escapeHtml(e.name)}”?</div></div>
-    <div class="modal-body">This removes the entity and its ${e.tables} table${e.tables===1?'':'s'} from <b>${escapeHtml(mn)}</b>. This can't be undone.</div>
-    <div class="modal-foot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-danger" onclick="_mdRemoveEnt('${id}','${entId}')">Remove entity</button></div></div>`;
+/* DS ModalDialog confirmation — highlight-icon circle + centered title/description + secondary/primary CTAs. Reusable across destructive confirmations. */
+function _dsConfirm(o){
+  const tone=o.tone||'alert', ic=o.icon||_RM_IC.del;
+  $('modalScrim').innerHTML=`<div class="modal ds-dialog">
+    <button class="ds-dialog-x" onclick="closeModal()" aria-label="Close">✕</button>
+    <div class="ds-dialog-ic ds-ic-${tone}">${ic}</div>
+    <div class="ds-dialog-title">${o.title}</div>
+    ${o.desc?`<div class="ds-dialog-desc">${o.desc}</div>`:''}
+    <div class="ds-dialog-foot"><button class="btn" onclick="closeModal()">${o.cancelLabel||'Cancel'}</button><button class="btn ${o.destructive?'btn-danger':'btn-primary'}" onclick="${o.onConfirm}">${o.confirmLabel||'Confirm'}</button></div>
+  </div>`;
   _modalOpen();
+}
+function confirmMdRemoveEnt(id,entId){ const e=_mdEnt(id,entId); if(!e) return; const mn=(_model(id)||{}).name||'this model';
+  _dsConfirm({tone:'alert', title:`Remove “${escapeHtml(e.name)}” from ${escapeHtml(mn)}?`, desc:`This removes the entity and its ${e.tables} table${e.tables===1?'':'s'} from the model. This can’t be undone.`, confirmLabel:'Remove entity', destructive:true, onConfirm:`_mdRemoveEnt('${id}','${entId}')`});
 }
 function _mdRemoveEnt(id,entId){ const c=_mdCtx(id); if(!c) return; const {m,md}=c; const e=md.ents.find(x=>x.id===entId); const nm=e?e.name:'Entity';
   md.ents=md.ents.filter(x=>x.id!==entId); md.tables=md.tables.filter(t=>t.entityId!==entId);
@@ -7993,7 +8022,7 @@ function _mdTblMenu(id,tblId,btn){ _mdKebab(btn,[
     {ic:_MD_EYE,label:'Preview',act:`openMdTablePreview('${id}','${tblId}')`},
     {ic:_MDIC.edit,label:'Edit',act:`openMdEditTable('${id}','${tblId}')`},
     'sep',
-    {ic:_RM_IC.del,label:'Remove from model',act:`confirmMdRemoveTbl('${id}','${tblId}')`,danger:true},
+    {ic:_RM_IC.del,label:'Remove from model',act:`confirmMdRemoveTbl('${id}','${tblId}')`},
   ]); }
 function confirmMdRemoveTbl(id,tblId){ const c=_mdCtx(id); if(!c) return; const t=c.md.tables.find(x=>x.id===tblId); if(!t) return;
   $('modalScrim').innerHTML=`<div class="modal"><div class="modal-head"><div class="modal-ic" style="background:var(--tag-error-bg,rgba(224,82,82,0.14));color:var(--tag-error-fg,#f87171);border-color:var(--tag-error-bd,rgba(224,82,82,0.3))">${_RM_IC.del}</div><div class="modal-title">Remove “${escapeHtml(t.name)}”?</div></div>
@@ -8060,7 +8089,7 @@ function _mdCompMenu(id,sub,idx,btn){ _mdKebab(btn,[
     {ic:_MD_EYE,label:'Preview',act:`openMdCompPreview('${id}','${sub}',${idx})`},
     {ic:_MDIC.edit,label:'Edit',act:`openMdCompForm('${id}','${sub}',${idx})`},
     'sep',
-    {ic:_RM_IC.del,label:'Remove from model',act:`confirmMdRemoveComp('${id}','${sub}',${idx})`,danger:true},
+    {ic:_RM_IC.del,label:'Remove from model',act:`confirmMdRemoveComp('${id}','${sub}',${idx})`},
   ]); }
 function confirmMdRemoveComp(id,sub,idx){ const c=_mdCtx(id); if(!c) return; const x=c.md[sub][idx]; if(!x) return;
   $('modalScrim').innerHTML=`<div class="modal"><div class="modal-head"><div class="modal-ic" style="background:var(--tag-error-bg,rgba(224,82,82,0.14));color:var(--tag-error-fg,#f87171);border-color:var(--tag-error-bd,rgba(224,82,82,0.3))">${_RM_IC.del}</div><div class="modal-title">Remove “${escapeHtml(x.name)}”?</div></div>
