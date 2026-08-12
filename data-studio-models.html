@@ -1812,6 +1812,8 @@ html.theme-light .cmdk{background:#fff}
 /* stat tiles */
 .md-tiles{display:flex; flex-wrap:wrap; gap:12px; margin-bottom:22px}
 .md-tile{flex:1; min-width:150px; border:1px solid var(--card-border,var(--line)); border-radius:12px; background:var(--card-bg,var(--bg2)); padding:16px}
+.md-tile-clickable{cursor:pointer; transition:border-color .12s, box-shadow .12s}
+.md-tile-clickable:hover{border-color:var(--field-border-hover,var(--line-strong)); box-shadow:0 2px 12px rgba(0,0,0,.14)}
 .md-tile-top{display:flex; align-items:center; justify-content:space-between}
 .md-tile-v{font-size:26px; font-weight:800; color:var(--t1); line-height:1}
 .md-tile-ic{color:var(--t3)}
@@ -6499,7 +6501,7 @@ function _mdDoDelete(id){ const i=MODELS.findIndex(x=>x.id===id); if(i>=0) MODEL
 function _mdRefocus(fid,v){ setTimeout(()=>{ const el=$(fid); if(el){ el.focus(); el.setSelectionRange(v.length,v.length); } },0); }
 
 /* ── Overview ── */
-function _mdTile(v,l,ic){ return `<div class="md-tile"><div class="md-tile-top"><span class="md-tile-v">${v}</span><span class="md-tile-ic">${ic}</span></div><div class="md-tile-l">${escapeHtml(l)}</div></div>`; }
+function _mdTile(v,l,ic,nav){ return `<div class="md-tile${nav?' md-tile-clickable':''}"${nav?` onclick="setModelTab('${nav}')"`:''}><div class="md-tile-top"><span class="md-tile-v">${v}</span><span class="md-tile-ic">${ic}</span></div><div class="md-tile-l">${escapeHtml(l)}</div></div>`; }
 function _mdSec(key,title,right,open,inner){
   return `<section class="md-sec ${open?'':'closed'}">
     <div class="md-sec-h" onclick="mdSection('${key}')"><span class="md-sec-caret">${_MDIC.chev}</span><span class="md-sec-t">${escapeHtml(title)}</span><span class="md-sec-r" onclick="event.stopPropagation()">${right||''}</span></div>
@@ -6508,10 +6510,10 @@ function _mdSec(key,title,right,open,inner){
 function _mdOverview(m,md){
   const s=modelDetailState.sec;
   const tiles=[
-    _mdTile(md.counts.entities,'Entities',_MDIC.ent),
-    _mdTile(md.counts.tables,'Tables',_MDIC.tbl),
+    _mdTile(md.counts.entities,'Entities',_MDIC.ent,'entities'),
+    _mdTile(md.counts.tables,'Tables',_MDIC.tbl,'tables'),
     _mdTile(md.relations,'Relations',_MDIC.rel),
-    _mdTile(md.counts.components,'Components',_MDIC.widget),
+    _mdTile(md.counts.components,'Components',_MDIC.widget,'components'),
     _mdTile(md.crossN,'Cross-model',_MDIC.open),
     `<div class="md-tile md-tile-pub"><div class="md-tile-l" style="margin:0 0 6px">Last published</div><div class="md-tile-pubv">1d ago · ${escapeHtml(P(m.owner).n)}</div>${md.draftEnts?`<a class="md-tile-warn" onclick="setModelTab('entities')">${_MDIC.warn}${md.draftEnts} draft entit${md.draftEnts===1?'y':'ies'} to publish</a>`:`<span class="md-tile-ok">All entities published</span>`}</div>`,
   ];
