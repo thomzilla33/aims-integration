@@ -2604,6 +2604,36 @@ html.theme-light .tb-tip{background:#fff}
 .cv-typetext{color:var(--t2); font-size:12.5px}
 .cv-field-d.cv-sys{color:var(--t3); font-weight:600}
 .sens.pub{background:var(--muted); color:var(--t3); border:1px solid var(--field-border)}
+/* ── J4 · inline column master-detail (left rail + Schema/Rules/Sensitivity/Display) ── */
+.cde-wrap{display:grid; grid-template-columns:260px minmax(0,1fr); border:1px solid var(--card-border); border-radius:12px; overflow:hidden; background:var(--card-bg)}
+.cde-rail{border-right:1px solid var(--card-border); background:var(--muted); max-height:600px; overflow-y:auto; padding:6px}
+.cde-rail-item{display:flex; align-items:center; gap:9px; width:100%; text-align:left; padding:8px 10px; border:none; background:transparent; border-left:2px solid transparent; border-radius:8px; cursor:pointer; color:var(--t1); font-family:inherit}
+.cde-rail-item:hover{background:var(--hover)}
+.cde-rail-item.sel{background:var(--tag-informative-bg); border-left-color:var(--primary)}
+.cde-rail-item.cde-static{cursor:default; opacity:.65}
+.cde-rail-ic{color:var(--t3); display:inline-flex; flex-shrink:0}
+.cde-rail-item.sel .cde-rail-ic{color:var(--primary)}
+.cde-rail-b{display:flex; flex-direction:column; min-width:0}
+.cde-rail-d{font-size:13px; font-weight:600; color:var(--t1); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:flex; align-items:center; gap:5px}
+.cde-rail-t{font-size:11px; color:var(--t3); font-family:ui-monospace,Menlo,monospace}
+.cde-pane{min-width:0; display:flex; flex-direction:column; background:var(--card-bg)}
+.cde-head{display:flex; align-items:flex-start; gap:12px; padding:16px 18px; border-bottom:1px solid var(--card-border)}
+.cde-head-main{min-width:0; flex:1}
+.cde-head-title{font-size:16px; font-weight:700; color:var(--t1)}
+.cde-head-tags{display:flex; align-items:center; gap:7px; margin-top:8px; flex-wrap:wrap}
+.cde-head-actions{display:flex; align-items:center; gap:8px; flex-shrink:0}
+.cde-icon-btn{display:inline-flex; align-items:center; justify-content:center; width:34px; height:34px; border-radius:8px; border:1px solid var(--field-border); background:var(--field-bg); color:var(--t2); cursor:pointer; font-size:14px; line-height:1}
+.cde-icon-btn:hover{color:var(--t1); border-color:var(--field-border-focus)}
+.cde-tabs{margin:0; padding:8px 18px 0}
+.cde-body{padding:16px 18px 22px; overflow-y:auto}
+.cde-lock-hint{display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:400; color:var(--field-placeholder); margin-left:4px}
+.cde-tgl-row{display:flex; align-items:center; justify-content:space-between; gap:16px; padding:12px 0; border-bottom:1px solid var(--field-border)}
+.cde-tgl-row:last-child{border-bottom:none}
+.cde-tgl-txt{min-width:0}
+.cde-tgl-l{font-size:13px; font-weight:600; color:var(--t1)}
+.cde-tgl-d{font-size:12px; color:var(--t3); margin-top:2px}
+.cde-regtags{display:inline-flex; gap:6px; flex-wrap:wrap}
+@media (max-width:820px){ .cde-wrap{grid-template-columns:1fr} .cde-rail{max-height:220px; border-right:none; border-bottom:1px solid var(--card-border)} }
 .cstr-fk{display:inline-flex; align-items:center; gap:4px; font-size:10.5px; font-weight:700; padding:2px 7px; border-radius:6px; background:var(--tag-purple-bg); color:var(--tag-purple-fg); border:1px solid var(--tag-purple-bd); white-space:nowrap; font-family:ui-monospace,Menlo,monospace}
 .cstr-fk svg{width:11px; height:11px; opacity:.85}
 .cstr-pk{display:inline-flex; align-items:center; gap:4px; font-size:10.5px; font-weight:700; padding:2px 7px; border-radius:6px; background:var(--tag-informative-bg); color:var(--tag-informative-fg); border:1px solid var(--tag-informative-bd); white-space:nowrap; font-family:ui-monospace,Menlo,monospace}
@@ -4625,7 +4655,7 @@ function renderTableDetail(id){
     <div id="tpanel">${tab==='overview'?tableOverviewTab(t):tab==='columns'?columnsTab(t):tab==='relationships'?relationshipsTab(t):tab==='data'?dataTab(t):tab==='indexes'?tableIndexesTab(t):_historyTab('table',t)}</div>`;
   if(tab==='relationships'&&_relViewMode==='diagram') setTimeout(_diagInit,0);
 }
-function setTableTab(t){ tableDetailState.tab=t; renderTableDetail(tableDetailState.id); }
+function setTableTab(t){ if(t!=='columns'){ _colFilter.sel=null; _colFilter.edit=false; _cdeBuf=null; } tableDetailState.tab=t; renderTableDetail(tableDetailState.id); }
 
 /* ── shared Overview primitives (tiles + recent activity) ── */
 const _ICO_COLS='<svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2.5" y="2.5" width="11" height="11" rx="1.6"/><path d="M6.5 2.5v11M10 2.5v11"/></svg>';
@@ -4732,7 +4762,8 @@ function _removeIndex(tid,name){ const t=_table(tid); if(!t) return; _tblIndexes
   if(t.status==='Published') t.status='Draft'; closeModal(); toast('Index “'+name+'” deleted','ok'); renderTableDetail(tid); }
 function toggleSysCols(){ tableDetailState.showSys=!tableDetailState.showSys; renderTableDetail(tableDetailState.id); }
 /* ── Columns tab — single fixed table + filter dropdowns + hover tooltip ── */
-let _colFilter = { q:'', type:'all', sens:'all', constr:'all' };
+let _colFilter = { q:'', type:'all', sens:'all', constr:'all', sel:null, edit:false, sub:'schema' };
+let _cdeBuf=null;   // working copy of the selected column while editing inline (survives sub-tab switches)
 function _colSearchInput(v){ _colFilter.q=v; _dsfRerender(); setTimeout(()=>{const el=$('colSearch'); if(el){ el.focus(); el.setSelectionRange(v.length,v.length); }},0); }
 function _colFilterSet(k,v){ _colFilter[k]=v; _dsfOpen=null; _dsfRerender(); }
 function _cvFieldCell(c){
@@ -4851,6 +4882,10 @@ function _colsView(kind, obj, fields, editable){
       + `</div>`;
   }).join(''):`<div class="empty" style="padding:40px">${filtering?'No columns match your filters.':'No columns yet.'}</div>`;
   const table=`<div class="ttd-table"><div class="ttd-thead cv-thead" style="${gt}">${heads.map(h=>`<span class="cv-th">${escapeHtml(h)}</span>`).join('')}</div>${bodyRows}</div>`;
+  // J4 — inline master-detail: when a column is selected, swap the flat table for the column editor (toolbar stays above).
+  const selCol = _colFilter.sel ? fields.find(x=>x.n===_colFilter.sel && !x.system) : null;
+  if(editable && selCol) return `${toolbar}${_cdeMaster(kind, obj, rows, selCol)}`;
+  if(_colFilter.sel && !selCol){ _colFilter.sel=null; _colFilter.edit=false; _cdeBuf=null; }   // stale selection → back to flat table
   return `${toolbar}${table}`;
 }
 function columnsTab(t){
@@ -4869,35 +4904,137 @@ function columnRow(t,c){
   </div>`;
 }
 
-/* Column detail slide-out */
+/* Column detail — inline master-detail (J4). Row-click selects the column; _colsView then swaps
+   the flat table for the four-tab editor. openColumn stays callable from every legacy row path. */
 function openColumn(tableId, colName){
-  const t=_colObj(tableId); if(!t) return; const c=t.cols.find(x=>x.n===colName); if(!c) return;
-  const flags=[c.pk&&'Primary',c.uq&&'Unique',c.req&&'Mandatory',c.idx&&'Indexed'].filter(Boolean);
-  const yn=(v)=>v?'<span style="color:var(--tag-success-fg)">Yes</span>':'<span style="color:var(--field-placeholder)">No</span>';
-  $('slideout').innerHTML=`
-    <div class="so-head"><div><div class="so-title">${escapeHtml(c.d)}</div><div class="so-internal">${escapeHtml(t.id)}.${escapeHtml(c.n)}</div></div><button class="so-close" onclick="closeSlideout()" aria-label="Close">✕</button></div>
-    <div class="so-body">
-      <div style="display:flex;gap:8px;align-items:center;margin-bottom:16px;flex-wrap:wrap"><span class="col-type ${_typeCls(c.t)}">${c.t}</span>${flags.map(f=>`<span class="flag on">${escapeHtml(f)}</span>`).join('')}${c.sens?`<span class="sens ${_sensCls(c.sens)}">${c.sens}</span>`:''}</div>
-      <div class="so-sec"><div class="so-sec-h">Schema</div><div class="so-fields">
-        <div class="so-field"><span class="so-field-l">Internal name <span class="so-locked"><svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="7" width="10" height="6" rx="1.3"/><path d="M5 7V5a3 3 0 0 1 6 0v2"/></svg>locked</span></span><span class="so-field-v mono">${escapeHtml(c.n)}</span></div>
-        <div class="so-field"><span class="so-field-l">Display name</span><span class="so-field-v">${escapeHtml(c.d)}</span></div>
-        <div class="so-field"><span class="so-field-l">Type</span><span class="so-field-v">${c.t}</span></div>
-        <div class="so-field"><span class="so-field-l">Primary key</span><span class="so-field-v">${yn(c.pk)}</span></div>
-        <div class="so-field"><span class="so-field-l">Unique</span><span class="so-field-v">${yn(c.uq)}</span></div>
-        <div class="so-field"><span class="so-field-l">Mandatory</span><span class="so-field-v">${yn(c.req)}</span></div>
-        <div class="so-field"><span class="so-field-l">Indexed</span><span class="so-field-v">${yn(c.idx)}</span></div>
-        ${c.rules?`<div class="so-field"><span class="so-field-l">Rules</span><span class="so-field-v">${escapeHtml(c.rules)}</span></div>`:''}
-      </div><div style="font-size:12px;color:var(--field-text);margin-top:10px;line-height:1.5">${escapeHtml(c.desc||'')}</div></div>
-      ${c.t==='Enum'&&c.ev?`<div class="so-sec"><div class="so-sec-h">Enum values <span style="color:var(--field-placeholder);font-weight:400">${c.ev.length}</span></div>${c.ev.map(([v,l,d2])=>`<div class="enum-row"><span class="enum-val">${escapeHtml(v)}</span><span class="enum-lbl">${escapeHtml(l)}</span><span class="enum-desc">${escapeHtml(d2||'')}</span></div>`).join('')}</div>`:''}
-      <div class="so-sec"><div class="so-sec-h">Sensitivity</div><div class="so-fields">
-        <div class="so-field"><span class="so-field-l">Classification</span><span class="so-field-v">${c.sens?`<span class="sens ${_sensCls(c.sens)}">${c.sens}</span>`:'Internal'}</span></div>
-        <div class="so-field"><span class="so-field-l">Retention</span><span class="so-field-v">${c.sens?'7 years':'Default'}</span></div>
-        <div class="so-field"><span class="so-field-l">Masking</span><span class="so-field-v">${c.sens==='PII'?'Last 4 shown':c.sens?'Fully masked':'None'}</span></div>
-      </div></div>
-      <div class="so-sec"><div class="so-sec-h">Display</div><div class="so-fields"><div class="so-field"><span class="so-field-l">Format</span><span class="so-field-v">${escapeHtml(c.fmt||'Default')}</span></div></div></div>
-    </div>
-    <div class="so-foot"><button class="btn btn-danger" style="margin-right:auto" onclick="confirmDeleteColumn('${tableId}','${colName}')">${_RM_IC.del} Delete</button><button class="btn" onclick="_dupColumn('${tableId}','${colName}')">Duplicate</button><button class="btn" onclick="closeSlideout()">Close</button><button class="btn btn-primary" onclick="openEditColumn('${tableId}','${colName}')">Edit column</button></div>`;
-  _soOpen();
+  const t=_colObj(tableId); if(!t) return; const c=t.cols.find(x=>x.n===colName); if(!c || c.system) return;
+  _colTipHide();   // the clicked row is about to be replaced by the re-render, so its mouseleave never fires
+  _colFilter.sel=colName; _colFilter.edit=false; _cdeBuf=null; if(!_colFilter.sub) _colFilter.sub='schema';
+  _colRerender(tableId);
+}
+
+/* ── Inline column editor (J4): left rail + four sub-tabs (Schema · Rules · Sensitivity · Display) ── */
+function _cdeConstrIc(c){
+  if(c.system) return _MDIC.lock;
+  if(c.pk) return '<svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="10" r="2.6"/><path d="M7.9 8.1l5.1-5.1M11 3l2 2M9.4 4.6l1.6 1.6"/></svg>';
+  if(c.t==='Reference') return _HIC.link;
+  return _MDIC.col;
+}
+function _cdeSeed(c){ return {d:c.d||'', t:c.t||'Text', sens:c.sens||'', desc:c.desc||'', pk:!!c.pk, uq:!!c.uq, req:!!c.req, idx:!!c.idx, defv:c.defv||'', hid:!!c.hid, doc:c.doc||''}; }
+function _cdeSet(k,v){ if(_cdeBuf) _cdeBuf[k]=v; }
+function _cdeSelect(id,n){ _colFilter.sel=n; _colFilter.edit=false; _cdeBuf=null; _colRerender(id); }
+function _cdeClose(id){ _colFilter.sel=null; _colFilter.edit=false; _cdeBuf=null; _colRerender(id); }
+function _cdeTab(id,tab){ _colFilter.sub=tab; _colRerender(id); }
+function _cdeEdit(id){ const o=_colObj(id); const c=o?o.cols.find(x=>x.n===_colFilter.sel):null; if(!c) return; _cdeBuf=_cdeSeed(c); _colFilter.edit=true; _colRerender(id); }
+function _cdeCancel(id){ _cdeBuf=null; _colFilter.edit=false; _colRerender(id); }
+function _cdeSave(id){
+  const o=_colObj(id); if(!o||!_cdeBuf) return; const c=o.cols.find(x=>x.n===_colFilter.sel); if(!c) return;
+  const b=_cdeBuf, orig=c.t;
+  const apply=()=>{
+    c.d=(b.d||'').trim()||c.d; c.t=b.t; c.sens=b.sens||null; c.desc=(b.desc||'').trim();
+    c.pk=b.pk||undefined; c.uq=b.uq||undefined; c.req=b.req||undefined; c.idx=b.idx||undefined;
+    c.defv=(''+(b.defv||'')).trim()||undefined; c.hid=b.hid||undefined; c.doc=(b.doc||'').trim()||undefined;
+    if(o.status==='Published') o.status='Draft';
+    _cdeBuf=null; _colFilter.edit=false; closeModal(); toast('Column “'+c.d+'” updated','ok'); _colRerender(id);
+  };
+  if(b.t!==orig){
+    $('modalScrim').innerHTML=`<div class="modal"><div class="modal-head"><div class="modal-ic"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 1.5 1 13.5h14L8 1.5Z"/><path d="M8 6.5v3M8 11.5h.01" stroke-linecap="round"/></svg></div><div class="modal-title">Change column type?</div></div>
+      <div class="modal-body">Changing <b>${escapeHtml(c.d)}</b> from <b>${escapeHtml(orig)}</b> to <b>${escapeHtml(b.t)}</b> runs a validation pass over the physical column. Existing values that can't be converted will be rejected — this runs against live tenant data.
+        <div class="impact"><div class="impact-row"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#facc15" stroke-width="1.6"><circle cx="8" cy="8" r="6"/><path d="M8 5v3.5M8 11h.01" stroke-linecap="round"/></svg><span>~3 existing records don't match <b>${escapeHtml(b.t)}</b> and would fail</span></div><div class="impact-row"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#facc15" stroke-width="1.6"><circle cx="8" cy="8" r="6"/><path d="M8 5v3.5M8 11h.01" stroke-linecap="round"/></svg><span>Dependent queries may need review</span></div></div>
+      </div><div class="modal-foot"><button class="btn" onclick="closeModal()">Back</button><button class="btn btn-primary" onclick="_applyColSave()">Change type &amp; save</button></div></div>`;
+    window._applyColSave=apply; _modalOpen();
+  } else apply();
+}
+function _cdeAudit(id,n){ closeRowMenu(); if(_table(id)){ tableDetailState.tab='history'; renderTableDetail(id); toast('Opening column history','ok'); } else { toast('Column history — see the History view','ok'); } }
+function _cdeKebab(id,n,btn){
+  const hist='<svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="6"/><path d="M8 4.5V8l2.4 1.4"/></svg>';
+  _mdKebab(btn,[
+    {ic:_RM_IC.dup, label:'Duplicate', act:`_dupColumn('${id}','${n}')`},
+    {ic:_RM_IC.exp, label:'Export configuration', act:`toast('Exported column configuration','ok')`},
+    {ic:hist,       label:'View in audit log', act:`_cdeAudit('${id}','${n}')`},
+    'sep',
+    {ic:_RM_IC.del, label:'Delete', act:`confirmDeleteColumn('${id}','${n}')`},   // no danger flag — DS menus carry no red items
+  ]);
+}
+function _cdeTypeRules(t){ return ({
+  Text:[['Trimmed value','Leading and trailing whitespace is removed']],
+  Integer:[['Whole number','Rejects decimals and non-numeric input']],
+  Decimal:[['Numeric value','Must be a valid decimal number']],
+  Boolean:[['Boolean value','Accepts only true or false']],
+  Date:[['Date format','Stored as an ISO-8601 date']],
+  Timestamp:[['Timestamp format','Stored as an ISO-8601 timestamp']],
+  UUID:[['UUID format','Must be a valid v4 UUID']],
+  Enum:[['Allowed values','Must match one of the defined options']],
+  Reference:[['Referential integrity','Must reference an existing row']],
+  JSON:[['Valid JSON','Value must parse as JSON']],
+})[t]||[]; }
+function _cdeRegTags(sens){
+  const map={PII:['GDPR','CCPA'],Financial:['PCI-DSS','SOX'],Confidential:['Data residency']};
+  const tags=map[sens]||[];
+  return tags.length?`<span class="cde-regtags">${tags.map(t=>`<span class="flag on">${escapeHtml(t)}</span>`).join('')}</span>`:'<span style="color:var(--field-placeholder)">No regulatory tags</span>';
+}
+function _cdeToggleRow(label,desc,on,edit,key){
+  const inp=`<input type="checkbox" class="rtoggle" ${on?'checked':''} ${edit?`onchange="_cdeSet('${key}',this.checked)"`:'disabled'}>`;
+  return `<div class="cde-tgl-row"><div class="cde-tgl-txt"><div class="cde-tgl-l">${label}</div><div class="cde-tgl-d">${desc}</div></div>${inp}</div>`;
+}
+function _cdeBody(id,c,sub,E,b){
+  const rd=(label,val)=>`<div class="so-field"><span class="so-field-l">${label}</span><span class="so-field-v">${val}</span></div>`;
+  const tgl=(label,desc,key)=>_cdeToggleRow(label,desc, E?!!b[key]:!!c[key], E, key);
+  const intnRead=`<div class="so-field"><span class="so-field-l">Internal name <span class="cde-lock-hint">${_MDIC.lock} locked</span></span><span class="so-field-v mono">${escapeHtml(c.n)}</span></div>`;
+  if(sub==='rules'){
+    const rules=_cdeTypeRules(c.t).map(([t2,d2])=>`<div class="cde-tgl-row"><div class="cde-tgl-txt"><div class="cde-tgl-l">${t2}</div><div class="cde-tgl-d">${d2}</div></div><span class="flag on">Auto</span></div>`).join('');
+    return `<div class="so-sec"><div class="so-sec-h">Validation rules</div>${tgl('Required','A value must be provided on every row','req')}${rules||'<div class="cde-tgl-d" style="padding:8px 0">No type-specific rules for this column.</div>'}</div>`;
+  }
+  if(sub==='sensitivity'){
+    const cls = E
+      ? `<div class="mform"><div class="mfield"><label class="mfield-l">Sensitivity level</label><select class="mselect" onchange="_cdeSet('sens',this.value||null)">${_sensOptions(b.sens)}</select></div></div>`
+      : rd('Sensitivity level', c.sens?`<span class="sens ${_sensCls(c.sens)}">${escapeHtml(c.sens)}</span>`:'Internal');
+    return `<div class="so-sec"><div class="so-sec-h">Classification</div>${cls}${rd('Regulatory tags', _cdeRegTags(E?b.sens:c.sens))}</div>`;
+  }
+  if(sub==='display'){
+    const doc = E
+      ? `<div class="mform"><div class="mfield"><textarea class="mtextarea" placeholder="Add notes, links, or context for this column…" oninput="_cdeSet('doc',this.value)">${escapeHtml(b.doc)}</textarea></div></div>`
+      : `<div style="font-size:13px;line-height:1.5;color:${c.doc?'var(--t1)':'var(--field-placeholder)'}">${c.doc?escapeHtml(c.doc):'No documentation added yet'}</div>`;
+    return `<div class="so-sec"><div class="so-sec-h">Visibility</div>${tgl('Hidden by default','Hide this column from default table and record views','hid')}</div>`
+      + `<div class="so-sec"><div class="so-sec-h">Documentation</div>${doc}</div>`;
+  }
+  // schema (default)
+  const identity = E
+    ? `<div class="mform">
+        <div class="mfield"><label class="mfield-l">Display name</label><input class="minput" value="${escapeHtml(b.d)}" oninput="_cdeSet('d',this.value)" autocomplete="off"></div>
+        <div class="mfield"><label class="mfield-l">Internal name <span class="cde-lock-hint">${_MDIC.lock} locked</span></label><input class="minput mono" value="${escapeHtml(c.n)}" disabled style="opacity:.6"><span class="mfield-help">Locked — cannot be changed after creation.</span></div>
+        <div class="mfield"><label class="mfield-l">Description</label><textarea class="mtextarea" oninput="_cdeSet('desc',this.value)" placeholder="What does this column hold, and who relies on it?">${escapeHtml(b.desc)}</textarea></div>
+        <div class="mrow"><div class="mfield"><label class="mfield-l">Type</label><select class="mselect" onchange="_cdeSet('t',this.value)">${_typeOptions(b.t)}</select></div><div class="mfield"><label class="mfield-l">Default value</label><input class="minput" value="${escapeHtml(b.defv)}" oninput="_cdeSet('defv',this.value)" placeholder="None" autocomplete="off"></div></div>
+      </div>`
+    : `${rd('Display name', escapeHtml(c.d))}${intnRead}${rd('Description', c.desc?escapeHtml(c.desc):'<span style="color:var(--field-placeholder)">No description</span>')}${rd('Type', `<span class="col-type ${_typeCls(c.t)}">${escapeHtml(c.t)}</span>`)}${rd('Default value', c.defv?escapeHtml(c.defv):'<span style="color:var(--field-placeholder)">—</span>')}`;
+  const constraints = tgl('Primary key','Uniquely identifies each row','pk')
+    + tgl('Unique','No two rows may share the same value','uq')
+    + tgl('Required','A value must be provided','req')
+    + tgl('Indexed','Optimized for lookups and joins','idx');
+  return `<div class="so-sec"><div class="so-sec-h">Identity</div>${identity}</div><div class="so-sec"><div class="so-sec-h">Constraints</div>${constraints}</div>`;
+}
+function _cdeMaster(kind, obj, railRows, c){
+  const id=obj.id, E=_colFilter.edit;
+  if(E && !_cdeBuf) _cdeBuf=_cdeSeed(c);
+  const b=E?_cdeBuf:null, sub=_colFilter.sub||'schema';
+  const rail=`<div class="cde-rail">`+railRows.map(x=>{
+    const sel=x.n===c.n, stat=x.system;
+    const inner=`<span class="cde-rail-ic">${_cdeConstrIc(x)}</span><span class="cde-rail-b"><span class="cde-rail-d">${escapeHtml(x.d)}${x.pk?' <span class="cv-key">KEY</span>':''}</span><span class="cde-rail-t">${escapeHtml((x.t||'').toLowerCase())}</span></span>`;
+    return stat
+      ? `<div class="cde-rail-item cde-static">${inner}</div>`
+      : `<button class="cde-rail-item ${sel?'sel':''}" onclick="_cdeSelect('${id}','${escapeHtml(x.n)}')">${inner}</button>`;
+  }).join('')+`</div>`;
+  const tags=`<span class="col-type ${_typeCls(c.t)}">${escapeHtml(c.t)}</span>`
+    + (c.req?'<span class="flag on">Required</span>':'')
+    + (c.pk?'<span class="flag on">Primary key</span>':'')
+    + (c.sens?`<span class="sens ${_sensCls(c.sens)}">${escapeHtml(c.sens)}</span>`:'');
+  const actions = E
+    ? `<button class="btn" onclick="_cdeCancel('${id}')">Cancel</button><button class="btn btn-primary" onclick="_cdeSave('${id}')">Save</button>`
+    : `<button class="btn" onclick="_cdeEdit('${id}')">${_MDIC.edit} Edit</button><button class="cde-icon-btn" onclick="_cdeKebab('${id}','${escapeHtml(c.n)}',this)" aria-label="More actions">${_MDIC.dots}</button><button class="cde-icon-btn" onclick="_cdeClose('${id}')" aria-label="Close">✕</button>`;
+  const head=`<div class="cde-head"><div class="cde-head-main"><div class="cde-head-title">${escapeHtml(c.d)}</div><div class="cde-head-tags">${tags}</div></div><div class="cde-head-actions">${actions}</div></div>`;
+  const TABS=[['schema','Schema'],['rules','Rules'],['sensitivity','Sensitivity'],['display','Display']];
+  const tabsHtml=`<div class="mdw-tabs cde-tabs">${TABS.map(([tid,l])=>`<button class="mdw-tab ${sub===tid?'on':''}" onclick="_cdeTab('${id}','${tid}')">${l}</button>`).join('')}</div>`;
+  return `<div class="cde-wrap">${rail}<div class="cde-pane">${head}${tabsHtml}<div class="cde-body">${_cdeBody(id,c,sub,E,b)}</div></div></div>`;
 }
 function confirmDeleteColumn(tableId,colName){ const t=_colObj(tableId); const c=t?t.cols.find(x=>x.n===colName):null; if(!c) return;
   if(c.pk){ toast('Can’t delete the primary key column'); return; }
@@ -4907,6 +5044,7 @@ function confirmDeleteColumn(tableId,colName){ const t=_colObj(tableId); const c
   _modalOpen();
 }
 function _deleteColumn(tableId,colName){ const t=_colObj(tableId); if(!t) return; const c=t.cols.find(x=>x.n===colName); const nm=c?c.d:colName;
+  if(_colFilter.sel===colName){ _colFilter.sel=null; _colFilter.edit=false; _cdeBuf=null; }
   t.cols=t.cols.filter(x=>x.n!==colName); if(t.rels) t.rels=t.rels.filter(r=>r.via!==colName); t._rows=null;
   if(t.status==='Published') t.status='Draft'; closeModal(); closeSlideout(); toast('Column “'+nm+'” deleted','ok'); _colRerender(tableId);
 }
@@ -5622,7 +5760,7 @@ function renderReferenceDetail(id){
     <div id="rpanel">${tab==='overview'?refOverviewTab(r):tab==='data'?refDataTab(r):tab==='refby'?refReferencedByTab(r):tab==='columns'?refColumnsTab(r):tab==='relationships'?refRelTab(r):tab==='settings'?refSettingsTab(r):_historyTab('reference',r)}</div>`;
   if(tab==='relationships'&&_relViewMode==='diagram') setTimeout(_diagInit,0);
 }
-function setRefTab(t){ refDetailState.tab=t; refDetailState.page=1; renderReferenceDetail(refDetailState.id); }
+function setRefTab(t){ if(t!=='columns'){ _colFilter.sel=null; _colFilter.edit=false; _cdeBuf=null; } refDetailState.tab=t; refDetailState.page=1; renderReferenceDetail(refDetailState.id); }
 function toggleRefInactive(){ refDetailState.showInactive=!refDetailState.showInactive; refDetailState.page=1; renderReferenceDetail(refDetailState.id); }
 function refSearchInput(id,v){ refDetailState.search=v; refDetailState.page=1; renderReferenceDetail(id); setTimeout(()=>{const el=$('refValSearch'); if(el){el.focus(); el.setSelectionRange(v.length,v.length);}},0); }
 function refSetPage(id,p){ refDetailState.page=p; renderReferenceDetail(id); }
