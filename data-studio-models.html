@@ -1431,6 +1431,18 @@ html.theme-light .cpriv{background:#fff}
 .mtextarea{height:auto; padding:10px 12px; resize:vertical; min-height:64px}
 .minput:focus,.mselect:focus,.mtextarea:focus{border-color:var(--field-border-focus)}
 .minput::placeholder,.mtextarea::placeholder{color:var(--field-placeholder)}
+/* Add/Edit row form — typed field labels (display name + internal name + type badge + PK/FK) */
+.rf-field{margin-bottom:20px}
+.rf-field:last-child{margin-bottom:4px}
+.rf-label{display:flex; align-items:center; gap:8px; margin-bottom:9px; flex-wrap:wrap}
+.rf-name{font-size:14px; font-weight:700; color:var(--t1)}
+.rf-req{color:var(--field-text-error,#dc2626); font-weight:700; margin-left:-5px}
+.rf-int{font-size:12.5px; font-family:ui-monospace,Menlo,monospace; color:var(--t3); background:none; padding:0}
+.rf-type{font-size:11px; font-family:ui-monospace,Menlo,monospace; font-weight:600; color:var(--t2); background:var(--muted); border:1px solid var(--card-border); border-radius:6px; padding:2px 7px}
+.rf-key{font-size:10.5px; font-weight:800; border-radius:6px; padding:2px 6px; letter-spacing:.02em}
+.rf-key.pk{color:var(--tag-informative-fg); background:var(--tag-informative-bg); border:1px solid var(--tag-informative-bd)}
+.rf-key.fk{color:#8b5cf6; background:rgba(139,92,246,.13); border:1px solid rgba(139,92,246,.30)}
+.rf-field .minput,.rf-field .mselect{width:100%}
 .mrow{display:flex; gap:12px}
 .mrow .mfield{flex:1}
 .mfield input[type=checkbox]{accent-color:var(--primary)}
@@ -5207,9 +5219,9 @@ function _tblDataKebab(btn,id){ _openPop(btn, `
   <button class="pop-item" onclick="_closePop();toast('Exported records to CSV','ok')"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v8M5 7l3 3 3-3M3 13h10"/></svg>Export all as CSV</button>
   <button class="pop-item" onclick="_closePop();toast('Exported records to JSON','ok')"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2h6l3 3v9H4V2Z"/><path d="M6.5 8h3M6.5 10.5h3"/></svg>Export all as JSON</button>`); }
 function openTblBulkDelete(id,n){
-  $('modalScrim').innerHTML=`<div class="modal"><div class="modal-head"><div class="modal-ic"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 1.5 1 13.5h14L8 1.5Z"/><path d="M8 6.5v3M8 11.5h.01" stroke-linecap="round"/></svg></div><div class="modal-title">Delete ${n} record${n===1?'':'s'}?</div></div>
-    <div class="modal-body">This permanently removes the selected record${n===1?'':'s'} from live tenant data. This can't be undone.</div>
-    <div class="modal-foot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary" style="background:var(--field-text-error,#dc2626);border-color:transparent" onclick="dataSelClear('${id}');closeModal();toast('${n} record${n===1?'':'s'} deleted','ok')">Delete</button></div></div>`;
+  $('modalScrim').innerHTML=`<div class="modal"><div class="modal-head"><div class="modal-ic"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 1.5 1 13.5h14L8 1.5Z"/><path d="M8 6.5v3M8 11.5h.01" stroke-linecap="round"/></svg></div><div class="modal-title">Delete ${n} row${n===1?'':'s'}?</div></div>
+    <div class="modal-body">This permanently removes the selected row${n===1?'':'s'} from live tenant data. This can't be undone.</div>
+    <div class="modal-foot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary" style="background:var(--field-text-error,#dc2626);border-color:transparent" onclick="dataSelClear('${id}');closeModal();toast('${n} row${n===1?'':'s'} deleted','ok')">Delete</button></div></div>`;
   _modalOpen();
 }
 /* System columns shown read-only in the Data grid (id is rendered as its own column; created_at/updated_at are toggleable and NEVER appear in the add/edit forms — those iterate t.cols only). */
@@ -5260,7 +5272,7 @@ function dataTab(t){
        <button class="tb-ico ttd-iconbtn" title="Refresh data" aria-label="Refresh" onclick="dataRefresh('${t.id}')"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3v3h-3M3 13v-3h3M13 6A5 5 0 0 0 4 4.5M3 10a5 5 0 0 0 9 1.5"/></svg></button>
        <button class="tb-ico ttd-iconbtn" title="Columns" aria-label="Columns" onclick="_colChooser(this,'${t.id}')"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="2.5" width="11" height="11" rx="1.5"/><path d="M7 2.5v11M11 2.5v11"/></svg></button>
        <button class="tb-ico ttd-iconbtn" title="More" aria-label="More" onclick="_tblDataKebab(this,'${t.id}')"><svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><circle cx="3" cy="8" r="1.3"/><circle cx="8" cy="8" r="1.3"/><circle cx="13" cy="8" r="1.3"/></svg></button>
-       <button class="btn btn-primary" style="height:34px" onclick="openAddRecord('${t.id}')"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M2 6h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg> Add record</button>
+       <button class="btn btn-primary" style="height:34px" onclick="openAddRecord('${t.id}')"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M2 6h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg> Add row</button>
      </div>
    </div>
    ${selN?`<div class="ttd-bulk"><span class="ttd-bulk-n">${selN} selected</span><button class="ttd-bulk-x" onclick="dataSelClear('${t.id}')">Deselect all</button><span class="ttd-bulk-sep"></span><button class="ttd-bulk-a" onclick="toast('Exported ${selN} rows','ok')">Export selected</button><button class="ttd-bulk-a danger" onclick="openTblBulkDelete('${t.id}',${selN})">Delete</button></div>`:''}
@@ -5273,7 +5285,7 @@ function dataTab(t){
         ${cb(s.sel.has(r.__id),`dataSelToggle('${t.id}','${escapeHtml(r.__id)}')`)}
         <span class="ttd-td mono">${escapeHtml(r.__id)}</span>
         ${gcols.map(c=>`<span class="ttd-td${c.sys?' ttd-td-sys':''}">${c.sys?_fmtVal(c,_dataSysVal(c.n,rows.indexOf(r))):_fmtVal(c,r[c.n])}</span>`).join('')}
-      </div>`).join(''):`<div class="empty" style="padding:44px">${s.search?`No records match “${escapeHtml(s.search||'')}”.`:(t.cols.length?'No records yet.':'Add columns to this table, then add records.')}</div>`}
+      </div>`).join(''):`<div class="empty" style="padding:44px">${s.search?`No rows match “${escapeHtml(s.search||'')}”.`:(t.cols.length?'No rows yet.':'Add columns to this table, then add rows.')}</div>`}
    </div>
    <div class="ttd-foot">
      <div class="ttd-foot-l"><span class="ttd-foot-lbl">Rows per page</span><select class="ttd-per" onchange="dataPerPage('${t.id}',this.value)">${[10,25,50,100].map(n=>`<option ${n===per?'selected':''}>${n}</option>`).join('')}</select><span class="ttd-foot-count">Showing ${total?start+1:0}–${end} of ${total} rows${gcols.length<_totCols?` · ${gcols.length} of ${_totCols} columns`:''}</span></div>
@@ -5290,48 +5302,58 @@ function openRecord(tid, idx){
   const t=_table(tid); const rows=_mockRows(t); const r=rows[idx]; if(!r) return;
   const allCols=SYSTEM_COLS.map(c=>({...c,system:true})).concat(t.cols);
   $('slideout').innerHTML=`
-    <div class="so-head"><div><div class="so-title">Record</div><div class="so-internal">${escapeHtml(t.id)} · ${escapeHtml(r.__id)}</div></div>
+    <div class="so-head"><div><div class="so-title">Row</div><div class="so-internal">${escapeHtml(t.id)} · ${escapeHtml(r.__id)}</div></div>
       <div class="rec-nav"><button ${idx<=0?'disabled':''} onclick="openRecord('${tid}',${idx-1})" aria-label="Previous"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10 4L6 8l4 4" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button ${idx>=rows.length-1?'disabled':''} onclick="openRecord('${tid}',${idx+1})" aria-label="Next"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 4l4 4-4 4" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
       <button class="so-close" onclick="closeSlideout()" aria-label="Close" style="margin-left:8px">✕</button></div>
     <div class="so-body"><div class="so-fields">
       ${allCols.map(c=>`<div class="so-field"><span class="so-field-l">${escapeHtml(c.d)}${c.system?' <span class="so-locked" style="font-size:10px">sys</span>':''}</span><span class="so-field-v ${c.t==='UUID'||c.t==='Reference'?'mono':''}">${c.system?_fmtVal(c,_mockVal(c,idx)):_fmtVal(c,r[c.n])}</span></div>`).join('')}
     </div></div>
-    <div class="so-foot"><button class="btn btn-danger" style="margin-right:auto" onclick="_deleteRecord('${tid}',${idx})">${_RM_IC.del} Delete row</button><button class="btn" onclick="_dupRecord('${tid}',${idx})">${_RM_IC.dup} Duplicate</button><button class="btn" onclick="closeSlideout()">Close</button><button class="btn btn-primary" onclick="openEditRecord('${tid}',${idx})">Edit record</button></div>`;
+    <div class="so-foot"><button class="btn btn-danger" style="margin-right:auto" onclick="_deleteRecord('${tid}',${idx})">${_RM_IC.del} Delete row</button><button class="btn" onclick="_dupRecord('${tid}',${idx})">${_RM_IC.dup} Duplicate</button><button class="btn" onclick="closeSlideout()">Close</button><button class="btn btn-primary" onclick="openEditRecord('${tid}',${idx})">Edit row</button></div>`;
   _soOpen();
 }
-function _deleteRecord(tid,idx){ const t=_table(tid); const rows=_mockRows(t); if(idx<0||idx>=rows.length) return; rows.splice(idx,1); closeSlideout(); toast('Record deleted','ok'); renderTableDetail(tid); }
-function _dupRecord(tid,idx){ const t=_table(tid); const rows=_mockRows(t); const r=rows[idx]; if(!r) return; const c=JSON.parse(JSON.stringify(r)); c.__id=_mockId(rows.length); rows.splice(idx+1,0,c); closeSlideout(); toast('Record duplicated','ok'); renderTableDetail(tid); }
+function _deleteRecord(tid,idx){ const t=_table(tid); const rows=_mockRows(t); if(idx<0||idx>=rows.length) return; rows.splice(idx,1); closeSlideout(); toast('Row deleted','ok'); renderTableDetail(tid); }
+function _dupRecord(tid,idx){ const t=_table(tid); const rows=_mockRows(t); const r=rows[idx]; if(!r) return; const c=JSON.parse(JSON.stringify(r)); c.__id=_mockId(rows.length); rows.splice(idx+1,0,c); closeSlideout(); toast('Row duplicated','ok'); renderTableDetail(tid); }
+/* Map internal column type → the lowercase badge shown in the Add/Edit row form (matches the eng type vocabulary). */
+const _RF_TYPE={UUID:'uuid',Timestamp:'datetime',Date:'date',Reference:'reference',Text:'text',Integer:'integer',Decimal:'decimal',Boolean:'boolean',Enum:'enum',JSON:'json',GeoPoint:'geo_point',GeoPolygon:'geo_polygon'};
+function _rfType(t){ return _RF_TYPE[t]||String(t||'').toLowerCase(); }
 function _recField(c, val){
   const v=val==null?'':val;
-  if(c.t==='Enum'&&c.ev) return `<select class="mselect" id="rf_${c.n}">${c.ev.map(e=>`<option value="${e[0]}" ${e[0]===v?'selected':''}>${escapeHtml(e[1])}</option>`).join('')}</select>`;
-  if(c.t==='Boolean') return `<label style="display:inline-flex;align-items:center;gap:8px;height:40px;font-size:13px;color:var(--field-text)"><input type="checkbox" id="rf_${c.n}" ${v?'checked':''}> ${c.d}</label>`;
-  const inputType=c.t==='Date'?'date':c.t==='Integer'||c.t==='Decimal'?'number':'text';
-  return `<input class="minput" id="rf_${c.n}" type="${inputType}" value="${escapeHtml(String(v))}" placeholder="${escapeHtml(c.d)}" autocomplete="off">`;
+  if(c.t==='Enum'&&c.ev) return `<select class="mselect" id="rf_${c.n}"><option value="">Select…</option>${c.ev.map(e=>`<option value="${e[0]}" ${e[0]===v?'selected':''}>${escapeHtml(e[1])}</option>`).join('')}</select>`;
+  if(c.t==='Boolean'){ const bv=(v===''||v==null)?'false':String(v); return `<select class="mselect" id="rf_${c.n}"><option value="true" ${bv==='true'?'selected':''}>Yes</option><option value="false" ${bv!=='true'?'selected':''}>No</option></select>`; }
+  const inputType=c.t==='Date'?'date':(c.t==='Integer'||c.t==='Decimal')?'number':'text';
+  const ph=c.t==='Reference'?'Search '+escapeHtml(c.d)+'…':escapeHtml(c.d);
+  return `<input class="minput" id="rf_${c.n}" type="${inputType}" value="${escapeHtml(String(v))}" placeholder="${ph}" autocomplete="off">`;
 }
 function _recordForm(t, row){
-  return `<div class="mform">${t.cols.map(c=>`<div class="mfield"><label class="mfield-l">${escapeHtml(c.d)}${c.req?' <span style="color:var(--field-text-error)">*</span>':''}${c.sens?` <span class="sens ${_sensCls(c.sens)}" style="font-weight:700">${c.sens}</span>`:''}</label>${_recField(c,row?row[c.n]:'')}</div>`).join('')}</div>`;
+  return `<div class="rf-form">${t.cols.map(c=>{
+    const req=c.req?'<span class="rf-req">*</span>':'';
+    const key=c.pk?'<span class="rf-key pk">PK</span>':((c.t==='Reference'||c.ref)?'<span class="rf-key fk">FK</span>':'');
+    const sens=c.sens?`<span class="sens ${_sensCls(c.sens)}" style="font-weight:700">${escapeHtml(c.sens)}</span>`:'';
+    return `<div class="rf-field"><div class="rf-label"><span class="rf-name">${escapeHtml(c.d)}</span>${req}<code class="rf-int">${escapeHtml(c.n)}</code><span class="rf-type">${_rfType(c.t)}</span>${key}${sens}</div>${_recField(c,row?row[c.n]:'')}</div>`;
+  }).join('')}</div>`;
 }
 function openAddRecord(tid){
   const t=_table(tid);
-  $('modalScrim').innerHTML=`<div class="modal" style="max-height:86vh;overflow:auto"><div class="modal-head"><div class="modal-ic" style="background:var(--tag-informative-bg);color:var(--tag-informative-fg);border-color:var(--tag-informative-bd)"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 3v10M3 8h10" stroke-linecap="round"/></svg></div><div class="modal-title">Add record to ${escapeHtml(t.alias)}</div></div>
-    <div class="modal-body">${_recordForm(t,null)}</div>
-    <div class="modal-foot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveRecord('${tid}',-1)">Add record</button></div></div>`;
-  _modalOpen();
+  $('slideout').innerHTML=`
+    <div class="so-head"><div class="so-title">Add row</div><button class="so-close" onclick="closeSlideout()" aria-label="Close">✕</button></div>
+    <div class="so-body">${_recordForm(t,null)}</div>
+    <div class="so-foot mp-foot" style="justify-content:flex-end"><button class="btn" onclick="closeSlideout()">Cancel</button><button class="btn btn-primary" onclick="saveRecord('${tid}',-1)"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M2 6h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg> Create row</button></div>`;
+  _soOpen();
 }
 function openEditRecord(tid, idx){
   const t=_table(tid); const r=_mockRows(t)[idx]; if(!r) return;
-  closeSlideout();
-  $('modalScrim').innerHTML=`<div class="modal" style="max-height:86vh;overflow:auto"><div class="modal-head"><div class="modal-ic" style="background:var(--tag-informative-bg);color:var(--tag-informative-fg);border-color:var(--tag-informative-bd)"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M11 2.5l2.5 2.5L6 12.5 3 13l.5-3L11 2.5Z" stroke-linejoin="round"/></svg></div><div class="modal-title">Edit record</div></div>
-    <div class="modal-body">${_recordForm(t,r)}</div>
-    <div class="modal-foot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveRecord('${tid}',${idx})">Save changes</button></div></div>`;
-  _modalOpen();
+  $('slideout').innerHTML=`
+    <div class="so-head"><div class="so-title">Edit row</div><button class="so-close" onclick="closeSlideout()" aria-label="Close">✕</button></div>
+    <div class="so-body">${_recordForm(t,r)}</div>
+    <div class="so-foot mp-foot" style="justify-content:flex-end"><button class="btn" onclick="closeSlideout()">Cancel</button><button class="btn btn-primary" onclick="saveRecord('${tid}',${idx})">Save changes</button></div>`;
+  _soOpen();
 }
 function saveRecord(tid, idx){
   const t=_table(tid); const rows=_mockRows(t);
   const rec = idx>=0 ? rows[idx] : {__id:_mockId(rows.length)};
-  for(const c of t.cols){ const el=$('rf_'+c.n); if(!el) continue; rec[c.n]= c.t==='Boolean'?el.checked : el.value; }
+  for(const c of t.cols){ const el=$('rf_'+c.n); if(!el) continue; rec[c.n]= c.t==='Boolean'?(el.value==='true') : el.value; }
   if(idx<0) rows.unshift(rec);
-  closeModal(); toast(idx<0?'Record added':'Record updated','ok'); renderTableDetail(tid);
+  closeSlideout(); toast(idx<0?'Row added':'Row updated','ok'); renderTableDetail(tid);
 }
 
 /* ──────────────────────────────────────────────────────────────
