@@ -2247,8 +2247,10 @@ html:not(.theme-light) .ref-vals{background:var(--surface-raised,#131C2E)}
 .erf-lbl{font-size:12px; font-weight:600; color:var(--t2); margin:15px 0 6px; display:flex; align-items:center}
 .erf-req{color:var(--field-text-error,#f87171); margin-left:3px}
 .erf-seg{display:flex; gap:6px}
-.erf-seg-b{flex:1; border:1px solid var(--line); background:transparent; color:var(--t2); border-radius:8px; padding:8px 6px; font-size:12px; cursor:pointer; text-align:center}
+.erf-seg-b{flex:1; height:40px; display:flex; align-items:center; justify-content:center; gap:5px; border:1px solid var(--line); background:transparent; color:var(--t2); border-radius:8px; padding:0 8px; font-size:13px; cursor:pointer; text-align:center; white-space:nowrap; transition:border-color .12s, background .12s}
+.erf-seg-b:hover{border-color:var(--field-border-hover,var(--line-strong)); color:var(--t1)}
 .erf-seg-b.on{border-color:var(--primary); background:var(--tag-informative-bg,rgba(125,177,255,.12)); color:var(--t1)}
+.erf-seg-b b{font-weight:700}
 .erf-seg-b b{color:var(--t1)}
 .erf-row{display:grid; grid-template-columns:1fr 1fr; gap:14px}
 .erf-help{font-size:11px; color:var(--t3); line-height:1.45; margin-top:5px}
