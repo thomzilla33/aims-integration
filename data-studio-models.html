@@ -2257,6 +2257,33 @@ html:not(.theme-light) .ref-vals{background:var(--surface-raised,#131C2E)}
 .erf-addc{height:32px}
 .erf-phys{display:flex; gap:8px; font-size:12px; color:var(--t2); background:var(--hover); border-radius:8px; padding:10px 12px; line-height:1.5}
 .erf-phys svg{flex-shrink:0; color:var(--tag-alert-fg,#facc15); margin-top:1px}
+/* Table / Reference relationships — expandable cards + incoming accordion */
+.card-badge.cb-info{background:var(--tag-informative-bg,rgba(43,127,255,.12)); color:var(--tag-informative-fg,#7db1ff); border-color:var(--tag-informative-bd,rgba(43,127,255,.28))}
+.trel-cross{background:var(--tag-informative-bg,rgba(43,127,255,.06)); border-color:var(--tag-informative-bd,rgba(43,127,255,.3))}
+.trel-del{font-size:11px; font-weight:600; padding:2px 8px; border-radius:999px; white-space:nowrap; background:var(--hover); color:var(--t2)}
+.trel-del.warn{background:var(--tag-alert-bg); color:var(--tag-alert-fg); border:1px solid var(--tag-alert-bd)}
+.erel-right{display:inline-flex; align-items:center; gap:6px; margin-left:auto}
+.trel-exp{display:inline-flex; align-items:center; justify-content:center; width:26px; height:26px; border:1px solid var(--line); background:transparent; color:var(--t3); border-radius:7px; cursor:pointer; transition:color .12s, border-color .12s}
+.trel-exp:hover{color:var(--t1); border-color:var(--card-border)}
+.trel-exp svg{transform:rotate(90deg); transition:transform .15s}
+.trel-exp.on{color:var(--t1)}
+.trel-exp.on svg{transform:rotate(-90deg)}
+.trel-fk{margin-top:10px}
+.trel-body{margin-top:12px; padding-top:12px; border-top:1px solid var(--line); display:flex; flex-direction:column; gap:5px}
+.trel-b-l{font-size:10.5px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:var(--t3); margin-top:6px}
+.trel-b-l:first-child{margin-top:0}
+.trel-b-v{font-size:12.5px; color:var(--t2); line-height:1.55}
+.trel-muted{color:var(--t3)}
+.trel-inc{margin-top:16px}
+.trel-inc-h{display:flex; align-items:center; gap:9px; width:100%; text-align:left; background:var(--card-bg); border:1px solid var(--card-border); border-radius:10px; padding:11px 14px; cursor:pointer; color:var(--t1); font-family:inherit}
+.trel-inc-h:hover{background:var(--hover)}
+.trel-inc-chev{color:var(--t3); flex-shrink:0; transition:transform .15s}
+.trel-inc-h.on .trel-inc-chev{transform:rotate(90deg)}
+.trel-inc-t{font-size:12.5px; font-weight:600}
+.trel-inc-note{margin-left:auto; font-size:11px; color:var(--t3)}
+.trel-inc-list{display:flex; flex-direction:column; gap:10px; margin-top:10px}
+/* New-relationship slideout — nullability + junction helpers */
+.erf-seg-3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px}
 /* Privileges tab */
 .priv-sec-h{display:flex; align-items:center; gap:10px; margin-bottom:4px}
 .priv-sec-actions{margin-left:auto; display:flex; align-items:center; gap:10px}
@@ -3387,8 +3414,8 @@ function _etTblCard(e,t){
     <div class="mcard-meta2"><span class="cmeta">${_CIC.user}${escapeHtml(P(t.owner).n)}</span><span class="cmeta">${_CIC.col}${t.cols} cols</span><span class="cmeta">${_CIC.link}${t.rel} rel</span><span class="cmeta">${_CIC.clock}${escapeHtml(t.updated)}</span></div></div>`;
 }
 function _tableExists(id){ return !!(typeof _table==='function'?_table(id):TABLES.find(t=>t.id===id)); }
-/* ── Relationships tab: Diagram / Cards / Table (port of TfdRelationshipsTab) ── */
-let _relViewMode='table';
+/* ── Relationships tab: Diagram+list / Diagram / List (list = expandable cards) ── */
+let _relViewMode='list';
 function setRelView(kind,id,v){ _relViewMode=v; if(kind==='table') renderTableDetail(id); else if(kind==='entity') renderEntityDetail(id); else renderReferenceDetail(id); }
 function _cardShort(k){ k=(k||'').toLowerCase(); if(k.indexOf('many-to-many')>=0) return 'N:M'; if(k.indexOf('one-to-many')>=0) return '1:N'; if(k.indexOf('many-to-one')>=0) return 'N:1'; if(k.indexOf('one-to-one')>=0) return '1:1'; return (k||'—').toUpperCase(); }
 const _ICO_DIAG='<svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="4" cy="4" r="2"/><circle cx="4" cy="12" r="2"/><circle cx="12" cy="8" r="2"/><path d="M6 4h2a2 2 0 0 1 2 2M6 12h2a2 2 0 0 0 2-2"/></svg>';
@@ -3410,18 +3437,109 @@ function _relDiagram(centerLabel, rels){
     <div class="diag-legend"><span><span class="lg-line"></span>Strong</span><span><span class="lg-line lg-dash"></span>Weak</span></div>
   </div>`;
 }
+/* ── Table / Reference relationships — list state (filters · expand · incoming) ── */
+let _relLS={key:'',kind:'table',id:'',search:'',dir:'all',type:'all',scope:'all'};
+let _relOpenSet=new Set();
+let _relIncOpen=false;
+function _relLReset(kind,id){ const key=kind+':'+id; if(_relLS.key!==key){ _relLS={key,kind,id,search:'',dir:'all',type:'all',scope:'all'}; _relOpenSet=new Set(); _relIncOpen=false; } }
+function _relRerender(){ const s=_relLS; if(s.kind==='table') renderTableDetail(s.id); else if(s.kind==='reference') renderReferenceDetail(s.id); else if(s.kind==='entity') renderEntityDetail(s.id); }
+function relLSet(k,v){ _relLS[k]=v; _relRerender(); if(k==='search') _mdRefocus('relSearch',v); }
+function relToggleCard(mi){ _relOpenSet.has(mi)?_relOpenSet.delete(mi):_relOpenSet.add(mi); _relRerender(); }
+function relToggleInc(){ _relIncOpen=!_relIncOpen; _relRerender(); }
+function _cap(s){ s=String(s||''); return s.charAt(0).toUpperCase()+s.slice(1); }
+function _tblNav(srcAlias, tgtAlias, cardShort){
+  const s=_slug(srcAlias).replace(/-/g,'_'), tt=_slug(tgtAlias).replace(/-/g,'_'); const sp=_plural(s), tp=_plural(tt);
+  if(cardShort==='1:1') return {navParent:tt+'.'+s, navChild:s+'.'+tt};
+  if(cardShort==='N:M') return {navParent:tt+'.'+sp, navChild:s+'.'+tp};
+  return {navParent:tt+'.'+sp, navChild:s+'.'+tt}; // 1:N / N:1 default
+}
+function _relMatch(r){ const s=_relLS;
+  if(s.type!=='all' && r.cardShort!==s.type) return false;
+  if(s.scope==='intra' && r.scope==='cross') return false;
+  if(s.scope==='cross' && r.scope!=='cross') return false;
+  const q=(s.search||'').toLowerCase();
+  if(q && !((r.target||'').toLowerCase().includes(q))) return false;
+  return true;
+}
+function _tblRelMenu(kind,id,mi,incoming,btn){
+  if(kind!=='table'){ _openPop(btn,`<button class="pop-item" onclick="_closePop();_relOpen('${kind}','${id}',${mi})">${_MDIC.open}Open</button>`); return; }
+  if(incoming){ _openPop(btn,`<button class="pop-item" onclick="_closePop();openTblRelDetail('${id}',${mi})">${_MDIC.open}Open</button>`); return; }
+  _openPop(btn,`<button class="pop-item" onclick="_closePop();openTblRelDetail('${id}',${mi})">${_MDIC.open}Open</button><button class="pop-item" onclick="_closePop();openEditTblRel('${id}',${mi})">${_MDIC.edit}Edit</button><button class="pop-item danger" onclick="_closePop();confirmRemoveTblRel('${id}',${mi})">${_RM_IC.del}Remove</button>`);
+}
+function _tblRelCard(kind,id,centerLabel,r,mi){
+  const open=_relOpenSet.has(mi), cross=r.scope==='cross', cs=r.cardShort, refCol=r.refCol||'id';
+  const nav=(r.navParent&&r.navChild)?{navParent:r.navParent,navChild:r.navChild}:_tblNav(centerLabel,r.target,cs);
+  const nullable=r.nullable!==false;
+  const srcGlyph=kind==='reference'?_HIC.tag:_MDIC.tbl, tgtGlyph=cross?_MDIC.open:(kind==='reference'?_HIC.tag:_MDIC.tbl);
+  const scopeBadge=cross?`<span class="erel-scope cross">${_HIC.link}Cross-model · ${escapeHtml(r.model||'')}</span>`:`<span class="erel-scope intra">Intra-model</span>`;
+  const delBadge=`<span class="trel-del ${/restrict/i.test(r.del||'')?'warn':''}">On delete: ${escapeHtml(r.del||'Restrict')}</span>`;
+  const cbCls=cs==='N:M'?'':'cb-info';
+  const chev='<svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4l4 4-4 4"/></svg>';
+  return `<div class="erel-card${cross?' trel-cross':''}">
+    <div class="erel-top">
+      <span class="erel-side">${srcGlyph}${escapeHtml(centerLabel)}</span>${_ERUR}<span class="erel-side">${tgtGlyph}${escapeHtml(r.target)}</span>
+      <span class="card-badge ${cbCls}">${cs}</span>${scopeBadge}${delBadge}
+      <span class="erel-right"><button class="trel-exp ${open?'on':''}" onclick="event.stopPropagation();relToggleCard(${mi})" aria-label="${open?'Collapse':'Expand'}">${chev}</button><button class="lrow-menu" onclick="event.stopPropagation();_tblRelMenu('${kind}','${id}',${mi},false,this)" aria-label="Relationship actions">${_MDIC.dots}</button></span>
+    </div>
+    <div class="erel-nav trel-fk"><code class="md-code">${escapeHtml(centerLabel)}.${escapeHtml(r.via||'')}</code>${_ERUR}<code class="md-code">${escapeHtml(r.target)}.${escapeHtml(refCol)}</code></div>
+    ${open?`<div class="trel-body">
+      <div class="trel-b-l">Description</div><div class="trel-b-v${r.desc?'':' trel-muted'}">${r.desc?escapeHtml(r.desc):'No description'}</div>
+      <div class="trel-b-l">Navigation names</div><div class="erel-nav"><code class="md-code">${escapeHtml(nav.navParent)}</code><span class="erel-nav-swap">${_ERSWAP}</span><code class="md-code">${escapeHtml(nav.navChild)}</code></div>
+      <div class="trel-b-l">Nullable</div><div class="trel-b-v">${nullable?'FK column is nullable — the relationship is optional.':'FK column is NOT NULL — the relationship is required.'}</div>
+    </div>`:''}
+  </div>`;
+}
+function _tblIncCard(kind,id,centerLabel,r,mi){
+  const cross=r.scope==='cross', cs=r.cardShort, cbCls=cs==='N:M'?'':'cb-info', clickable=kind==='table';
+  return `<div class="erel-card erel-inc"${clickable?` onclick="openTblRelDetail('${id}',${mi})" style="cursor:pointer"`:''}>
+    <div class="erel-top">
+      <span class="erel-side">${_MDIC.tbl}${escapeHtml(r.target)}</span>${_ERUR}<span class="erel-side">${_MDIC.tbl}${escapeHtml(centerLabel)}</span>
+      <span class="card-badge ${cbCls}">${cs}</span>${cross?`<span class="erel-scope cross">${_HIC.link}Cross-model · ${escapeHtml(r.model||'')}</span>`:`<span class="erel-scope intra">Intra-model</span>`}
+      <span class="erel-right"><button class="lrow-menu" onclick="event.stopPropagation();_tblRelMenu('${kind}','${id}',${mi},true,this)" aria-label="Relationship actions">${_MDIC.dots}</button></span>
+    </div>
+    <div class="erel-nav trel-fk"><code class="md-code">${escapeHtml(r.target)}.${escapeHtml(r.via||'')}</code>${_ERUR}<code class="md-code">${escapeHtml(centerLabel)}.id</code></div>
+  </div>`;
+}
 function _relView(kind, obj, centerLabel, rels){
-  const id=obj.id, v=_relViewMode;
-  const seg=(mode,label,ic)=>`<button class="rel-vw-btn ${v===mode?'on':''}"${mode==='diagram'?' data-version="v2"':''} onclick="setRelView('${kind}','${id}','${mode}')">${ic}<span>${label}</span></button>`;
-  const toolbar=`<div class="ttd-head"><div class="ttd-head-l"><label class="dsf-search" style="max-width:220px;height:34px">${_HIC.search}<input type="text" placeholder="Search relationships…" oninput="toast('Search — prototype')" autocomplete="off"></label></div><div class="ttd-head-r"><div class="rel-vw">${seg('diagram','Diagram',_ICO_DIAG)}${seg('cards','Cards',_ICO_CARDS)}${seg('table','Table',_ICO_TBL2)}</div><button class="btn btn-primary" style="height:34px" onclick="_relAdd('${kind}','${id}')"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M2 6h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg> Add relationship</button></div></div>`;
+  const id=obj.id; _relLReset(kind,id); const s=_relLS;
+  const v = SCOPE!=='v2' ? 'list' : ((_relViewMode==='diagram'||_relViewMode==='diagramlist')?_relViewMode:'list');
+  const dc=s.dir!=='all'?{label:s.dir,onremove:"relLSet('dir','all')"}:null;
+  const tc=s.type!=='all'?{label:s.type,onremove:"relLSet('type','all')"}:null;
+  const scp=s.scope!=='all'?{label:s.scope==='intra'?'Intra-model':'Cross-model',onremove:"relLSet('scope','all')"}:null;
+  const seg=(mode,label)=>`<button class="rel-vw-btn ${v===mode?'on':''}"${(mode==='diagram'||mode==='diagramlist')?' data-version="v2"':''} onclick="setRelView('${kind}','${id}','${mode}')">${label}</button>`;
+  const toolbar=`<div class="tbar md-tbar">
+      <label class="dsf-search">${_MDIC.search}<input id="relSearch" type="text" placeholder="Search related table…" value="${escapeHtml(s.search)}" oninput="relLSet('search',this.value)" autocomplete="off"></label>
+      ${dsfDrop('relDir','Direction',dc,[{label:'All directions',selected:s.dir==='all',onclick:"dsfPickSingle();relLSet('dir','all')"}].concat(['Outgoing','Incoming'].map(x=>({label:x,selected:s.dir===x,onclick:`dsfPickSingle();relLSet('dir','${x}')`}))))}
+      ${dsfDrop('relType','Type',tc,[{label:'All types',selected:s.type==='all',onclick:"dsfPickSingle();relLSet('type','all')"}].concat(['1:1','1:N','N:M','N:1'].map(x=>({label:x,selected:s.type===x,onclick:`dsfPickSingle();relLSet('type','${x}')`}))))}
+      ${dsfDrop('relScope','Scope: All scopes',scp,[{label:'All scopes',selected:s.scope==='all',onclick:"dsfPickSingle();relLSet('scope','all')"},{label:'Intra-model',selected:s.scope==='intra',onclick:"dsfPickSingle();relLSet('scope','intra')"},{label:'Cross-model',selected:s.scope==='cross',onclick:"dsfPickSingle();relLSet('scope','cross')"}])}
+      <span class="tbar-spring"></span>
+      <div class="rel-vw">${seg('diagramlist','Diagram + list')}${seg('diagram','Diagram')}${seg('list','List')}</div>
+      <button class="btn btn-primary" onclick="_relAdd('${kind}','${id}')">${_MDIC.plus} New relationship</button>
+    </div>`;
+  const outg=[], incm=[]; rels.forEach((r,i)=>{ (r.dir==='Incoming'?incm:outg).push({r,i}); });
+  const showOut=(s.dir==='all'||s.dir==='Outgoing'), showInc=(s.dir==='all'||s.dir==='Incoming');
+  const outF=showOut?outg.filter(({r})=>_relMatch(r)):[];
+  const incF=showInc?incm.filter(({r})=>_relMatch(r)):[];
+  let cardsHtml;
+  if(outF.length) cardsHtml=outF.map(({r,i})=>_tblRelCard(kind,id,centerLabel,r,i)).join('');
+  else if(!outg.length) cardsHtml=`<div class="placeholder" style="padding:34px">No relationships yet. Connect <b>${escapeHtml(centerLabel)}</b> to another ${kind==='reference'?'list':kind} via a foreign key.</div>`;
+  else cardsHtml=`<div class="empty" style="padding:30px"><div class="empty-t">No relationships match</div>Adjust the filters above.</div>`;
+  let incBlock='';
+  if(incm.length && showInc){
+    const chev='<svg class="trel-inc-chev" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4l4 4-4 4"/></svg>';
+    const noun=kind==='reference'?'lists':'tables', nounS=kind==='reference'?'list':'table';
+    incBlock=`<div class="trel-inc">
+      <button class="trel-inc-h ${_relIncOpen?'on':''}" onclick="relToggleInc()">${chev}<span class="trel-inc-t">Incoming relationships from other ${noun} (${incF.length})</span><span class="trel-inc-note">referential · edit on the source ${nounS}</span></button>
+      ${_relIncOpen?`<div class="trel-inc-list">${incF.length?incF.map(({r,i})=>_tblIncCard(kind,id,centerLabel,r,i)).join(''):`<div class="empty" style="padding:20px">No incoming relationships match.</div>`}</div>`:''}
+    </div>`;
+  }
+  const listBody=`<div class="erel-list">${cardsHtml}${incBlock}</div>`;
+  const diagRels=outg.concat(incm).map(({r})=>({target:r.target,cardShort:r.cardShort,strong:r.scope!=='cross'}));
+  const diagram=outg.length||incm.length?_relDiagram(centerLabel, diagRels):`<div class="empty" style="padding:34px"><div class="empty-t">No relationships to diagram</div>Add one with New relationship.</div>`;
   let body;
-  // A7: when both directions are present, label an Outgoing and an Incoming (read-only) section.
-  const _grp = rels.some(r=>r.dir==='Incoming') && rels.some(r=>r.dir&&r.dir!=='Incoming');
-  const _rh=(r,i)=> (_grp && (i===0 || r.dir!==rels[i-1].dir)) ? `<div class="rel-sec-h" style="grid-column:1/-1;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--t3);padding:${i?'16px 0 8px':'2px 0 8px'}">${r.dir==='Incoming'?'Incoming · edit at source':'Outgoing'}</div>` : '';
-  if(!rels.length){ body=`<div class="placeholder" style="padding:38px">No relationships yet. Connect <b>${escapeHtml(centerLabel)}</b> to another ${kind==='reference'?'list':kind} via a foreign key.</div>`; }
-  else if(v==='diagram'){ body=_relDiagram(centerLabel, rels); }
-  else if(v==='table'){ const gt='grid-template-columns:minmax(0,1fr) 96px 100px 120px 120px'; body=`<div class="ttd-table"><div class="ttd-thead cv-thead" style="${gt}"><span class="cv-th">Related</span><span class="cv-th">Cardinality</span><span class="cv-th">Strength</span><span class="cv-th">Direction</span><span class="cv-th">On delete</span></div>${rels.map((r,i)=>`${_rh(r,i)}<div class="ttd-tr cv-static" style="${gt};cursor:pointer" onclick="_relOpen('${kind}','${id}',${i})"><span class="cv-td"><span class="cv-field-d">${escapeHtml(r.target)}</span>${r.via?`<span class="cv-field-n" style="margin-left:6px">.${escapeHtml(r.via)}</span>`:''}</span><span class="cv-td"><span class="card-badge">${r.cardShort}</span></span><span class="cv-td">${r.strong?'<span class="cv-yes">Strong</span>':'<span class="cv-no">Weak</span>'}</span><span class="cv-td">${escapeHtml(r.dir||'Uni')}</span><span class="cv-td">${escapeHtml(r.del)}</span></div>`).join('')}</div>`; }
-  else { body=`<div class="rfb-list">${rels.map((r,i)=>`${_rh(r,i)}<div class="rfb-card" onclick="_relOpen('${kind}','${id}',${i})"><div class="rfb-top"><span class="idx-ic">${_HIC.link}</span><span class="rfb-col">${escapeHtml(centerLabel)}</span>${r.via?`<span class="cv-field-n">.${escapeHtml(r.via)}</span>`:''}${_ARROW}<span class="rfb-col">${escapeHtml(r.target)}</span><span class="card-badge">${r.cardShort}</span><span class="rfb-reqchip ${r.strong?'rfb-req':'rfb-opt'}">${r.strong?'Strong':'Weak'}</span><span style="flex:1"></span><span style="font-size:11px;color:var(--t3)">${escapeHtml(r.dir||'Uni')} · on delete ${escapeHtml(r.del)}</span></div>${r.desc?`<div class="rfb-desc">${escapeHtml(r.desc)}</div>`:''}</div>`).join('')}</div>`; }
+  if(v==='diagram') body=diagram;
+  else if(v==='diagramlist') body=diagram+listBody;
+  else body=listBody;
   return toolbar+body;
 }
 /* ── Entity Relationships tab — rich (diagram + list · scope · incoming · new-rel slideout) ── */
@@ -4835,8 +4953,19 @@ function _refTable(ref){ return _table(_refId(ref)); }
 function _invKind(k){ return k==='many-to-one'?'one-to-many':k==='one-to-one'?'one-to-one':'many-to-many'; }
 
 function relationshipsTab(t){
-  const out=(t.rels||[]).map(r=>({ target:(_table(r.target)||{}).alias||_relTargetName(r.target)||r.target, cardShort:_cardShort(r.kind), strong:true, dir:'Outgoing', del:'Restrict', via:r.via }));
-  const inc=TABLES.filter(x=>x.id!==t.id).flatMap(x=>(x.rels||[]).filter(r=>_refId(r.target)===t.id).map(r=>({ target:x.alias, cardShort:_cardShort(_invKind(r.kind)), strong:true, dir:'Incoming', del:'Restrict', via:r.via })));
+  const out=(t.rels||[]).map(r=>{
+    const tgt=_table(_refId(r.target)), tgtName=(tgt||{}).alias||_relTargetName(r.target)||r.target, cs=_cardShort(r.kind);
+    const cross=!!(tgt&&tgt.model&&t.model&&tgt.model!==t.model), nav=_tblNav(t.alias, tgtName, cs);
+    return { target:tgtName, cardShort:cs, strong:true, dir:'Outgoing', del:_cap(r.onDelete||'restrict'), via:r.via, desc:r.desc||'',
+      scope:cross?'cross':'intra', model:cross?((_model(tgt.model)||{}).name||tgt.model):'', navParent:nav.navParent, navChild:nav.navChild,
+      nullable:!r.req, onUpdate:_cap(r.onUpdate||'cascade'), refCol:'id' };
+  });
+  const inc=TABLES.filter(x=>x.id!==t.id).flatMap(x=>(x.rels||[]).filter(r=>_refId(r.target)===t.id).map(r=>{
+    const cs=_cardShort(_invKind(r.kind)), cross=!!(x.model&&t.model&&x.model!==t.model), nav=_tblNav(x.alias, t.alias, cs);
+    return { target:x.alias, cardShort:cs, strong:true, dir:'Incoming', del:_cap(r.onDelete||'restrict'), via:r.via, desc:r.desc||'',
+      scope:cross?'cross':'intra', model:cross?((_model(x.model)||{}).name||x.model):'', navParent:nav.navParent, navChild:nav.navChild,
+      nullable:!r.req, onUpdate:_cap(r.onUpdate||'cascade'), refCol:'id' };
+  }));
   return _relView('table', t, t.alias, out.concat(inc));
 }
 function _relTargetName(x){ const tt=_table(x); return tt?tt.alias:x; }
@@ -4844,35 +4973,89 @@ function relRow(t,r){
   const tgt=_refTable(r.target);
   return `<div class="drow"><span class="drow-name">${escapeHtml(t.alias)}</span><span class="col-mono">.${escapeHtml(r.via)}</span>${_ARROW}<span class="drow-name">${escapeHtml(tgt?tgt.alias:_refId(r.target))}</span>${!tgt?'<span class="mini-badge mb-secondary">external</span>':''}<span class="card-badge">${r.kind}</span><span class="drow-meta"><span class="ondel">on delete: ${r.onDelete}</span>${tgt?`<span class="drow-link" onclick="navigate('tables/${tgt.id}')">Open →</span>`:''}</span></div>`;
 }
+/* ── New relationship — rich right slideout (draft state · live header · auto nav names) ── */
+let _narDraft=null;
+function _narAutoNav(){ const d=_narDraft; if(!d) return; const t=_table(d.tid), rel=_table(d.related);
+  const nav=_tblNav((t||{}).alias||'', (rel||{}).alias||'related', d.type); d.navParent=nav.navParent; d.navChild=nav.navChild; }
+function _narValid(d){ if(!d||!d.related) return false; if(d.type==='N:M') return !!(d.junction&&d.jFk1&&d.jFk2); return !!(d.related&&d.fkCol); }
+function _narValidate(){ const b=$('narCreateBtn'); if(b) b.disabled=!_narValid(_narDraft); }
+function _narSet(k,v){ const d=_narDraft; if(!d) return; d[k]=v;
+  if((k==='related'||k==='type')&&!d.navEdited) _narAutoNav();
+  if(k==='junction'){ d.jFk1=''; d.jFk2=''; }
+  _narForm(); }
 function openAddRelationship(tid){
-  const t=_table(tid);
-  const opts=TABLES.filter(x=>x.id!==tid).map(x=>`<option value="${x.id}">${escapeHtml(x.alias)}</option>`).join('');
-  $('modalScrim').innerHTML=`<div class="modal"><div class="modal-head"><div class="modal-ic" style="background:var(--tag-purple-bg);color:var(--tag-purple-fg);border-color:var(--tag-purple-bd)"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 10a3 3 0 0 1 0-4l1-1a3 3 0 0 1 4 4M10 6a3 3 0 0 1 0 4l-1 1a3 3 0 0 1-4-4" stroke-linecap="round"/></svg></div><div class="modal-title">Add relationship</div></div>
-   <div class="modal-body"><div class="mform">
-     <div class="mfield"><label class="mfield-l">Type</label><select class="mselect" id="arKind"><option value="many-to-one">Many-to-one — FK on ${escapeHtml(t.alias)}</option><option value="one-to-one">One-to-one</option><option value="one-to-many">One-to-many</option><option value="many-to-many">Many-to-many — junction table</option></select></div>
-     <div class="mfield"><label class="mfield-l">Related table</label><select class="mselect" id="arTarget">${opts}</select></div>
-     <div class="mfield"><label class="mfield-l">Via column</label><input class="minput" id="arVia" placeholder="e.g. vehicle_id" autocomplete="off"></div>
-     <div class="mrow"><div class="mfield"><label class="mfield-l">On delete</label><select class="mselect" id="arDel"><option>restrict</option><option>cascade</option><option>set null</option><option>no action</option></select></div><div class="mfield"><label class="mfield-l">On update</label><select class="mselect" id="arUpd"><option>cascade</option><option>restrict</option><option>no action</option></select></div></div>
-     <div class="mfield"><label class="mfield-l">Required</label><select class="mselect" id="arReq"><option value="">Optional — the foreign key can be null</option><option value="1">Required — NOT NULL</option></select></div>
-     <div class="mfield"><label class="mfield-l">Description</label><input class="minput" id="arDesc" placeholder="What this relationship represents…" autocomplete="off"></div>
-   </div></div>
-   <div class="modal-foot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveRelationship('${tid}')">Add relationship</button></div></div>`;
-  _modalOpen();
-  setTimeout(()=>{const sel=$('arTarget'),via=$('arVia'); const upd=()=>{ if(via&&!via.value) via.value=sel.value+'_id'; }; if(sel){sel.onchange=upd; upd();}},30);
+  const t=_table(tid); if(!t) return;
+  const others=TABLES.filter(x=>x.id!==tid), first=others[0]||{};
+  const fkDefault=((t.cols.find(c=>c.t==='Reference')||{}).n)||((t.cols[0]||{}).n)||'';
+  _narDraft={ tid, type:'1:1', related:first.id||'', fkCol:fkDefault, refCol:'id',
+    junction:(others[1]||first||{}).id||'', jFk1:'', jFk2:'',
+    onDelete:'Restrict', onUpdate:'No action', nullable:true, navParent:'', navChild:'', desc:'', navEdited:false };
+  _narAutoNav(); _narForm(); _soOpen();
+}
+function _narForm(){
+  const d=_narDraft; if(!d) return; const t=_table(d.tid); if(!t) return;
+  const others=TABLES.filter(x=>x.id!==d.tid), rel=_table(d.related), relLabel=rel?rel.alias:'—';
+  const cbCls=d.type==='N:M'?'':'cb-info';
+  const typeSeg=[['1:1','1:1','One-to-one'],['1:N','1:N','One-to-many'],['N:M','N:M','Many-to-many']]
+    .map(([v,s,l])=>`<button class="erf-seg-b ${d.type===v?'on':''}" onclick="_narSet('type','${v}')"><b>${s}</b> ${l}</button>`).join('');
+  const relOpts=others.map(x=>`<option value="${x.id}" ${d.related===x.id?'selected':''}>${escapeHtml(x.alias)} (${escapeHtml(x.id)})</option>`).join('')||'<option>—</option>';
+  const fkOpts=t.cols.map(c=>`<option value="${escapeHtml(c.n)}" ${d.fkCol===c.n?'selected':''}>${escapeHtml(c.n)} · ${escapeHtml((c.t||'').toLowerCase())}</option>`).join('')||'<option value="">No columns</option>';
+  const relCols=rel?rel.cols:[]; const refOpts=[`<option value="id" ${d.refCol==='id'?'selected':''}>id · uuid · PK</option>`].concat(relCols.filter(c=>c.n!=='id').map(c=>`<option value="${escapeHtml(c.n)}" ${d.refCol===c.n?'selected':''}>${escapeHtml(c.n)} · ${escapeHtml((c.t||'').toLowerCase())}</option>`)).join('');
+  const juncOpts=others.map(x=>`<option value="${x.id}" ${d.junction===x.id?'selected':''}>${escapeHtml(x.alias)} (${escapeHtml(x.id)})</option>`).join('')||'<option>—</option>';
+  const junc=_table(d.junction), jCols=junc?junc.cols:[];
+  const jOpt=(sel)=>`<option value="">Select column…</option>`+jCols.map(c=>`<option value="${escapeHtml(c.n)}" ${sel===c.n?'selected':''}>${escapeHtml(c.n)} · ${escapeHtml((c.t||'').toLowerCase())}</option>`).join('');
+  const delOpts=['Restrict','Cascade','Set null','No action'].map(x=>`<option ${d.onDelete===x?'selected':''}>${x}</option>`).join('');
+  const updOpts=['No action','Cascade','Restrict'].map(x=>`<option ${d.onUpdate===x?'selected':''}>${x}</option>`).join('');
+  const nullSeg=[[true,'Optional (nullable)'],[false,'Required']].map(([v,l])=>`<button class="erf-seg-b ${d.nullable===v?'on':''}" onclick="_narSet('nullable',${v})">${l}</button>`).join('');
+  const fkRow = (d.type==='1:1'||d.type==='1:N') ? `
+      <div class="erf-row">
+        <div><div class="erf-lbl">FK column (this table) <span class="erf-req">*</span></div><select class="minput" onchange="_narSet('fkCol',this.value)">${fkOpts}</select></div>
+        <div><div class="erf-lbl">References column <span class="erf-req">*</span></div><select class="minput" onchange="_narSet('refCol',this.value)">${refOpts}</select></div>
+      </div>${d.type==='1:1'?'<div class="erf-help">A unique constraint will be applied to enforce 1:1.</div>':''}` : '';
+  const jRow = (d.type==='N:M') ? `
+      <div class="erf-lbl">Junction table <span class="erf-req">*</span></div>
+      <select class="minput" onchange="_narSet('junction',this.value)">${juncOpts}</select>
+      <div class="erf-row" style="margin-top:14px">
+        <div><div class="erf-lbl">FK → this table <span class="erf-req">*</span></div><select class="minput" onchange="_narSet('jFk1',this.value)">${jOpt(d.jFk1)}</select></div>
+        <div><div class="erf-lbl">FK → related table <span class="erf-req">*</span></div><select class="minput" onchange="_narSet('jFk2',this.value)">${jOpt(d.jFk2)}</select></div>
+      </div>` : '';
+  $('slideout').innerHTML=`
+    <div class="so-head"><div><div class="so-title erf-title"><span class="erf-t-side">${_MDIC.tbl}${escapeHtml(t.alias)}</span>${_ERUR}<span class="card-badge ${cbCls}">${d.type}</span><span class="erf-t-side">${_MDIC.tbl}${escapeHtml(relLabel)}</span></div><div class="so-internal">NEW RELATIONSHIP</div></div><button class="so-close" onclick="closeSlideout()" aria-label="Close">✕</button></div>
+    <div class="so-body">
+      <div class="erf-lbl">Relationship type <span class="erf-req">*</span></div><div class="erf-seg erf-seg-3">${typeSeg}</div>
+      <div class="erf-lbl">Related table <span class="erf-req">*</span></div>
+      <select class="minput" onchange="_narSet('related',this.value)">${relOpts}</select>
+      ${fkRow}${jRow}
+      <div class="erf-row">
+        <div><div class="erf-lbl">On delete <span class="erf-req">*</span></div><select class="minput" onchange="_narSet('onDelete',this.value)">${delOpts}</select></div>
+        <div><div class="erf-lbl">On update <span class="erf-req">*</span></div><select class="minput" onchange="_narSet('onUpdate',this.value)">${updOpts}</select></div>
+      </div>
+      <div class="erf-lbl">Nullability</div><div class="erf-seg">${nullSeg}</div>
+      <div class="erf-row">
+        <div><div class="erf-lbl">Nav name → parent</div><input class="minput md-name-mono" value="${escapeHtml(d.navParent)}" oninput="_narDraft.navParent=this.value;_narDraft.navEdited=true;_narValidate()" autocomplete="off"></div>
+        <div><div class="erf-lbl">Nav name → child</div><input class="minput md-name-mono" value="${escapeHtml(d.navChild)}" oninput="_narDraft.navChild=this.value;_narDraft.navEdited=true;_narValidate()" autocomplete="off"></div>
+      </div>
+      <div class="erf-lbl">Description</div><textarea class="mtextarea" placeholder="What does this relationship represent?" oninput="_narDraft.desc=this.value">${escapeHtml(d.desc)}</textarea>
+    </div>
+    <div class="so-foot"><button class="btn" onclick="closeSlideout()">Cancel</button><button class="btn btn-primary" id="narCreateBtn" ${_narValid(d)?'':'disabled'} onclick="saveRelationship('${d.tid}')">${_MDIC.plus} Create relationship</button></div>`;
 }
 function saveRelationship(tid){
-  const t=_table(tid); const kind=$('arKind').value, target=$('arTarget').value, via=($('arVia').value||target+'_id').trim(), del=$('arDel').value, upd=$('arUpd').value;
-  const req=!!($('arReq')&&$('arReq').value), desc=($('arDesc')?$('arDesc').value.trim():'');
-  if(kind==='many-to-many'){ closeModal(); toast('Junction table “'+tid+'_'+target+'” created','ok'); }
-  else {
+  const d=_narDraft; if(!d) return; const t=_table(tid); if(!t) return;
+  const kind={'1:1':'one-to-one','1:N':'one-to-many','N:M':'many-to-many'}[d.type]||'many-to-one';
+  const del=(d.onDelete||'Restrict').toLowerCase(), upd=(d.onUpdate||'No action').toLowerCase();
+  const req=!d.nullable, desc=(d.desc||'').trim(), target=d.related;
+  if(d.type==='N:M'){
+    const jt=_table(d.junction); closeSlideout(); toast('Junction table “'+(jt?jt.alias:d.junction)+'” linked','ok');
+  } else {
+    const via=(d.fkCol||target+'_id').trim();
     t.rels.push({via, target, kind, onDelete:del, onUpdate:upd, req, desc});
-    if((kind==='many-to-one'||kind==='one-to-one') && !t.cols.find(c=>c.n===via)){
-      t.cols.push({n:via, d:via.replace(/_/g,' ').replace(/^\w/,ch=>ch.toUpperCase()), t:'Reference', ref:target, uq:kind==='one-to-one'||undefined, req:req||undefined, desc:desc||('Relationship to '+target+'.')}); // Required removes nullability on the FK column
+    if(!t.cols.find(c=>c.n===via)){
+      t.cols.push({n:via, d:via.replace(/_/g,' ').replace(/^\w/,ch=>ch.toUpperCase()), t:'Reference', ref:target, uq:d.type==='1:1'||undefined, req:req||undefined, desc:desc||('Relationship to '+target+'.')}); // Required removes nullability on the FK column
       t._rows=null;
     }
-    if(t.status==='Published') t.status='Draft'; closeModal(); toast('Relationship added','ok');
+    if(t.status==='Published') t.status='Draft'; closeSlideout(); toast('Relationship added','ok');
   }
-  renderTableDetail(tid);
+  _narDraft=null; renderTableDetail(tid);
 }
 /* Table relationship detail — outgoing (editable) vs incoming (read-only) */
 function openTblRelDetail(id,i){
@@ -5440,7 +5623,8 @@ function refRelTab(r){
   const targets={crm:'Industry types',finance:'Currencies',operations:'Regions',compliance:'Data regions',business:'Segments'};
   const to=targets[(r.category||'').toLowerCase()]||'Related list';
   const noun=_refInternal(r).replace(/^ref_/,'');
-  const rows = relN? [{target:to, cardShort:'N:1', strong:false, dir:'Uni', del:'Restrict', via:noun+'_parent', desc:'Optional parent classification used to roll up '+r.name.toLowerCase()+' values for reporting.'}] : [];
+  const nav=_tblNav(r.name, to, 'N:1');
+  const rows = relN? [{target:to, cardShort:'N:1', strong:false, dir:'Outgoing', del:'Restrict', via:noun+'_parent', desc:'Optional parent classification used to roll up '+r.name.toLowerCase()+' values for reporting.', scope:'intra', model:'', navParent:nav.navParent, navChild:nav.navChild, nullable:true, onUpdate:'Cascade', refCol:'id'}] : [];
   return _relView('reference', r, r.name, rows);
 }
 function refSettingsTab(r){
