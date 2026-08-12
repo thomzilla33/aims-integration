@@ -1166,6 +1166,10 @@ html.theme-light .elist{background:#fff}
 .slideout{position:fixed; top:0; right:0; bottom:0; width:min(600px,94vw); background:var(--surface-floating-default); backdrop-filter:blur(30px); border-radius:24px 0 0 24px;
   z-index:61; transform:translateX(100%); transition:transform .3s ease-out; display:flex; flex-direction:column; box-shadow:-24px -24px 60px 0 rgba(0,0,0,0.08)}
 .slideout.open{transform:translateX(0)}
+/* Slide Out resize affordance — drag the left edge to widen/narrow (G3) */
+.so-resize{position:absolute; left:0; top:0; bottom:0; width:8px; cursor:ew-resize; z-index:2; touch-action:none}
+.so-resize::before{content:""; position:absolute; left:2px; top:0; bottom:0; width:2px; background:transparent; transition:background .12s}
+.so-resize:hover::before,.so-resize.dragging::before{background:var(--field-border-focus)}
 .so-head{display:flex; align-items:flex-start; gap:12px; padding:20px 22px 16px; border-bottom:1px solid var(--line)}
 .so-title{font-size:17px; font-weight:800}
 .so-internal{font-size:12px; color:var(--t3); font-family:'SF Mono',Menlo,monospace; margin-top:2px}
@@ -1443,6 +1447,8 @@ html.theme-light .cpriv{background:#fff}
 .rf-key.pk{color:var(--tag-informative-fg); background:var(--tag-informative-bg); border:1px solid var(--tag-informative-bd)}
 .rf-key.fk{color:#8b5cf6; background:rgba(139,92,246,.13); border:1px solid rgba(139,92,246,.30)}
 .rf-field .minput,.rf-field .mselect{width:100%}
+/* Entity relationship slideout: align all form controls to full width (G3) */
+.mdw-relform .minput,.mdw-relform .mselect,.mdw-relform .mtextarea{width:100%; box-sizing:border-box}
 .mrow{display:flex; gap:12px}
 .mrow .mfield{flex:1}
 .mfield input[type=checkbox]{accent-color:var(--primary)}
@@ -1797,6 +1803,7 @@ html.theme-light .cmdk{background:#fff}
   .mtabs.mtabs-lg::-webkit-scrollbar{display:none}
   .mtabs.mtabs-lg .mtab{white-space:nowrap; flex-shrink:0}
   .slideout{width:100vw !important; border-radius:0}
+  .so-resize{display:none}
   .detail-head{flex-wrap:wrap}
   .dh-actions{width:100%; margin-top:10px}
   .mp-stats{grid-template-columns:repeat(2,1fr)}
@@ -1950,6 +1957,16 @@ html:not(.theme-light) .diag-legend{background:var(--surface-raised,#131C2E)}
 .md-trow-foot{display:flex; align-items:center; gap:9px; flex-wrap:wrap; margin-top:10px; font-size:12px; color:var(--t2)}
 .md-trow-foot .lrow-metric{display:inline-flex; align-items:center; gap:5px}
 .md-trow-foot .lrow-sep{color:var(--t3)}
+/* Entity → Tables sub-tab: whole card clickable (F1) */
+.mdw-tblcard{cursor:pointer; transition:border-color .12s, background .12s}
+.mdw-tblcard:hover{border-color:var(--field-border-hover,var(--line-strong)); background:var(--hover)}
+/* DS HighlightIcon — rounded tinted container + icon (F2) */
+.hlic{display:inline-flex; align-items:center; justify-content:center; flex-shrink:0}
+.hlic-md{width:32px; height:32px; border-radius:var(--r8)}
+.hlic-sm{width:24px; height:24px; border-radius:var(--r4,4px)}
+.hlic-md svg{width:18px; height:18px}
+.hlic-sm svg{width:15px; height:15px}
+.hlic-informative{background:var(--hi-informative-bg,var(--tag-informative-bg)); color:var(--hi-informative-icon,var(--tag-informative-fg))}
 .md-trow-exp{display:flex; align-items:center; gap:14px; margin-top:14px; padding-top:14px; border-top:1px solid var(--line)}
 .md-exp-note{font-size:12.5px; color:var(--t3); flex:1}
 
@@ -2754,7 +2771,8 @@ html:not(.theme-light) .mdw-seg.on{background:var(--surface-raised,#131C2E)}
 .mdw-rel-ent svg{color:var(--t3)}
 .mdw-rel-cross{display:inline-flex; align-items:center; gap:5px; font-size:11.5px; font-weight:600; color:var(--primary); background:rgba(43,127,255,0.1); border-radius:6px; padding:3px 8px}
 .mdw-rel-intra{font-size:11.5px; font-weight:600; color:var(--t2); background:var(--muted); border:1px solid var(--card-border,var(--line)); border-radius:6px; padding:3px 8px}
-.mdw-rel-open{font-size:12px; font-weight:600; color:var(--primary); cursor:pointer}
+.mdw-rel-open{display:inline-flex; align-items:center; gap:5px; font-size:12px; font-weight:600; color:var(--t2); background:transparent; border:none; border-radius:6px; padding:4px 8px; cursor:pointer; transition:background .12s, color .12s}
+.mdw-rel-open:hover{color:var(--t1); background:var(--hover)}
 .mdw-rel-desc{font-size:12.5px; color:var(--t2); margin:9px 0}
 .mdw-rel-meta{display:flex; align-items:center; gap:7px; flex-wrap:wrap; font-size:12px; color:var(--t2)}
 .mdw-rel-k{font-size:10px; font-weight:700; letter-spacing:.05em; color:var(--t3)}
@@ -3304,7 +3322,7 @@ function openPreview(id){ navigate('entities/'+id); return;
 }
 let _soClearTimer;
 function closeSlideout(){ const so=$('slideout'); so.classList.remove('open'); so.setAttribute('aria-hidden','true'); $('scrim').classList.remove('open');
-  clearTimeout(_soClearTimer); _soClearTimer=setTimeout(()=>{ if(!so.classList.contains('open')) so.innerHTML=''; },340); }
+  clearTimeout(_soClearTimer); _soClearTimer=setTimeout(()=>{ if(!so.classList.contains('open')){ so.innerHTML=''; so.style.width=''; } },340); }
 
 /* ── Entity detail data now lives on each entity (e.rels / e.cperms / e.cprivs / e.ceps) ── */
 function _defaultEndpoints(e){
@@ -7324,17 +7342,17 @@ function _mdEntWorkspace(m,md,e){
   const sub0=modelDetailState.ent.subtab||'overview';
   const _si=SCOPE_TIERS.indexOf(SCOPE);
   const sub=(TAB_VER[sub0] && SCOPE_TIERS.indexOf(TAB_VER[sub0])>_si) ? 'overview' : sub0; // gated sub-tab (diagram/privileges) → fall back to overview below its tier
-  const rail=md.ents.map(x=>`<button class="mdw-rail-item ${x.id===e.id?'on':''}" onclick="mdSelectEnt('${m.id}','${x.id}')"><span class="mdw-rail-ic">${_MDIC.ent}</span><span class="mdw-rail-name">${escapeHtml(x.name)}</span><span class="mdw-rail-r">${x.pii?`<span class="mdw-lock">${_MDIC.lock}</span>`:''}<span class="mdw-dot ${x.status==='Published'?'pub':x.status==='Draft'?'draft':'pend'}"></span></span></button>`).join('');
+  const rail=md.ents.map(x=>`<button class="mdw-rail-item ${x.id===e.id?'on':''}" onclick="mdSelectEnt('${m.id}','${x.id}')"><span class="mdw-rail-name">${escapeHtml(x.name)}</span><span class="mdw-rail-r">${x.pii?`<span class="mdw-lock">${_MDIC.lock}</span>`:''}<span class="mdw-dot ${x.status==='Published'?'pub':x.status==='Draft'?'draft':'pend'}"></span></span></button>`).join('');
   const tabs=[['overview','Overview'],['diagram','Diagram'],['tables','Tables'],['relationships','Relationships'],['privileges','Privileges']];
   const body = sub==='diagram'?_mdwDiagram(m,md,e) : sub==='tables'?_mdwTables(m,md,e) : sub==='relationships'?_mdwRelationships(m,md,e) : sub==='privileges'?_mdwPrivileges(m,md,e) : _mdwOverview(m,md,e);
   return `<div class="mdw">
     <aside class="mdw-rail">
-      <div class="mdw-rail-h"><button class="mdw-browse" onclick="mdBackToEntities('${m.id}')">${_CHEVL} Browse</button></div>
+      <div class="mdw-rail-h"><button class="mdw-browse" onclick="mdBackToEntities('${m.id}')">${_CHEVL} Back</button></div>
       <div class="mdw-rail-list">${rail}</div>
     </aside>
     <section class="mdw-main">
       <div class="mdw-head"><div class="mdw-head-l"><span class="mdw-title">${escapeHtml(e.name)}</span>${_stPill(e.status)}</div>
-        <button class="btn btn-primary" onclick="openMdEntityFull('${m.id}','${e.id}')">${_MDIC.open} Open</button></div>
+        <button class="btn" onclick="openMdEntityFull('${m.id}','${e.id}')">${_MDIC.open} Open</button></div>
       <div class="mdw-tabs">${tabs.map(([tid,l])=>`<button class="mdw-tab ${sub===tid?'on':''}" ${TAB_VER[tid]?`data-version="${TAB_VER[tid]}"`:''} onclick="mdEntWsTab('${m.id}','${tid}')">${l}</button>`).join('')}</div>
       <div class="mdw-body">${body}</div>
     </section>
@@ -7378,7 +7396,21 @@ function _mdwDiagram(m,md,e){
 function _mdwTables(m,md,e){
   const tbls=md.tables.filter(t=>t.entityId===e.id); const prim=tbls.filter(t=>t.role==='Primary').length, sec=tbls.length-prim;
   return `<div class="dsec-h" style="margin-bottom:12px"><div class="dsec-t">Tables<span class="dsec-sub">${tbls.length} table${tbls.length===1?'':'s'} · ${prim} primary · ${sec} secondary</span></div><button class="btn btn-primary" style="height:34px" onclick="openMdAddTable('${m.id}')">${_MDIC.plus} Add table</button></div>
-    <div class="md-trows">${tbls.map(t=>_mdTblRow(m,t)).join('')||'<div class="placeholder" style="padding:28px">No tables in this entity yet.</div>'}</div>`;
+    <div class="md-trows">${tbls.map(t=>_mdwTblCard(m,t)).join('')||'<div class="placeholder" style="padding:28px">No tables in this entity yet.</div>'}</div>`;
+}
+/* DS HighlightIcon — rounded tinted container + icon (Figma node 7919:10532) */
+function _hlic(icon,variant,size){ return `<span class="hlic hlic-${size||'md'} hlic-${variant||'informative'}">${icon}</span>`; }
+/* Entity → Tables sub-tab card: whole-card click (F1) · HighlightIcon (F2) · semantic status Tag (F3) */
+function _mdwTblCard(m,t){
+  return `<div class="md-trow mdw-tblcard" onclick="${_mdTblClick(m,t)}">
+    <div class="md-trow-h">
+      ${_hlic(_MDIC.tbl,'informative','sm')}<span class="md-trow-av">${av(P(t.owner),'sm')}</span>
+      <span class="md-trow-name">${escapeHtml(t.name)}</span><code class="md-code">${escapeHtml(t.code)}</code>
+      ${_entityChip(t.entityId,t.entity)}<span class="mini-badge ${t.role==='Primary'?'mb-primary':'mb-secondary'}">${escapeHtml(t.role)}</span>${t.pii?_piiBadge():''}
+      <span class="md-trow-right">${_stateTag(t.status)}<span class="lrow-time">${escapeHtml(t.updated)}</span><button class="lrow-menu" onclick="event.stopPropagation();_mdTblMenu('${m.id}','${t.id}',this)" aria-label="Table actions">${_MDIC.dots}</button></span>
+    </div>
+    <div class="md-trow-desc">${escapeHtml(t.desc)}</div>
+    <div class="md-trow-foot"><span class="lrow-metric">${_MDIC.col}${_colN(t)} columns</span><span class="lrow-sep">·</span><span class="lrow-metric">${_MDIC.rel}${t.rel} relations</span><span class="lrow-sep">·</span><span>${escapeHtml(P(t.owner).n)}</span></div></div>`;
 }
 function _mdwSoon(title,desc){ return `<div class="placeholder" style="padding:44px"><div class="placeholder-t">${escapeHtml(title)}</div>${escapeHtml(desc)}<div style="margin-top:8px;font-size:12px;color:var(--t3)">Coming in the next pass.</div></div>`; }
 
@@ -7394,8 +7426,9 @@ function _mdwEnsureRels(m,md,e){
 function _mdwIncoming(m,md,e){ const sibs=md.ents.filter(x=>x.id!==e.id); return sibs.length>1?[{t:sibs[1].name, k:'one-to-many', via:_rsnip(e.name)+'_id', del:'Cascade', srcId:sibs[1].id}]:[]; }
 function _mdwRelCard(m,e,r,idx){
   const es=_rsnip(e.name), ts=_rsnip(r.t);
+  const crossM=r.cross?MODELS.find(x=>x.name===r.cross):null;
   return `<div class="mdw-rel-card">
-    <div class="mdw-rel-top"><span class="mdw-rel-ent">${_MDIC.ent}${escapeHtml(e.name)}</span>${_ARROW}<span class="mdw-rel-ent">${escapeHtml(r.t)}</span><span class="card-badge">${_cardShort(r.k)}</span>${r.cross?`<span class="mdw-rel-cross">${_OPEN_IC} Cross-model · ${escapeHtml(r.cross)}</span>`:''}<span style="flex:1"></span><button class="lrow-menu" onclick="_mdwRelMenu('${m.id}','${e.id}',${idx},this)" aria-label="Relationship actions">${_MDIC.dots}</button></div>
+    <div class="mdw-rel-top"><span class="mdw-rel-ent">${_MDIC.ent}${escapeHtml(e.name)}</span>${_ARROW}<span class="mdw-rel-ent">${escapeHtml(r.t)}</span><span class="card-badge">${_cardShort(r.k)}</span>${r.cross?`<span class="mdw-rel-cross">Cross-model · ${escapeHtml(r.cross)}</span>`:''}<span style="flex:1"></span>${crossM?`<button class="mdw-rel-open" onclick="navigate('models/${crossM.id}')">Open ${escapeHtml(r.cross)} →</button>`:''}<button class="lrow-menu" onclick="_mdwRelMenu('${m.id}','${e.id}',${idx},this)" aria-label="Relationship actions">${_MDIC.dots}</button></div>
     <div class="mdw-rel-desc">${escapeHtml(r.desc)}</div>
     <div class="mdw-rel-meta"><span class="mdw-rel-k">FK</span><code class="md-code">${escapeHtml((r.cross?ts:es)+'.'+r.via)}</code><span class="mdw-rel-sep">·</span><span class="mdw-rel-k">ON DELETE</span><b>${escapeHtml(r.del)}</b>${!r.cross?`<span class="mdw-rel-sep">·</span><span class="mdw-rel-k">NAVIGATE</span><code class="md-code">${es}.${ts}</code> ↔ <code class="md-code">${ts}.${es}</code>`:''}</div>
   </div>`;
@@ -7423,7 +7456,7 @@ function openMdwRelForm(mid,eid,idx){
   const opts=sibs.concat(cross); if(r&&!opts.find(o=>o.v===r.t)) opts.unshift({v:r.t,cross:r.cross||''});
   $('slideout').innerHTML=`
     <div class="so-head"><div><div class="so-title">${r?'Edit relationship':'New relationship'}</div><div class="so-internal">${escapeHtml(e.name)} · ${escapeHtml(c.m.name)}</div></div><button class="so-close" onclick="closeSlideout()" aria-label="Close">✕</button></div>
-    <div class="so-body">
+    <div class="so-body mdw-relform">
       ${_RIF('Related entity',null,`<select class="minput" id="wr_target">${opts.map(o=>`<option value="${escapeHtml(o.v)}" data-cross="${escapeHtml(o.cross)}" ${r&&r.t===o.v?'selected':''}>${escapeHtml(o.v)}${o.cross?' (cross-model)':''}</option>`).join('')}</select>`,1)}
       ${_RIF('Cardinality',null,`<select class="minput" id="wr_card">${_CARD_OPTS.map(([v,l])=>`<option value="${v}" ${(r?r.k:'one-to-many')===v?'selected':''}>${l}</option>`).join('')}</select>`)}
       ${_RIF('Foreign key',null,`<input class="minput md-name-mono" id="wr_via" value="${r?escapeHtml(r.via):''}" placeholder="e.g. account_id" autocomplete="off">`,0,'field')}
@@ -7617,7 +7650,7 @@ function _mdTblWorkspace(m,md,t){
   const tabs=[['overview','Overview'],['columns','Columns'],['relationships','Relationships'],['data','Data'],['indexes','Indexes']];
   const body = sub==='columns'?_mdtwColumns(m,md,t) : sub==='relationships'?_mdtwRelationships(m,md,t) : sub==='data'?_mdtwData(m,md,t) : sub==='indexes'?_mdtwIndexesTab(m,md,t) : _mdtwOverview(m,md,t);
   return `<div class="mdw">
-    <aside class="mdw-rail"><div class="mdw-rail-h"><button class="mdw-browse" onclick="mdBackToTables('${m.id}')">${_CHEVL} Browse</button></div><div class="mdw-rail-list">${rail}</div></aside>
+    <aside class="mdw-rail"><div class="mdw-rail-h"><button class="mdw-browse" onclick="mdBackToTables('${m.id}')">${_CHEVL} Back</button></div><div class="mdw-rail-list">${rail}</div></aside>
     <section class="mdw-main">
       <div class="mdw-head"><div class="mdw-head-l"><span class="mdw-title">${escapeHtml(t.name)}</span><code class="md-code">${escapeHtml(t.code)}</code><span class="mini-badge ${t.role==='Primary'?'mb-primary':'mb-secondary'}">${escapeHtml(t.role)}</span>${_stPill(t.status)}${t.pii?_piiBadge():''}</div>
         <button class="btn" onclick="openMdTablePreview('${m.id}','${t.id}')">${_MD_EYE} Preview</button></div>
@@ -7888,7 +7921,35 @@ function _mdSync(m,md){
   m.entities=md.ents.length; _mdEdited(m);
 }
 function _mdColNames(n){ const base=['id','name','code','status','description','created_at','updated_at','owner_id','external_id','is_active','notes','type','source','region','amount','priority']; return base.slice(0,Math.max(1,Math.min(base.length,n||6))); }
-function _soOpen(){ const so=$('slideout'); so.classList.add('open'); so.setAttribute('aria-hidden','false'); $('scrim').classList.add('open'); }
+function _soOpen(){ const so=$('slideout'); _soAttachResize(so); so.classList.add('open'); so.setAttribute('aria-hidden','false'); $('scrim').classList.add('open'); }
+/* Generic slideout resize — appended on open (innerHTML is replaced each open, so re-append) */
+let _soResz=null;
+function _soAttachResize(so){
+  if(so.querySelector('.so-resize')) return;
+  const h=document.createElement('div');
+  h.className='so-resize'; h.setAttribute('aria-hidden','true'); h.title='Drag to resize';
+  h.addEventListener('pointerdown',_soResizeStart);
+  so.appendChild(h);
+}
+function _soResizeStart(ev){
+  ev.preventDefault();
+  const so=$('slideout');
+  _soResz={x:ev.clientX, w:so.getBoundingClientRect().width, h:ev.currentTarget};
+  _soResz.h.classList.add('dragging'); document.body.style.userSelect='none'; document.body.style.cursor='ew-resize';
+  window.addEventListener('pointermove',_soResizeMove); window.addEventListener('pointerup',_soResizeEnd);
+}
+function _soResizeMove(ev){
+  if(!_soResz) return;
+  const max=Math.min(900, window.innerWidth*0.96);
+  let w=_soResz.w+(_soResz.x-ev.clientX); // drag left → wider
+  w=Math.max(460, Math.min(max, w));
+  $('slideout').style.width=w+'px';
+}
+function _soResizeEnd(){
+  if(_soResz&&_soResz.h) _soResz.h.classList.remove('dragging');
+  _soResz=null; document.body.style.userSelect=''; document.body.style.cursor='';
+  window.removeEventListener('pointermove',_soResizeMove); window.removeEventListener('pointerup',_soResizeEnd);
+}
 function _mdKebab(btn,items){
   closeRowMenu();
   const it=x=> x==='sep' ? '<div class="rowmenu-sep"></div>' : `<button class="rowmenu-item ${x.danger?'danger':''}" onclick="closeRowMenu();${x.act}">${x.ic}${x.label}</button>`;
