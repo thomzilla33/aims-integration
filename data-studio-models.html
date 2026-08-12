@@ -2517,10 +2517,6 @@ html.theme-light .tb-tip{background:#fff}
 .ri-lock{display:inline-flex; color:var(--t3)}
 
 /* ── Columns tab subtabs (Schema/Rules/Sensitivity/Display) ── */
-.cv-subs{display:inline-flex; gap:2px; background:var(--muted); border:1px solid var(--card-border); border-radius:9px; padding:3px; margin-bottom:14px}
-.cv-sub{border:none; background:transparent; color:var(--t2); font-family:inherit; font-size:12.5px; font-weight:600; padding:6px 14px; border-radius:7px; cursor:pointer}
-.cv-sub:hover{color:var(--t1)}
-.cv-sub.on{background:var(--card-bg); color:var(--t1); box-shadow:0 1px 2px rgba(15,23,42,.1)}
 .cv-thead{height:44px; background:var(--muted)}
 .cv-th{font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.03em; color:var(--t3); display:flex; align-items:center}
 .cv-td{font-size:12.5px; color:var(--t1); min-width:0; overflow:hidden; text-overflow:ellipsis; display:flex; align-items:center; gap:4px; flex-wrap:wrap}
@@ -2537,6 +2533,29 @@ html.theme-light .tb-tip{background:#fff}
 .cv-cls-int{font-size:11.5px; color:var(--t2)}
 .ttd-tr.cv-static{cursor:default}
 .ttd-tr.cv-static:hover{background:transparent}
+/* Columns tab — single fixed table cells */
+.cv-typetext{color:var(--t2); font-size:12.5px}
+.cv-field-d.cv-sys{color:var(--t3); font-weight:600}
+.sens.pub{background:var(--muted); color:var(--t3); border:1px solid var(--field-border)}
+.cstr-fk{display:inline-flex; align-items:center; gap:4px; font-size:10.5px; font-weight:700; padding:2px 7px; border-radius:6px; background:var(--tag-purple-bg); color:var(--tag-purple-fg); border:1px solid var(--tag-purple-bd); white-space:nowrap; font-family:ui-monospace,Menlo,monospace}
+.cstr-fk svg{width:11px; height:11px; opacity:.85}
+/* Columns tab — hover tooltip */
+#colTip{position:fixed; z-index:120; display:none; pointer-events:none; min-width:220px; max-width:320px; background:var(--surface-floating-default,var(--bg2)); border:1px solid var(--line-strong,var(--line)); border-radius:12px; box-shadow:0 16px 42px rgba(0,0,0,0.42); padding:13px 15px; backdrop-filter:blur(24px) saturate(1.4)}
+html.theme-light #colTip{background:#fff; box-shadow:0 12px 34px rgba(15,23,42,.14)}
+.ctip-h{margin-bottom:9px}
+.ctip-d{font-size:13.5px; font-weight:700; color:var(--t1)}
+.ctip-n{font-size:11.5px; font-family:ui-monospace,Menlo,monospace; color:var(--t3); margin-top:2px}
+.ctip-badges{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px; align-items:center}
+.ctip-row{display:flex; justify-content:space-between; gap:14px; font-size:12px; padding:7px 0; border-top:1px solid var(--field-border)}
+.ctip-l{color:var(--t3)} .ctip-v{color:var(--t1); font-weight:600}
+.ctip-desc{font-size:12px; color:var(--t2); line-height:1.5; margin-top:7px}
+.ctip-muted{color:var(--t3)}
+/* New column slideout */
+.so-sub{font-size:12.5px; color:var(--t3); margin-top:4px}
+.so-sub code{font-family:ui-monospace,Menlo,monospace; font-size:11.5px; background:var(--muted); border:1px solid var(--field-border); border-radius:5px; padding:1px 6px; color:var(--t2)}
+.mfield-help{font-size:11px; color:var(--t3); line-height:1.4}
+.nc-note{display:flex; gap:9px; align-items:flex-start; font-size:12px; color:var(--t2); line-height:1.5; background:var(--muted); border:1px solid var(--field-border); border-radius:9px; padding:11px 12px}
+.nc-note svg{flex-shrink:0; color:var(--t3); margin-top:1px}
 
 /* ── Relationships tab: view toggle + diagram hub ── */
 .rel-vw{display:inline-flex; gap:2px; background:var(--muted); border:1px solid var(--card-border); border-radius:8px; padding:2px}
@@ -4427,6 +4446,7 @@ function tableRow(t){
 let tableDetailState = { id:null, tab:'overview', showSys:false };
 function renderTableDetail(id){
   const t=_table(id); if(!t){ location.hash='#/tables'; return; }
+  _dsfRerender = ()=>renderTableDetail(id);
   const tab=tableDetailState.tab;
   const _idxList=_tblIndexes(t);
   const _relIn=TABLES.filter(x=>x.id!==t.id).reduce((n,x)=>n+(x.rels||[]).filter(r=>_refId(r.target)===t.id).length,0);
@@ -4551,34 +4571,116 @@ function confirmRemoveIndex(tid,name){ const t=_table(tid); if(!t) return; _tblI
 function _removeIndex(tid,name){ const t=_table(tid); if(!t) return; _tblIndexes(t); t._idx=(t._idx||[]).filter(i=>i.name!==name);
   if(t.status==='Published') t.status='Draft'; closeModal(); toast('Index “'+name+'” deleted','ok'); renderTableDetail(tid); }
 function toggleSysCols(){ tableDetailState.showSys=!tableDetailState.showSys; renderTableDetail(tableDetailState.id); }
-/* ── Columns tab with subtabs Schema/Rules/Sensitivity/Display (port of TfdColumnsTab) ── */
-let _colsSub='schema';
-function setColsSub(kind,id,sub){ _colsSub=sub; if(kind==='table') renderTableDetail(id); else renderReferenceDetail(id); }
-function _cvFieldCell(c){ return `<div class="cv-field"><span class="cv-field-ic"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2.5" y="2.5" width="11" height="11" rx="2"/><path d="M2.5 6.5h11"/></svg></span><div class="cv-field-b"><span class="cv-field-d">${escapeHtml(c.d)}${c.pk?' <span class="cv-key">KEY</span>':''}</span><span class="cv-field-n">${escapeHtml(c.n)}</span></div></div>`; }
-function _cvConstraints(c){ const f=[c.pk&&'PK',c.uq&&'UQ',c.req&&'REQ',c.idx&&'IDX'].filter(Boolean); return f.length?f.map(x=>`<span class="flag on">${x}</span>`).join(' '):'<span style="color:var(--field-placeholder)">—</span>'; }
+/* ── Columns tab — single fixed table + filter dropdowns + hover tooltip ── */
+let _colFilter = { q:'', type:'all', sens:'all', constr:'all' };
+function _colSearchInput(v){ _colFilter.q=v; _dsfRerender(); setTimeout(()=>{const el=$('colSearch'); if(el){ el.focus(); el.setSelectionRange(v.length,v.length); }},0); }
+function _colFilterSet(k,v){ _colFilter[k]=v; _dsfOpen=null; _dsfRerender(); }
+function _cvFieldCell(c){
+  const ic = c.system
+    ? `<span class="cv-field-ic">${_MDIC.lock}</span>`
+    : `<span class="cv-field-ic"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2.5" y="2.5" width="11" height="11" rx="2"/><path d="M2.5 6.5h11"/></svg></span>`;
+  const sysTag = c.system ? ' <span class="so-locked" style="font-size:9.5px;font-weight:700">System</span>' : '';
+  return `<div class="cv-field">${ic}<div class="cv-field-b"><span class="cv-field-d ${c.system?'cv-sys':''}">${escapeHtml(c.d)}${c.pk?' <span class="cv-key">KEY</span>':''}${sysTag}</span><span class="cv-field-n">${escapeHtml(c.n)}</span></div></div>`;
+}
 function _cvDefault(c){ if(c.t==='Boolean') return 'false'; if(c.t==='Enum'&&c.ev&&c.ev[0]) return escapeHtml(c.ev[0][0]||c.ev[0]); return '<span style="color:var(--field-placeholder)">—</span>'; }
-function _cvYN(v){ return v?'<span class="cv-yes">Yes</span>':'<span class="cv-no">No</span>'; }
-function _cvLen(c){ return ({Text:'≤ 255',Integer:'−2³¹ … 2³¹',Decimal:'18, 2'})[c.t]||'<span style="color:var(--field-placeholder)">—</span>'; }
-function _cvFmt(c){ return c.fmt||({Date:'YYYY-MM-DD',Timestamp:'ISO 8601',UUID:'uuid v4',Decimal:'#,##0.00'})[c.t]||'<span style="color:var(--field-placeholder)">—</span>'; }
-function _cvAllowed(c){ return (c.t==='Enum'&&c.ev)?`${c.ev.length} values`:'<span style="color:var(--field-placeholder)">—</span>'; }
-function _cvSens(c){ const s=c.sens||'Internal'; return {cls:s, mask:s==='PII'?'Last 4 shown':s==='Financial'?'Fully masked':s==='Confidential'?'Redacted':'None', ret:c.sens?'7 years':'Default', enc:c.sens?'AES-256':'At rest'}; }
+/* FK target from internal name: <base>_id → <base>s.id (owner/created_by/updated_by → users.id) */
+function _fkTarget(c){
+  let base='';
+  if(c.ref) base=_refId(c.ref);                    // accurate target table when known
+  else { const m=(c.n||'').match(/^(.+)_id$/); if(m) base=m[1]; else return null; }
+  if(base==='owner'||base==='created_by'||base==='updated_by') return 'users.id';
+  let p; if(/y$/.test(base)) p=base.slice(0,-1)+'ies'; else if(/(s|x|z|ch|sh)$/.test(base)) p=base+'es'; else p=base+'s';
+  return p+'.id';
+}
+function _colConstraints(c){
+  const parts=[];
+  if(c.t==='Reference'){ const tgt=_fkTarget(c); parts.push(`<span class="cstr-fk">${_HIC.link}FK${tgt?' → '+escapeHtml(tgt):''}</span>`); }
+  if(c.uq) parts.push('<span class="flag on">Unique</span>');
+  if(c.idx) parts.push('<span class="flag on">Index</span>');
+  return parts.length?parts.join(''):'<span style="color:var(--field-placeholder)">—</span>';
+}
+function _colSensCell(c){ const s=c.sens||'Public'; const cls=s==='Public'?'pub':_sensCls(s); return `<span class="sens ${cls}">${escapeHtml(s)}</span>`; }
+function _colTipHtml(c){
+  const fk=_fkTarget(c);
+  const b1=`<span class="col-type ${_typeCls(c.t)}">${escapeHtml(c.t)}</span>`
+    + (c.t==='Reference'?`<span class="cstr-fk">${_HIC.link}FK${fk?' → '+escapeHtml(fk):''}</span>`:'')
+    + (c.idx?'<span class="flag on">Indexed</span>':'');
+  const b2=(c.req?'<span class="flag on">Required</span>':'<span class="flag">Nullable</span>') + _colSensCell(c);
+  return `<div class="ctip-h"><div class="ctip-d">${escapeHtml(c.d)}</div><div class="ctip-n">${escapeHtml(c.n)}</div></div>`
+    + `<div class="ctip-badges">${b1}</div>`
+    + `<div class="ctip-badges">${b2}</div>`
+    + `<div class="ctip-row"><span class="ctip-l">Nullable</span><span class="ctip-v">${c.req?'Required':'Nullable'}</span></div>`
+    + `<div class="ctip-desc">${c.desc?escapeHtml(c.desc):'<span class="ctip-muted">No description</span>'}</div>`;
+}
+function _colTipEl(){ let el=$('colTip'); if(!el){ el=document.createElement('div'); el.id='colTip'; document.body.appendChild(el); } return el; }
+function _colTipShow(rowEl){
+  const el=_colTipEl(); el.innerHTML=decodeURIComponent(rowEl.dataset.tip||''); el.style.display='block';
+  const r=rowEl.getBoundingClientRect(), w=el.offsetWidth;
+  let left=Math.max(8, Math.min(r.left+16, window.innerWidth-w-12));
+  let top=r.bottom+8; if(top+el.offsetHeight>window.innerHeight-8) top=Math.max(8, r.top-el.offsetHeight-8);
+  el.style.left=left+'px'; el.style.top=top+'px';
+}
+function _colTipHide(){ const el=$('colTip'); if(el) el.style.display='none'; }
+function _colRowMenu(tableId, colName, btn){
+  const t=_table(tableId); const c=t?t.cols.find(x=>x.n===colName):null; if(!c) return;
+  const _cp='<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="5" width="9" height="9" rx="1.5"/><path d="M11 5V3.5A1.5 1.5 0 0 0 9.5 2h-6A1.5 1.5 0 0 0 2 3.5v6A1.5 1.5 0 0 0 3.5 11H5"/></svg>';
+  _mdKebab(btn,[
+    {ic:_MDIC.open, label:'Open',      act:`openColumn('${tableId}','${colName}')`},
+    {ic:_MDIC.edit, label:'Edit',      act:`openEditColumn('${tableId}','${colName}')`},
+    {ic:_cp,        label:'Duplicate', act:`_dupColumn('${tableId}','${colName}')`},
+    c.pk?null:{ic:_RM_IC.del, label:'Delete', act:`confirmDeleteColumn('${tableId}','${colName}')`, danger:true},
+  ]);
+}
 function _colsView(kind, obj, fields, editable){
-  const sub=_colsSub, id=obj.id;
-  const SUBS=[['schema','Schema'],['rules','Rules'],['sensitivity','Sensitivity'],['display','Display']];
-  const subbar=`<div class="cv-subs">${SUBS.map(([s,l])=>`<button class="cv-sub ${sub===s?'on':''}" onclick="setColsSub('${kind}','${id}','${s}')">${l}</button>`).join('')}</div>`;
-  const toolbar=`<div class="ttd-head"><div class="ttd-head-l"><label class="dsf-search" style="max-width:220px;height:34px">${_HIC.search}<input type="text" placeholder="Search fields…" oninput="toast('Search — prototype')" autocomplete="off"></label>${kind==='table'?`<label class="cols-toggle" style="margin-left:2px"><input type="checkbox" ${tableDetailState.showSys?'checked':''} onchange="toggleSysCols()"> System</label>`:''}</div><div class="ttd-head-r">${editable?`<button class="btn btn-primary" style="height:34px" onclick="openCreateColumn('${id}')">${_PLUS} Add field</button>`:`<span class="so-locked" style="font-size:11px">Standard schema · locked</span>`}</div></div>`;
-  let heads, gt, rowFn;
-  if(sub==='rules'){ heads=['Field','Required','Unique','Length / range','Format','Allowed']; gt='grid-template-columns:minmax(160px,1.3fr) 90px 90px 140px 140px 110px';
-    rowFn=c=>`${_cvFieldCell(c)}<span class="cv-td">${_cvYN(c.req)}</span><span class="cv-td">${_cvYN(c.uq)}</span><span class="cv-td">${_cvLen(c)}</span><span class="cv-td mono">${_cvFmt(c)}</span><span class="cv-td">${_cvAllowed(c)}</span>`; }
-  else if(sub==='sensitivity'){ heads=['Field','Classification','Masking','Retention','Encryption']; gt='grid-template-columns:minmax(160px,1.3fr) 140px 150px 120px 130px';
-    rowFn=c=>{const m=_cvSens(c); return `${_cvFieldCell(c)}<span class="cv-td">${c.sens?`<span class="sens ${_sensCls(c.sens)}">${c.sens}</span>`:'<span class="cv-cls-int">Internal</span>'}</span><span class="cv-td">${m.mask}</span><span class="cv-td">${m.ret}</span><span class="cv-td">${m.enc}</span>`; }; }
-  else if(sub==='display'){ heads=['Field','Label','Format','Show in UI','Show in API']; gt='grid-template-columns:minmax(160px,1.3fr) minmax(0,1fr) 140px 110px 110px';
-    rowFn=c=>`${_cvFieldCell(c)}<span class="cv-td">${escapeHtml(c.d)}</span><span class="cv-td mono">${_cvFmt(c)}</span><span class="cv-td">${_cvYN(true)}</span><span class="cv-td">${_cvYN(!c.sens||c.sens!=='PII')}</span>`; }
-  else { heads=['Field','Type','Constraints','Default','Description']; gt='grid-template-columns:minmax(160px,1.3fr) 120px 170px 90px minmax(0,1.4fr)';
-    rowFn=c=>`${_cvFieldCell(c)}<span class="cv-td"><span class="col-type ${_typeCls(c.t)}">${c.t}</span></span><span class="cv-td">${_cvConstraints(c)}</span><span class="cv-td">${_cvDefault(c)}</span><span class="cv-td cv-desc">${c.desc?escapeHtml(c.desc):'<span style="color:var(--field-placeholder)">—</span>'}</span>`; }
-  const clickable = editable && sub==='schema';
-  const table=`<div class="ttd-table"><div class="ttd-thead cv-thead" style="${gt}">${heads.map(h=>`<span class="cv-th">${escapeHtml(h)}</span>`).join('')}</div>${fields.length?fields.map(c=>`<div class="ttd-tr ${(clickable&&!c.system)?'':'cv-static'}" style="${gt}" ${(clickable&&!c.system)?`onclick="openColumn('${id}','${escapeHtml(c.n)}')"`:''}>${rowFn(c)}</div>`).join(''):`<div class="empty" style="padding:40px">No fields yet.</div>`}</div>`;
-  return `${subbar}${toolbar}${table}`;
+  const id=obj.id, f=_colFilter, q=(f.q||'').toLowerCase();
+  const types=[...new Set(fields.map(c=>c.t))];
+  const rows=fields.filter(c=>{
+    if(q && !((c.d||'').toLowerCase().includes(q) || (c.n||'').toLowerCase().includes(q))) return false;
+    if(f.type!=='all' && c.t!==f.type) return false;
+    if(f.sens!=='all' && (c.sens||'Public')!==f.sens) return false;
+    if(f.constr==='fk' && c.t!=='Reference') return false;
+    if(f.constr==='unique' && !c.uq) return false;
+    if(f.constr==='indexed' && !c.idx) return false;
+    if(f.constr==='required' && !c.req) return false;
+    return true;
+  });
+  const cnt=fn=>fields.filter(fn).length;
+  const typeOpts=[{label:'All types',selected:f.type==='all',onclick:"_colFilterSet('type','all')"}]
+    .concat(types.map(tp=>({label:tp.toLowerCase(),selected:f.type===tp,onclick:`_colFilterSet('type','${tp}')`,count:cnt(c=>c.t===tp)})));
+  const SENS=['Public','PII','Financial','Confidential'];
+  const sensOpts=[{label:'All',selected:f.sens==='all',onclick:"_colFilterSet('sens','all')"}]
+    .concat(SENS.map(s=>({label:s,selected:f.sens===s,onclick:`_colFilterSet('sens','${s}')`,count:cnt(c=>(c.sens||'Public')===s)})));
+  const CONSTR=[['fk','Foreign key',c=>c.t==='Reference'],['unique','Unique',c=>!!c.uq],['indexed','Indexed',c=>!!c.idx],['required','Required',c=>!!c.req]];
+  const constrOpts=[{label:'All',selected:f.constr==='all',onclick:"_colFilterSet('constr','all')"}]
+    .concat(CONSTR.map(([v,l,fn])=>({label:l,selected:f.constr===v,onclick:`_colFilterSet('constr','${v}')`,count:cnt(fn)})));
+  const typeChip=f.type!=='all'?{label:f.type.toLowerCase(),onremove:"_colFilterSet('type','all')"}:null;
+  const sensChip=f.sens!=='all'?{label:f.sens,onremove:"_colFilterSet('sens','all')"}:null;
+  const constrChip=f.constr!=='all'?{label:(CONSTR.find(x=>x[0]===f.constr)||['','—'])[1],onremove:"_colFilterSet('constr','all')"}:null;
+  const toolbar=`<div class="ttd-head"><div class="ttd-head-l">`
+    + `<label class="dsf-search" style="max-width:240px;height:36px">${_HIC.search}<input id="colSearch" type="text" placeholder="Search columns…" value="${escapeHtml(f.q)}" oninput="_colSearchInput(this.value)" autocomplete="off"></label>`
+    + dsfDrop('colType','Type',typeChip,typeOpts)
+    + dsfDrop('colSens','Sensitivity',sensChip,sensOpts)
+    + dsfDrop('colConstr','Constraints',constrChip,constrOpts)
+    + (kind==='table'?`<label class="cols-toggle" style="margin-left:2px"><input type="checkbox" ${tableDetailState.showSys?'checked':''} onchange="toggleSysCols()"> System</label>`:'')
+    + `</div><div class="ttd-head-r">${editable?`<button class="btn btn-primary" style="height:36px" onclick="openCreateColumn('${id}')">${_PLUS} Add column</button>`:`<span class="so-locked" style="font-size:11px">Standard schema · locked</span>`}</div></div>`;
+  const gt='grid-template-columns:minmax(200px,1.6fr) 120px 110px 110px minmax(180px,1.4fr) 120px 44px';
+  const heads=['Display name','Type','Nullable','Default','Constraints','Sensitivity',''];
+  const filtering=q||f.type!=='all'||f.sens!=='all'||f.constr!=='all';
+  const bodyRows=rows.length?rows.map(c=>{
+    const clickable = editable && !c.system;
+    const tip=encodeURIComponent(_colTipHtml(c));
+    return `<div class="ttd-tr ${clickable?'':'cv-static'}" style="${gt}" data-tip="${tip}" onmouseenter="_colTipShow(this)" onmouseleave="_colTipHide()" ${clickable?`onclick="openColumn('${id}','${escapeHtml(c.n)}')"`:''}>`
+      + _cvFieldCell(c)
+      + `<span class="cv-td"><span class="cv-typetext">${escapeHtml((c.t||'').toLowerCase())}</span></span>`
+      + `<span class="cv-td">${c.req?'Required':'<span style="color:var(--t3)">Nullable</span>'}</span>`
+      + `<span class="cv-td">${_cvDefault(c)}</span>`
+      + `<span class="cv-td">${_colConstraints(c)}</span>`
+      + `<span class="cv-td">${_colSensCell(c)}</span>`
+      + `<span class="cv-td" style="justify-content:flex-end">${clickable?`<button class="lrow-menu" onclick="event.stopPropagation();_colRowMenu('${id}','${escapeHtml(c.n)}',this)" aria-label="Column actions">${_MDIC.dots}</button>`:''}</span>`
+      + `</div>`;
+  }).join(''):`<div class="empty" style="padding:40px">${filtering?'No columns match your filters.':'No columns yet.'}</div>`;
+  const table=`<div class="ttd-table"><div class="ttd-thead cv-thead" style="${gt}">${heads.map(h=>`<span class="cv-th">${escapeHtml(h)}</span>`).join('')}</div>${bodyRows}</div>`;
+  return `${toolbar}${table}`;
 }
 function columnsTab(t){
   const rows=(tableDetailState.showSys?SYSTEM_COLS.map(c=>({...c,system:true})):[]).concat(t.cols);
@@ -4647,24 +4749,42 @@ function _dupColumn(tableId,colName){ const t=_table(tableId); if(!t) return; co
 /* Create / edit column (modal + pre-save safety) */
 function _typeOptions(sel){ return COL_TYPES.map(t=>`<option value="${t}" ${t===sel?'selected':''}>${t}</option>`).join(''); }
 function _sensOptions(sel){ return ['','PII','Financial','Confidential'].map(s=>`<option value="${s}" ${s===(sel||'')?'selected':''}>${s||'Internal (none)'}</option>`).join(''); }
-function openCreateColumn(tableId){
-  $('modalScrim').innerHTML=`<div class="modal"><div class="modal-head"><div class="modal-ic" style="background:var(--tag-informative-bg);color:var(--tag-informative-fg);border-color:var(--tag-informative-bd)"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 3v10M3 8h10" stroke-linecap="round"/></svg></div><div class="modal-title">New column</div></div>
-    <div class="modal-body"><div class="mform">
-      <div class="mfield"><label class="mfield-l">Internal name</label><input class="minput" id="ncName" placeholder="e.g. loyalty_tier" autocomplete="off"></div>
-      <div class="mrow"><div class="mfield"><label class="mfield-l">Type</label><select class="mselect" id="ncType">${_typeOptions('Text')}</select></div><div class="mfield"><label class="mfield-l">Sensitivity</label><select class="mselect" id="ncSens">${_sensOptions('')}</select></div></div>
-      <div class="mfield"><label class="mfield-l">Description <span style="color:var(--field-placeholder);font-weight:400">· required for the LLM</span></label><textarea class="mtextarea" id="ncDesc" placeholder="What this column holds and how it's used."></textarea></div>
+let _ncEdited=false;
+function openCreateColumn(id){
+  const t=_table(id); const r=t?null:_ref(id); const obj=t||r; if(!obj) return;
+  _ncEdited=false;
+  const internal = t ? (t.code||t.id) : r.id;
+  const info='<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 7.2v3.4M8 5.2h.01" stroke-linecap="round"/></svg>';
+  const TYPES=['text','integer','decimal','boolean','date','timestamp','uuid','enum','reference','json','geo_point'];
+  $('slideout').innerHTML=`
+    <div class="so-head"><div style="flex:1;min-width:0">
+      <div class="so-title" style="display:flex;align-items:center;gap:9px"><span style="display:inline-flex;color:var(--primary)">${_PLUS}</span>New column</div>
+      <div class="so-sub">Add a column to table <code>${escapeHtml(internal)}</code></div>
+    </div><button class="so-close" onclick="closeSlideout()" aria-label="Close">✕</button></div>
+    <div class="so-body"><div class="mform">
+      <div class="mfield"><label class="mfield-l">Display name <span style="color:var(--field-text-error)">*</span></label><input class="minput" id="ncDisplay" placeholder="Customer Email" autocomplete="off" oninput="_ncDisplayIn()"></div>
+      <div class="mfield"><label class="mfield-l">Internal name <span style="color:var(--field-text-error)">*</span></label><input class="minput mono" id="ncInternal" placeholder="customer_email" autocomplete="off" oninput="_ncInternalIn()"><span class="mfield-help">Internal identifier. Cannot be changed after creation.</span></div>
+      <div class="mfield"><label class="mfield-l">Type <span style="color:var(--field-text-error)">*</span></label><select class="mselect" id="ncType" onchange="_ncCheck()">${TYPES.map(o=>`<option value="${o}"${o==='text'?' selected':''}>${o}</option>`).join('')}</select></div>
+      <div class="mfield"><label class="mfield-l">Description <span style="color:var(--field-text-error)">*</span></label><textarea class="mtextarea" id="ncDesc" placeholder="What does this column hold, and who relies on it?" oninput="_ncCheck()"></textarea><span class="mfield-help"><span id="ncCount">0 chars</span> · Helps users and AI understand what this column represents.</span></div>
+      <div class="nc-note">${info}<span>Everything else — nullability, constraints, sensitivity, validations — starts with safe defaults. You can refine it after creating.</span></div>
     </div></div>
-    <div class="modal-foot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveNewColumn('${tableId}')">Add column</button></div></div>`;
-  _modalOpen(); setTimeout(()=>{const el=$('ncName'); if(el)el.focus();},50);
+    <div class="so-foot"><button class="btn" onclick="closeSlideout()">Cancel</button><button class="btn btn-primary" id="ncCreate" disabled onclick="_createColumn('${id}')">${_PLUS} Create column</button></div>`;
+  _soOpen(); setTimeout(()=>{const el=$('ncDisplay'); if(el) el.focus();},60);
 }
-function saveNewColumn(tableId){
-  const t=_table(tableId); const name=($('ncName').value||'').trim().toLowerCase().replace(/\s+/g,'_');
-  if(!name){ toast('Enter a column name'); return; }
-  if(t.cols.find(c=>c.n===name)){ toast('A column with that name already exists'); return; }
-  const disp=name.replace(/_/g,' ').replace(/^\w/,ch=>ch.toUpperCase());
-  const sens=$('ncSens').value||null;
-  t.cols.push({n:name,d:disp,t:$('ncType').value,sens:sens,desc:($('ncDesc').value||'').trim()});
-  if(t.status==='Published') t.status='Draft'; closeModal(); toast('Column “'+disp+'” added','ok'); renderTableDetail(tableId);
+function _ncDisplayIn(){ if(!_ncEdited){ const i=$('ncInternal'); if(i) i.value=_slug($('ncDisplay').value); } _ncCheck(); }
+function _ncInternalIn(){ _ncEdited=true; _ncCheck(); }
+function _ncCheck(){ const d=$('ncDisplay'),i=$('ncInternal'),ty=$('ncType'),de=$('ncDesc'),b=$('ncCreate'),cnt=$('ncCount'); if(!b) return; if(cnt&&de) cnt.textContent=de.value.length+' chars'; const ok=!!(d&&i&&ty&&de&&d.value.trim()&&i.value.trim()&&ty.value&&de.value.trim()); b.disabled=!ok; }
+function _capColType(v){ return ({text:'Text',integer:'Integer',decimal:'Decimal',boolean:'Boolean',date:'Date',timestamp:'Timestamp',uuid:'UUID',enum:'Enum',reference:'Reference',json:'JSON',geo_point:'Geo point'})[v]||'Text'; }
+function _createColumn(id){
+  const t=_table(id); const r=t?null:_ref(id); const obj=t||r; if(!obj) return;
+  const disp=($('ncDisplay').value||'').trim();
+  const internal=($('ncInternal').value||'').trim().toLowerCase().replace(/\s+/g,'_');
+  const typeRaw=$('ncType').value; const desc=($('ncDesc').value||'').trim();
+  if(!disp||!internal||!typeRaw||!desc){ toast('Fill in all required fields'); return; }
+  if(t && t.cols.find(c=>c.n===internal)){ toast('A column with that name already exists'); return; }
+  const col={ n:internal, d:disp, t:_capColType(typeRaw), req:false, uq:false, idx:false, pk:false, desc };
+  if(t){ t.cols.push(col); if(t.status==='Published') t.status='Draft'; closeSlideout(); toast('Column “'+disp+'” added','ok'); renderTableDetail(id); }
+  else { closeSlideout(); toast('Column “'+disp+'” added','ok'); renderReferenceDetail(id); }
 }
 function openEditColumn(tableId, colName){
   const t=_table(tableId); const c=t.cols.find(x=>x.n===colName); if(!c) return;
