@@ -8049,7 +8049,7 @@ function _doAssociate(mid){
   });
   _mdSync(m,md); _assocSel=null; closeModal(); closeSlideout(); toast(n+' entit'+(n===1?'y':'ies')+' associated to “'+m.name+'”','ok'); modelDetailState.tab='entities'; renderModelDetail(mid);
 }
-function openMdAddEntity(id){ openEntityMarketplaceModal(id); }
+function openMdAddEntity(id){ if(SCOPE!=='v2'){ openCreateEntityModal(id); return; } openEntityMarketplaceModal(id); }   // V1/V1.2: New = Start-from-scratch only; marketplace catalog is Full vision (ARP-1015)
 function openMdEditEntity(id,entId){ openMdEntityForm(id,entId); }
 function openCreateEntityModal(mid){
   const c=_mdCtx(mid); if(!c) return; const owners=_mdOwners();
@@ -8196,7 +8196,7 @@ function _mdRemoveEnt(id,entId){ const c=_mdCtx(id); if(!c) return; const {m,md}
   _mdSync(m,md); closeModal(); closeSlideout(); toast('“'+nm+'” removed','ok'); renderModelDetail(id); }
 
 /* ── TABLES ───────────────────────────────────────────────── */
-function openMdAddTable(id){ openTableMarketplaceModal(id); }
+function openMdAddTable(id){ if(SCOPE!=='v2'){ openMdTableForm(id,null); return; } openTableMarketplaceModal(id); }   // V1/V1.2: New = Start-from-scratch only; marketplace catalog is Full vision (ARP-1015)
 function openMdEditTable(id,tblId){ openMdTableForm(id,tblId); }
 function openMdTableForm(id,tblId){
   const c=_mdCtx(id); if(!c) return; const {m,md}=c; const t=tblId?md.tables.find(x=>x.id===tblId):null; const owners=_mdOwners();
