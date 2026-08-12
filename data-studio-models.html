@@ -2503,6 +2503,7 @@ html.theme-light .tb-tip{background:#fff}
 .ttd-tr:hover{background:var(--hover)}
 .ttd-tr.is-sel{background:var(--tag-informative-bg,rgba(33,115,255,.06))}
 .ttd-td{font-size:13px; color:var(--t1); min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.ttd-td-sys{color:var(--t3); font-variant-numeric:tabular-nums}
 .ttd-td.mono{font-family:ui-monospace,Menlo,monospace; font-size:12px; color:var(--t2)}
 .ttd-desc{color:var(--t2); font-size:12.5px}
 .mv-check{width:18px; height:18px; flex-shrink:0; border:1.5px solid var(--field-border-hover,var(--line-strong)); border-radius:5px; background:var(--field-bg); display:inline-flex; align-items:center; justify-content:center; cursor:pointer; padding:0}
@@ -5211,25 +5212,47 @@ function openTblBulkDelete(id,n){
     <div class="modal-foot"><button class="btn" onclick="closeModal()">Cancel</button><button class="btn btn-primary" style="background:var(--field-text-error,#dc2626);border-color:transparent" onclick="dataSelClear('${id}');closeModal();toast('${n} record${n===1?'':'s'} deleted','ok')">Delete</button></div></div>`;
   _modalOpen();
 }
+/* System columns shown read-only in the Data grid (id is rendered as its own column; created_at/updated_at are toggleable and NEVER appear in the add/edit forms — those iterate t.cols only). */
+const DATA_SYS_COLS=[{n:'created_at',d:'Created at',t:'Timestamp',sys:1},{n:'updated_at',d:'Updated at',t:'Timestamp',sys:1}];
+function _dataSysVal(n,i){ return _mockVal({t:'Timestamp'}, n==='updated_at'?i+4:i); }
+/* Inline dynamic quick-filters — surface the table's naturally faceted columns (Boolean/Enum + low-cardinality Text) as dropdowns, wired to the same colFilters used by the full Filters slideout. */
+function _dataQuickCols(t){ const rows=_mockRows(t); const out=[]; t.cols.forEach(c=>{ if(c.t==='Boolean'||c.t==='Enum'){ out.push(c); return; } if(c.t==='Text'){ const d=new Set(rows.map(r=>r[c.n])); if(d.size>1&&d.size<=10) out.push(c); } }); return out.slice(0,4); }
+function dataQuickSet(tid,col,val){ const s=dataState; s.colFilters=s.colFilters||{}; if(val==null||val===''||val==='__all') delete s.colFilters[col]; else s.colFilters[col]={op:'is',val:String(val)}; s.page=1; dsfPickSingle(); renderTableDetail(tid); }
+function _dataQuickFilters(t){
+  const qcols=_dataQuickCols(t); if(!qcols.length) return ''; const rows=_mockRows(t); const cfs=dataState.colFilters||{};
+  return qcols.map(c=>{
+    const cur=cfs[c.n]&&cfs[c.n].op==='is'?cfs[c.n].val:null;
+    let opts;
+    if(c.t==='Boolean') opts=[['true','True'],['false','False']];
+    else if(c.t==='Enum'&&c.ev) opts=c.ev.map(e=>[e[0],e[1]]);
+    else opts=[...new Set(rows.map(r=>String(r[c.n])))].slice(0,8).map(v=>[v,v]);
+    const curLbl=cur!=null?((c.t==='Enum'&&c.ev&&(c.ev.find(e=>e[0]===cur)||[])[1])||cur):null;
+    const chip=cur!=null?{label:(c.d||c.n)+': '+curLbl, onremove:`dataQuickSet('${t.id}','${_jsq(c.n)}','__all')`}:null;
+    const options=[{label:'All',selected:cur==null,onclick:`dataQuickSet('${t.id}','${_jsq(c.n)}','__all')`}].concat(opts.map(([v,l])=>({label:l,selected:String(cur)===String(v),onclick:`dataQuickSet('${t.id}','${_jsq(c.n)}','${_jsq(String(v))}')`})));
+    return dsfDrop('dq_'+t.id+'_'+c.n, c.d||c.n, chip, options);
+  }).join('');
+}
 function dataTab(t){
   const s=dataState; const rows=_mockRows(t); const q=(s.search||'').toLowerCase(); const per=s.perPage||25;
   const _dh=(dataState.hidden=dataState.hidden||{}); const hid=_dh[t.id]=_dh[t.id]||new Set();
   const cols=t.cols.filter(c=>!hid.has(c.n)); // A1: render all columns with lateral scroll (was slice(0,6)); hidden columns excluded via the Columns chooser
+  const sysVis=DATA_SYS_COLS.filter(c=>!hid.has(c.n)); const gcols=sysVis.concat(cols); const _totCols=DATA_SYS_COLS.length+t.cols.length; // created_at/updated_at as read-only system columns (toggleable via the Columns chooser)
   let filtered=q?rows.filter(r=>Object.values(r).some(v=>String(v).toLowerCase().includes(q))):rows.slice();
   const _cfs=Object.entries(s.colFilters||{}).filter(([,f])=>_cfActive(f)); // A4: per-column filters (AND across columns)
   if(_cfs.length) filtered=filtered.filter(r=>_cfs.every(([col,f])=>_matchColFilter(r[col],f)));
-  if(s.sortCol){ const c=s.sortCol; filtered.sort((a,b)=>{ const va=(''+(c==='__id'?a.__id:(a[c]||''))).toLowerCase(), vb=(''+(c==='__id'?b.__id:(b[c]||''))).toLowerCase(); const cmp=va<vb?-1:va>vb?1:0; return s.sortDir==='desc'?-cmp:cmp; }); }
+  if(s.sortCol){ const c=s.sortCol; const gv=r=> c==='__id'?r.__id : ((c==='created_at'||c==='updated_at')?_dataSysVal(c,rows.indexOf(r)):(r[c]||'')); filtered.sort((a,b)=>{ const va=(''+gv(a)).toLowerCase(), vb=(''+gv(b)).toLowerCase(); const cmp=va<vb?-1:va>vb?1:0; return s.sortDir==='desc'?-cmp:cmp; }); }
   const total=filtered.length, pages=Math.max(1,Math.ceil(total/per)), page=Math.min(Math.max(1,s.page||1),pages);
   const start=(page-1)*per, end=Math.min(start+per,total), vis=filtered.slice(start,end);
   s.sel=s.sel||new Set(); const ids=vis.map(r=>r.__id); const allSel=ids.length&&ids.every(i=>s.sel.has(i)); const selN=s.sel.size;
-  const _minW=38+150+cols.length*172+56; // A1: force lateral scroll when columns exceed the viewport
-  const gt=`grid-template-columns:38px 150px ${cols.map(()=>'minmax(160px,1fr)').join(' ')};min-width:${_minW}px`;
-  const HCOLS=[{key:'__id',disp:'ID',name:'__id'}].concat(cols.map(c=>({key:c.n,disp:c.d,name:c.n})));
+  const _minW=38+150+gcols.length*172+56; // A1: force lateral scroll when columns exceed the viewport
+  const gt=`grid-template-columns:38px 150px ${gcols.map(()=>'minmax(160px,1fr)').join(' ')};min-width:${_minW}px`;
+  const HCOLS=[{key:'__id',disp:'ID',name:'__id'}].concat(gcols.map(c=>({key:c.n,disp:c.d,name:c.n})));
   const cb=(ck,onc)=>`<button class="mv-check ${ck?'on':''}" onclick="event.stopPropagation();${onc}" role="checkbox" aria-checked="${ck}">${ck?'<svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.5 3.5L13 4.5"/></svg>':''}</button>`;
   const sortIc=(col)=>{ if(s.sortCol!==col) return '<svg class="ttd-sort" width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M5 6.5L8 3.5l3 3M5 9.5l3 3 3-3" opacity=".5"/></svg>'; return s.sortDir==='asc'?'<svg class="ttd-sort on" width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 9.5L8 5.5l4 4"/></svg>':'<svg class="ttd-sort on" width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6.5L8 10.5l4-4"/></svg>'; };
   return `<div class="ttd-head">
      <div class="ttd-head-l">
        <label class="dsf-search" style="max-width:250px;height:34px"><svg class="dsf-search-ic" width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="7" cy="7" r="4.5"/><path d="M11 11l3 3"/></svg><input id="dataSearch" type="text" placeholder="Search records…" value="${escapeHtml(s.search||'')}" oninput="dataSearchInput('${t.id}',this.value)" autocomplete="off"></label>
+       ${_dataQuickFilters(t)}
        <button class="btn ttd-tool ${_cfs.length?'has-active':''}" style="height:34px" onclick="openTblFilters('${t.id}')"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3.5h12M4 8h8M6.5 12.5h3"/></svg> Filters${_cfs.length?`<span class="mk-fcount">${_cfs.length}</span>`:''}</button>
      </div>
      <div class="ttd-head-r">
@@ -5249,16 +5272,17 @@ function dataTab(t){
      ${vis.length?vis.map(r=>`<div class="ttd-tr ${s.sel.has(r.__id)?'is-sel':''}" style="${gt}" onclick="openRecord('${t.id}',${rows.indexOf(r)})">
         ${cb(s.sel.has(r.__id),`dataSelToggle('${t.id}','${escapeHtml(r.__id)}')`)}
         <span class="ttd-td mono">${escapeHtml(r.__id)}</span>
-        ${cols.map(c=>`<span class="ttd-td">${_fmtVal(c,r[c.n])}</span>`).join('')}
+        ${gcols.map(c=>`<span class="ttd-td${c.sys?' ttd-td-sys':''}">${c.sys?_fmtVal(c,_dataSysVal(c.n,rows.indexOf(r))):_fmtVal(c,r[c.n])}</span>`).join('')}
       </div>`).join(''):`<div class="empty" style="padding:44px">${s.search?`No records match “${escapeHtml(s.search||'')}”.`:(t.cols.length?'No records yet.':'Add columns to this table, then add records.')}</div>`}
    </div>
    <div class="ttd-foot">
-     <div class="ttd-foot-l"><span class="ttd-foot-lbl">Rows per page</span><select class="ttd-per" onchange="dataPerPage('${t.id}',this.value)">${[10,25,50,100].map(n=>`<option ${n===per?'selected':''}>${n}</option>`).join('')}</select><span class="ttd-foot-count">Showing ${total?start+1:0}–${end} of ${total} rows${cols.length<t.cols.length?` · ${cols.length} of ${t.cols.length} columns`:''}</span></div>
+     <div class="ttd-foot-l"><span class="ttd-foot-lbl">Rows per page</span><select class="ttd-per" onchange="dataPerPage('${t.id}',this.value)">${[10,25,50,100].map(n=>`<option ${n===per?'selected':''}>${n}</option>`).join('')}</select><span class="ttd-foot-count">Showing ${total?start+1:0}–${end} of ${total} rows${gcols.length<_totCols?` · ${gcols.length} of ${_totCols} columns`:''}</span></div>
      <div class="ttd-pager"><button class="ttd-pg-btn" ${page<=1?'disabled':''} onclick="dataSetPage('${t.id}',${page-1})"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M10 4L6 8l4 4"/></svg> Previous</button><span class="ttd-pg-ind">Page ${page} of ${pages}</span><button class="ttd-pg-btn" ${page>=pages?'disabled':''} onclick="dataSetPage('${t.id}',${page+1})">Next <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4l4 4-4 4"/></svg></button></div>
    </div>`;
 }
 function _colChooser(btn,tid){ const t=_table(tid); if(!t) return; const _dh=(dataState.hidden=dataState.hidden||{}); const hid=_dh[tid]=_dh[tid]||new Set();
-  const html=t.cols.map(c=>`<button class="pop-item" onclick="_toggleCol('${tid}','${escapeHtml(c.n)}')"><span class="mv-check ${hid.has(c.n)?'':'on'}" style="pointer-events:none">${hid.has(c.n)?'':'<svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.5 3.5L13 4.5"/></svg>'}</span>${escapeHtml(c.d||c.n)}</button>`).join('');
+  const all=DATA_SYS_COLS.concat(t.cols);
+  const html=all.map(c=>`<button class="pop-item" onclick="_toggleCol('${tid}','${escapeHtml(c.n)}')"><span class="mv-check ${hid.has(c.n)?'':'on'}" style="pointer-events:none">${hid.has(c.n)?'':'<svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.5 3.5L13 4.5"/></svg>'}</span>${escapeHtml(c.d||c.n)}${c.sys?' <span class="so-locked" style="font-size:9.5px;margin-left:4px">sys</span>':''}</button>`).join('');
   _openPop(btn, html);
 }
 function _toggleCol(tid,name){ const _dh=(dataState.hidden=dataState.hidden||{}); const hid=_dh[tid]=_dh[tid]||new Set(); if(hid.has(name)) hid.delete(name); else hid.add(name); _closePop(); renderTableDetail(tid); }
