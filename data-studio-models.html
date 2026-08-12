@@ -3445,7 +3445,7 @@ function _etTblRow(e,t,idx){
       <span class="md-trow-right">${_stPill(t.status)}<span class="lrow-time">${escapeHtml(t.updated)}</span><button class="lrow-menu" onclick="event.stopPropagation();_entTblMenu('${e.id}',${idx},this)" aria-label="Table actions">${_MDIC.dots}</button><span class="et-chev${open?' on':''}">${_MDIC.chev}</span></span>
     </div>
     <div class="md-trow-desc">${escapeHtml(t.desc)}</div>
-    <div class="md-trow-foot"><span class="lrow-metric">${_MDIC.col}${t.cols} columns</span><span class="lrow-sep">·</span><span class="lrow-metric">${_MDIC.rel}${t.rel} relations</span><span class="lrow-sep">·</span><span>${escapeHtml(P(t.owner).n)}</span></div>
+    <div class="md-trow-foot"><span class="lrow-metric">${_MDIC.col}${_colN(t)} columns</span><span class="lrow-sep">·</span><span class="lrow-metric">${_MDIC.rel}${t.rel} relations</span><span class="lrow-sep">·</span><span>${escapeHtml(P(t.owner).n)}</span></div>
     ${colsHtml}
   </div>`;
 }
@@ -3453,7 +3453,7 @@ function _etTblCard(e,t){
   return `<div class="mcard" onclick="etView('list');etExpand('${t.id}')">
     <div class="mcard-top"><div style="display:flex;align-items:center;gap:8px;min-width:0"><div class="mcard-title">${escapeHtml(t.alias)}</div><span class="mini-badge ${t.role==='Primary'?'mb-primary':'mb-secondary'}">${escapeHtml(t.role)}</span></div>${_stateTag(t.status)}</div>
     <div class="mcard-desc">${escapeHtml(t.desc)}</div>
-    <div class="mcard-meta2"><span class="cmeta">${_CIC.user}${escapeHtml(P(t.owner).n)}</span><span class="cmeta">${_CIC.col}${t.cols} cols</span><span class="cmeta">${_CIC.link}${t.rel} rel</span><span class="cmeta">${_CIC.clock}${escapeHtml(t.updated)}</span></div></div>`;
+    <div class="mcard-meta2"><span class="cmeta">${_CIC.user}${escapeHtml(P(t.owner).n)}</span><span class="cmeta">${_CIC.col}${_colN(t)} cols</span><span class="cmeta">${_CIC.link}${t.rel} rel</span><span class="cmeta">${_CIC.clock}${escapeHtml(t.updated)}</span></div></div>`;
 }
 function _tableExists(id){ return !!(typeof _table==='function'?_table(id):TABLES.find(t=>t.id===id)); }
 /* ── Relationships tab: Diagram+list / Diagram / List (list = expandable cards) ── */
@@ -5194,14 +5194,14 @@ function _fmtVal(c,v){
   if(c.t==='Reference') return '<span style="color:var(--primary)">'+escapeHtml(String(v))+'</span>';
   return escapeHtml(String(v));
 }
-function dataSearchInput(tid,v){ dataState.search=v; dataState.page=1; renderTableDetail(tid); setTimeout(()=>{const el=$('dataSearch'); if(el){el.focus(); el.setSelectionRange(v.length,v.length);}},0); }
-function dataSetPage(tid,p){ dataState.page=p; renderTableDetail(tid); }
-function dataRefresh(tid){ toast('Data refreshed','ok'); renderTableDetail(tid); }
-function dataSort(tid,col){ const s=dataState; if(s.sortCol===col){ s.sortDir=s.sortDir==='asc'?'desc':'asc'; } else { s.sortCol=col; s.sortDir='asc'; } renderTableDetail(tid); }
-function dataPerPage(tid,n){ dataState.perPage=+n; dataState.page=1; renderTableDetail(tid); }
-function dataSelToggle(tid,id){ const s=dataState; s.sel=s.sel||new Set(); s.sel.has(id)?s.sel.delete(id):s.sel.add(id); renderTableDetail(tid); }
-function dataSelAll(tid,ids){ const s=dataState; s.sel=s.sel||new Set(); const all=ids.length&&ids.every(i=>s.sel.has(i)); ids.forEach(i=>all?s.sel.delete(i):s.sel.add(i)); renderTableDetail(tid); }
-function dataSelClear(tid){ dataState.sel=new Set(); renderTableDetail(tid); }
+function dataSearchInput(tid,v){ dataState.search=v; dataState.page=1; _recRerender(tid); setTimeout(()=>{const el=$('dataSearch'); if(el){el.focus(); el.setSelectionRange(v.length,v.length);}},0); }
+function dataSetPage(tid,p){ dataState.page=p; _recRerender(tid); }
+function dataRefresh(tid){ toast('Data refreshed','ok'); _recRerender(tid); }
+function dataSort(tid,col){ const s=dataState; if(s.sortCol===col){ s.sortDir=s.sortDir==='asc'?'desc':'asc'; } else { s.sortCol=col; s.sortDir='asc'; } _recRerender(tid); }
+function dataPerPage(tid,n){ dataState.perPage=+n; dataState.page=1; _recRerender(tid); }
+function dataSelToggle(tid,id){ const s=dataState; s.sel=s.sel||new Set(); s.sel.has(id)?s.sel.delete(id):s.sel.add(id); _recRerender(tid); }
+function dataSelAll(tid,ids){ const s=dataState; s.sel=s.sel||new Set(); const all=ids.length&&ids.every(i=>s.sel.has(i)); ids.forEach(i=>all?s.sel.delete(i):s.sel.add(i)); _recRerender(tid); }
+function dataSelClear(tid){ dataState.sel=new Set(); _recRerender(tid); }
 /* A4: per-column dynamic filters — type-aware operators, multiple columns at once */
 function _cfActive(f){ return !!(f && ((f.val!=null&&f.val!=='')||(f.val2!=null&&f.val2!=='')) ); }
 function _matchColFilter(cell,f){
@@ -5239,7 +5239,7 @@ function _readColFilter(c){
   const op=(q('.cf-txtop')||{}).value||'contains'; const v=(q('.cf-txtv')||{}).value||''; return v.trim()!==''?{op,val:v.trim()}:null;
 }
 function openTblFilters(id){
-  const t=_table(id); const cfs=dataState.colFilters||{};
+  const t=_recTable(id); const cfs=dataState.colFilters||{};
   $('slideout').innerHTML=`
     <div class="so-head"><div class="so-title">Filters</div><button class="so-close" onclick="closeSlideout()" aria-label="Close">✕</button></div>
     <div class="so-body"><div class="flt-sec"><div class="flt-sec-h">Filter by column</div>
@@ -5251,8 +5251,8 @@ function openTblFilters(id){
     <div class="so-foot"><button class="btn" onclick="clearTblFilters('${id}')">Clear all</button><button class="btn btn-primary" onclick="applyTblFilters('${id}')">Apply filters</button></div>`;
   _soOpen();
 }
-function applyTblFilters(id){ const t=_table(id); const out={}; t.cols.forEach(c=>{ const f=_readColFilter(c); if(f) out[c.n]=f; }); dataState.colFilters=out; dataState.page=1; closeSlideout(); renderTableDetail(id); }
-function clearTblFilters(id){ dataState.colFilters={}; dataState.page=1; closeSlideout(); renderTableDetail(id); }
+function applyTblFilters(id){ const t=_recTable(id); const out={}; t.cols.forEach(c=>{ const f=_readColFilter(c); if(f) out[c.n]=f; }); dataState.colFilters=out; dataState.page=1; closeSlideout(); _recRerender(id); }
+function clearTblFilters(id){ dataState.colFilters={}; dataState.page=1; closeSlideout(); _recRerender(id); }
 function _tblDataKebab(btn,id){ _openPop(btn, `
   <button class="pop-item" onclick="_closePop();openImportWizard('${id}','table')"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 10V2M5 5l3-3 3 3M3 11v2h10v-2"/></svg>Import records…</button>
   <button class="pop-item" onclick="_closePop();toast('Exported records to CSV','ok')"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v8M5 7l3 3 3-3M3 13h10"/></svg>Export all as CSV</button>
@@ -5268,7 +5268,7 @@ const DATA_SYS_COLS=[{n:'created_at',d:'Created at',t:'Timestamp',sys:1},{n:'upd
 function _dataSysVal(n,i){ return _mockVal({t:'Timestamp'}, n==='updated_at'?i+4:i); }
 /* Inline dynamic quick-filters — surface the table's naturally faceted columns (Boolean/Enum + low-cardinality Text) as dropdowns, wired to the same colFilters used by the full Filters slideout. */
 function _dataQuickCols(t){ const rows=_mockRows(t); const out=[]; t.cols.forEach(c=>{ if(c.t==='Boolean'||c.t==='Enum'){ out.push(c); return; } if(c.t==='Text'){ const d=new Set(rows.map(r=>r[c.n])); if(d.size>1&&d.size<=10) out.push(c); } }); return out.slice(0,4); }
-function dataQuickSet(tid,col,val){ const s=dataState; s.colFilters=s.colFilters||{}; if(val==null||val===''||val==='__all') delete s.colFilters[col]; else s.colFilters[col]={op:'is',val:String(val)}; s.page=1; dsfPickSingle(); renderTableDetail(tid); }
+function dataQuickSet(tid,col,val){ const s=dataState; s.colFilters=s.colFilters||{}; if(val==null||val===''||val==='__all') delete s.colFilters[col]; else s.colFilters[col]={op:'is',val:String(val)}; s.page=1; dsfPickSingle(); _recRerender(tid); }
 function _dataQuickFilters(t){
   const qcols=_dataQuickCols(t); if(!qcols.length) return ''; const rows=_mockRows(t); const cfs=dataState.colFilters||{};
   return qcols.map(c=>{
@@ -5331,14 +5331,21 @@ function dataTab(t){
      <div class="ttd-pager"><button class="ttd-pg-btn" ${page<=1?'disabled':''} onclick="dataSetPage('${t.id}',${page-1})"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M10 4L6 8l4 4"/></svg> Previous</button><span class="ttd-pg-ind">Page ${page} of ${pages}</span><button class="ttd-pg-btn" ${page>=pages?'disabled':''} onclick="dataSetPage('${t.id}',${page+1})">Next <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4l4 4-4 4"/></svg></button></div>
    </div>`;
 }
-function _colChooser(btn,tid){ const t=_table(tid); if(!t) return; const _dh=(dataState.hidden=dataState.hidden||{}); const hid=_dh[tid]=_dh[tid]||new Set();
+/* Data-row authoring works on standalone tables (TABLES) AND in-model workspace tables (md.tables, ids like "<modelId>__<code>"). Resolve the host table + its re-render generically. */
+function _recTable(id){
+  let t=_table(id); if(t) return t;
+  if(id && id.indexOf('__')>=0){ const m=_model(id.split('__')[0]); if(m){ const wt=(_md(m).tables||[]).find(x=>x.id===id); if(wt){ wt.cols=wt.cols||_mdtwCols(wt); wt.alias=wt.alias||wt.name; return wt; } } }
+  return _ref(id);
+}
+function _recRerender(id){ if(_table(id)) renderTableDetail(id); else if(id && id.indexOf('__')>=0 && _model(id.split('__')[0])) renderModelDetail(modelDetailState.id); else if(_ref(id)) renderReferenceDetail(id); else renderTableDetail(id); }
+function _colChooser(btn,tid){ const t=_recTable(tid); if(!t) return; const _dh=(dataState.hidden=dataState.hidden||{}); const hid=_dh[tid]=_dh[tid]||new Set();
   const all=DATA_SYS_COLS.concat(t.cols);
   const html=all.map(c=>`<button class="pop-item" onclick="_toggleCol('${tid}','${escapeHtml(c.n)}')"><span class="mv-check ${hid.has(c.n)?'':'on'}" style="pointer-events:none">${hid.has(c.n)?'':'<svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.5 3.5L13 4.5"/></svg>'}</span>${escapeHtml(c.d||c.n)}${c.sys?' <span class="so-locked" style="font-size:9.5px;margin-left:4px">sys</span>':''}</button>`).join('');
   _openPop(btn, html);
 }
-function _toggleCol(tid,name){ const _dh=(dataState.hidden=dataState.hidden||{}); const hid=_dh[tid]=_dh[tid]||new Set(); if(hid.has(name)) hid.delete(name); else hid.add(name); _closePop(); renderTableDetail(tid); }
+function _toggleCol(tid,name){ const _dh=(dataState.hidden=dataState.hidden||{}); const hid=_dh[tid]=_dh[tid]||new Set(); if(hid.has(name)) hid.delete(name); else hid.add(name); _closePop(); _recRerender(tid); }
 function openRecord(tid, idx){
-  const t=_table(tid); const rows=_mockRows(t); const r=rows[idx]; if(!r) return;
+  const t=_recTable(tid); const rows=_mockRows(t); const r=rows[idx]; if(!r) return;
   const allCols=SYSTEM_COLS.map(c=>({...c,system:true})).concat(t.cols);
   $('slideout').innerHTML=`
     <div class="so-head"><div><div class="so-title">Row</div><div class="so-internal">${escapeHtml(t.id)} · ${escapeHtml(r.__id)}</div></div>
@@ -5350,8 +5357,8 @@ function openRecord(tid, idx){
     <div class="so-foot"><button class="btn btn-danger" style="margin-right:auto" onclick="_deleteRecord('${tid}',${idx})">${_RM_IC.del} Delete row</button><button class="btn" onclick="_dupRecord('${tid}',${idx})">${_RM_IC.dup} Duplicate</button><button class="btn" onclick="closeSlideout()">Close</button><button class="btn btn-primary" onclick="openEditRecord('${tid}',${idx})">Edit row</button></div>`;
   _soOpen();
 }
-function _deleteRecord(tid,idx){ const t=_table(tid); const rows=_mockRows(t); if(idx<0||idx>=rows.length) return; rows.splice(idx,1); closeSlideout(); toast('Row deleted','ok'); renderTableDetail(tid); }
-function _dupRecord(tid,idx){ const t=_table(tid); const rows=_mockRows(t); const r=rows[idx]; if(!r) return; const c=JSON.parse(JSON.stringify(r)); c.__id=_mockId(rows.length); rows.splice(idx+1,0,c); closeSlideout(); toast('Row duplicated','ok'); renderTableDetail(tid); }
+function _deleteRecord(tid,idx){ const t=_recTable(tid); const rows=_mockRows(t); if(idx<0||idx>=rows.length) return; rows.splice(idx,1); closeSlideout(); toast('Row deleted','ok'); _recRerender(tid); }
+function _dupRecord(tid,idx){ const t=_recTable(tid); const rows=_mockRows(t); const r=rows[idx]; if(!r) return; const c=JSON.parse(JSON.stringify(r)); c.__id=_mockId(rows.length); rows.splice(idx+1,0,c); closeSlideout(); toast('Row duplicated','ok'); _recRerender(tid); }
 /* Map internal column type → the lowercase badge shown in the Add/Edit row form (matches the eng type vocabulary). */
 const _RF_TYPE={UUID:'uuid',Timestamp:'datetime',Date:'date',Reference:'reference',Text:'text',Integer:'integer',Decimal:'decimal',Boolean:'boolean',Enum:'enum',JSON:'json',GeoPoint:'geo_point',GeoPolygon:'geo_polygon'};
 function _rfType(t){ return _RF_TYPE[t]||String(t||'').toLowerCase(); }
@@ -5372,7 +5379,7 @@ function _recordForm(t, row){
   }).join('')}</div>`;
 }
 function openAddRecord(tid){
-  const t=_table(tid);
+  const t=_recTable(tid);
   $('slideout').innerHTML=`
     <div class="so-head"><div class="so-title">Add row</div><button class="so-close" onclick="closeSlideout()" aria-label="Close">✕</button></div>
     <div class="so-body">${_recordForm(t,null)}</div>
@@ -5380,7 +5387,7 @@ function openAddRecord(tid){
   _soOpen();
 }
 function openEditRecord(tid, idx){
-  const t=_table(tid); const r=_mockRows(t)[idx]; if(!r) return;
+  const t=_recTable(tid); const r=_mockRows(t)[idx]; if(!r) return;
   $('slideout').innerHTML=`
     <div class="so-head"><div class="so-title">Edit row</div><button class="so-close" onclick="closeSlideout()" aria-label="Close">✕</button></div>
     <div class="so-body">${_recordForm(t,r)}</div>
@@ -5388,11 +5395,11 @@ function openEditRecord(tid, idx){
   _soOpen();
 }
 function saveRecord(tid, idx){
-  const t=_table(tid); const rows=_mockRows(t);
+  const t=_recTable(tid); const rows=_mockRows(t);
   const rec = idx>=0 ? rows[idx] : {__id:_mockId(rows.length)};
   for(const c of t.cols){ const el=$('rf_'+c.n); if(!el) continue; rec[c.n]= c.t==='Boolean'?(el.value==='true') : el.value; }
   if(idx<0) rows.unshift(rec);
-  closeSlideout(); toast(idx<0?'Row added':'Row updated','ok'); renderTableDetail(tid);
+  closeSlideout(); toast(idx<0?'Row added':'Row updated','ok'); _recRerender(tid);
 }
 
 /* ──────────────────────────────────────────────────────────────
@@ -6311,6 +6318,8 @@ const _CIC={
 };
 /* Shared DS status state-tag (outline pill) — used by cards + preview slideouts */
 function _stateTag(s){ const c={Published:'published',Draft:'draft','Pending changes':'pending',Deprecated:'deprecated',Archived:'draft'}[s]||'draft'; return `<span class="mcard-state ${c}">${escapeHtml(s)}</span>`; }
+/* Column count for a model/workspace table — .cols may be a number (unvisited) or an array (once its Data tab has been opened). */
+function _colN(t){ return Array.isArray(t.cols)?t.cols.length:(t.cols||0); }
 function modelCard(m){
   const own=P(m.owner);
   const st={Published:'published',Draft:'draft','Pending changes':'pending',Deprecated:'deprecated',Archived:'draft'}[m.status]||'draft';
@@ -7436,14 +7445,14 @@ function _mdTblRow(m,t){
       <span class="md-trow-right">${_stPill(t.status)}<span class="lrow-time">${escapeHtml(t.updated)}</span><button class="lrow-menu" onclick="event.stopPropagation();_mdTblMenu('${m.id}','${t.id}',this)" aria-label="Table actions">${_MDIC.dots}</button></span>
     </div>
     <div class="md-trow-desc">${escapeHtml(t.desc)}</div>
-    <div class="md-trow-foot"><span class="lrow-metric">${_MDIC.col}${t.cols} columns</span><span class="lrow-sep">·</span><span class="lrow-metric">${_MDIC.rel}${t.rel} relations</span><span class="lrow-sep">·</span><span>${escapeHtml(P(t.owner).n)}</span></div></div>`;
+    <div class="md-trow-foot"><span class="lrow-metric">${_MDIC.col}${_colN(t)} columns</span><span class="lrow-sep">·</span><span class="lrow-metric">${_MDIC.rel}${t.rel} relations</span><span class="lrow-sep">·</span><span>${escapeHtml(P(t.owner).n)}</span></div></div>`;
 }
 function _mdTblCard(m,t){
   return `<div class="mcard" onclick="${_mdTblClick(m,t)}">
     <div class="mcard-top"><div style="display:flex;align-items:center;gap:8px;min-width:0"><div class="mcard-title">${escapeHtml(t.name)}</div><span class="mini-badge ${t.role==='Primary'?'mb-primary':'mb-secondary'}">${escapeHtml(t.role)}</span></div><div style="display:flex;align-items:center;gap:6px;flex-shrink:0">${_stateTag(t.status)}<button class="md-cardkb" onclick="event.stopPropagation();_mdTblMenu('${m.id}','${t.id}',this)" aria-label="Table actions">${_MDIC.dots}</button></div></div>
     <div class="mcard-subtitle">${escapeHtml(t.entity)}</div>
     <div class="mcard-desc">${escapeHtml(t.desc)}</div>
-    <div class="mcard-meta2"><span class="cmeta">${_CIC.user}${escapeHtml(P(t.owner).n)}</span><span class="cmeta">${_CIC.col}${t.cols} cols</span><span class="cmeta">${_CIC.link}${t.rel} rel</span><span class="cmeta">${_CIC.clock}${escapeHtml(t.updated)}</span></div></div>`;
+    <div class="mcard-meta2"><span class="cmeta">${_CIC.user}${escapeHtml(P(t.owner).n)}</span><span class="cmeta">${_CIC.col}${_colN(t)} cols</span><span class="cmeta">${_CIC.link}${t.rel} rel</span><span class="cmeta">${_CIC.clock}${escapeHtml(t.updated)}</span></div></div>`;
 }
 
 /* ── Table WORKSPACE (master-detail inside a model) ── */
@@ -7631,13 +7640,10 @@ function _mdtwRelMenu(mid,tid,idx,btn){ _mdKebab(btn,[
     {ic:_RM_IC.del,label:'Remove',act:`_mdtwRemoveRel('${mid}','${tid}',${idx})`,danger:true},
   ]); }
 function _mdtwRemoveRel(mid,tid,idx){ const c=_mdCtx(mid); if(!c) return; const t=c.md.tables.find(x=>x.id===tid); _mdtwEnsureRels(c.m,c.md,t).splice(idx,1); if(t.rel)t.rel--; _mdEdited(c.m); toast('Relationship removed','ok'); renderModelDetail(mid); }
-/* ── Table workspace: Data (sample grid, read-only preview) ── */
+/* ── Table workspace: Data (full CRUD grid — same authoring as the standalone table Data tab) ── */
 function _mdtwData(m,md,t){
-  const cols=_mdtwCols(t).slice(0,7); const N=8; const gt='display:grid;grid-template-columns:repeat('+cols.length+',minmax(108px,1fr))';
-  const rows=[]; for(let i=0;i<N;i++){ const r={}; cols.forEach(c=>r[c.n]=_mockVal(c,i)); rows.push(r); }
-  const total=((_mdtwCols(t).length*211+t.rel*97)%9000)+1000; const totalFmt=String(total).replace(/\B(?=(\d{3})+(?!\d))/g,',');
-  return `<div class="dsec-h" style="margin-bottom:12px"><div class="dsec-t">Data preview<span class="dsec-sub">sample of ${N} of ${totalFmt} rows${cols.length<_mdtwCols(t).length?' · first '+cols.length+' columns':''}</span></div><button class="btn" style="height:34px" onclick="toast('Exported sample to CSV','ok')">${_EXP_IC} Export</button></div>
-    <div class="mdtw-data-wrap"><div class="ttd-table"><div class="ttd-thead cv-thead" style="${gt}">${cols.map(c=>`<span class="cv-th">${escapeHtml(c.d||c.n)}</span>`).join('')}</div>${rows.map(r=>`<div class="ttd-tr cv-static" style="${gt}">${cols.map(c=>`<span class="cv-td">${_fmtVal(c,r[c.n])}</span>`).join('')}</div>`).join('')}</div></div>`;
+  t.cols=_mdtwCols(t); t.alias=t.alias||t.name;   // make the workspace table dataTab-compatible
+  return dataTab(t);                              // full CRUD grid (Add row / edit / delete / filters / pagination), same as the standalone Data tab
 }
 
 /* ── Components tab ── */
@@ -8009,7 +8015,7 @@ function openMdTablePreview(id,tblId){
   const c=_mdCtx(id); if(!c) return; const {m,md}=c; const t=md.tables.find(x=>x.id===tblId); if(!t) return;
   const er={nodes:[{label:t.name, role:t.role, cols:_erColsForTable(t)}], edges:[], note:''};
   const drift=t.status==='Published'?'No drift detected against the catalog baseline.':t.status==='Draft'?'Draft — not yet published to the catalog.':'Pending changes awaiting publish.';
-  const insights=[`${t.cols} column${t.cols===1?'':'s'} · ${t.rel} relation${t.rel===1?'':'s'}.`, drift, `Backs the ${escapeHtml(t.entity)} entity in ${escapeHtml(m.name)}.`];
+  const insights=[`${_colN(t)} column${_colN(t)===1?'':'s'} · ${t.rel} relation${t.rel===1?'':'s'}.`, drift, `Backs the ${escapeHtml(t.entity)} entity in ${escapeHtml(m.name)}.`];
   const stats=[['Columns',t.cols],['Relations',t.rel],['Role',t.role],['Updated',escapeHtml(t.updated)]];
   const subtitle=`${escapeHtml(t.role)} · ${escapeHtml(t.entity)} · <span style="font-family:var(--font-mono,ui-monospace,Menlo,monospace)">${escapeHtml(t.code)}</span>${t.pii?' · PII':''}`;
   $('slideout').innerHTML=`${_pvHead3(_IC_TABLE,t.name,t.status,subtitle)}
