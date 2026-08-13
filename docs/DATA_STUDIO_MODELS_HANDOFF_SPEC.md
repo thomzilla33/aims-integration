@@ -58,14 +58,15 @@ The prototype embeds this ladder live via the **Scope** toggle (`applyScope()` s
 **In scope:**
 - [ ] Entities list — search · filter (Model/Domain/Status/Owner/Tags) · pagination · create · **card → full detail on single click** — **B.1 / ARP-1024**
 - [ ] Entity detail tabs **Overview · Tables · Relationships** — **B.2 / ARP-1025**
-- [ ] Entity **relationship authoring**: entity↔entity with **cardinality (1:1 / 1:N / N:M)** + **strength (Strong / Weak)** + **composition (Association / Aggregation / Composition)** + **direction (Unidirectional / Bidirectional)** + nav names; required fields gate the Create button
+- [ ] Entity **relationship authoring**: entity↔entity with **cardinality (1:1 / 1:N / N:N)** + **related entity** + **strength (Strong / Weak)** + **direction (Unidirectional / Bidirectional)** + description + nav names; required fields gate the Create button. *(The prototype currently also renders a **Composition** field — Association / Aggregation / Composition — which is NOT in the canonical ARP-1025 V1 scope; tracked in Open Questions.)*
+- [ ] Entity actions: **Delete** (Duplicate is intentionally out — it would duplicate every child table)
 - [ ] Overview = the basic info block only (no KPIs/diagram/activity at V1)
 
 **Not in scope (deferred):** Privileges + API tabs (V1.2); Diagram view + cross-model relationships (Full vision).
 
 **Acceptance criteria:**
 - [ ] Clicking anywhere on an entity card opens its detail (not only the avatar)
-- [ ] "New relationship" opens a slideout whose required fields (related entity, strength, composition, direction) must be set before Create enables
+- [ ] "New relationship" opens a slideout whose required fields (related entity, cardinality, strength, direction) must be set before Create enables
 - [ ] The same entity opens the same relationship form whether reached from the standalone list or the in-model workspace
 - [ ] Status is rendered as a semantic tag (not a colored dot + badge)
 
@@ -217,6 +218,7 @@ Custom endpoints + request/response customization are **Full vision**.
 | At V1, should Add-entity / Add-table skip the marketplace and open Start-from-scratch directly? | PM | **Answered** — yes, gated to scratch at V1/V1.2; marketplace is Full vision |
 | Is data **Import** in V1 for Reference/Tables, or post-V1? | PM | Open — currently treated as post-V1 (not in C.3) |
 | Does the in-model **Table workspace** need full CRUD parity with the standalone Data tab? | Design | **Answered** — yes, implemented (shared `dataTab` via `_recTable`) |
+| Is **Composition** (Association / Aggregation / Composition) part of the V1 entity-relationship form? Prototype renders it; canonical **ARP-1025** does not list it (canonical = cardinality + related entity + strength + direction + description). | PM / Eng | **Open** — flagged 2026-08-12. Either add Composition to ARP-1025 scope or remove it from the prototype to align. |
 
 ---
 
@@ -225,7 +227,8 @@ Custom endpoints + request/response customization are **Full vision**.
 Cross-checked the prototype against the 13 Sub Features (ARP-1021→1033):
 - **All 13 sub-features covered** at the prototype/UX level.
 - **QA cross-scope:** 16 surfaces × 3 scopes = **0 render errors**; gating correct (V1 core · V1.2 +Publish · Full vision +Components/Indexes/History).
-- One consistency gap found + fixed during review: in-model entity relationship form now matches the standalone (strength/composition/direction).
+- In-model and standalone entity-relationship forms were unified during review (same form both entry points).
+- One divergence remains **open vs canonical**: the prototype's entity-relationship form shows a **Composition** field that ARP-1025's V1 scope does not list — see Open Questions.
 
 > Reminder: this prototype is the **design source of truth for handoff**, not the shippable build. V1 ships as the React DS implementation + backend/API + tests, built from this spec and the ARP tickets.
 
@@ -236,3 +239,4 @@ Cross-checked the prototype against the 13 Sub Features (ARP-1021→1033):
 | Date | Change | Author |
 |---|---|---|
 | 2026-08-12 | Initial umbrella spec — 5 areas × 3 tiers, cross-checked vs ARP-1021→1033 | Thomas (PM) |
+| 2026-08-12 | Aligned to canonical ARP tickets: entity cardinality N:N (was N:M); Composition moved to Open Questions (not in ARP-1025 V1); added entity "Duplicate is out" | Thomas (PM) |
