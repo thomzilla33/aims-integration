@@ -7446,7 +7446,7 @@ function _mdwRelCard(m,e,r,idx){
   return `<div class="mdw-rel-card">
     <div class="mdw-rel-top"><span class="mdw-rel-ent">${_MDIC.ent}${escapeHtml(e.name)}</span>${_ARROW}<span class="mdw-rel-ent">${escapeHtml(r.t)}</span><span class="card-badge">${_cardShort(r.k)}</span>${r.cross?`<span class="mdw-rel-cross">Cross-model · ${escapeHtml(r.cross)}</span>`:''}<span style="flex:1"></span>${crossM?`<button class="mdw-rel-open" onclick="navigate('models/${crossM.id}')">Open ${escapeHtml(r.cross)} →</button>`:''}<button class="lrow-menu" onclick="_mdwRelMenu('${m.id}','${e.id}',${idx},this)" aria-label="Relationship actions">${_MDIC.dots}</button></div>
     <div class="mdw-rel-desc">${escapeHtml(r.desc)}</div>
-    <div class="mdw-rel-meta"><span class="mdw-rel-k">FK</span><code class="md-code">${escapeHtml((r.cross?ts:es)+'.'+r.via)}</code><span class="mdw-rel-sep">·</span><span class="mdw-rel-k">ON DELETE</span><b>${escapeHtml(r.del)}</b>${!r.cross?`<span class="mdw-rel-sep">·</span><span class="mdw-rel-k">NAVIGATE</span><code class="md-code">${es}.${ts}</code> ↔ <code class="md-code">${ts}.${es}</code>`:''}</div>
+    <div class="mdw-rel-meta"><span class="mdw-rel-k">STRENGTH</span><b>${escapeHtml(r.strength||'Strong')}</b><span class="mdw-rel-sep">·</span><span class="mdw-rel-k">COMPOSITION</span><b>${escapeHtml(r.comp||'Association')}</b><span class="mdw-rel-sep">·</span><span class="mdw-rel-k">DIRECTION</span><b>${escapeHtml(r.dir||'Unidirectional')}</b>${!r.cross?`<span class="mdw-rel-sep">·</span><span class="mdw-rel-k">NAVIGATE</span><code class="md-code">${es}.${ts}</code> ↔ <code class="md-code">${ts}.${es}</code>`:''}</div>
   </div>`;
 }
 function _mdwIncCard(m,e,r){
@@ -7475,8 +7475,9 @@ function openMdwRelForm(mid,eid,idx){
     <div class="so-body mdw-relform">
       ${_RIF('Related entity',null,`<select class="minput" id="wr_target">${opts.map(o=>`<option value="${escapeHtml(o.v)}" data-cross="${escapeHtml(o.cross)}" ${r&&r.t===o.v?'selected':''}>${escapeHtml(o.v)}${o.cross?' (cross-model)':''}</option>`).join('')}</select>`,1)}
       ${_RIF('Cardinality',null,`<select class="minput" id="wr_card">${_CARD_OPTS.map(([v,l])=>`<option value="${v}" ${(r?r.k:'one-to-many')===v?'selected':''}>${l}</option>`).join('')}</select>`)}
-      ${_RIF('Foreign key',null,`<input class="minput md-name-mono" id="wr_via" value="${r?escapeHtml(r.via):''}" placeholder="e.g. account_id" autocomplete="off">`,0,'field')}
-      ${_RIF('On delete',null,`<select class="minput" id="wr_del">${_REL_DEL.map(d=>`<option ${(r?r.del:'Restrict')===d?'selected':''}>${d}</option>`).join('')}</select>`)}
+      ${_RIF('Strength',null,`<select class="minput" id="wr_strength">${['Strong','Weak'].map(x=>`<option ${(r?r.strength===x:x==='Strong')?'selected':''}>${x}</option>`).join('')}</select>`,1)}
+      ${_RIF('Composition',null,`<select class="minput" id="wr_comp">${['Association','Aggregation','Composition'].map(x=>`<option ${(r?r.comp===x:x==='Association')?'selected':''}>${x}</option>`).join('')}</select>`,1)}
+      ${_RIF('Direction',null,`<select class="minput" id="wr_dir">${['Unidirectional','Bidirectional'].map(x=>`<option ${(r?r.dir===x:x==='Unidirectional')?'selected':''}>${x}</option>`).join('')}</select>`,1)}
       ${_RIF('Description',null,`<textarea class="mtextarea" id="wr_desc" placeholder="What this relationship represents.">${r?escapeHtml(r.desc):''}</textarea>`)}
     </div>
     <div class="so-foot"><button class="btn" onclick="closeSlideout()">Cancel</button><button class="btn btn-primary" onclick="saveMdwRel('${mid}','${eid}',${idx==null?'null':idx})">${_MDIC.plus}${r?'Save changes':'Add relationship'}</button></div>`;
@@ -7486,7 +7487,7 @@ function saveMdwRel(mid,eid,idx){
   const c=_mdCtx(mid); if(!c) return; const e=c.md.ents.find(x=>x.id===eid); const rels=_mdwEnsureRels(c.m,c.md,e);
   const sel=$('wr_target'); const t=sel.value; if(!t){ toast('Pick a related entity'); return; }
   const cross=sel.options[sel.selectedIndex].getAttribute('data-cross')||null;
-  const rel={ t, k:$('wr_card').value, via:($('wr_via').value||'').trim().toLowerCase().replace(/\s+/g,'_')||_rsnip(t)+'_id', del:$('wr_del').value, cross:cross||null, desc:($('wr_desc').value||'').trim()||(e.name+' → '+t+'.') };
+  const rel={ t, k:$('wr_card').value, strength:$('wr_strength').value, comp:$('wr_comp').value, dir:$('wr_dir').value, cross:cross||null, desc:($('wr_desc').value||'').trim()||(e.name+' → '+t+'.') };
   if(idx!=null&&idx>=0&&rels[idx]) rels[idx]=rel; else rels.push(rel);
   _mdEdited(c.m); closeSlideout(); toast('Relationship '+(idx!=null?'updated':'added'),'ok'); modelDetailState.ent.subtab='relationships'; renderModelDetail(mid);
 }
